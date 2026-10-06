@@ -1,4 +1,6 @@
-﻿#include <stdio.h>
+﻿// 第1回 課題1　最初のプログラム（Welcome / welcome.c）
+// 2 行を表示する。行の区切りは文字列中の \n で表す。
+#include <stdio.h>
 
 int main(void)
 {

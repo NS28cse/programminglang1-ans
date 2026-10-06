@@ -25,7 +25,7 @@ tools: Read, Grep, Glob, Bash
    cmake -S . -B $B -G Ninja -DSOFTPRAC_WEEKS=weekNN -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
    cmake --build $B && ctest --test-dir $B --output-on-failure
    ```
-   さらに `clang` でもビルドする（`-DCMAKE_C_COMPILER=clang`）。`python3 tools/normalize_sources.py --check` も実行する。
+   さらに `clang` でも別フォルダでビルド・テストする（`-DCMAKE_C_COMPILER=clang -DSOFTPRAC_WERROR=ON`。環境によって Clang の sanitizer ランタイムがないため `SOFTPRAC_SANITIZE` は付けない）。`python3 tools/normalize_sources.py --check` も実行する。
 3. 各プログラムを実際に実行し，演習ページの期待する表示と**1 文字ずつ**比べる。検証表・境界値・異常な入力（引数なし，範囲外，`12x`，空入力，存在しないファイルなど）も自分で試す。
    テストがあっても，テストの期待値自体が演習ページと食い違っていないか確認する。
 4. ソースを読み，未定義動作・境界の誤り・資源の解放漏れ・戻り値の未検査・講義範囲外の機能・MSVC 固有の問題

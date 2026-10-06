@@ -5,6 +5,7 @@ BOM を付けると，/utf-8 を指定していない Visual Studio のプロジ
 ファイルをコピーしても日本語コメントが正しく読まれる（C4819 や文字化けを防ぐ）。
     python tools/normalize_sources.py          # 修正する
     python tools/normalize_sources.py --check  # 確認だけ（CI 用）
+    python tools/normalize_sources.py week05   # 指定した回だけ
 """
 import pathlib
 import sys
@@ -24,8 +25,10 @@ def normalized(data: bytes) -> bytes:
 
 def main():
     check = "--check" in sys.argv
+    weeks = [a for a in sys.argv[1:] if not a.startswith("--")] or ["week[0-9][0-9]"]
     bad = []
-    for path in sorted(ROOT.glob("week[0-9][0-9]/**/*")):
+    paths = sorted({p for w in weeks for p in ROOT.glob(f"{w}/**/*")})
+    for path in paths:
         if path.suffix not in (".c", ".h") or not path.is_file():
             continue
         data = path.read_bytes()
