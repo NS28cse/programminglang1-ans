@@ -37,7 +37,8 @@
 ```sh
 B=/tmp/build-week06
 cmake -S . -B $B -G Ninja -DSOFTPRAC_WEEKS=week06 -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
-cmake --build $B && ctest --test-dir $B --output-on-failure   # 24 件すべて成功（GCC 13・Clang 18，警告 0）
+cmake --build $B && ctest --test-dir $B --output-on-failure   # GCC 13: 24 件すべて成功，警告 0，ASan/UBSan のエラーなし
+# Clang 18 でも -DCMAKE_C_COMPILER=clang（sanitizer なし）で 24 件成功，警告 0
 ```
 
 ## 準備：配列を書き出して「容量・長さ・終端の添字」を記録する
