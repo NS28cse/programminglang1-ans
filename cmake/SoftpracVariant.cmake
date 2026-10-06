@@ -4,7 +4,8 @@
 # ソースを書き換えて行う。ここでは学生と同じ書き換えを CMake が行い，別の実行ファイルとして
 # ビルド・テストする（フォルダのソースは最終版のまま変えない）。
 #
-#   softprac_add_variant(<プログラム名> <ソース> <ケース名> <置換前> <置換後> [<置換前> <置換後>]...)
+#   softprac_add_variant(<プログラム名> <ソース> <ケース名> [<置換前> <置換後>]...)
+#   （置換を省略すると <ソース> をそのままビルドする。比較用の別ソースのテストに使う）
 #
 #   - <ソース> の中で <置換前> がちょうど 1 回現れることを確認してから <置換後> に置き換える
 #     （ソースを直して置換前の文字列がなくなったら，構成の段階でエラーにして気付けるようにする）
@@ -21,11 +22,11 @@ function(softprac_add_variant base source case)
   file(READ "${src}" text)
   math(EXPR n "${ARGC} - 3")
   math(EXPR odd "${n} % 2")
-  if(n LESS_EQUAL 0 OR odd)
+  if(odd)
     message(FATAL_ERROR "softprac_add_variant(${base} ${case}): 置換前と置換後を組で指定してください")
   endif()
-  math(EXPR last_index "${ARGC} - 1")
-  foreach(i RANGE 3 ${last_index} 2)
+  set(i 3)
+  while(i LESS ARGC)   # 置換なしなら何もしない（比較用の別ソース versions/ などをそのままビルドする）
     math(EXPR j "${i} + 1")
     set(old "${ARGV${i}}")
     set(new "${ARGV${j}}")
@@ -35,7 +36,8 @@ function(softprac_add_variant base source case)
       message(FATAL_ERROR "softprac_add_variant(${base} ${case}): ${source} に「${old}」がちょうど 1 回現れません")
     endif()
     string(REPLACE "${old}" "${new}" text "${text}")
-  endforeach()
+    math(EXPR i "${i} + 2")
+  endwhile()
 
   # 書き換えた版を作る（内容が同じなら書き直さない）。元のソースが変わったら構成し直す
   set(gen "${CMAKE_CURRENT_BINARY_DIR}/variants/${case}/${source}")

@@ -4,4 +4,5 @@ softprac_add_program(GcdLoop gcd_loop.c)
 
 # a = b を先に行ってから余りを求める（元の a を失い，常に b % b = 0 になる）
 softprac_add_variant(GcdLoop gcd_loop.c overwrite_first
-  "unsigned int remainder = a % b" "unsigned int remainder = (a = b, a % b)")
+  "        unsigned int remainder = a % b; /* 先に余りを保存する（a を上書きすると元の a を失う） */\n        a = b;\n        b = remainder;"
+  "        a = b;          /* 誤り: 余りを保存する前に a を上書き */\n        b = a % b;")

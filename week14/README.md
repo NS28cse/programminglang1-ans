@@ -7,7 +7,7 @@
 
 | 課題 | プロジェクト | ソース | テスト数 |
 | --- | --- | --- | --- |
-| 課題1 階乗の境界 | `Factorial` | [recursion.c](Factorial/recursion.c) | 11 + 書き換え版 1 |
+| 課題1 階乗の境界 | `Factorial` | [recursion.c](Factorial/recursion.c) | 11 + 書き換え版 3 |
 | 課題2 再帰の復帰順 | `Trace` | [trace.c](Trace/trace.c) | 9 + 書き換え版 3 |
 | 課題3 互除法を反復へ書き換える | `GcdLoop` | [gcd_loop.c](GcdLoop/gcd_loop.c) | 12 + 書き換え版 1 |
 | 課題4 再帰の入口を安全にする | `CheckedFactorial` | [checked_factorial.c](CheckedFactorial/checked_factorial.c) | 9 |
@@ -20,8 +20,9 @@
 
 「書き換え版」は，小問や「出力位置を変える」のようにソースを書き換えて試す版である。フォルダのソースは最終版のまま，
 各プロジェクトの `CMakeLists.txt` の `softprac_add_variant` で書き換えた版をビルドし，期待する出力（`variants/tests/<ケース>.out`）と比較する。
-対象: `Factorial` の `base_0`（基底値 0），`Trace` の `enter_after_check`・`enter_after_check_0`・`leave_before_call`（表示位置の変更），
-`GcdLoop` の `overwrite_first`（更新順序の誤り），`Fibonacci` の `no_reset`（`stats` を初期化せずに 2 回呼ぶ）。合計 60 テスト。
+対象: `Factorial` の `base_0`（基底値 0。n=5，0，20），`Trace` の `enter_after_check`（n=3，0）・`leave_before_call`（表示位置の変更），
+`GcdLoop` の `overwrite_first`（更新順序の誤り），`Fibonacci` の `no_reset`（`stats` を初期化せずにもう一度呼ぶ）。
+書き換えた版のソースは README に載せたコードと同じ形になる。合計 62 テスト（本体 54，書き換え版 8）。
 
 ### 値の変え方（全プロジェクト共通）
 
@@ -164,7 +165,8 @@ n=20 result=2432902008176640000 calls=21 depth=21
    gcd=6
    recursive=0 loop=120 equal=0
    ```
-   反復版（`result = 1` から始まる）とは一致しなくなる。n を 0〜5 に変えたコピーでも `0! = 0`，`1! = 0`，…，`5! = 0` とすべて 0 だった。
+   反復版（`result = 1` から始まる）とは一致しなくなる。同じ版を n=0（`variant_base_0--n0`）と n=20（`variant_base_0--n20`）で実行しても
+   `0! = 0`（`recursive=0 loop=1 equal=0`），`20! = 0`（`recursive=0 loop=2432902008176640000 equal=0`）。n を 0〜5 に変えたコピーでも `0! = 0`，`1! = 0`，…，`5! = 0` とすべて 0 だった。
 2. **`n`を減らさず`factorial(n)`を呼ぶと，なぜ止まらないか。** → 呼び出し先の `n` が自分と同じなので，`n == 0` 以外から始めると基底条件に一歩も近づかない。同じ状態の呼び出しが無限に続き，実際にはスタックの限界を超えて異常終了する（実行はしない）。基底条件を書くだけでなく「呼ぶたびに小さくなる量」が必要。
 3. **`unsigned long long`なら，どんな`n`の階乗でも求められるか。** → 求められない。64 ビットでは 20! までしか収まらず，21! 以上は回り込んで誤った値になる（エラーにならないので気付きにくい）。また再帰の深さも `n + 1` になるので，大きな `n` ではスタックの問題もある。範囲 0〜20 を契約として決め，計算前に検査する。
 
@@ -276,8 +278,6 @@ main
 | 基底条件から1段戻ったとき | `sum_to(0)` が 0 を返し，`sum_to(1)` の `int result = 1 + sum_to(0);` の初期化が完了した時点で `result = 1` が確定する（その次の行 `leave 1: 1` で表示される）。同様に `sum_to(2)` は 3，`sum_to(3)` は 6 と，復帰のたびに 1 段ずつ確定する |
 
 - 呼び出し履歴（コールスタック）の上から `sum_to` (n=0)，`sum_to` (n=1)，`sum_to` (n=2)，`sum_to` (n=3)，`main` の順に並ぶ。行を選ぶと，その呼び出しの `n` が「ローカル」ウィンドウに表示される（実行は巻き戻らない）。
-- 自動テストの書き換え版は，CMake の置換の都合で文を移す代わりにコンマ演算子 `int result = (printf("enter %d\n", n), n + sum_to(n - 1));` で同じ位置に表示している（表示される順序は上のコードと同じ）。
-
 - 待機中の段の `result` は初期化が終わっていないので，表示される値は意味のないごみ。MSVC の Debug 構成では未初期化のスタック領域が 0xCC で埋められるため，`-858993460`（0xCCCCCCCC）と表示されることが多い。これを途中結果として記録してはいけない。
 
 ### 出力位置を変える
@@ -309,7 +309,7 @@ leave 3: 6
 sum=6
 ```
 
-予測どおり `enter 0` だけが消える。`sum_to(0)` は基底条件で `return` するので，判定の後の `enter` に到達しない。`n=0` で実行すると（テスト `variant_enter_after_check_0`）`leave 0: 0` と `sum=0` の 2 行だけになり，「関数に入った」ことが表示から分からなくなる。結果の値（6）は変わらない。
+予測どおり `enter 0` だけが消える。`sum_to(0)` は基底条件で `return` するので，判定の後の `enter` に到達しない。`n=0` で実行すると（テスト `variant_enter_after_check--n0`）`leave 0: 0` と `sum=0` の 2 行だけになり，「関数に入った」ことが表示から分からなくなる。結果の値（6）は変わらない。
 
 **(2) `leave` の表示を再帰呼び出しより前へ移す案**（`result` はまだ計算されていないので `n` だけを表示する。テスト `variant_leave_before_call`）
 
@@ -681,7 +681,7 @@ n must be 0..20      （同上）
    2nd: fib=3 calls=18 depth=4
    reset: fib=3 calls=9 depth=4
    ```
-   解答の `main` の `fib` の呼び出しを同じ `stats` で 2 回続けて行う書き換え版（テスト `variant_no_reset`）でも `fib=3 calls=18 depth=4 loop=3` になる。
+   解答の `main` で `result = fib(n, 1, &stats);` をもう一度（初期化し直さずに）実行する書き換え版（テスト `variant_no_reset`）でも `fib=3 calls=18 depth=4 loop=3` になる。
    `calls` は 18 に積み上がり，`max_depth` は「最大値」なので 4 のまま（増えないので誤りに気付きにくい）。別の測定は新しく `{0, 0}` で初期化する。
 3. **左右は順番に処理するため，呼び出しの木にある全ノードを同時にスタックへ積むわけではない。** → `left` の計算（左の部分木全体）が終わってその呼び出しがすべて戻ってから，`right` の呼び出しが始まる。同時に待機しているのは根から現在の呼び出しまでの 1 本の経路だけなので，`fib(4)` で同時に存在する `fib` は最大 4 個（9 個ではない）。
 4. **`depth`は対象関数の論理的な深さであり，実際に何バイトのスタックを使ったかを測っているわけではない。** → 1 段あたりの領域（引数・局所変数・戻り先など）の大きさは処理系・最適化・呼び出し規約で変わり，`printf` など他の関数の分も含まれない。`depth=20` だから何バイト，とは言えない。
@@ -989,7 +989,7 @@ cmake -S . -B $B -G Ninja -DSOFTPRAC_WEEKS=week14 -DSOFTPRAC_WERROR=ON -DSOFTPRA
 cmake --build $B && ctest --test-dir $B --output-on-failure
 ```
 
-- GCC 13（AddressSanitizer/UBSan 付き）: 警告 0，テスト 60 件（本体 54 件，書き換え版 6 件）すべて成功。
-- Clang 18（`-DCMAKE_C_COMPILER=clang`，この環境には Clang の sanitizer ランタイムがないため `SOFTPRAC_SANITIZE` なし）: 警告 0，テスト 60 件すべて成功。
+- GCC 13（AddressSanitizer/UBSan 付き）: 警告 0，テスト 62 件（本体 54 件，書き換え版 8 件）すべて成功。
+- Clang 18（`-DCMAKE_C_COMPILER=clang`，この環境には Clang の sanitizer ランタイムがないため `SOFTPRAC_SANITIZE` なし）: 警告 0，テスト 62 件すべて成功。
 - 追加で `-Wconversion -Wsign-conversion -Wshadow` を付けても GCC・Clang とも警告 0（MSVC `/W4` の C4244・C4267・C4389 に相当する型変換の警告がないことの確認）。
 - 実行結果の数値は Windows x64 (MSVC) と Linux x64 で同じ（`unsigned long long` はどちらも 64 ビット）。違うのは `long` の大きさ（Windows は 32 ビット，Linux x64 は 64 ビット）で，影響するのは `strtol` で範囲外になる非常に大きい引数の扱いだけ（どちらでも拒否される）。
