@@ -1,2 +1,4 @@
 * text=auto eol=lf
 *.bin binary
+# テスト用の入力・期待値は改行コードを含めてそのまま保存する（CRLF の入力を試すケースなど）
+**/tests/** -text
