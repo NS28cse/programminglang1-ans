@@ -1,0 +1,14 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Welcome.exe (bin\\week01\\Welcome.exe)",
+      "name": "week01 Welcome",
+      "currentDir": "${workspaceRoot}\\week01\\Welcome",
+      "args": []
+    }
+  ]
+}

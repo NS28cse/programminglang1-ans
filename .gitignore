@@ -1,0 +1,24 @@
+# CMake / Visual Studio / VS Code の生成物
+/out/
+/build/
+/.vs/*
+!/.vs/launch.vs.json
+CMakeUserPresets.json
+CMakeSettings.json
+*.user
+*.suo
+x64/
+Debug/
+Release/
+.cache/
+compile_commands.json
+
+# 実行時にプログラムが作るファイル（第10回など）
+*.exe
+*.obj
+*.o
+*.pdb
+*.ilk
+
+.DS_Store
+Thumbs.db

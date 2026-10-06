@@ -1,0 +1,20 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "CMake: すべてビルド",
+      "type": "cmake",
+      "command": "build",
+      "targets": [ "all" ],
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": [ "$msCompile", "$gcc" ]
+    },
+    {
+      "label": "CTest: テストを実行",
+      "type": "cmake",
+      "command": "test",
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}

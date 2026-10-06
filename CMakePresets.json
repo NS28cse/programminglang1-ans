@@ -1,0 +1,63 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}"
+    },
+    {
+      "name": "msvc-debug",
+      "displayName": "Windows / MSVC (x64 Debug)",
+      "description": "Visual Studio の「C++ によるデスクトップ開発」に含まれる cl.exe と Ninja を使う",
+      "inherits": "base",
+      "generator": "Ninja",
+      "architecture": { "value": "x64", "strategy": "external" },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": [ "Windows" ] }
+      }
+    },
+    {
+      "name": "msvc-release",
+      "displayName": "Windows / MSVC (x64 Release)",
+      "inherits": "msvc-debug",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
+      "name": "gcc-debug",
+      "displayName": "GCC / Clang (Debug, macOS・Linux)",
+      "description": "PATH 上の cc（gcc や clang）を使う",
+      "inherits": "base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
+      "condition": { "type": "notEquals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    },
+    {
+      "name": "mingw-debug",
+      "displayName": "Windows / MinGW-w64 gcc (Debug)",
+      "description": "Visual Studio を入れずに MSYS2 などの gcc を使う場合",
+      "inherits": "base",
+      "generator": "Ninja",
+      "cacheVariables": { "CMAKE_C_COMPILER": "gcc", "CMAKE_BUILD_TYPE": "Debug" },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "msvc-debug", "configurePreset": "msvc-debug" },
+    { "name": "msvc-release", "configurePreset": "msvc-release" },
+    { "name": "gcc-debug", "configurePreset": "gcc-debug" },
+    { "name": "mingw-debug", "configurePreset": "mingw-debug" }
+  ],
+  "testPresets": [
+    { "name": "msvc-debug", "configurePreset": "msvc-debug", "output": { "outputOnFailure": true } },
+    { "name": "msvc-release", "configurePreset": "msvc-release", "output": { "outputOnFailure": true } },
+    { "name": "gcc-debug", "configurePreset": "gcc-debug", "output": { "outputOnFailure": true } },
+    { "name": "mingw-debug", "configurePreset": "mingw-debug", "output": { "outputOnFailure": true } }
+  ]
+}

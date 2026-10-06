@@ -1,0 +1,53 @@
+{
+  // 使い方: 実行したい課題の .c ファイルをエディタで開いた状態で F5（デバッグ）または Ctrl+F5（デバッグなし）
+  //   - 開いている .c があるフォルダ（= プロジェクト）の実行ファイルを起動する
+  //   - 作業ディレクトリはそのフォルダ（Visual Studio の $(ProjectDir) と同じ）
+  //   - コマンドライン引数が必要な課題は「引数つき」を選び，下の args を書き換える
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "開いている課題を実行 (Windows / MSVC)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${command:cmake.buildDirectory}/bin/${relativeFileDirname}.exe",
+      "args": [],
+      "cwd": "${fileDirname}",
+      "console": "integratedTerminal",
+      "preLaunchTask": "CMake: すべてビルド"
+    },
+    {
+      "name": "開いている課題を引数つきで実行 (Windows / MSVC)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${command:cmake.buildDirectory}/bin/${relativeFileDirname}.exe",
+      "args": [ "input.txt" ],
+      "cwd": "${fileDirname}",
+      "console": "integratedTerminal",
+      "preLaunchTask": "CMake: すべてビルド"
+    },
+    {
+      "name": "開いている課題を実行 (macOS / Linux)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${command:cmake.buildDirectory}/bin/${relativeFileDirname}",
+      "args": [],
+      "cwd": "${fileDirname}",
+      "externalConsole": false,
+      "linux": { "MIMode": "gdb" },
+      "osx": { "MIMode": "lldb" },
+      "preLaunchTask": "CMake: すべてビルド"
+    },
+    {
+      "name": "開いている課題を引数つきで実行 (macOS / Linux)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${command:cmake.buildDirectory}/bin/${relativeFileDirname}",
+      "args": [ "input.txt" ],
+      "cwd": "${fileDirname}",
+      "externalConsole": false,
+      "linux": { "MIMode": "gdb" },
+      "osx": { "MIMode": "lldb" },
+      "preLaunchTask": "CMake: すべてビルド"
+    }
+  ]
+}
