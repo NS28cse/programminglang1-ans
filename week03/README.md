@@ -20,14 +20,17 @@
 
 合計 28 テスト。フォルダのソースは**演習ページの最初の値（最終的に戻す値）の版**で，`tests/basic.out` がその出力。
 
-### 「値を変えて試す」小問のテスト（`tests/variants/`）
+### 「値を変えて試す」小問のテスト（`variants/tests/`）
 
 今回のプログラムは入力をソースに直接書くので，値を変えた結果はソースを書き換えて作り直さないと確かめられない。
-そこで各プロジェクトの `CMakeLists.txt` で，ソースの初期化の部分だけを文字列で置き換えた版をビルドフォルダに生成し，
-`tests/variants/<版>.out` をその版の期待する出力としてテストしている（補助関数は [variants.cmake](variants.cmake)）。
+そこで各プロジェクトの `CMakeLists.txt` で，共通の補助関数 `softprac_add_variant`（[cmake/SoftpracVariant.cmake](../cmake/SoftpracVariant.cmake)）を使い，
+ソースの一部だけを文字列で置き換えた版をビルドフォルダに生成してビルドし，`variants/tests/<ケース>.out` をその版の期待する出力としてテストしている。
+テスト名は `week03/<プロジェクト>/variant_<ケース>`。
 
-- 例: `week03_add_variant(TimeParts time_parts.c seconds_0 "int seconds = 3671;" "int seconds = 0;")` は，
-  `int seconds = 0;` にした `time_parts.c` を作ってビルドし，[tests/variants/seconds_0.out](TimeParts/tests/variants/seconds_0.out) と比べる。
+- 例: `softprac_add_variant(TimeParts time_parts.c seconds_0 "seconds = 3671" "seconds = 0")` は，
+  `int seconds = 0;` にした `time_parts.c` を作ってビルドし，[variants/tests/seconds_0.out](TimeParts/variants/tests/seconds_0.out) と比べる。
+- 置換の文字列には `;` を使えない（CMake のリストの区切りになる）。そのため 2 行の順番を入れ替える `Update` の `swapped_order` は仮の文字列を経由して置き換え，
+  `Flags` の「2 回セット」は 2 つの文を 1 つの式にまとめた形でテストしている（それぞれ下で説明）。
 - 置き換え前の文字列がソースにちょうど 1 回現れないときは CMake の構成エラーになる（ソースを直した後に，元の版を誤ってテストしないため）。
 - 生成した版は Visual Studio の起動構成（`.vs/launch.vs.json`）には載らない。学生と同じように確かめるときは，フォルダのソースの初期値を手で書き換えてビルド・実行すればよい。
 - 本体のプロジェクトは自動の規則と同じく `softprac_add_program(<名前> <ソース>)` で作っている。
@@ -80,7 +83,7 @@ decimal minutes=61.18
 
 ### 境界の値を試す（`seconds` を 0，59，60，61 に変更）
 
-入力範囲の上限 10000 も併せて確かめた。どの行も実際の出力（テスト `tests/variants/seconds_*.out`）。
+入力範囲の上限 10000 も併せて確かめた。どの行も実際の出力（テスト `variant_seconds_*`，期待値は `TimeParts/variants/tests/`）。
 
 | `seconds` | 予測と実行結果（1 行目） | 2 行目 | 理由 |
 | ---: | --- | --- | --- |
@@ -96,7 +99,7 @@ decimal minutes=61.18
 
 ### 説明すること（右辺を `seconds / 60` にすると，なぜ 1.00 になるか）
 
-`seconds = 61` で `double decimal_minutes = seconds / 60;` に変えた版（テスト `int_division_61`）の実際の出力:
+`seconds = 61` で `double decimal_minutes = seconds / 60;` に変えた版（テスト `variant_int_division_61`）の実際の出力:
 
 ```text
 1 min 1 sec
@@ -168,7 +171,7 @@ final x=20
 
 ### 書き方を変えて比較する
 
-**複合代入を通常の代入の形へ書き換えた版**（テスト `plain_assignment`）:
+**複合代入を通常の代入の形へ書き換えた版**（テスト `variant_plain_assignment`）:
 
 ```c
     x = x + 3;
@@ -182,7 +185,7 @@ final x=20
 
 `x += 3;` は `x = x + 3;`，`x *= 2;` は `x = x * 2;` と同じ意味なので，結果も同じ 20 になる。
 
-**最初の `x` を 0 と -2 に変えた版**（テスト `x_0`・`x_minus2`）:
+**最初の `x` を 0 と -2 に変えた版**（テスト `variant_x_0`・`variant_x_minus2`）:
 
 | 最初の `x` | `before` | `after` | 前置・後置の後の `x` | `+= 3` の後 | `*= 2` の後 | 実際の出力 |
 | ---: | ---: | ---: | ---: | ---: | ---: | --- |
@@ -194,7 +197,7 @@ final x=20
 
 ### 説明すること（`x *= 2;` と `x += 3;` の順番を逆にすると，最終値は同じか）
 
-**同じにならない。** 順番を逆にした版（テスト `swapped_order`）の実際の出力:
+**同じにならない。** 順番を逆にした版（テスト `variant_swapped_order`。`x += 3;` と `x *= 2;` の 2 行を入れ替えた版）の実際の出力:
 
 ```c
     x *= 2;
@@ -264,7 +267,7 @@ n=12 d=0 large=0
 | `d = 3`（`score=75`） | `score=75 valid=1 invalid=0` / `n=12 d=3 large=1` | 1 | 0 | 1 | 2 行目だけ | `d != 0` が真なので右側も評価。12 / 3 = 4，`4 > 2` は真 |
 | `d = 6`（`score=75`） | `score=75 valid=1 invalid=0` / `n=12 d=6 large=0` | 1 | 0 | 0 | 2 行目だけ | 12 / 6 = 2，`2 > 2` は偽（`>` は等しい値を含まない） |
 
-（各行はテスト `tests/variants/score_minus1`・`score_0`・`score_100`・`score_101`・`d_3`・`d_6` の実際の出力。）
+（各行はテスト `variant_score_minus1`・`variant_score_0`・`variant_score_100`・`variant_score_101`・`variant_d_3`・`variant_d_6` の実際の出力。）
 
 - `valid` と `invalid` は常に逆の値になる（`invalid` は `!valid` と同じ。「0 以上 かつ 100 以下」の否定は「0 未満 または 100 より大きい」）。
 - `score` は 1 行目だけ，`d` は 2 行目だけに影響する。条件ごとに別の変数へ保存しているため。
@@ -360,7 +363,7 @@ leap=1
 | 2024 | 1 | 1 | 0 | 1 | **1** | 1 | 同じ |
 | 2025 | 0 | 1 | 0 | 0 | **0** | 0 | 同じ |
 
-（1900・2024・2025 はテスト `tests/variants/year_*` の実際の出力。例えば 1900 は次のとおり。）
+（1900・2024・2025 はテスト `variant_year_*` の実際の出力。例えば 1900 は次のとおり。）
 
 ```text
 year=1900
@@ -448,7 +451,7 @@ exec=1
 演習ページの 001 → 011 → 010 → 110 と一致する。
 `~read_mask` は下位 3 ビットだけでなく `unsigned int` の**全ビット**を反転した値（32 ビットの `unsigned int` では 0xFFFFFFFE = 4294967294。Windows x64 の MSVC でも Linux x64 でも同じ）で，ビット 0 だけが 0，ほかはすべて 1。そのため AND してもビット 0 以外は元のまま残る。
 
-**最初の `flags` を `0u` と `7u` に変えた版**（テスト `start_0`・`start_7` の実際の出力）:
+**最初の `flags` を `0u` と `7u` に変えた版**（テスト `variant_start_0`・`variant_start_7` の実際の出力）:
 
 | 段階 | `0u` から（ビット列） | 表示 | `7u` から（ビット列） | 表示 |
 | --- | --- | --- | --- | --- |
@@ -476,11 +479,12 @@ exec=1
 `OR` は各ビットを独立に「どちらかが 1 なら 1」にするので，既に 1 のビットに同じマスクを何度 `OR` しても 1 のまま，ほかのビットにも影響しない。
 加算は数値の足し算なので，既に 1 のビットに 1 を足すと**桁上がりして隣のビットが変わり**，対象のビットは 0 になってしまう。
 
-`flags |= write_mask;` を 2 回にした版と，`flags += write_mask;` を 2 回にした版を実際に実行した（テスト `set_twice_or`・`set_twice_add`）。
+書く権限のセットを `OR` で 2 回続けて行う版と，加算で 2 回続けて行う版を実際に実行した（テスト `variant_set_twice_or`・`variant_set_twice_add`）。
+テストでは `flags |= write_mask;` の行を次の 1 つの式に置き換えている。`(flags | write_mask)` を計算してから，その結果にもう一度 `| write_mask` を行うので，
+`flags |= write_mask;` を 2 行続けて書いた場合と同じ順序の計算になる（2 行で書いた版も同じ出力になることを確認済み）。
 
 ```c
-    flags |= write_mask;
-    flags |= write_mask;
+    flags = (flags | write_mask) | write_mask;
 ```
 
 ```text
@@ -492,8 +496,7 @@ exec=1
 ```
 
 ```c
-    flags += write_mask;
-    flags += write_mask;
+    flags = (flags + write_mask) + write_mask;   /* flags += write_mask; を 2 回と同じ */
 ```
 
 ```text
@@ -573,7 +576,7 @@ AND では「1 との AND は元の値のまま」「0 との AND は 0」にな
 
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
-| 課題1〜4のソースと実行結果を保存した | 各課題の「解答」と「実行結果」。ソースはこのフォルダ，出力は各プロジェクトの `tests/basic.out`（値を変えた版は `tests/variants/`）。学生は `memo.txt` の記録（上の「記録の書き方の例」）と併せて確認する |
+| 課題1〜4のソースと実行結果を保存した | 各課題の「解答」と「実行結果」。ソースはこのフォルダ，出力は各プロジェクトの `tests/basic.out`（値を変えた版は `variants/tests/`）。学生は `memo.txt` の記録（上の「記録の書き方の例」）と併せて確認する |
 | 整数除算と小数の除算を，計算時の型から説明できる | 課題1 の「説明すること」（`seconds / 60` → 1.00），確認問題 2・3 |
 | 前置・後置の式の値と，変数の更新後の値を区別できる | 課題2 の実行前の表（`before=5`・`after=7`・`x=7`）と初期値 0，-2 の表，確認問題 4 |
 | 範囲の境界と，うるう年の例外にあたる値を試した | 課題3 の境界の表（-1，0，100，101 と `d` の 3，6），課題4 の 1900・2000・2024・2025 の表（課題1 の 0，59，60，61 も境界） |

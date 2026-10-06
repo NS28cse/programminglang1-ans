@@ -30,8 +30,8 @@
 ### 「値を変えた版」のテストについて（TA 向け）
 
 この回は入力がないので，「容量を 10 から 9，8 へ変える」「初期値を `""` に変える」といった小問は，ソースを書き換えて作り直すしか確かめる方法がありません。
-そこで [`_cmake/variants.cmake`](_cmake/variants.cmake) の `week06_add_variant` で，学生と同じ書き換え（例: `char text[10]` → `char text[9]`）を CMake が行った版をビルドフォルダに生成し，
-`<プロジェクト>/variants/tests/<ケース名>.out` を期待する出力としてテストします（形式は `tests/` と同じ）。置き換え前の文字列がソースにちょうど 1 回現れなければ構成エラーになります。
+そこで共通の補助関数 `softprac_add_variant`（[`cmake/SoftpracVariant.cmake`](../cmake/SoftpracVariant.cmake)）で，学生と同じ書き換え（例: `char text[10]` → `char text[9]`）を CMake が行った版をビルドフォルダに生成し，
+`<プロジェクト>/variants/tests/<ケース名>.out` を期待する出力としてテストします（形式は `tests/` と同じ。テスト名は `week06/<プロジェクト>/variant_<ケース名>`）。置き換え前の文字列がソースにちょうど 1 回現れなければ構成エラーになります。
 どの版を作っているかは各プロジェクトの `CMakeLists.txt` に書いてあります。生成した版はテスト専用で，Visual Studio の起動構成には載りません。
 
 ```sh

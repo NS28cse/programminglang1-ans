@@ -217,9 +217,10 @@ calc_divide(6.0, 0.0): ok=0 q=99.0
 | `calc_divide` | 0，2 | 1（成功）を返し，`*out` に 0.0 を保存（被除数 0 は正常） |
 | `calc_divide` | 6，0 | 0（失敗）を返し，`*out` は変更しない（呼び出し前の 99.0 のまま） |
 
-- 宣言だけを追加すると，`main.c` はコンパイルできるが**リンクで `subtract` が未解決**（`LNK2019`）。本体だけを追加すると，`main.c` からは宣言が見えず，C17 では未宣言の関数の呼び出しとしてエラー／警告になる
-  （MSVC は `C4013: 'subtract' が定義されていません。int 型の値を返す外部関数と見なします`，GCC 13 は `implicit declaration of function 'subtract'`）。
-  仮に通っても `int` を返すと見なされ，`double` の戻り値を正しく受け取れない。
+- 宣言だけを追加すると，`main.c` はコンパイルできるが**リンクで `subtract` が未解決**（`LNK2019`）。本体だけを追加すると，`main.c` からは宣言が見えず，未宣言の関数の呼び出しになる
+  （MSVC は `warning C4013: 'subtract' undefined; assuming extern returning int`，GCC 13 は `warning: implicit declaration of function 'subtract' [-Wimplicit-function-declaration]`。
+  C99 以降の規格では誤りで，GCC 14 以降は既定でエラー，このリポジトリの `-Werror` でもエラー）。
+  警告を無視してビルドすると `int` を返す関数と見なされ，`double` の戻り値を正しく受け取れない（未定義動作）。
 - 0.0 での割り算の判定は**割る前**に行う。`b == 0.0` は −0.0 にも真になる。この課題では小さな有限値だけを扱うので，オーバーフローなどは対象外（仕様どおり）。
 
 ### 採点のポイント・よくある誤り
@@ -320,7 +321,8 @@ calc.c:(.text+0x0): multiple definition of `add'; <一時ファイル>.o:main_du
 collect2: error: ld returned 1 exit status
 ```
 
-Clang 18 も同じ段階で失敗する（リンクの 2 つは同じ `ld` のメッセージに `clang: error: linker command failed with exit code 1` が続く）。
+Clang 18 も同じ段階で失敗する（前処理 `fatal error: 'calc_missing.h' file not found`，コンパイル `error: conflicting types for 'add'` と `note: previous declaration is here`，
+リンクの 2 つは同じ `ld` のメッセージに `clang: error: linker command failed with exit code 1` が続く）。
 
 ### 診断の違いから分かること
 
@@ -677,7 +679,7 @@ badcmp.c:6:28: runtime error: signed integer overflow: 2147483647 - -2147483648 
 | 関数・マクロ | ヘッダ | 入力条件 | 戻り値・作用の意味 | このプログラムでの値 |
 | --- | --- | --- | --- | --- |
 | `sqrt(x)` | `math.h` | `x ≥ 0`（負だと定義域エラー） | 非負の平方根（`double`） | `sqrt(9.0)` → 3.0 |
-| `pow(x, y)` | `math.h` | `x < 0` で `y` が整数でない，`0` の負の乗などは定義域エラー。結果が大きすぎると範囲エラー | `x` の `y` 乗（`double`，丸め誤差あり） | `pow(3.0, 2.0)` → 9.0 |
+| `pow(x, y)` | `math.h` | `x < 0` で `y` が整数でないと定義域エラー，`x` が 0 で `y` が負だとエラー（極エラー）になり得る。結果が大きすぎると範囲エラー | `x` の `y` 乗（`double`，丸め誤差あり） | `pow(3.0, 2.0)` → 9.0 |
 | `fabs(x)` | `math.h` | 任意の `double` | 絶対値 | `fabs(-2.5)` → 2.5 |
 | `isalpha(c)`・`isdigit(c)` | `ctype.h` | `c` は `EOF` か `unsigned char` で表せる値（`char` は `(unsigned char)` に変換して渡す） | 条件に合えば**0 以外**（1 とは限らない），合わなければ 0 | `!= 0` で 0/1 にして 1，1 |
 | `FLT_MIN` | `float.h` | ― | `float` の**最小の正の正規化数**（負の最小値ではない。最も負の値は `-FLT_MAX`） | `FLT_MIN > 0.0f` → 1 |
@@ -716,7 +718,7 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
    一方，`strcpy`・`memcpy`・`srand`・`rand` は `assert` の外にあるので同じように実行される。`#include <assert.h>` の後で定義しても効かない（マクロは取り込んだ時点の定義で決まる）。Visual Studio では Release 構成が既定で `NDEBUG` を定義する。
 2. **`assert` の式にコピーや `rand` を入れない理由**: `NDEBUG` を定義した構成（Release など）では `assert` の式自体が評価されないので，`assert(strcpy(text, src) != NULL)` や `assert(rand() >= 0)` と書くと，
    その構成ではコピーも乱数の生成も行われず，プログラムの動作が変わる（乱数の系列もずれる）。`assert` は「ここでは必ず成り立つはず」という開発中の前提の確認であり，入力検査や必要な処理は `if` と通常の文で書く。
-   参考: 前提が崩れると `af: af.c:5: main: Assertion 'n >= 0 && n <= 8' failed.` を出して異常終了（Linux では終了コード 134），`NDEBUG` ありでは何も起きずに続行した。
+   参考: `int n = 9; assert(n >= 0 && n <= 8);` だけのプログラムで試すと，前提が崩れて ``af: af.c:5: main: Assertion `n >= 0 && n <= 8' failed.`` を出して異常終了（Linux では終了コード 134），`NDEBUG` ありでは何も起きずに続行した。
 3. **`rand() % 10` が 0〜9 になる理由と偏り**: `rand()` は 0 以上なので，10 で割った余りは 0〜9 になる。しかし `rand()` が取り得る値の個数（`RAND_MAX + 1`）が 10 で割り切れなければ，余りの出やすさに差が出る。
    MSVC の `RAND_MAX` = 32767 では 32768 通りで，32768 = 10×3276 + 8 なので，余り 0〜7 は 3277 通り，8・9 は 3276 通りになる（glibc の 2147483648 通りでも余り 0〜7 がわずかに多い）。
    また `rand` の系列の質は処理系に依存する。何回か実行して偏りが見えなくても，有限回の結果は「偏りがある可能性を否定できない」だけで一様性の**証明にはならない**（逆に偶然の偏りも起こる）。暗号やパスワードには使わない。

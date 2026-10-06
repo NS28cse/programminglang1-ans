@@ -185,7 +185,7 @@ int main(void)
 }
 ```
 
-入力 `ab` と Enter（標準出力だけ）:
+入力 `ab` と Enter（標準出力だけ。この版は置き換える部分が複数の文になり `softprac_add_variant` で表せないため，自動テストにはせず手元でビルドして実行した結果）:
 
 ```text
 character=a
@@ -219,6 +219,10 @@ while ((ch = getchar()) != EOF) {
 | `abc` Enter，`XYZ` Enter | `/a/b/c/` 改行 `/X/Y/Z/` 改行 | `/a/b/c/` 改行 `/X/Y/Z/` 改行 | `variant_slash_two_lines` |
 | Enter だけ | `/` と改行 | `/` と改行 | `variant_slash_newline_only` |
 | 空の入力 | 出力なし | 出力なし | `variant_slash_empty` |
+
+テスト（`Echo/CMakeLists.txt` の `softprac_add_variant`）では，置換文字列に `;` を書けない制約のため，
+`if (putchar(ch) == EOF) {` を `if (putchar('/') == EOF || putchar(ch) == EOF) {` に置き換えた版を使っています。
+`||` の短絡評価により `'/'` の出力に失敗すれば `ch` は出力せずにエラー処理へ進むので，上のコードと同じ動作です。
 
 改行も 1 文字として読まれ本体を通るので，**改行の前にも `/` が付き**，行末が `/` になります。`EOF` では本体に入らないので，最後に余分な `/` は付きません。
 
@@ -422,13 +426,14 @@ Enter だけの空行は `'\n'` と `'\0'` を読めているので `fgets` は�
     char line[8];
 ```
 
-| 入力 | 予測 | 実行結果（標準出力 / 標準エラー出力） |
-| --- | --- | --- |
-| `ABCDEF`（6文字） | 長さ6 | `Text: length=6 text=ABCDEF` |
-| `ABCDEFG`（7文字） | 長さ7 | `Text: length=7 text=ABCDEFG` |
-| `ABCDEFGH`（8文字） | Line too long. | `Text: ` / `Line too long.`（終了コード 1） |
-| 空行 | 長さ0 | `Text: length=0 text=` |
-| `EOF` だけ | No line read. | `Text: ` / `No line read.`（終了コード 1） |
+| 入力 | 予測 | 実行結果（標準出力 / 標準エラー出力） | テスト |
+| --- | --- | --- | --- |
+| `ABCDEF`（6文字） | 長さ6 | `Text: length=6 text=ABCDEF` | `variant_line8_abcdef` |
+| `ABCDEFG`（7文字） | 長さ7 | `Text: length=7 text=ABCDEFG` | `variant_line8_abcdefg` |
+| `ABCDEFGH`（8文字） | Line too long. | `Text: ` / `Line too long.`（終了コード 1） | `variant_line8_abcdefgh` |
+| 空行 | 長さ0 | `Text: length=0 text=` | `variant_line8_empty_line` |
+| `EOF` だけ | No line read. | `Text: ` / `No line read.`（終了コード 1） | `variant_line8_eof_only` |
+| 改行なしの `ABCDEFG` で終了 | 長さ7 | `Text: length=7 text=ABCDEFG` | `variant_line8_abcdefg_no_newline` |
 
 `ABCDEF` は 6 文字＋改行＋終端 = 8 要素でちょうど収まり，`ABCDEFG` は 7 文字＋終端で改行が入らず，追加の `getchar` が改行だけを読みます。
 `sizeof line` は配列そのものに使っているので 8 になりますが，**関数の配列引数**（`char s[]`）に `sizeof` を使っても配列全体の大きさは得られない（第5回）ので，関数に分けるときは容量を別の引数で渡します。
@@ -529,9 +534,9 @@ MSVC（Visual Studio 2015 以降）でも同じ表示です（古い MSVC は `%
 
 | 変更 | 予測 | 実行結果（変わった行） |
 | --- | --- | --- |
-| `int n = 123456;` | `%5d` でも 6 桁すべて表示（切り詰めない） | `\|123456\|123456\|` |
-| `unsigned int base = 0764u;` | 八進 764 = 十進 500 なので出力は変わらない | `500 764 1f4`（5 行とも元と同じ） |
-| `unsigned int base = 0x1f4u;` | 十六進 1f4 = 十進 500 なので出力は変わらない | `500 764 1f4`（5 行とも元と同じ） |
+| `int n = 123456;` | `%5d` でも 6 桁すべて表示（切り詰めない） | `\|123456\|123456\|`（テスト `variant_n_123456`） |
+| `unsigned int base = 0764u;` | 八進 764 = 十進 500 なので出力は変わらない | `500 764 1f4`（5 行とも元と同じ。テスト `variant_base_octal`） |
+| `unsigned int base = 0x1f4u;` | 十六進 1f4 = 十進 500 なので出力は変わらない | `500 764 1f4`（5 行とも元と同じ。テスト `variant_base_hex`） |
 
 `n = 123456` の全出力:
 
@@ -639,11 +644,11 @@ score=13
         if (position < length && ch == target[position]) {
 ```
 
-| 入力 | 区別しない版（最終版） | 区別する版（実行結果） |
-| --- | ---: | ---: |
-| `This is a pen` | 13 | 13 |
-| `thiS is a Pen` | 13 | 10（`t`・`S`・`P` の 3 文字が不一致） |
-| `This` | 4 | 4 |
+| 入力 | 区別しない版（最終版） | 区別する版（実行結果） | テスト（区別する版） |
+| --- | ---: | ---: | --- |
+| `This is a pen` | 13 | 13 | `variant_case_exact` |
+| `thiS is a Pen` | 13 | 10（`t`・`S`・`P` の 3 文字が不一致） | `variant_case_mixed` |
+| `This` | 4 | 4 | `variant_case_partial` |
 
 ### 入力案内を `stdout` に出していることと課題4の関係
 
