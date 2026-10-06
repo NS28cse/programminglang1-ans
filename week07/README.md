@@ -11,22 +11,24 @@
 
 | 課題 | プロジェクト | ソース | テスト数 | データファイル |
 | --- | --- | --- | ---: | --- |
-| 1 複写 | `Echo` | [`echo.c`](Echo/echo.c)（講義の例題そのまま） | 5 | [`input.txt`](Echo/input.txt) |
+| 1 複写 | `Echo` | [`echo.c`](Echo/echo.c)（講義の例題そのまま） | 5＋変更版 4 | [`input.txt`](Echo/input.txt) |
 | 1 小文字化フィルタ | `LowerInput` | [`lower_input.c`](LowerInput/lower_input.c) | 7 | [`input.txt`](LowerInput/input.txt)，[`ab.txt`](LowerInput/ab.txt)（課題4の入力ファイル） |
 | 2 英字数 | `LetterCount` | [`letter_count.c`](LetterCount/letter_count.c) | 9 | [`input.txt`](LetterCount/input.txt) |
 | 2 バイト数 | `ByteCount` | [`byte_count.c`](ByteCount/byte_count.c)（演習ページのコードそのまま） | 6 | [`input.txt`](ByteCount/input.txt) |
-| 3 行の容量 | `LineInput` | [`line.c`](LineInput/line.c)（講義の例題そのまま） | 11 | [`input.txt`](LineInput/input.txt) |
-| 4 書式 | `Formats` | [`formats.c`](Formats/formats.c)（演習ページのコードそのまま） | 1 | なし（入力を待たない） |
-| 発展 タイピング | `Typing` | [`typing.c`](Typing/typing.c) | 13 | [`input.txt`](Typing/input.txt) |
-| | | | **52** | |
+| 3 行の容量 | `LineInput` | [`line.c`](LineInput/line.c)（講義の例題そのまま） | 11＋変更版 6 | [`input.txt`](LineInput/input.txt) |
+| 4 書式 | `Formats` | [`formats.c`](Formats/formats.c)（演習ページのコードそのまま） | 1＋変更版 3 | なし（入力を待たない） |
+| 発展 タイピング | `Typing` | [`typing.c`](Typing/typing.c) | 13＋変更版 3 | [`input.txt`](Typing/input.txt) |
+| | | | **68**（うち変更版 16） | |
 
 - 演習ページはソース名を指定していないため，講義の例題（`echo.c`，`line.c`）はその名前を使い，ほかはプロジェクト名を小文字・`_` 区切りにしました。
 - 演習ページで「一時的に置き換える」「`line[8]`へ変更する」「`n`を123456へ変更する」などの**実験用の変更**は，フォルダのソースには入れず（元に戻した状態を最終版とし），
   変更した版を本 README にコードブロックで載せ，実際に実行した結果を貼っています。
   `Echo` の検証①〜③・`LineInput` の 31/32 個の `A`・`Formats` の期待する表示は，すべて変更前のコードに対する仕様だからです。
+  変更版のうち置換で表せるもの（`putchar('/')` の追加，`line[8]`，`n`・`base` の値，大文字・小文字を区別する比較）は，
+  各フォルダの `CMakeLists.txt` の `softprac_add_variant` でソースを書き換えた版をビルドし，`variants/tests/` の期待値でテストしています。
 - `Typing` は演習ページの「作成する最終版」（大文字・小文字を区別しない版）です。区別する版は README に載せています。
 
-ビルドとテスト（警告 0・52 テスト成功を確認済み。GCC 14 + AddressSanitizer/UBSan，Clang 18 でも同じ）:
+ビルドとテスト（警告 0・68 テスト成功を確認済み。GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1（sanitizer なし）でも同じ）:
 
 ```sh
 cmake -S . -B /tmp/build-week07 -G Ninja -DSOFTPRAC_WEEKS=week07 -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
@@ -211,11 +213,12 @@ while ((ch = getchar()) != EOF) {
 }
 ```
 
-| 入力 | 予測 | 実行結果 |
-| --- | --- | --- |
-| `ab` Enter | `/a/b/` と改行 | `/a/b/` と改行 |
-| `abc` Enter，`XYZ` Enter | `/a/b/c/` 改行 `/X/Y/Z/` 改行 | `/a/b/c/` 改行 `/X/Y/Z/` 改行 |
-| Enter だけ | `/` と改行 | `/` と改行 |
+| 入力 | 予測 | 実行結果 | テスト |
+| --- | --- | --- | --- |
+| `ab` Enter | `/a/b/` と改行 | `/a/b/` と改行 | `variant_slash_ab` |
+| `abc` Enter，`XYZ` Enter | `/a/b/c/` 改行 `/X/Y/Z/` 改行 | `/a/b/c/` 改行 `/X/Y/Z/` 改行 | `variant_slash_two_lines` |
+| Enter だけ | `/` と改行 | `/` と改行 | `variant_slash_newline_only` |
+| 空の入力 | 出力なし | 出力なし | `variant_slash_empty` |
 
 改行も 1 文字として読まれ本体を通るので，**改行の前にも `/` が付き**，行末が `/` になります。`EOF` では本体に入らないので，最後に余分な `/` は付きません。
 

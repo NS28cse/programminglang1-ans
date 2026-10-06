@@ -1,10 +1,17 @@
 # 第13回 発展3「途中で失敗した場合」：vector_create の確保を fail_on_call 回目だけ失敗させる版
 #   vector_main.c と vector.h は正常版（../DynamicVector）をそのまま使い，vector.c だけを試験用に差し替える。
-#   fail_on_call = 0〜3 の 4 つの実行ファイルを作る（演習ページの「番号を変え，それぞれ新しく実行」に相当）。
-#   テストは実行ファイルごとに callN/tests/ に置く（SOFTPRAC_PROJECT_DIR を切り替えて登録する）。
+#   演習ページの「番号を 0，1，2，3 に変え，それぞれ新しく実行」を，4 つの実行ファイルで再現する。
+#     DynamicVectorFail  … fail_on_call = 2（演習ページの値）。テストは tests/
+#     DynamicVectorFailN … fail_on_call = N（N = 0，1，3）。テストは callN/tests/
+#   VS Code の「開いている課題を実行」はフォルダ名と同じ DynamicVectorFail を起動する。
 set(normal_dir "${CMAKE_CURRENT_SOURCE_DIR}/../DynamicVector")
 set(fail_sources vector.c "${normal_dir}/vector_main.c" "${normal_dir}/vector.h")
 
+softprac_add_program(DynamicVectorFail ${fail_sources})
+target_compile_definitions(DynamicVectorFail PRIVATE FAIL_ON_CALL=2)
+target_include_directories(DynamicVectorFail PRIVATE "${normal_dir}")
+
+# 以下はテストの置き場所（SOFTPRAC_PROJECT_DIR）を callN/ に切り替えて登録する
 set(SOFTPRAC_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/call0")
 softprac_add_program(DynamicVectorFail0 ${fail_sources})
 target_compile_definitions(DynamicVectorFail0 PRIVATE FAIL_ON_CALL=0)
@@ -14,11 +21,6 @@ set(SOFTPRAC_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/call1")
 softprac_add_program(DynamicVectorFail1 ${fail_sources})
 target_compile_definitions(DynamicVectorFail1 PRIVATE FAIL_ON_CALL=1)
 target_include_directories(DynamicVectorFail1 PRIVATE "${normal_dir}")
-
-set(SOFTPRAC_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/call2")
-softprac_add_program(DynamicVectorFail2 ${fail_sources})
-target_compile_definitions(DynamicVectorFail2 PRIVATE FAIL_ON_CALL=2)
-target_include_directories(DynamicVectorFail2 PRIVATE "${normal_dir}")
 
 set(SOFTPRAC_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/call3")
 softprac_add_program(DynamicVectorFail3 ${fail_sources})
