@@ -11,24 +11,24 @@
 
 | 課題 | プロジェクト | ソース | テスト数 | データファイル |
 | --- | --- | --- | ---: | --- |
-| 1 複写 | `Echo` | [`echo.c`](Echo/echo.c)（講義の例題にコメントだけ追加） | 5＋変更版 4 | [`input.txt`](Echo/input.txt) |
+| 1 複写 | `Echo` | [`echo.c`](Echo/echo.c)（講義の例題にコメントだけ追加） | 5＋変更版 8 | [`input.txt`](Echo/input.txt) |
 | 1 小文字化フィルタ | `LowerInput` | [`lower_input.c`](LowerInput/lower_input.c) | 8 | [`input.txt`](LowerInput/input.txt)，[`ab.txt`](LowerInput/ab.txt)（課題4の入力ファイル） |
 | 2 英字数 | `LetterCount` | [`letter_count.c`](LetterCount/letter_count.c) | 10 | [`input.txt`](LetterCount/input.txt) |
 | 2 バイト数 | `ByteCount` | [`byte_count.c`](ByteCount/byte_count.c)（演習ページのコードにコメントだけ追加） | 6 | [`input.txt`](ByteCount/input.txt) |
 | 3 行の容量 | `LineInput` | [`line.c`](LineInput/line.c)（講義の例題にコメントだけ追加） | 11＋変更版 6 | [`input.txt`](LineInput/input.txt) |
 | 4 書式 | `Formats` | [`formats.c`](Formats/formats.c)（演習ページのコードにコメントだけ追加） | 1＋変更版 3 | なし（入力を待たない） |
-| 発展 タイピング | `Typing` | [`typing.c`](Typing/typing.c) | 14＋変更版 3 | [`input.txt`](Typing/input.txt) |
-| | | | **71**（うち変更版 16） | |
+| 発展 タイピング | `Typing` | [`typing.c`](Typing/typing.c) | 14＋変更版 5 | [`input.txt`](Typing/input.txt) |
+| | | | **77**（うち変更版 22） | |
 
 - 演習ページはソース名を指定していないため，講義の例題（`echo.c`，`line.c`）はその名前を使い，ほかはプロジェクト名を小文字・`_` 区切りにしました。
 - 演習ページで「一時的に置き換える」「`line[8]`へ変更する」「`n`を123456へ変更する」などの**実験用の変更**は，フォルダのソースには入れず（元に戻した状態を最終版とし），
   変更した版を本 README にコードブロックで載せ，実際に実行した結果を貼っています。
   `Echo` の検証①〜③・`LineInput` の 31/32 個の `A`・`Formats` の期待する表示は，すべて変更前のコードに対する仕様だからです。
-  変更版のうち置換で表せるもの（`putchar('/')` の追加，`line[8]`，`n`・`base` の値，大文字・小文字を区別する比較）は，
-  各フォルダの `CMakeLists.txt` の `softprac_add_variant` でソースを書き換えた版をビルドし，`variants/tests/` の期待値でテストしています。
+  変更版（`Echo` の `character=`/`new line` 表示と `putchar('/')` の追加，`line[8]`，`n`・`base` の値，大文字・小文字を区別する比較）は，
+  各フォルダの `CMakeLists.txt` の `softprac_add_variant` で README と同じ書き換えをした版をビルドし，`variants/tests/<版>--<入力>.*` の期待値でテストしています（テスト名は `variant_<版>--<入力>`）。
 - `Typing` は演習ページの「作成する最終版」（大文字・小文字を区別しない版）です。区別する版は README に載せ，`softprac_add_variant` でテストしています。
 
-ビルドとテスト（警告 0・71 テスト成功を確認済み。GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1（sanitizer なし）でも同じ）:
+ビルドとテスト（警告 0・77 テスト成功を確認済み。GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1（sanitizer なし）でも同じ）:
 
 ```sh
 cmake -S . -B /tmp/build-week07 -G Ninja -DSOFTPRAC_WEEKS=week07 -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
@@ -52,7 +52,9 @@ Visual Studio では，入力するのはエディタではなく Ctrl+F5 で開
 
 演習ページは「シェル操作は行わない」としていますが，TA が動作確認する場合や，興味のある学生に聞かれた場合のために使い方をまとめます。
 実行ファイルの場所は，学生の Visual Studio プロジェクトなら出力ウィンドウに表示される `...\x64\Debug\Echo.exe`，
-このリポジトリを CMake で開いた場合は `out\build\msvc-debug\bin\week07\Echo.exe` です。以下はそのフォルダで実行する例です（`input.txt` などはプロジェクトフォルダからコピーするか，パスを付けて指定します）。
+このリポジトリを CMake で開いた場合は `out\build\msvc-debug\bin\week07\Echo.exe` です。
+以下は実行ファイルのあるフォルダで実行する例です。このリポジトリでは，プロジェクトフォルダ（`week07\Echo` など。`input.txt` がある）で
+`..\..\out\build\msvc-debug\bin\week07\Echo.exe < input.txt` のように実行ファイルを相対パスで指定すれば，入力ファイルをコピーする必要はありません。
 
 **cmd（コマンドプロンプト）**: 記号の意味は講義の表どおりです。
 
@@ -156,6 +158,7 @@ XYZ        ← 出力
 | ② Enter だけ → 入力終了 | `\n` | 改行 1 個 | `\n`（1 バイト）。コンソールでは入力の空行と出力の空行で 2 行空く |
 | ③ `abc` Enter，`XYZ` Enter → 入力終了 | `abc\nXYZ\n` | 2 行の複写 | `abc` `XYZ` の 2 行 |
 | （追加）改行なしで終わる | `abc` | `abc`（改行は付かない） | `abc`（3 バイト。テスト `no_final_newline`） |
+| （追加）空白・記号と，空白 2 個だけの行 | `Hello C17!\n  \n` | そのまま複写 | `Hello C17!` と空白 2 個の行（テスト `spaces_line`） |
 
 「空の入力」（①: `getchar` の 1 回目から `EOF`）と「空行 1 個の入力」（②: 1 回目が `'\n'`，2 回目が `EOF`）は，ループ本体の実行回数が 0 回と 1 回で異なります。
 
@@ -194,7 +197,7 @@ int main(void)
 }
 ```
 
-入力 `ab` と Enter（標準出力だけ。この版は置き換える部分が複数の文になり `softprac_add_variant` で表せないため，自動テストにはせず手元でビルドして実行した結果）:
+入力 `ab` と Enter（標準出力だけ。テスト `variant_visible--ab`）:
 
 ```text
 character=a
@@ -224,14 +227,10 @@ while ((ch = getchar()) != EOF) {
 
 | 入力 | 予測 | 実行結果 | テスト |
 | --- | --- | --- | --- |
-| `ab` Enter | `/a/b/` と改行 | `/a/b/` と改行 | `variant_slash_ab` |
-| `abc` Enter，`XYZ` Enter | `/a/b/c/` 改行 `/X/Y/Z/` 改行 | `/a/b/c/` 改行 `/X/Y/Z/` 改行 | `variant_slash_two_lines` |
-| Enter だけ | `/` と改行 | `/` と改行 | `variant_slash_newline_only` |
-| 空の入力 | 出力なし | 出力なし | `variant_slash_empty` |
-
-テスト（`Echo/CMakeLists.txt` の `softprac_add_variant`）では，置換文字列に `;` を書けない制約のため，
-`if (putchar(ch) == EOF) {` を `if (putchar('/') == EOF || putchar(ch) == EOF) {` に置き換えた版を使っています。
-`||` の短絡評価により `'/'` の出力に失敗すれば `ch` は出力せずにエラー処理へ進むので，上のコードと同じ動作です。
+| `ab` Enter | `/a/b/` と改行 | `/a/b/` と改行 | `variant_slash--ab` |
+| `abc` Enter，`XYZ` Enter | `/a/b/c/` 改行 `/X/Y/Z/` 改行 | `/a/b/c/` 改行 `/X/Y/Z/` 改行 | `variant_slash--two_lines` |
+| Enter だけ | `/` と改行 | `/` と改行 | `variant_slash--newline_only` |
+| 空の入力 | 出力なし | 出力なし | `variant_slash--empty` |
 
 改行も 1 文字として読まれ本体を通るので，**改行の前にも `/` が付き**，行末が `/` になります。`EOF` では本体に入らないので，最後に余分な `/` は付きません。
 
@@ -270,7 +269,7 @@ azaz09
 **説明すること（変換を `EOF` 判定の後に行う理由）**:
 `EOF` は文字ではなく「これ以上読めない」という状態を表す負の `int` の値なので，文字として変換・出力してはいけません。
 条件式で先に `EOF` を除いておけば，本体の `ch` は必ず実際に読んだ 1 バイト（0〜255）であり，その値だけを範囲判定・変換・`putchar` できます。
-（判定の前に変換して `putchar` に渡すような書き方をすると，`EOF` が `unsigned char` に変換された値 255 のバイトとして書き出されてしまいます。）
+（判定の前に変換して `putchar` に渡すような書き方をすると，`EOF` が `unsigned char` に変換された値のバイトとして書き出されてしまいます。MSVC・glibc では `EOF` は −1 なので，0xFF（255）のバイトになります。）
 
 **説明すること（配列へ全入力を保存しなくてよい理由）**:
 各文字の出力は**その 1 文字だけで決まり**，前後の文字を参照しないからです。読んだらすぐ変換して書き出し，次の文字へ進めばよいので，必要な記憶は変数 `ch` の 1 つだけです。
@@ -365,7 +364,7 @@ CR LF のファイルをリダイレクトした場合だけ，Windows は改行
 ### 採点のポイント・よくある誤り（課題2）
 
 - 英字判定を `ch >= 'A' && ch <= 'z'` の 1 範囲にしている → `[` `\` `]` `^` `_` `` ` `` も数える。`@AZ[` が 3 になれば誤り。
-- `&&` と `||` の組み合わせで括弧を省き，意図と違う式になっている（`&&` の方が優先順位が高いので結果は同じになるが，読みやすさのため括弧を付ける）。
+- `ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z'` と括弧を省いても，`&&` が `||` より先に結合するので結果は同じ。ただし GCC は `-Wparentheses`（Clang は `-Wlogical-op-parentheses`）の警告を出すので，意図を明示するため `(... && ...) || (... && ...)` と括弧を付ける（`-Werror` の環境ではビルドが止まる）。
 - `while (getchar() != '\n')` だけで `EOF` を見ていない → 改行なしで入力が終わると無限ループ。
 - 右側にも `getchar()` を書いて 1 文字おきに読む。
 - `ByteCount` の表で改行を数え忘れる（Enter だけを 0，`abcd` Enter を 4 とする）。
@@ -439,12 +438,12 @@ Enter だけの空行は `'\n'` と `'\0'` を読めているので `fgets` は�
 
 | 入力 | 予測 | 実行結果（標準出力 / 標準エラー出力） | テスト |
 | --- | --- | --- | --- |
-| `ABCDEF`（6文字） | 長さ6 | `Text: length=6 text=ABCDEF` | `variant_line8_abcdef` |
-| `ABCDEFG`（7文字） | 長さ7 | `Text: length=7 text=ABCDEFG` | `variant_line8_abcdefg` |
-| `ABCDEFGH`（8文字） | Line too long. | `Text: ` / `Line too long.`（終了コード 1） | `variant_line8_abcdefgh` |
-| 空行 | 長さ0 | `Text: length=0 text=` | `variant_line8_empty_line` |
-| `EOF` だけ | No line read. | `Text: ` / `No line read.`（終了コード 1） | `variant_line8_eof_only` |
-| 改行なしの `ABCDEFG` で終了 | 長さ7 | `Text: length=7 text=ABCDEFG` | `variant_line8_abcdefg_no_newline` |
+| `ABCDEF`（6文字） | 長さ6 | `Text: length=6 text=ABCDEF` | `variant_line8--abcdef` |
+| `ABCDEFG`（7文字） | 長さ7 | `Text: length=7 text=ABCDEFG` | `variant_line8--abcdefg` |
+| `ABCDEFGH`（8文字） | Line too long. | `Text: ` / `Line too long.`（終了コード 1） | `variant_line8--abcdefgh` |
+| 空行 | 長さ0 | `Text: length=0 text=` | `variant_line8--empty_line` |
+| `EOF` だけ | No line read. | `Text: ` / `No line read.`（終了コード 1） | `variant_line8--eof_only` |
+| 改行なしの `ABCDEFG` で終了 | 長さ7 | `Text: length=7 text=ABCDEFG` | `variant_line8--abcdefg_no_newline` |
 
 `ABCDEF` は 6 文字＋改行＋終端 = 8 要素でちょうど収まり，`ABCDEFG` は 7 文字＋終端で改行が入らず，追加の `getchar` が改行だけを読みます。
 `sizeof line` は配列そのものに使っているので 8 になりますが，**関数の配列引数**（`char s[]`）に `sizeof` を使っても配列全体の大きさは得られない（第5回）ので，関数に分けるときは容量を別の引数で渡します。
@@ -658,9 +657,11 @@ score=13
 
 | 入力 | 区別しない版（最終版） | 区別する版（実行結果） | テスト（区別する版） |
 | --- | ---: | ---: | --- |
-| `This is a pen` | 13 | 13 | `variant_case_exact` |
-| `thiS is a Pen` | 13 | 10（`t`・`S`・`P` の 3 文字が不一致） | `variant_case_mixed` |
-| `This` | 4 | 4 | `variant_case_partial` |
+| `This is a pen` | 13 | 13 | `variant_case_sensitive--exact` |
+| `thiS is a Pen` | 13 | 10（`t`・`S`・`P` の 3 文字が不一致） | `variant_case_sensitive--mixed` |
+| `This` | 4 | 4 | `variant_case_sensitive--partial` |
+| `Txxxxxxxxxp` | 2 | 2 | `variant_case_sensitive--same_position` |
+| `THIS IS A PEN` | 13 | 4（`T` と空白 3 個だけが一致） | `variant_case_sensitive--upper_all` |
 
 ### 入力案内を `stdout` に出していることと課題4の関係
 

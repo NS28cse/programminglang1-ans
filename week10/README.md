@@ -10,10 +10,10 @@
 
 | 課題 | 内容 | プロジェクト | ソース | 既定の引数（`run.args`） | データファイル | テスト |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 1 文字ずつ読んで表示 | `ReadText` | [read_text.c](ReadText/read_text.c) | `input.txt` | [input.txt](ReadText/input.txt) | 8 |
+| 1 | 1 文字ずつ読んで表示 | `ReadText` | [read_text.c](ReadText/read_text.c) | `input.txt` | [input.txt](ReadText/input.txt) | 9 |
 | 1 | 行の長さ | `LineLengths` | [line_lengths.c](LineLengths/line_lengths.c) | `input.txt` | [input.txt](LineLengths/input.txt) | 13 |
-| 2 | 数値引数の検査（最終版 = 合計版） | `ParseNumber` | [parse_number.c](ParseNumber/parse_number.c) | `12 23 34` | なし | 12 + 置き換え前の版 14 |
-| 2 | 引数を表示して文字列を探す | `Arguments` | [arguments.c](Arguments/arguments.c) | `nagano ishikawa` | なし | 10 |
+| 2 | 数値引数の検査（最終版 = 合計版） | `ParseNumber` | [parse_number.c](ParseNumber/parse_number.c) | `12 23 34` | なし | 13 + 置き換え前の版 15 |
+| 2 | 引数を表示して文字列を探す | `Arguments` | [arguments.c](Arguments/arguments.c) | `nagano ishikawa` | なし | 11 |
 | 3 | バイト列を保存（最終版 = UTF-8 の「あ」） | `Binary` | [binary.c](Binary/binary.c) | なし | なし（`bytes.bin` は実行時に作る） | 2 + 置き換え前の版 1 |
 | 3 | バイト順を調べる（「別の `main`」） | `ByteOrder` | [byte_order.c](ByteOrder/byte_order.c) | なし | なし | 1 + 変更前の版 1 |
 | 4 | テキストを書く（最終版 = 追記 `a`） | `WriteText` | [write_text.c](WriteText/write_text.c) | なし | なし（`scores.txt` は実行時に作る） | 3 + `w` 版 3 + `wx` 版 2 |
@@ -21,15 +21,15 @@
 | 発展2 | 二乗の一覧を書く | `WriteSquares` | [write_squares.c](WriteSquares/write_squares.c) | `4 squares.txt` | なし（`squares.txt` は実行時に作る） | 14 |
 | 発展2 | 一覧を検査して値を探す | `CheckValue` | [check_value.c](CheckValue/check_value.c) | `squares.txt 9` | [squares.txt](CheckValue/squares.txt)（`WriteSquares 4` の出力のコピー） | 34 |
 
-テストは合計 121 件（フォルダのソース 99 件，途中の版 22 件）。すべて成功（GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1，どちらも `-Wall -Wextra -Wpedantic -Werror` で警告 0）。
+テストは合計 125 件（フォルダのソース 102 件，途中の版 23 件）。すべて成功（GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1，どちらも `-Wall -Wextra -Wpedantic -Werror` で警告 0）。
 
 ### この回の約束（TA 向け）
 
 - **フォルダのソースは最終版**（CONTRIBUTING.md）。演習ページが「〜へ置き換えます」「モードだけを `a` へ変えます」と段階的に変更させる課題
   （`ParseNumber`・`Binary`・`ByteOrder`・`WriteText`・`NumberFormats`）は，すべての変更を反映した版をフォルダに置いた。
   変更前の版（講義の `parse_number.c`・`binary.c` そのもの，モード `w` の `WriteText` など）は，各プロジェクトの `CMakeLists.txt` が
-  最終版の一部を置き換えて生成し，別の実行ファイルとしてビルド・テストしている（[_cmake/Week10Variant.cmake](_cmake/Week10Variant.cmake)，
-  期待値は `<プロジェクト>/variants/<版>/tests/`）。この README の「変更前の版」のコードと実行結果は，その生成物を実際に実行したもの。
+  最終版の一部を置き換えて生成し，別の実行ファイルとしてビルド・テストしている（全回共通の `softprac_add_variant`（[cmake/SoftpracVariant.cmake](../cmake/SoftpracVariant.cmake)），
+  期待値は `<プロジェクト>/variants/tests/<版>.out` または `<版>--<ケース>.out`，テスト名は `week10/<プロジェクト>/variant_<版>[--<ケース>]`）。この README の「変更前の版」のコードと実行結果は，その生成物を実際に実行したもの。
 - `ByteOrder` は演習ページの「講義の `unsigned short` の観察用断片を別の `main` で実行します」に対応する。演習ページにプロジェクト名がないので，
   解答で名前を付けた（全回で重複しない名前）。学生のプロジェクト名は自由でよい。
 - プログラムが書き出すファイル（`bytes.bin`・`scores.txt`・`numbers.txt`・`numbers.bin`・`squares.txt`）はリポジトリに置いていない。
@@ -225,7 +225,7 @@ $ LineLengths empty.txt    ← 空ファイル: 何も表示しない（終了�
 ### 置き換え前の版（講義の `parse_number.c`）と検証表
 
 演習ページの前半（検証表）は講義の `parse_number.c` そのもので確かめる。フォルダのソースは後半の合計版に置き換えた最終版なので，
-置き換え前の版は `ParseNumber/CMakeLists.txt` が `ParseNumber_single` として生成し，次の表の値をすべてテストしている（[variants/single/tests](ParseNumber/variants/single/tests)）。
+置き換え前の版は `ParseNumber/CMakeLists.txt` が `ParseNumber_single` として生成し，次の表の値をすべてテストしている（[variants/tests/single--*](ParseNumber/variants/tests)）。
 
 ```c
 #include <stdio.h>
@@ -286,7 +286,7 @@ expected an integer from 0 to 100
 | `abc` | `expected an integer from 0 to 100`，終了コード 1 | 数字を読めない（`end == argv[1]`） |
 | 42 50 | `usage: ParseNumber integer`，終了コード 1 | 引数が多すぎる（`argc` が 3） |
 
-そのほか: 引数なしは `usage: ParseNumber integer`（終了コード 1）。`""`（空文字列）は `end == argv[1]` なので `expected an integer from 0 to 100`（終了コード 1，cmd で確認）。
+そのほか: 引数なしは `usage: ParseNumber integer`（終了コード 1）。`""`（空文字列）は `end == argv[1]` なので `expected an integer from 0 to 100`（終了コード 1，テスト `single--empty_arg`）。
 
 **極端に長い整数**: `999999999999999999999999999999` は `strtol` が `LONG_MAX` を返し `errno` を `ERANGE` にするので拒否される。
 `long` は Windows x64 (MSVC) では 4 バイト（最大 2147483647），Linux x64 では 8 バイト（最大 9223372036854775807）。
@@ -483,9 +483,9 @@ $ WriteText     → 3 行（a はファイルがなければ新しく作る）
 
 | モード | 実行前に3行ある場合 | 注意 | 確かめたこと（テスト） |
 | --- | --- | --- | --- |
-| `w` | 今回の3行だけになる | 以前の内容を消す | 3 行 → 3 行，`old data` などの別の内容 → 3 行（`mode_w/overwrite_*`） |
+| `w` | 今回の3行だけになる | 以前の内容を消す | 3 行 → 3 行，`old data` などの別の内容 → 3 行（`mode_w--overwrite_*`） |
 | `a` | 以前の3行と今回の3行で6行 | 繰り返すたびに増える | 3 → 6 → 9 行，なければ 3 行で作成（`append_*`，`new_file`） |
-| `wx` | 開くのに失敗 | 既存ファイルを保護する | `fopen: File exists`，終了コード 1，元の内容のまま（`mode_wx/existing_file`）。なければ 3 行で作成 |
+| `wx` | 開くのに失敗 | 既存ファイルを保護する | `fopen: File exists`，終了コード 1，元の内容のまま（`mode_wx--existing_file`）。なければ 3 行で作成 |
 
 `wx` の版（`fopen("scores.txt", "wx")`）の実行結果:
 
@@ -706,11 +706,8 @@ expected a value from 0 to 9801
 
 | 項目 | 確認できる課題と内容 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | `ParseNumber`: 0・100（受け付ける），101・-1（拒否），`+42`・`" 42"`・`"42 "`・`12x`・`abc`・非常に長い整数・引数の過不足。合計版の 10 個・11 個。<br>`LineLengths`: 31 文字（改行あり・なし）と 32 文字，空行，空ファイル。<br>`ReadText`: 空ファイル，最後の改行なし，`missing.txt`，引数なし，`""`，空白を含む名前。<br>`WriteText`: `w`・`a`・`wx` を既存ファイルあり・なしで比較。<br>`WriteSquares`: `N` = 0・100・101，既存ファイル。<br>`CheckValue`: 表の 7 種類の異常，0 と 9801，30・31 バイトの行。すべて自動テストにしている（`ReadText ""` と `ParseNumber ""` は下の注を参照） |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | `ParseNumber`: 0・100（受け付ける），101・-1（拒否），`+42`・`" 42"`・`"42 "`・`12x`・`abc`・非常に長い整数・引数の過不足。合計版の 10 個・11 個。<br>`LineLengths`: 31 文字（改行あり・なし）と 32 文字，空行，空ファイル。<br>`ReadText`: 空ファイル，最後の改行なし，`missing.txt`，引数なし，`""`，空白を含む名前。<br>`WriteText`: `w`・`a`・`wx` を既存ファイルあり・なしで比較。<br>`WriteSquares`: `N` = 0・100・101，既存ファイル。<br>`CheckValue`: 表の 7 種類の異常，0 と 9801，30・31 バイトの行。すべて自動テストにしている |
 | 警告を確認し，原因を説明・修正した | すべてのプロジェクトが GCC/Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で問題になる C4996 は `fopen` を使うファイルの先頭の `#define _CRT_SECURE_NO_WARNINGS` で抑止。`%zu`・`wx` は MSVC 2015 以降で使える）。<br>学生の提出物でよく出る警告: C4996（`fopen`，`_CRT_SECURE_NO_WARNINGS` がない／`#include` の後に書いた），C4244（`long` を `int` に代入），C4018/C4389（`size_t` と `int` の比較），C4100（使わない `argc`） |
 | 自分の言葉で，処理の流れと使った型を説明できる | `FILE *`（ストリームでありファイルの中身ではない），`fgetc` の戻り値が `int` である理由（課題1），`char *argv[]` と `argc`（課題2），`size_t` と `fread` の戻り値（課題3），`unsigned char *` でオブジェクトの表現を見る（`ByteOrder`），`long` と `strtol`・`errno`（課題2・発展2），`double` のテキスト/バイナリ表現（発展1） |
 
-注: 引数を **1 個だけ空文字列** にするケース（`ReadText ""`・`ParseNumber ""`）は，リポジトリのテスト基盤（`cmake/RunTest.cmake`）が
-`.args` の空行 1 行だけを「引数なし」として扱ってしまうため自動テストにできない。上の実行結果は手で実行して確かめたもの
-（どちらも `argc` が 2 で，`ReadText` は `argv[1][0] == '\0'` で，`ParseNumber` は `end == argv[1]` で拒否される）。
-空文字列を 2 個目以降に含むケース（`WriteSquares 4 ""`，`CheckValue "" 9`，`Arguments "" fukui`）は自動テストにしている。
+注: 空文字列の引数は `.args` の空行で表す（空行 1 行だけなら空文字列の引数 1 つ）。`ReadText ""`（`empty_arg`），`ParseNumber ""`（合計版 `empty_arg`・置き換え前の版 `single--empty_arg`），`Arguments ""`（`empty_arg`），`WriteSquares 4 ""`，`CheckValue "" 9` を自動テストにしている。

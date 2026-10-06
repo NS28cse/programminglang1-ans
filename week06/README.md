@@ -222,7 +222,6 @@ char lower(char c)
 ```c
 #include <stddef.h>
 #include <stdio.h>
-
 int main(void)
 {
     char text[] = "Hello C17!";
@@ -262,7 +261,7 @@ ASCII では `'@'` は 64（`'A'` の直前），`'['` は 91（`'Z'` の直後�
 
 ### 1文字の変換を関数へ分ける
 
-置き換えた後も，上の表のすべての入力で同じ結果になりました（テスト 5 件）。
+置き換えた後も，上の表のすべての入力で同じ結果になりました（最終版 5 件・最初の版 5 件のテスト）。
 
 **値渡しとの関係**: 第5回で学んだとおり，C の関数呼び出しは**値渡し**です。`lower(text[i])` を呼ぶと，`text[i]` の値が仮引数 `c` に**コピー**されます。
 関数の中で `c` を使って計算しても，変わるのは（変わるとしても）コピーの `c` だけで，呼び出し元の `text[i]` には影響しません。
@@ -333,7 +332,6 @@ ASCII では `'@'` は 64（`'A'` の直前），`'['` は 91（`'Z'` の直後�
 
 ```c
 #include <stdio.h>
-
 int main(void)
 {
     int total = 7, count = 2;
@@ -549,7 +547,6 @@ Visual Studio では `strcat` に C4996 が出るため，使う場合はファ�
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
-
 int main(void)
 {
     char text[10] = "hoge";
