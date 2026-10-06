@@ -2,7 +2,6 @@
 // 文字列は最初の終端 '\0' で終わる。関数は配列の容量を受け取らず，終端まで走査する。
 #include <stddef.h>
 #include <stdio.h>
-
 // strlen を使わずに長さを数える。s は読み取り可能な領域内に終端を持つ文字列であること
 size_t my_length(const char s[])
 {

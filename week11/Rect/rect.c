@@ -1,4 +1,4 @@
-// 第11回 課題3: Point を 2 つ持つ Rect（入れ子の構造体）の面積とメンバ参照
+﻿// 第11回 課題3: Point を 2 つ持つ Rect（入れ子の構造体）の面積とメンバ参照
 #include <stdio.h>
 enum { MAX_NAME = 20 };
 typedef struct {

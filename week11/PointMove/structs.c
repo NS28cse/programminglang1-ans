@@ -1,4 +1,4 @@
-// 第11回 課題1: 値渡し（moved）とポインタ渡し（move_in_place）で a の変化を比べる（講義の structs.c）
+﻿// 第11回 課題1: 値渡し（moved）とポインタ渡し（move_in_place）で a の変化を比べる（講義の structs.c）
 // 移動量を変えるときは，moved と move_in_place の 2 か所を同じ値に書き換える
 #include <stdio.h>
 typedef struct {

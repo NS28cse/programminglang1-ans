@@ -1,4 +1,4 @@
-// 第11回 課題2: Student 配列の平均，構造体全体の交換，名前と点数による比較
+﻿// 第11回 課題2: Student 配列の平均，構造体全体の交換，名前と点数による比較
 #include <stdio.h>
 #include <string.h>
 enum { COUNT = 3 };

@@ -2,7 +2,6 @@
 // ASCII を前提に，'A'〜'Z' だけを小文字にする。数字・記号・スペース・終端は変えない。
 #include <stddef.h>
 #include <stdio.h>
-
 // c のコピーを受け取り，変換した文字を返す（呼び出し元の配列は変更しない）
 char lower(char c)
 {

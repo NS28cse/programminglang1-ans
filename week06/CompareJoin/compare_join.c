@@ -2,7 +2,6 @@
 // strcmp は戻り値の符号だけを使う。連結は書き込む前に容量を確かめ，終端も含めてループでコピーする。
 #include <stdio.h>
 #include <string.h>
-
 int main(void)
 {
     char text[10] = "hoge";

@@ -1,7 +1,6 @@
 ﻿// 第6回 ウォームアップ：文字と数値（CharCode / char_code.c）
 // char は小さな整数。%c なら文字，%d なら文字コード（ASCII の値）として表示する。
 #include <stdio.h>
-
 int main(void)
 {
     char c = '3';

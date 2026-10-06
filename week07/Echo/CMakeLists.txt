@@ -1,10 +1,25 @@
 # 第7回 課題1 Echo
-# 本体（講義の echo.c）に加えて，putchar(ch) の前に putchar('/') とその戻り値の確認を加えた版をテストする。
-# 置換文字列に ; を書けないため，同じ動作になる「||」でつないだ 1 行の条件に置き換える
-# （'/' の出力に失敗したら ch は出力せずにエラー。README の版と同じ動作）
+# 本体（講義の echo.c）に加えて，演習ページの 2 つの書き換えをした版をテストする
+#   slash  : putchar(ch) の前に putchar('/') とその戻り値の確認を加えた版
+#   visible: putchar とその失敗処理を，改行を見える形で表示する printf に置き換えた版
+# 期待値は variants/tests/<版>--<入力の名前>.*
 softprac_add_program(Echo echo.c)
 
-foreach(case slash_ab slash_two_lines slash_newline_only slash_empty)
-  softprac_add_variant(Echo echo.c ${case}
-    "if (putchar(ch) == EOF) {" "if (putchar('/') == EOF || putchar(ch) == EOF) {")
-endforeach()
+softprac_add_variant(Echo echo.c slash
+  [=[        if (putchar(ch) == EOF) {]=]
+  [=[        if (putchar('/') == EOF) {
+            fprintf(stderr, "output error\n");
+            return 1;
+        }
+        if (putchar(ch) == EOF) {]=])
+
+softprac_add_variant(Echo echo.c visible
+  [=[        if (putchar(ch) == EOF) {
+            fprintf(stderr, "output error\n");
+            return 1;
+        }]=]
+  [=[        if (ch == '\n') {
+            printf("new line\n");
+        } else {
+            printf("character=%c\n", ch);
+        }]=])

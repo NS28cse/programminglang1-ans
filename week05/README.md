@@ -152,8 +152,8 @@ max=93
 - **`i` を 1 から始める理由**: `best` を `a[0]` で初期化した時点で添字 0 は調べ終えているから。0 から始めても結果は同じだが，`a[0]` と自分自身を比べる無駄な 1 回になる。
   候補を 0 などの固定値で初期化しないのは，「配列の中の値」から始めればどんな範囲の値でも正しく動くため（例えば全要素が負なら 0 は誤り）。そのために `n` は 1 以上という約束が必要で，`n = 0` では `a[0]` が存在せず読めない。
 - **戻り値を返す位置**: `for` の後（全要素を調べ終えた後）。ループの中で `return` すると最初の比較で関数が終わり，残りの要素を調べない。
-  例えば `if` の後ろ（ループ内）へ `return best;` を移すと，初期値の配列で `max=85` になった（`i = 1` だけ調べて返す）。さらに `n = 1` ではループに入らず，値を返さない経路ができる
-  （GCC: `warning: control reaches end of non-void function [-Wreturn-type]`，MSVC: `C4715: 'max_score': not all control paths return a value`）。
+  例えば `if` の後ろ（ループ内）へ `return best;` を移すと，初期値の配列で `max=85` になった（`i = 1` だけ調べて返す）。さらに，値を返さずに関数の終わりに達する経路ができ（コンパイラが警告。GCC: `warning: control reaches end of non-void function [-Wreturn-type]`，MSVC: `C4715: 'max_score': not all control paths return a value`），
+  `n = 1` では実際にその経路を通る（ループに 1 回も入らない。その戻り値を使うと未定義動作）。
 - **`const` を付ける意図**: `max_score` は配列を読むだけで書き換えないことを宣言として示す。配列の引数は要素がコピーされず元の要素を指すので，書き換えると呼び出し元の配列が変わる。
   `const` があれば，誤って `a[i] = 0;` のように書いたときにコンパイルエラーになり（GCC: `assignment of read-only location`，MSVC: `C2166: l-value specifies const object`），呼び出し側も「渡しても壊されない」と分かる。
 
@@ -472,23 +472,17 @@ power=32
 | `power(5, 1)` | 5 | 1回だけ掛ける（1 × 5） |
 | `power(5, 5)` | 3125 | 課題で許す最大の結果（1 × 5 × 5 × 5 × 5 × 5） |
 
-検証用 `FunctionsCases` の実行結果（表の 6 行に，最初の表示の 2 つと範囲の端を加えた。テスト `boundary` の期待値）:
+`main` の `average(2.0f, 4.0f)` と `power(2, 5)` の引数を書き換えた版の実行結果（[Functions/CMakeLists.txt](Functions/CMakeLists.txt)。表の 6 つの呼び出しを 3 つの版で覆い，範囲の端も加えた）:
 
-```text
-average(2.0f, 4.0f)=3.0
-power(2, 5)=32
-average(0.0f, 0.0f)=0.0
-average(-4.0f, 2.0f)=-1.0
-average(1.0f, 2.0f)=1.5
-power(2, 0)=1
-power(5, 1)=5
-power(5, 5)=3125
-average(-100.0f, -100.0f)=-100.0
-average(-100.0f, 100.0f)=0.0
-average(100.0f, 100.0f)=100.0
-power(1, 5)=1
-power(1, 0)=1
-```
+| `average` の引数 | `power` の引数 | 実行結果 | テスト |
+| --- | --- | --- | --- |
+| `2.0f, 4.0f`（元） | `2, 5`（元） | `average=3.0` / `power=32` | `basic` |
+| `0.0f, 0.0f` | `2, 0` | `average=0.0` / `power=1` | `variant_a_0_0_p_2_0` |
+| `-4.0f, 2.0f` | `5, 1` | `average=-1.0` / `power=5` | `variant_a_m4_2_p_5_1` |
+| `1.0f, 2.0f` | `5, 5` | `average=1.5` / `power=3125` | `variant_a_1_2_p_5_5` |
+| `-100.0f, -100.0f`（範囲の下端） | `1, 0` | `average=-100.0` / `power=1` | `variant_a_m100_m100_p_1_0` |
+| `-100.0f, 100.0f` | `1, 5` | `average=0.0` / `power=1` | `variant_a_m100_100_p_1_5` |
+| `100.0f, 100.0f`（範囲の上端） | `2, 5`（元） | `average=100.0` / `power=32` | `variant_a_100_100` |
 
 表の値は，どれも `float` で正確に表せる値（整数と 0.5 の倍数）なので，表示の丸めの心配はない。
 `power` は負の指数（結果が分数になる）や `int` の範囲を超える大きさは扱わない。範囲を守るのは呼び出し側の約束で，関数名が `power` だから何でも計算できるわけではない。
@@ -496,7 +490,7 @@ power(1, 0)=1
 ### 説明すること
 
 - **`result` を 0 で初期化してはいけない理由**: `power` は `result` に `base` を掛けていく。0 に何を掛けても 0 なので，どの呼び出しでも 0 が返る
-  （実際に `int result = 0;` にすると `power=0` と表示された）。掛け算の初期値は単位元の 1 にする。こうすると `exponent = 0` で本体を 0 回実行したときも，正しく 1（= base<sup>0</sup>）が返る。
+  （実際に `int result = 0;` にすると `average=3.0` / `power=0` と表示される。テスト `variant_result_0`）。掛け算の初期値は単位元の 1 にする。こうすると `exponent = 0` で本体を 0 回実行したときも，正しく 1（= base<sup>0</sup>）が返る。
   足し算で合計を求める `sum` を 0 で初期化するのと対になっている。
 - **`return` を `for` の外へ置く理由**: `return` を実行するとその場で関数が終わり呼び出し元へ戻る。`for` の中に置くと 1 回掛けただけで返り，`exponent` 回の繰り返しにならない。
   また `exponent = 0` のときは本体を 1 回も実行しないので，`for` の中の `return` には到達せず値を返さない経路ができる（未定義動作。GCC は `-Wreturn-type`，MSVC は `C4715` の警告）。
@@ -524,7 +518,7 @@ MSVC は `C4013: 'average' undefined; assuming extern returning int` の後に `
     printf("average=%.1f\n", result);
 ```
 
-どちらも実際の表示は `average=3.0` / `power=32` で同じ（両方をビルドして確認）。
+どちらも実際の表示は `average=3.0` / `power=32` で同じ（変更後はテスト `basic`，変更前はテスト `variant_before_result` で確認）。
 `average` の中で `printf` だけを実行して値を返さない形（例えば `void average(float a, float b)` の中で表示する）では，平均は画面に出るだけで呼び出し元に値が戻らず，
 `float result = average(...)` のように変数へ保存したり，別の計算（合計との比較など）に使ったりできない。`return` は呼び出し元へ値を返す操作，表示は `printf` の仕事，と区別する。
 
@@ -580,23 +574,14 @@ int sum_array(const int a[], int n)
 total=390 mean=78.0
 ```
 
-**値を変えて確かめる**（初期化子と `n` を書き換えて再ビルドした実際の結果。演習ページの期待どおり）
+**値を変えて確かめる**（初期化子と `n` を書き換えた版。[SumMean/CMakeLists.txt](SumMean/CMakeLists.txt)。演習ページの期待どおり）
 
-| 変更 | 実行結果 |
-| --- | --- |
-| `int scores[COUNT] = {72, 85, 60, 93, 80};`，`int n = COUNT;`（初期値） | `total=390 mean=78.0` |
-| `int scores[COUNT] = {0};`，`int n = 1;` | `total=0 mean=0.0` |
-| `int scores[COUNT] = {100, 100, 100};`，`int n = 3;` | `total=300 mean=100.0` |
-
-検証用 `SumMeanCases` の実行結果（範囲の最大 {100, 100, 100, 100, 100} と，合計関数単独での `n = 0` を追加。テスト `cases` の期待値）:
-
-```text
-n=5 total=390 mean=78.0
-n=1 total=0 mean=0.0
-n=3 total=300 mean=100.0
-n=5 total=500 mean=100.0
-sum_array(zero, 0)=0
-```
+| 変更 | 実行結果 | テスト |
+| --- | --- | --- |
+| `int scores[COUNT] = {72, 85, 60, 93, 80};`，`int n = COUNT;`（初期値） | `total=390 mean=78.0` | `basic` |
+| `int scores[COUNT] = {0};`，`int n = 1;` | `total=0 mean=0.0` | `variant_zero_n_1` |
+| `int scores[COUNT] = {100, 100, 100};`，`int n = 3;` | `total=300 mean=100.0` | `variant_hundred_n_3` |
+| `int scores[COUNT] = {100, 100, 100, 100, 100};`，`int n = COUNT;`（範囲の最大） | `total=500 mean=100.0` | `variant_full_100` |
 
 **説明**
 
@@ -628,7 +613,7 @@ sum_array(zero, 0)=0
    a[2]=5 address=0x7fec0cb00028
    array=12 element=4 count=3
    ```
-   Windows（MSVC）でも `int` は 4 バイトなので最後の行は同じ。`%p` の表示形式は環境で異なる（MSVC では `0x` なしの大文字 16 桁など）。
+   （この例は AddressSanitizer を有効にしたビルドのもの。ASan なしでは `0x7ffea78331dc`・`…1e0`・`…1e4` のような `0x7ff…` で始まるスタックのアドレスになる（間隔はやはり 4）。）Windows（MSVC）でも `int` は 4 バイトなので最後の行は同じ。`%p` の表示形式は環境で異なる（MSVC では `0x` なしの大文字 16 桁など）。
 4. **関数の仮引数 `a` は配列そのものではなく，先頭の要素を指す情報（ポインタ）だから**。配列を渡しても全要素はコピーされず，`sizeof a` はポインタのサイズになる。
    実際に 3 要素の配列を渡した関数で `sizeof a` を表示すると，Linux x64 では `8`（`main` での `sizeof a` は 12）。Windows x64 でも 8，x86（Win32）では 4。
    GCC は `warning: 'sizeof' on array function parameter 'a' will return size of 'const int *' [-Wsizeof-array-argument]` を出す。だから長さは別の引数 `n` で渡す。
@@ -646,7 +631,7 @@ sum_array(zero, 0)=0
 
 | 項目 | どこで確認できるか |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1の {0}・`n = 1`（本体 0 回）と最初・最後が最大の配列（`MaximumCases`），課題2の全要素 0（`ColumnSumCases`），課題3の初期値 0・−1（`ValueCopyCases`），課題4の `power(2, 0)`・`power(5, 5)`（`FunctionsCases`），発展の `n = 1` と {100, 100, 100}（`SumMeanCases`）。すべて自動テストで確認済み |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1の {0}・`n = 1`（本体 0 回）と最初・最後が最大の配列（`Maximum` の `variant_zero`〜`variant_last`），課題2の全要素 0（`ColumnSum` の `variant_zero`），課題3の初期値 0・−1（`ValueCopy` の `variant_original_x_0`・`variant_original_x_m1`），課題4の `power(2, 0)`・`power(5, 5)` と範囲の端（`Functions` の `variant_a_…`），発展の `n = 1` と {100, 100, 100}（`SumMean` の `variant_zero_n_1`・`variant_hundred_n_3`）。すべて自動テストで確認済み |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC 13.3／Clang 18.1 の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で警告になる書き方 ―― VLA，`double` から `float` への暗黙の変換，宣言のない呼び出し ―― も避けている）。よく出る警告: プロトタイプ宣言なし（C4013），`return` がループ内で値を返さない経路（C4715），`double` から `float` への変換（C4244/C4305），グローバル変数の隠蔽（C4459）。課題1・4・確認問題6 で説明 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1の `best` の追跡表，課題2の訪問順の表，課題4の関数の型の表（`float average(float, float)`，`int power(int, int)`），発展の `(double)` の説明 |
 | 添字の範囲と，関数に渡す要素数が一致している | 課題1・発展で配列の大きさと渡す長さに同じ `COUNT`／`n` を使う。課題2の `table[col][row]` が範囲外になる理由，確認問題2・4 |

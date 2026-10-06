@@ -1,4 +1,4 @@
-// 第11回 発展2: 2 点を軸ごとに下限・上限へそろえる normalized と，半開区間で判定する contains
+﻿// 第11回 発展2: 2 点を軸ごとに下限・上限へそろえる normalized と，半開区間で判定する contains
 #include <stdio.h>
 enum { MAX_NAME = 20 };
 typedef struct {
