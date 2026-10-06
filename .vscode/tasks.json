@@ -5,6 +5,7 @@
       "label": "CMake: すべてビルド",
       "type": "cmake",
       "command": "build",
+      "preset": "${command:cmake.activeBuildPresetName}",
       "targets": [ "all" ],
       "group": { "kind": "build", "isDefault": true },
       "problemMatcher": [ "$msCompile", "$gcc" ]
@@ -13,6 +14,7 @@
       "label": "CTest: テストを実行",
       "type": "cmake",
       "command": "test",
+      "preset": "${command:cmake.activeTestPresetName}",
       "group": "test",
       "problemMatcher": []
     }

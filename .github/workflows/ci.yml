@@ -1,0 +1,55 @@
+name: build-and-test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  windows-msvc:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure (MSVC, /W4 /WX)
+        run: cmake -S . -B build -A x64 -DSOFTPRAC_WERROR=ON
+      - name: Build
+        run: cmake --build build --config Debug
+      - name: Test
+        run: ctest --test-dir build -C Debug --output-on-failure
+
+  linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cc: [gcc, clang]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Ninja
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - name: Configure (warnings as errors, ASan/UBSan)
+        run: cmake -S . -B build -G Ninja -DCMAKE_C_COMPILER=${{ matrix.cc }} -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
+      - name: Build
+        run: cmake --build build
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure / Build / Test (preset)
+        run: |
+          cmake --preset gcc-debug -DSOFTPRAC_WERROR=ON
+          cmake --build --preset gcc-debug
+          ctest --preset gcc-debug
+
+  repository-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sources are UTF-8 with BOM and LF
+        run: python3 tools/normalize_sources.py --check
+      - name: .vs/launch.vs.json is up to date
+        run: |
+          python3 tools/gen_launch_vs.py
+          git diff --exit-code -- .vs/launch.vs.json
