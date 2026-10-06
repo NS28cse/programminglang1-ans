@@ -1,8 +1,5 @@
-﻿// 第11回 課題3: Point を 2 つ持つ Rect（入れ子の構造体）の面積とメンバ参照
-// 引数なしなら左下 (1, 2)，右上 (5, 5)。「Rect lx ly ux uy」で座標を変えられる（ux >= lx，uy >= ly）
+// 第11回 課題3: Point を 2 つ持つ Rect（入れ子の構造体）の面積とメンバ参照
 #include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
 enum { MAX_NAME = 20 };
 typedef struct {
     double x;
@@ -34,41 +31,14 @@ int set_name(Rect *r, const char *src)
     }
     return 1;
 }
-// 文字列全体を -1000〜1000 の実数として読めたら 1
-int parse_coord(const char *text, double *value)
+int main(void)
 {
-    char *end;
-    errno = 0;
-    double v = strtod(text, &end);
-    if (text == end || *end != '\0' || errno == ERANGE ||
-        !(v >= -1000.0 && v <= 1000.0)) {
-        return 0;
-    }
-    *value = v;
-    return 1;
-}
-int main(int argc, char *argv[])
-{
+    // 座標は -1000〜1000 で，upper の x・y はそれぞれ lower 以上にする
     Rect r = {
         .lower = {1.0, 2.0},
         .upper = {5.0, 5.0},
         .name = "sample"
     };
-    if (argc != 1 && argc != 5) {
-        fprintf(stderr, "usage: Rect [lx ly ux uy]\n");
-        return 1;
-    }
-    if (argc == 5) {
-        if (!parse_coord(argv[1], &r.lower.x) || !parse_coord(argv[2], &r.lower.y) ||
-            !parse_coord(argv[3], &r.upper.x) || !parse_coord(argv[4], &r.upper.y)) {
-            fprintf(stderr, "expected numbers from -1000 to 1000\n");
-            return 1;
-        }
-        if (r.upper.x < r.lower.x || r.upper.y < r.lower.y) {
-            fprintf(stderr, "upper must not be less than lower\n");
-            return 1;
-        }
-    }
     // main の r は Rect 本体なので，ドットを 2 回使う
     printf("%s lower=(%.1f, %.1f) upper=(%.1f, %.1f)\n",
            r.name, r.lower.x, r.lower.y, r.upper.x, r.upper.y);

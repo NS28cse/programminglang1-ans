@@ -11,25 +11,29 @@
 
 | 課題 | 内容 | プロジェクト | ソース | テスト |
 | --- | --- | --- | --- | --- |
-| ウォームアップ | 初期化を読む | `Warmup05` | [warmup.c](Warmup05/warmup.c) | 1（[basic](Warmup05/tests/basic.out)） |
-| 1 | 最大の点数 | `Maximum` | [maximum.c](Maximum/maximum.c) | 1（[basic](Maximum/tests/basic.out)） |
-| 1（検証用） | 「異なる配列で確かめる」の表 | `MaximumCases` | [maximum_cases.c](MaximumCases/maximum_cases.c) | 1（[table](MaximumCases/tests/table.out)：表の 4 行＋元の配列） |
-| 2 | 列ごとの合計 | `ColumnSum` | [arrays.c](ColumnSum/arrays.c) | 1（[basic](ColumnSum/tests/basic.out)） |
-| 2（検証用） | `table` を変えた 3 通り | `ColumnSumCases` | [column_cases.c](ColumnSumCases/column_cases.c) | 1（[tables](ColumnSumCases/tests/tables.out)） |
-| 2 補足 | 三次元配列の添字 | `Array3D` | [array3d.c](Array3D/array3d.c) | 1（[basic](Array3D/tests/basic.out)） |
-| 3 | 値渡し（最終版 = `z` を追加した版） | `ValueCopy` | [valuecopy.c](ValueCopy/valuecopy.c) | 1（[basic](ValueCopy/tests/basic.out)） |
-| 3（検証用） | 3 つの呼び出し方・初期値 0/−1・2 回代入 | `ValueCopyCases` | [valuecopy_cases.c](ValueCopyCases/valuecopy_cases.c) | 1（[experiments](ValueCopyCases/tests/experiments.out)：8 実験） |
-| 4 | 平均と累乗の関数 | `Functions` | [functions.c](Functions/functions.c) | 1（[basic](Functions/tests/basic.out)） |
-| 4（検証用） | 「境界の値で確認する」の表 | `FunctionsCases` | [functions_cases.c](FunctionsCases/functions_cases.c) | 1（[boundary](FunctionsCases/tests/boundary.out)：表の 6 行＋最初の表示＋範囲の端 5 個） |
-| 発展 | 合計と平均の役割分担 | `SumMean` | [summean.c](SumMean/summean.c) | 1（[basic](SumMean/tests/basic.out)） |
-| 発展（検証用） | {0}・{100, 100, 100} など | `SumMeanCases` | [summean_cases.c](SumMeanCases/summean_cases.c) | 1（[cases](SumMeanCases/tests/cases.out)） |
+| ウォームアップ | 初期化を読む | `Warmup05` | [warmup.c](Warmup05/warmup.c) | 1（basic） |
+| 1 | 最大の点数 | `Maximum` | [maximum.c](Maximum/maximum.c) | 5（本体 1 + 書き換え版 4：表の 4 つの配列） |
+| 2 | 列ごとの合計 | `ColumnSum` | [arrays.c](ColumnSum/arrays.c) | 4（本体 1 + 書き換え版 3：`table` 2 通り，`sum` の初期化位置の誤り） |
+| 2 補足 | 三次元配列の添字 | `Array3D` | [array3d.c](Array3D/array3d.c) | 1（basic） |
+| 3 | 値渡し（最終版 = `z` を追加した版） | `ValueCopy` | [valuecopy.c](ValueCopy/valuecopy.c) | 10（本体 1 + 書き換え版 9：元のプログラム，初期値 0/−1，3 つの呼び出し方，2 回代入，スコープ） |
+| 4 | 平均と累乗の関数 | `Functions` | [functions.c](Functions/functions.c) | 9（本体 1 + 書き換え版 8：表の 6 呼び出し，範囲の端，`result = 0` の誤り，変数に保存する前の版） |
+| 発展 | 合計と平均の役割分担 | `SumMean` | [summean.c](SumMean/summean.c) | 4（本体 1 + 書き換え版 3） |
 
-- 演習ページがプロジェクト名を指定しているのは `Maximum`・`ColumnSum`・`ValueCopy`・`Functions` だけ。ソース名の指定は課題2の `arrays.c`（講義の例題を入れる）だけなので，ほかはプロジェクト名を小文字にした名前にした。
+合計 34 テスト。GCC 13.3（`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan）と Clang 18.1（`-Werror`）で警告 0・全テスト成功を確認済み。
+
+- 演習ページがプロジェクト名を指定しているのは `Maximum`・`ColumnSum`・`ValueCopy`・`Functions` だけ。ソース名の指定は課題2の `arrays.c`（講義の例題を入れる）だけなので，
+  ほかはプロジェクト名を小文字にした名前（`Warmup05` だけは回の番号を除いた `warmup.c`）にした。
 - 発展は名前の指定がないので `SumMean`，ウォームアップは他の回と重ならないよう `Warmup05`，三次元配列の補足は `Array3D` とした（CMake ではプロジェクト名＝実行ファイル名が全回で一意である必要がある）。
-- **`*Cases` は演習ページにない検証用プロジェクト**。演習の小問は「`main` を複製せず初期値を変えて再ビルド」なので，提出用のプロジェクト（`Maximum` など）は 1 通りの値だけを持つ。
-  表のすべての値を自動テストで確かめるため，同じ関数を写して表の値をまとめて表示するプログラムを別に作った。学生に求める形ではない。
-  各小問を実際に初期値を変えて再ビルドした結果も，課題ごとに載せている（どちらも同じ値になることを確認済み）。
-- どのプログラムも入力を取らず表示が 1 通りに決まるので，テストは各 1 ケース（標準出力の完全一致と終了コード 0）。合計 12 ケース。
+
+### テストの構成（書き換え版）
+
+- `<プロジェクト>/tests/basic.out` … フォルダのソース（最終版）の期待する出力。
+- `<プロジェクト>/variants/tests/<ケース>.out` … 「値を変えて確かめる」「`main` の中だけを変更する」などの書き換え版の期待する出力。
+  各プロジェクトの `CMakeLists.txt` で `softprac_add_variant(...)`（[cmake/SoftpracVariant.cmake](../cmake/SoftpracVariant.cmake)）を呼び，
+  提出用のソースの文字列（例: `{72, 85, 60, 93, 80}` → `{0}`）を置き換えた版をビルドしてテストする。学生が初期値を書き換えて再ビルドするのと同じ操作を CMake が行う。
+  置き換え前の文字列がソースにちょうど 1 回現れないと構成の段階でエラーになるので，ソースを直したときに気付ける。テスト名は `weekNN/<プロジェクト>/variant_<ケース>`。
+- 書き換え版の実行ファイルは `bin/` ではなくビルドフォルダの `variants/week05/` にでき，Visual Studio の起動構成（`.vs/launch.vs.json`）には現れない。
+- どのプログラムも入力を取らず表示が 1 通りに決まるので，各版のテストは標準出力の完全一致と終了コード 0。
 - 実行結果は Linux x64（GCC 13.3 / Clang 18.1，`-std=c17 -Wall -Wextra -Wpedantic -Werror`，GCC では AddressSanitizer/UBSan も有効）で実際にビルド・実行した出力。
   表示は ASCII だけで，`%p`（アドレス）と `sizeof` の一部を除き Windows（MSVC）でも同じになる。配列の長さはすべて定数（リテラルか `enum`）なので MSVC でもビルドできる（VLA なし）。
 - 誤りの例の診断は，GCC は実際にコンパイルした出力，MSVC はエラー・警告番号と英語版の文面（日本語版 Visual Studio では同じ番号の日本語訳が表示される）。
@@ -129,24 +133,15 @@ max=93
 | {100, 20, 30} | 3 | 100 | 最初が最大（初期値のまま一度も更新されない） |
 | {20, 30, 100} | 3 | 100 | 最後が最大（`i = n - 1` の最後の比較で更新される） |
 
-`maximum.c` の `COUNT` と初期化子を表に合わせて書き換え，再ビルドした実際の結果:
+`maximum.c` の `COUNT` と初期化子を表に合わせて書き換えた版の実行結果（[Maximum/CMakeLists.txt](Maximum/CMakeLists.txt)。各行をテストで確認）:
 
-| 変更（`enum { COUNT = … };` と `int scores[COUNT] = …;`） | 実行結果 |
-| --- | --- |
-| `COUNT = 1`，`{0}` | `max=0` |
-| `COUNT = 3`，`{60, 60, 60}` | `max=60` |
-| `COUNT = 3`，`{100, 20, 30}` | `max=100` |
-| `COUNT = 3`，`{20, 30, 100}` | `max=100` |
-
-検証用 `MaximumCases` の実行結果（同じ `max_score` に 5 つの配列を渡したもの。テスト `table` の期待値）:
-
-```text
-{72, 85, 60, 93, 80} n=5 max=93
-{0} n=1 max=0
-{60, 60, 60} n=3 max=60
-{100, 20, 30} n=3 max=100
-{20, 30, 100} n=3 max=100
-```
+| 変更（`enum { COUNT = … };` と `int scores[COUNT] = …;`） | 実行結果 | テスト |
+| --- | --- | --- |
+| （元）`COUNT = 5`，`{72, 85, 60, 93, 80}` | `max=93` | `basic` |
+| `COUNT = 1`，`{0}` | `max=0` | `variant_zero` |
+| `COUNT = 3`，`{60, 60, 60}` | `max=60` | `variant_same` |
+| `COUNT = 3`，`{100, 20, 30}` | `max=100` | `variant_first` |
+| `COUNT = 3`，`{20, 30, 100}` | `max=100` | `variant_last` |
 
 **要素数の変更と `sizeof`**: 解答では配列の大きさと渡す長さを同じ定数 `COUNT` にしているので，`COUNT` を変えれば両方が一緒に変わる。
 `int scores[5]` と `max_score(scores, 5)` のようにリテラルを 2 か所に書いた場合は，配列だけを増やしても呼び出しの 5 は変わらない（演習ページの注意）。
@@ -209,20 +204,17 @@ col 2: 9
 
 （先頭の 0 は列ごとに初期化した `sum`。）訪問順は `[0][0] → [1][0] → [0][1] → [1][1] → [0][2] → [1][2]` で，メモリ上の並び（行ごとに連続）とは異なる順に読む。
 
-### `table` を変えて確かめる（実際に初期化子を書き換えて再ビルドした結果）
+### `table` を変えて確かめる
 
-| `table` の初期化子 | 実行結果（`total` の行は 3 通りとも `total=390 mean=78.0`） |
-| --- | --- |
-| `{{1, 2, 3}, {4, 5, 6}}`（元） | `col 0: 5` / `col 1: 7` / `col 2: 9` |
-| `{{1, 1, 1}, {2, 2, 2}}` | `col 0: 3` / `col 1: 3` / `col 2: 3` |
-| `{{0}}`（全要素 0） | `col 0: 0` / `col 1: 0` / `col 2: 0` |
+`table` の初期化子だけを書き換えた版の実行結果（[ColumnSum/CMakeLists.txt](ColumnSum/CMakeLists.txt)。各行をテストで確認）:
 
-```text
-total=390 mean=78.0
-col 0: 3
-col 1: 3
-col 2: 3
-```
+| `table` の初期化子 | 実行結果（`total` の行は 3 通りとも `total=390 mean=78.0`） | テスト |
+| --- | --- | --- |
+| `{{1, 2, 3}, {4, 5, 6}}`（元） | `col 0: 5` / `col 1: 7` / `col 2: 9` | `basic` |
+| `{{1, 1, 1}, {2, 2, 2}}` | `col 0: 3` / `col 1: 3` / `col 2: 3` | `variant_ones` |
+| `{{0}}`（全要素 0） | `col 0: 0` / `col 1: 0` / `col 2: 0` | `variant_zero` |
+
+`{{0}}` の版の表示全体:
 
 ```text
 total=390 mean=78.0
@@ -232,9 +224,8 @@ col 2: 0
 ```
 
 `{{0}}` は `table[0][0]` だけを 0 と書き，残りの 5 要素は省略したので 0 になる（ウォームアップと同じ規則）。点数配列 `scores` は変えていないので最初の行は変わらない。
-検証用 `ColumnSumCases` は 3 つの `table` を `tables[3][2][3]` にまとめ，同じ二重ループで表示する（テスト `tables`）。
 
-**`sum` の初期化を二重ループ全体の前へ移した誤りの版**（演習ページの「5，12，21 の累積」を実際に確認）
+**`sum` の初期化を二重ループ全体の前へ移した誤りの版**（演習ページの「5，12，21 の累積」をテスト `variant_sum_outside` で確認）
 
 ```c
     int sum = 0;  // 誤り: 二重ループ全体の前で 1 回だけ初期化

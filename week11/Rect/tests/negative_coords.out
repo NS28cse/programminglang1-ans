@@ -1,4 +1,0 @@
-sample lower=(-2.0, -1.0) upper=(1.0, 3.0)
-width=3.0 height=4.0 area=12.0
--2.0 -2.0 -2.0 -2.0
-renamed=other
