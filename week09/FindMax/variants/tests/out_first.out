@@ -1,0 +1,18 @@
+max=7
+a[1]=12
+blue
+green
+red
+n=3: found a[0]=7
+  a = {99, 12, 4}
+n=1: found a[0]=7
+  a = {99, 12, 4}
+n=0: not found, answer==NULL is 1
+  a = {7, 12, 4}
+n=-1: not found, answer==NULL is 1
+  a = {7, 12, 4}
+tie: found a[0]=12
+first=1
+stale: return=0 answer==NULL is 1
+20 30 1
+20 40 1

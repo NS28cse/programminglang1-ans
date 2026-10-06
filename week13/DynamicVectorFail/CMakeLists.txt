@@ -1,28 +1,15 @@
-# 第13回 発展3「途中で失敗した場合」：vector_create の確保を fail_on_call 回目だけ失敗させる版
+# 第13回 発展3「途中で失敗した場合」（DynamicVectorFail）
 #   vector_main.c と vector.h は正常版（../DynamicVector）をそのまま使い，vector.c だけを試験用に差し替える。
-#   演習ページの「番号を 0，1，2，3 に変え，それぞれ新しく実行」を，4 つの実行ファイルで再現する。
-#     DynamicVectorFail  … fail_on_call = 2（演習ページの値）。テストは tests/
-#     DynamicVectorFailN … fail_on_call = N（N = 0，1，3）。テストは callN/tests/
-#   VS Code の「開いている課題を実行」はフォルダ名と同じ DynamicVectorFail を起動する。
+#   本体は fail_on_call = 2（演習ページの値）。演習ページの「番号を 0，1，2，3 に変え，それぞれ新しく実行」の
+#   残り 0，1，3 は，softprac_add_variant で vector.c の値を書き換えた版として作り，テストする。
 set(normal_dir "${CMAKE_CURRENT_SOURCE_DIR}/../DynamicVector")
-set(fail_sources vector.c "${normal_dir}/vector_main.c" "${normal_dir}/vector.h")
 
-softprac_add_program(DynamicVectorFail ${fail_sources})
-target_compile_definitions(DynamicVectorFail PRIVATE FAIL_ON_CALL=2)
+softprac_add_program(DynamicVectorFail vector.c "${normal_dir}/vector_main.c" "${normal_dir}/vector.h")
 target_include_directories(DynamicVectorFail PRIVATE "${normal_dir}")
 
-# 以下はテストの置き場所（SOFTPRAC_PROJECT_DIR）を callN/ に切り替えて登録する
-set(SOFTPRAC_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/call0")
-softprac_add_program(DynamicVectorFail0 ${fail_sources})
-target_compile_definitions(DynamicVectorFail0 PRIVATE FAIL_ON_CALL=0)
-target_include_directories(DynamicVectorFail0 PRIVATE "${normal_dir}")
-
-set(SOFTPRAC_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/call1")
-softprac_add_program(DynamicVectorFail1 ${fail_sources})
-target_compile_definitions(DynamicVectorFail1 PRIVATE FAIL_ON_CALL=1)
-target_include_directories(DynamicVectorFail1 PRIVATE "${normal_dir}")
-
-set(SOFTPRAC_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/call3")
-softprac_add_program(DynamicVectorFail3 ${fail_sources})
-target_compile_definitions(DynamicVectorFail3 PRIVATE FAIL_ON_CALL=3)
-target_include_directories(DynamicVectorFail3 PRIVATE "${normal_dir}")
+foreach(n 0 1 3)
+  softprac_add_variant(DynamicVectorFail vector.c fail_on_call_${n} "fail_on_call = 2" "fail_on_call = ${n}")
+  # 書き換えた vector.c に，分割した残りのソースとヘッダの場所を加える
+  target_sources(DynamicVectorFail_fail_on_call_${n} PRIVATE "${normal_dir}/vector_main.c")
+  target_include_directories(DynamicVectorFail_fail_on_call_${n} PRIVATE "${normal_dir}")
+endforeach()

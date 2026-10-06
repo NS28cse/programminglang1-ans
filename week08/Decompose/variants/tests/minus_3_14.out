@@ -1,0 +1,18 @@
+whole=-3 fraction=-0.14
+x=3.14: whole=3 fraction=0.14
+x=-3.14: whole=-3 fraction=-0.14
+x=0.00: whole=0 fraction=0.00
+x=5.00: whole=5 fraction=0.00
+x=-100.00: whole=-100 fraction=0.00
+x=100.00: whole=100 fraction=0.00
+x=99.99: whole=99 fraction=0.99
+x=-0.50: whole=0 fraction=-0.50
+[x=9 y=3]
+minimum=3 points_to_y=1
+x=9 y=0
+[x=3 y=9]
+minimum=3 points_to_y=0
+x=0 y=9
+[x=5 y=5]
+minimum=5 points_to_y=1
+x=5 y=0

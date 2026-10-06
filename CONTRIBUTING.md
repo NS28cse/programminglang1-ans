@@ -55,9 +55,10 @@ weekNN/
 | `tests/<ケース>.setup/` | 実行前に作業フォルダへコピーするファイル（ケース専用の入力ファイル） |
 | `tests/<ケース>.files/` | 実行後に作業フォルダにあるべきファイル（`.bin` はバイト単位，他は改行コードを無視して比較） |
 
-- 入力を使わない回で「値を変えて確かめる」小問は，フォルダに `CMakeLists.txt` を置き，`softprac_add_program(<名前> <ソース>)` に続けて
+- 「値を変えて確かめる」「一時的に書き換える」小問は，フォルダに `CMakeLists.txt` を置き，`softprac_add_program(<名前> <ソース>)` に続けて
   `softprac_add_variant(<名前> <ソース> <ケース名> "<置換前>" "<置換後>")` を書くと，ソースの一部を置き換えた版をビルドしてテストできる
-  （期待値は `variants/tests/<ケース名>.out`。詳しくは `cmake/SoftpracVariant.cmake`，例は `week02/Rectangle/`）。
+  （期待値は `variants/tests/<ケース名>.out`，同じ版を別の入力で試すときは `<ケース名>--<名前>.out`。置換文字列には `;` も書ける。
+  同じフォルダの main を持たない `.c` も自動でリンクされる。詳しくは `cmake/SoftpracVariant.cmake`，例は `week02/Rectangle/`）。
 - テストはプロジェクトフォルダのデータファイル（ソース以外）をコピーした一時フォルダで実行される。
 - アドレスの表示など，実行ごとに変わる出力はテストにしない（README に実行例を載せる）。
 - ケース名は内容が分かるようにする（`basic`，`zero`，`boundary_100`，`too_many_args` など）。

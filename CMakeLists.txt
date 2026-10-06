@@ -31,6 +31,8 @@ function(softprac_apply_options target)
       target_compile_options(${target} PRIVATE /WX)
     endif()
   else()
+    # math.h の関数（sqrt など）のために libm をリンクする（MSVC では不要）
+    target_link_libraries(${target} PRIVATE m)
     target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic)
     if(SOFTPRAC_WERROR)
       target_compile_options(${target} PRIVATE -Werror)

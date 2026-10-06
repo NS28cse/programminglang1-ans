@@ -7,24 +7,35 @@
 
 | 課題 | プロジェクト | ソース | テスト |
 | --- | --- | --- | ---: |
-| 課題1（見つからない場合・同点・失敗時・二重ポインタの代入） | `FindMax` | [double_pointer.c](FindMax/double_pointer.c) | 1 |
-| 課題1（値を返す版と場所を返す版） | `ReturnMaximum` | [return_maximum.c](ReturnMaximum/return_maximum.c) | 1 |
+| 課題1（見つからない場合・同点・失敗時・二重ポインタの代入） | `FindMax` | [double_pointer.c](FindMax/double_pointer.c) | 3（本体 1，書き換え版 2） |
+| 課題1（値を返す版と場所を返す版） | `ReturnMaximum` | [return_maximum.c](ReturnMaximum/return_maximum.c) | 2（本体 1，書き換え版 1） |
 | 課題2 表示順を変更する | `Names` | [names.c](Names/names.c) | 1 |
-| 課題3 行ごとの平均 | `MatrixMean` | [matrix.c](MatrixMean/matrix.c) | 1 |
+| 課題3 行ごとの平均 | `MatrixMean` | [matrix.c](MatrixMean/matrix.c) | 3（本体 1，書き換え版 2） |
 | 課題4 二次元配列の行を交換する | `SwapRows` | [swap_rows.c](SwapRows/swap_rows.c) | 1 |
 | 発展1 長さが異なる行を扱う | `RaggedRows` | [ragged_rows.c](RaggedRows/ragged_rows.c) | 1 |
 | 発展2 型の説明 | `ArrayTypes`（※） | [array_types.c](ArrayTypes/array_types.c) | 1 |
 
 ※ 発展2 には演習ページでプロジェクト名の指定がありません。型と `sizeof` を実際に確かめるため，解答用に `ArrayTypes` という名前で作りました。
-`ReturnMaximum`・`Names`・`SwapRows`・`RaggedRows` もソース名の指定がないため，プロジェクト名を小文字に分けた名前にしています。
+`ReturnMaximum`・`Names`・`SwapRows`・`RaggedRows` もソース名の指定がないため，プロジェクト名を小文字と `_` で書いた名前（`return_maximum.c` など）にしています。
 
 ### この回の解答の作り方（テストについて）
 
 - 演習ページに「今回の入力はソース中の初期値です」とあるので，プログラムは入力を読みません（コマンドライン引数は第10回）。
   そのため，**表の各ケースを 1 回の実行で順に試す**最終版にしました。各ケースは「初期状態から別々に」試すよう，ケースごとに別の配列（または関数内の新しい配列）を使います。
-- テストは各プロジェクト 1 つ（`tests/all_cases.out`）で，検証表の値（見つからない場合 `n=0`・`n=-1`，同点，`rows=0`，同じ行の交換，2 回交換，空文字列など）をすべて含みます。
+- 本体のテストは各プロジェクト 1 つ（`tests/all_cases.out`）で，検証表の値（見つからない場合 `n=0`・`n=-1`，同点，`rows=0`，同じ行の交換，2 回交換，空文字列など）をすべて含みます。
   アドレスや `sizeof` のバイト数のように処理系で変わる値は表示せず，`p == &a[1]` のような比較や「式との比較（1 なら成り立つ）」で表示しています。
-- 演習ページの途中の版（`n` だけ変えた版，`>=` にした版など）は，この README にコードと実際の実行結果を載せます。
+- 演習ページの「書き換えて確かめる」版のうち，解答のソースの一部を置き換えれば作れるものは，`softprac_add_variant`（各プロジェクトの `CMakeLists.txt`）で
+  別の実行ファイルとしてビルドし，`variants/tests/<ケース名>.out` と比べてテストしています（フォルダのソースは最終版のまま）。
+
+  | プロジェクト | ケース | 置き換え | 確かめること |
+  | --- | --- | --- | --- |
+  | `FindMax` | `tie_ge` | `if (a[i] > *best)` → `if (a[i] >= *best)` | 同点で `a[1]` が選ばれ `first=0` |
+  | `FindMax` | `out_first` | `*out = best` → `*out = &a[0]` | 常に先頭要素を返す（`max=7`） |
+  | `ReturnMaximum` | `best_zero` | `int best = a[0]` → `int best = 0` | 全要素が負だと 0 を返す誤り |
+  | `MatrixMean` | `int_division` | `(double)total / COLS` → `total / COLS` | `{1, 1, 2}` の行平均が 1.00 になる |
+  | `MatrixMean` | `array_param` | `int (*a)[COLS]` → `int a[][COLS]` | 出力が本体とまったく同じ |
+
+- それ以外の途中の版（例題 `double_pointer.c` の `n` だけ変えた版など）は，この README にコードと実際の実行結果を載せます。
 - 実行結果は Linux x64（GCC 13，`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan）でビルド・実行した出力です。Clang 18 でも警告 0・テスト成功を確認しました。
   表示する内容に処理系依存の値を含めていないので，Windows（MSVC，x64）でも同じ表示になります。可変長配列（VLA）は使っていません（MSVC は非対応）。
 
@@ -147,6 +158,7 @@ red
 ```
 
 確認後は `>` に戻します（解答のソースは `>`）。
+解答のソースに同じ書き換えをした版（variant `tie_ge`）では，`tie: found a[1]=12`，`first=0` になり，他の行（`n=3` の `a[1]` など，同点のないケース）は本体と同じです（[variants/tests/tie_ge.out](FindMax/variants/tests/tie_ge.out)）。
 
 ### 説明すること: `*out = best;` を `*out = &a[0];` に変えたら
 
@@ -159,6 +171,20 @@ a[1]=12
 blue
 green
 red
+```
+
+解答のソースに同じ書き換えをした版（variant `out_first`，`-Werror` でも警告なしでビルドできる）の実行結果では，`n=3` でも `found a[0]=7` になり，99 が入るのも `a[0]` です（[variants/tests/out_first.out](FindMax/variants/tests/out_first.out)。`n=1` の結果は本来も `a[0]` なので見分けられません）。
+
+```text
+max=7
+a[1]=12
+blue
+green
+red
+n=3: found a[0]=7
+  a = {99, 12, 4}
+n=1: found a[0]=7
+  a = {99, 12, 4}
 ```
 
 「ビルドできた」「警告が出ない」ことは仕様どおりであることを意味しません。期待する結果（`max=12`，`a[1]=99`）と比べて確認する必要があります。
@@ -215,7 +241,7 @@ after=-4 99
   `max_pointer` が返すのは関数内の変数 `best` 自体のアドレスではなく，`best` に保存されている「呼び出し元の配列要素のアドレス」なので，関数が終わっても有効です。
 - **`{-7, -12, -4}`**: `before=-4 -4`，`after=-4 99` です。
 - **最大候補を 0 から始めない理由**: 全要素が負のとき，0 より大きい要素がないので候補が更新されず，配列にない 0 を返してしまうからです。先頭要素 `a[0]` から始めれば，必ず配列中の値が答えになります
-  （そのため `n>=1` という条件が必要です）。`max_value` を `int best = 0;` に変えた途中版の実行結果（3 行目が誤り）:
+  （そのため `n>=1` という条件が必要です）。`max_value` を `int best = 0;` に変えた途中版（variant `best_zero`）の実行結果（3〜4 行目が誤り）:
 
   ```text
   before=12 12
@@ -418,7 +444,7 @@ void print_means(int (*a)[COLS], int rows)
 }
 ```
 
-最初に作る形は `void print_means(int a[][COLS], int rows)` で，これを `int (*a)[COLS]` に変えても出力は変わりません（同じ型なので，下の実行結果はどちらの宣言でも同じ）。
+最初に作る形は `void print_means(int a[][COLS], int rows)` で，これを `int (*a)[COLS]` に変えても出力は変わりません（同じ型なので，下の実行結果はどちらの宣言でも同じ。`int a[][COLS]` と書いた版を variant `array_param` としてビルドし，出力が本体と同じであることをテストしています）。
 全体平均は `overall_mean`（成功なら 1 を返し `*mean` に書く。`rows<=0` なら 0 を返す）として追加しました。
 
 ### 実行結果
@@ -457,7 +483,7 @@ overall rows=0: undefined
 | 元の配列 | 0 | 何も表示しない（ループが1回も回らない） |
 
 - `rows=3` は存在しない 3 行目（`a[2]`）へ進むので試しません。関数は実際の行数を知らないので，`rows` が 0〜2 であることは呼び出し側の条件です。
-- **整数除算の確認**: `(double)total / COLS` を `total / COLS` に変えた途中版（`double mean = total / COLS;`）の実行結果の先頭部分:
+- **整数除算の確認**: `(double)total / COLS` を `total / COLS` に変えた途中版（`double mean = total / COLS;`，variant `int_division`）の実行結果の先頭部分（残りの行は本体と同じ）:
 
   ```text
   {1, 2, 3}, {4, 5, 6} rows=2:
@@ -924,6 +950,6 @@ MSVC:  warning C4047: 'initializing': 'int **' differs in levels of indirection 
 
 | 項目 | 確認できる課題と方法 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1: `n=0`・`n=-1`（失敗），`n=1`，同点 `{12, 12, 4}`，失敗時に古い結果を残さない（`FindMax` の実行結果）。`ReturnMaximum`: 全要素が負，場所の版だけ `n=0`。課題2: `swap_names(names, 1, 1)`，2 回交換。課題3: `rows=0`・`rows=1`，値の両端 0 と 100，割り切れない平均。課題4: 同じ行の交換，2 回，空文字列。発展1: 長さの違う行の交換。いずれも `tests/all_cases.out` で自動テストしている。`n=4`・`rows=3`・リテラルへの書き込みなど範囲外になるものは実行せず，型と図で説明した |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1: `n=0`・`n=-1`（失敗），`n=1`，同点 `{12, 12, 4}`，失敗時に古い結果を残さない（`FindMax` の実行結果）。`ReturnMaximum`: 全要素が負，場所の版だけ `n=0`。課題2: `swap_names(names, 1, 1)`，2 回交換。課題3: `rows=0`・`rows=1`，値の両端 0 と 100，割り切れない平均。課題4: 同じ行の交換，2 回，空文字列。発展1: 長さの違う行の交換。いずれも `tests/all_cases.out` で，`>=`・`*out = &a[0]`・`best = 0`・整数除算の書き換えは `variants/tests/` で自動テストしている（gcc・clang とも 12 テスト成功）。`n=4`・`rows=3`・リテラルへの書き込みなど範囲外になるものは実行せず，型と図で説明した |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトを `-Wall -Wextra -Wpedantic -Werror`（GCC/Clang）と AddressSanitizer/UBSan で警告 0・エラー 0 にした。説明した警告: 課題3 の `int *a[COLS]`（`int **` と `int (*)[3]` の不一致，C4047/C4024），関数内の `sizeof a`（`-Wsizeof-array-argument`），課題2 の `char **` → `const char **`，課題4 の行の代入（C2106），発展2 の `int **bad = a;`。いずれもキャストではなく宣言を直す |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の二重ポインタの表（`pp → p → x`），課題2・課題4 の図（ポインタの交換と内容の交換），課題3 の `int (*)[3]` と `int **`，発展1 の 3 種類の配列の図，発展2 の型の表 |

@@ -1,14 +1,9 @@
-// 第13回 発展3「途中で失敗した場合」（DynamicVectorFail / vector.c）
+﻿// 第13回 発展3「途中で失敗した場合」（DynamicVectorFail / vector.c）
 // DynamicVector/vector.c のコピー。vector_create の malloc だけを試験用の vector_allocate に置き換えた。
-// fail_on_call 回目の確保だけ NULL を返す（0 なら失敗させない）。値は FAIL_ON_CALL で指定する（既定は演習ページの 2）。
-// CMakeLists.txt が fail_on_call = 2，0，1，3 の実行ファイル DynamicVectorFail，DynamicVectorFail0/1/3 を作る。
-// 1 つのプロジェクトで試すときは，下の #define の値を書き換えて 1 回ずつ実行し直す。正常版は DynamicVector に残してある。
+// fail_on_call 回目の確保だけ NULL を返す（0 なら失敗させない）。この版は演習ページの値 2。
+// 0，1，3 の版は CMakeLists.txt の softprac_add_variant が値を書き換えて作る。正常版は DynamicVector に残してある。
 #include "vector.h"
 #include <stdlib.h>
-
-#ifndef FAIL_ON_CALL
-#define FAIL_ON_CALL 2
-#endif
 
 struct vector {
     double v[2];
@@ -18,7 +13,7 @@ struct vector {
 static void *vector_allocate(size_t bytes)
 {
     static int calls = 0;
-    const int fail_on_call = FAIL_ON_CALL;
+    const int fail_on_call = 2;
     ++calls;
     if (calls == fail_on_call) {
         return NULL;

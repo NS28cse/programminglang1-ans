@@ -11,14 +11,14 @@
 
 | 課題 | プロジェクト | ソース | テスト数 | データファイル |
 | --- | --- | --- | ---: | --- |
-| 1 複写 | `Echo` | [`echo.c`](Echo/echo.c)（講義の例題そのまま） | 5＋変更版 4 | [`input.txt`](Echo/input.txt) |
-| 1 小文字化フィルタ | `LowerInput` | [`lower_input.c`](LowerInput/lower_input.c) | 7 | [`input.txt`](LowerInput/input.txt)，[`ab.txt`](LowerInput/ab.txt)（課題4の入力ファイル） |
-| 2 英字数 | `LetterCount` | [`letter_count.c`](LetterCount/letter_count.c) | 9 | [`input.txt`](LetterCount/input.txt) |
-| 2 バイト数 | `ByteCount` | [`byte_count.c`](ByteCount/byte_count.c)（演習ページのコードそのまま） | 6 | [`input.txt`](ByteCount/input.txt) |
-| 3 行の容量 | `LineInput` | [`line.c`](LineInput/line.c)（講義の例題そのまま） | 11＋変更版 6 | [`input.txt`](LineInput/input.txt) |
-| 4 書式 | `Formats` | [`formats.c`](Formats/formats.c)（演習ページのコードそのまま） | 1＋変更版 3 | なし（入力を待たない） |
-| 発展 タイピング | `Typing` | [`typing.c`](Typing/typing.c) | 13＋変更版 3 | [`input.txt`](Typing/input.txt) |
-| | | | **68**（うち変更版 16） | |
+| 1 複写 | `Echo` | [`echo.c`](Echo/echo.c)（講義の例題にコメントだけ追加） | 5＋変更版 4 | [`input.txt`](Echo/input.txt) |
+| 1 小文字化フィルタ | `LowerInput` | [`lower_input.c`](LowerInput/lower_input.c) | 8 | [`input.txt`](LowerInput/input.txt)，[`ab.txt`](LowerInput/ab.txt)（課題4の入力ファイル） |
+| 2 英字数 | `LetterCount` | [`letter_count.c`](LetterCount/letter_count.c) | 10 | [`input.txt`](LetterCount/input.txt) |
+| 2 バイト数 | `ByteCount` | [`byte_count.c`](ByteCount/byte_count.c)（演習ページのコードにコメントだけ追加） | 6 | [`input.txt`](ByteCount/input.txt) |
+| 3 行の容量 | `LineInput` | [`line.c`](LineInput/line.c)（講義の例題にコメントだけ追加） | 11＋変更版 6 | [`input.txt`](LineInput/input.txt) |
+| 4 書式 | `Formats` | [`formats.c`](Formats/formats.c)（演習ページのコードにコメントだけ追加） | 1＋変更版 3 | なし（入力を待たない） |
+| 発展 タイピング | `Typing` | [`typing.c`](Typing/typing.c) | 14＋変更版 3 | [`input.txt`](Typing/input.txt) |
+| | | | **71**（うち変更版 16） | |
 
 - 演習ページはソース名を指定していないため，講義の例題（`echo.c`，`line.c`）はその名前を使い，ほかはプロジェクト名を小文字・`_` 区切りにしました。
 - 演習ページで「一時的に置き換える」「`line[8]`へ変更する」「`n`を123456へ変更する」などの**実験用の変更**は，フォルダのソースには入れず（元に戻した状態を最終版とし），
@@ -26,9 +26,9 @@
   `Echo` の検証①〜③・`LineInput` の 31/32 個の `A`・`Formats` の期待する表示は，すべて変更前のコードに対する仕様だからです。
   変更版のうち置換で表せるもの（`putchar('/')` の追加，`line[8]`，`n`・`base` の値，大文字・小文字を区別する比較）は，
   各フォルダの `CMakeLists.txt` の `softprac_add_variant` でソースを書き換えた版をビルドし，`variants/tests/` の期待値でテストしています。
-- `Typing` は演習ページの「作成する最終版」（大文字・小文字を区別しない版）です。区別する版は README に載せています。
+- `Typing` は演習ページの「作成する最終版」（大文字・小文字を区別しない版）です。区別する版は README に載せ，`softprac_add_variant` でテストしています。
 
-ビルドとテスト（警告 0・68 テスト成功を確認済み。GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1（sanitizer なし）でも同じ）:
+ビルドとテスト（警告 0・71 テスト成功を確認済み。GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1（sanitizer なし）でも同じ）:
 
 ```sh
 cmake -S . -B /tmp/build-week07 -G Ninja -DSOFTPRAC_WEEKS=week07 -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
@@ -57,11 +57,16 @@ Visual Studio では，入力するのはエディタではなく Ctrl+F5 で開
 **cmd（コマンドプロンプト）**: 記号の意味は講義の表どおりです。
 
 ```bat
-Echo.exe < input.txt                       rem input.txt を標準入力へ接続（キー入力も Ctrl+Z も不要）
-LowerInput.exe < input.txt > out.txt       rem 結果を out.txt へ（既存の内容は上書き）
-LowerInput.exe < input.txt >> out.txt      rem out.txt の末尾へ追記
-LowerInput.exe < input.txt | ByteCount.exe rem LowerInput の stdout を ByteCount の stdin へ
-LineInput.exe < input.txt 2> err.txt       rem stderr だけを err.txt へ（stdout は画面のまま）
+rem input.txt を標準入力へ接続（キー入力も Ctrl+Z も不要）
+Echo.exe < input.txt
+rem 結果を out.txt へ（既存の内容は上書き）
+LowerInput.exe < input.txt > out.txt
+rem out.txt の末尾へ追記
+LowerInput.exe < input.txt >> out.txt
+rem LowerInput の stdout を ByteCount の stdin へ
+LowerInput.exe < input.txt | ByteCount.exe
+rem stderr だけを err.txt へ（stdout は画面のまま）
+LineInput.exe < input.txt 2> err.txt
 ```
 
 **PowerShell**（VS Code の既定のターミナル）: `<` は使えません（「`<` 演算子は将来使用するために予約されています」というエラーになる）。
@@ -102,7 +107,11 @@ $ printf 'ab\r\nC\r\n' | ./ByteCount
 
 同じ内容（メモ帳で保存した CR LF のファイル）を Windows で `ByteCount.exe < file.txt` とすると，`\r\n` が `\n` になるので 5 になります。
 逆に，Windows で `LowerInput.exe < ab.txt > out.txt` として作った `out.txt` は `ab` と CR LF の 4 バイトになります（Linux では 3 バイト）。
-本リポジトリのテストの入力（`tests/*.in`）はすべて LF なので，どちらの環境でも同じ結果になります。
+本リポジトリのテストの入力（`tests/*.in`）は，下の `crlf` ケースを除いて LF なので，どちらの環境でも同じ結果になります。
+CR LF の入力を与える `crlf` ケース（`LowerInput`・`LetterCount`・`Typing`）は，`\r` が結果に影響しない（英字でない・お手本の 14 文字目以降・
+出力の `\r\n` はテストが改行コードを無視して比較する）ので，Windows でも Linux でも同じ期待値で成功します。
+一方 `LineInput` に `Hello` と CR LF を与えると，Linux では `\r` が本文に残り `length=6 text=Hello\r` になります（Windows では `length=5`）。
+`ByteCount` と `LineInput` に CR LF のテストを置いていないのはこのためです。
 
 ---
 
@@ -110,7 +119,7 @@ $ printf 'ab\r\nC\r\n' | ./ByteCount
 
 **要点**: `getchar` が返す値を `int` で受け，`EOF` でない間だけ `putchar` で書く**複写**。Enter（改行文字）と `EOF`（入力の状態）は別物で，Enter ではループは終わらない。
 
-解答: [`Echo/echo.c`](Echo/echo.c)（講義の `echo.c` と同じ。先頭のコメントだけ追加）
+解答: [`Echo/echo.c`](Echo/echo.c)（講義の `echo.c` と同じ。コメントだけ追加）
 
 ```c
 int ch; // EOF と 256 通りのバイト値を区別するため char ではなく int で受ける
@@ -247,6 +256,7 @@ while ((ch = getchar()) != EOF) {
 | ``@AZ[`az{``（`A`・`Z`・`a`・`z` の前後の文字） | ``@az[`az{`` | ``@az[`az{`` | `boundary` |
 | `Hello C17!`，`AZaz09`，`A B` の 3 行 | 3 行とも小文字化，空白・改行はそのまま | `hello c17!` / `azaz09` / `a b` | `multi_lines` |
 | 空の入力 / Enter だけ / 改行なしの `ABC` | 出力なし / 改行 / `abc` | 同左 | `empty` / `newline_only` / `no_final_newline` |
+| CR LF で終わる 2 行（`Hello C17!`，`AZaz09`） | 2 行とも小文字化 | `hello c17!` / `azaz09`（Linux では `\r` もそのまま複写） | `crlf` |
 
 コンソールでの実行例（Linux の端末）:
 
@@ -308,6 +318,7 @@ printf("%d\n", count);
 | （追加）`EOF` だけ | 0 | 改行がなくても `EOF` で止まる | 0 | `eof_only` |
 | （追加）改行なしの `abc 12!` | 3 | 最後の行に改行がなくても集計する | 3 | `no_final_newline` |
 | （追加）`ab` Enter `cdef` Enter | 2 | 最初の改行で止まり，2 行目は読まない | 2 | `first_line_only` |
+| （追加）`abc 12!` と CR LF | 3 | `\r` は英字ではないので数えない（Windows では `\n` に変換済み） | 3 | `crlf` |
 
 コンソールでの実行例（Linux の端末）。`EOF` を知らせなくても，Enter を押した時点で集計が表示されて終了します。
 
@@ -321,7 +332,7 @@ abc 12!
 
 ### 改行も含めた全入力のバイト数（`ByteCount`）
 
-解答: [`ByteCount/byte_count.c`](ByteCount/byte_count.c)（演習ページのコードそのまま）
+解答: [`ByteCount/byte_count.c`](ByteCount/byte_count.c)（演習ページのコードにコメントだけ追加）
 
 | 入力してから`EOF` | 期待する数 | 実行結果 | テスト |
 | --- | ---: | ---: | --- |
@@ -516,7 +527,7 @@ Windows でパイプを使っても `B` の表示は同じ 3 と 9 です（`A` 
 
 ### `printf` の幅と書式を確かめる（`Formats`）
 
-解答: [`Formats/formats.c`](Formats/formats.c)（演習ページのコードそのまま。テスト `basic`）
+解答: [`Formats/formats.c`](Formats/formats.c)（演習ページのコードにコメントだけ追加。テスト `basic`）
 
 実行結果（期待する表示と 1 文字ずつ一致）:
 
@@ -632,6 +643,7 @@ score=13
 | 追加 | 2 回分入力しても上限 13 | `This is a penThis is a pen` | 13 | 13 | `twice` |
 | 追加 | `EOF` だけ / 改行なしの `This` | （なし）/ `This` | 0 / 4 | 0 / 4 | `eof_only` / `no_final_newline` |
 | 追加 | 最初の改行で採点を終える | `This` Enter `This is a pen` | 4 | 4 | `first_line_only` |
+| 追加 | CR LF で終わる行 | `This is a pen` と CR LF | 13 | 13 | `crlf` |
 
 `Txxxxxxxxxp` は 11 文字で，位置 0 の `T` と位置 10 の `p` だけがお手本（`This is a pen` の位置 0 が `T`，位置 10 が `p`）と一致するので 2 点です。
 `Thi is a pen` は位置 3 以降がお手本より 1 つ前にずれるため，`Thi` の 3 点だけです（位置を合わせ直す処理はしない仕様）。
