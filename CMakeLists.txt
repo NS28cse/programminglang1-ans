@@ -21,6 +21,7 @@ set(SOFTPRAC_WEEKS "" CACHE STRING "ビルドする回を限定する（例: wee
 enable_testing()
 
 set(SOFTPRAC_RUN_TEST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/RunTest.cmake")
+include(cmake/SoftpracVariant.cmake)   # softprac_add_variant（ソースを書き換えた版のテスト）
 
 # 授業と同じ警告設定（警告レベル4，UTF-8 ソース）を 1 つのターゲットに付ける
 function(softprac_apply_options target)
