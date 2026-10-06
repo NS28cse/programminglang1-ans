@@ -29,8 +29,6 @@
 
 - 例: `softprac_add_variant(TimeParts time_parts.c seconds_0 "seconds = 3671" "seconds = 0")` は，
   `int seconds = 0;` にした `time_parts.c` を作ってビルドし，[variants/tests/seconds_0.out](TimeParts/variants/tests/seconds_0.out) と比べる。
-- 置換の文字列には `;` を使えない（CMake のリストの区切りになる）。そのため 2 行の順番を入れ替える `Update` の `swapped_order` は仮の文字列を経由して置き換え，
-  `Flags` の「2 回セット」は 2 つの文を 1 つの式にまとめた形でテストしている（それぞれ下で説明）。
 - 置き換え前の文字列がソースにちょうど 1 回現れないときは CMake の構成エラーになる（ソースを直した後に，元の版を誤ってテストしないため）。
 - 生成した版は Visual Studio の起動構成（`.vs/launch.vs.json`）には載らない。学生と同じように確かめるときは，フォルダのソースの初期値を手で書き換えてビルド・実行すればよい。
 - 本体のプロジェクトは自動の規則と同じく `softprac_add_program(<名前> <ソース>)` で作っている。
@@ -38,7 +36,7 @@
 ### 実行環境について
 
 実行結果はすべて Linux x64（GCC 13.3 と Clang 18.1，`-std=c17 -Wall -Wextra -Wpedantic -Werror`，GCC は AddressSanitizer/UBSan 付き）で実際にビルド・実行した出力。
-表示する値は `int`・`unsigned int`（Windows x64 の MSVC でも Linux x64 でも 32 ビット）の範囲の小さな整数と `%.2f` の小数だけで，環境によって変わる値はない。Windows（MSVC，C17，`/W4`）でも同じ表示になる。
+表示する値は `int`・`unsigned int`（Windows x64 の MSVC でも Linux x64 でも 32 ビット）の範囲の小さな整数と `%.2f` の小数だけで，環境によって変わる値はない。表示する値が型の大きさや処理系に依存しないため，Windows（MSVC，C17，`/W4`）でも同じ表示になる。
 
 ### 記録（`memo.txt`）の書き方の例
 
@@ -289,7 +287,8 @@ score=75 valid=1 invalid=0
 score=101 valid=1 invalid=1
 ```
 
-コンパイラも警告する（GCC 13: `warning: comparisons like 'X<=Y<=Z' do not have their mathematical meaning [-Wparentheses]`，
+コンパイラも警告する（GCC 13: `warning: comparisons like 'X<=Y<=Z' do not have their mathematical meaning [-Wparentheses]` と
+`warning: comparison of constant '100' with boolean expression is always true [-Wbool-compare]`，
 Clang 18: `warning: result of comparison of constant 100 with boolean expression is always true [-Wtautological-constant-out-of-range-compare]`）。
 MSVC の `/W4` では警告されないことがあるので，警告に頼らず `score >= 0 && score <= 100` と 2 つの比較を `&&` でつなぐ。
 
@@ -298,7 +297,7 @@ MSVC の `/W4` では警告されないことがあるので，警告に頼ら�
 `int large = d != 0 & n / d > 2;` とすると，`&` は**ビット演算子で短絡評価がない**ため，左側 `d != 0` が偽（0）でも右側 `n / d > 2` が評価される。
 `d` が 0 なので `12 / 0` の**整数の 0 による除算**が起き，これは未定義動作である（Windows では通常「Integer division by zero」の例外でプログラムが異常終了する）。
 `&&` なら左側が偽の時点で結果が 0 に決まり，右側の除算は行われない。「先に安全性を確認してから使う」ために，`d != 0` を `&&` の**左側**に置く（`n / d > 2 && d != 0` の順では防げない）。
-なお GCC はこの式に `warning: suggest parentheses around comparison in operand of '&' [-Wparentheses]` を出す（コンパイルだけで確認。実行はしていない）。
+なお GCC 13 はこの式に `warning: suggest parentheses around comparison in operand of '&' [-Wparentheses]` を出すが，Clang 18（`-Wall -Wextra -Wpedantic`）は警告を出さない（どちらもコンパイルだけで確認。実行はしていない）。警告がなくても危険な式であることに変わりはない。
 
 ### 採点のポイント・よくある誤り
 
@@ -330,21 +329,22 @@ MSVC の `/W4` では警告されないことがあるので，警告に頼ら�
 ```c
     int year = 2000;  /* 正の整数として与える */
 
-    /* 規則を3つの条件に分けて確認する（真なら1，偽なら0） */
+    /* 規則を3つの条件に分けて書き出す（真なら1，偽なら0） */
     int div4 = year % 4 == 0;         /* 4で割り切れる */
     int not_div100 = year % 100 != 0; /* 100では割り切れない */
     int div400 = year % 400 == 0;     /* 400で割り切れる */
 
     /* (4で割り切れる かつ 100では割り切れない) または 400で割り切れる */
-    int leap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
+    int leap = (div4 && not_div100) || div400;
 
     printf("year=%d\n", year);
     printf("div4=%d not_div100=%d div400=%d\n", div4, not_div100, div400);
     printf("leap=%d\n", leap);
 ```
 
-`leap` は講義の例題と同じ 1 つの条件式で求めている。`div4`・`not_div100`・`div400` は書き出した 3 つの条件を確かめるための表示で，
-`int leap = (div4 && not_div100) || div400;` と書いても同じ結果になる。`leap` だけを表示する解答でも演習の要求は満たす。
+書き出した 3 つの条件を変数 `div4`・`not_div100`・`div400` に保存し，`leap` はそれらを `&&` と `||` で組み合わせた 1 つの条件式で求めている（「かつ」「または」との対応がそのまま読める）。
+3 つの変数を使わずに講義の例題と同じ `int leap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;` と書いても同じ結果になる（4 年すべてで確認済み）。
+3 つの条件の表示は確認用で，`leap` だけを表示する解答でも演習の要求は満たす。
 
 **実行結果**
 
@@ -378,10 +378,10 @@ leap=0
 
 ### 説明すること（「かつ」「または」との対応と，分岐ではないこと）
 
-- `year % 4 == 0 && year % 100 != 0` の `&&` が 1 つ目の規則の「4 で割り切れ，**かつ** 100 では割り切れない」に対応する。
-- `|| year % 400 == 0` の `||` が「それとは別に，400 で割り切れる年**も**」，つまり 1 つ目の規則と 2 つ目の規則の「**または**」に対応する。
+- `div4 && not_div100`（1 つの式なら `year % 4 == 0 && year % 100 != 0`）の `&&` が，1 つ目の規則の「4 で割り切れ，**かつ** 100 では割り切れない」に対応する。
+- `|| div400`（`|| year % 400 == 0`）の `||` が「それとは別に，400 で割り切れる年**も**」，つまり 1 つ目の規則と 2 つ目の規則の「**または**」に対応する。
 - 括弧 `( ... )` は 1 つ目の規則のまとまりを示す。`&&` は `||` より優先順位が高いので括弧がなくても同じ意味になるが，意図を明示するために付ける（括弧がないと GCC は `warning: suggest parentheses around '&&' within '||' [-Wparentheses]`，Clang は `warning: '&&' within '||' [-Wlogical-op-parentheses]` を出す）。
-- 短絡評価も働く: 2024 年は `(A && B)` が真なので `||` の右側（`year % 400 == 0`）は評価されない。1900・2000 年は `A && B` が偽なので右側が評価される。2025 年は A が偽なので B は評価されない。
+- 短絡評価も働く: 2024 年は `(A && B)` が真なので `||` の右側（`div400`）は評価されない。1900・2000 年は `A && B` が偽なので右側が評価される。2025 年は A が偽なので B は評価されない（1 つの式で書いた場合は，評価されない部分の `%` の計算自体が行われない）。
 
 この式は**分岐ではない**。`if` を使っていないので，どの年でもすべての文が上から順に実行される。
 `leap = 条件式;` は条件の真偽を 0 か 1 の**値として計算し，代入で変数へ保存している**だけで，実行する処理を選んではいない（処理を選ぶのは次回の制御構造）。
@@ -480,11 +480,11 @@ exec=1
 加算は数値の足し算なので，既に 1 のビットに 1 を足すと**桁上がりして隣のビットが変わり**，対象のビットは 0 になってしまう。
 
 書く権限のセットを `OR` で 2 回続けて行う版と，加算で 2 回続けて行う版を実際に実行した（テスト `variant_set_twice_or`・`variant_set_twice_add`）。
-テストでは `flags |= write_mask;` の行を次の 1 つの式に置き換えている。`(flags | write_mask)` を計算してから，その結果にもう一度 `| write_mask` を行うので，
-`flags |= write_mask;` を 2 行続けて書いた場合と同じ順序の計算になる（2 行で書いた版も同じ出力になることを確認済み）。
+テストでは `flags |= write_mask;` の行を次の 2 行に置き換えている。
 
 ```c
-    flags = (flags | write_mask) | write_mask;
+    flags |= write_mask;
+    flags |= write_mask;
 ```
 
 ```text
@@ -496,7 +496,8 @@ exec=1
 ```
 
 ```c
-    flags = (flags + write_mask) + write_mask;   /* flags += write_mask; を 2 回と同じ */
+    flags += write_mask;
+    flags += write_mask;
 ```
 
 ```text
@@ -519,7 +520,7 @@ exec=0
 - クリアに `flags &= !read_mask;` と書く → `!read_mask` は論理否定で 0 になり，`flags` 全体が 0 になる（実際に確認すると `clear read=0`，`toggle exec=4`）。ビットの反転は `~`。
 - クリアに `flags ^= read_mask;` や `flags -= read_mask;` を使う → 初期値 1u ではたまたま同じ結果だが，読む権限が 0 のとき（初期値 0u）に誤る。`^` の版を 0u で実行すると `clear read=3`，`toggle exec=7` になる（正しくは 2，6）。0u と 7u で試す小問はこの誤りを見つけるためのもの。
 - 調べる式に `flags && exec_mask` を使う → `flags` が 0 でなければ常に 1（論理演算とビット演算の混同）。
-- `0b011` のような 2 進リテラルは C17 の標準ではない（MSVC の C ではエラー）。`011` と書くと 8 進数の 9 になる。
+- `0b011` のような 2 進リテラルは C17 の標準にはない（C23 で導入。GCC/Clang は `-Wpedantic` で警告し，処理系によっては拡張として受け付けるが，講義どおり `3u` や `0x03u` で書く）。`011` と書くと 8 進数の 9 になる。
 
 ---
 

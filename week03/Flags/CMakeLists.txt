@@ -5,8 +5,10 @@ softprac_add_program(Flags flags.c)
 
 softprac_add_variant(Flags flags.c start_0 "flags = 1u" "flags = 0u")
 softprac_add_variant(Flags flags.c start_7 "flags = 1u" "flags = 7u")
-# 書く権限のセットを 2 回続けて行う（置換の文字列に ; を使えないので 1 つの式にしている）
+# 書く権限のセットを 2 行続けて行う（OR 版と，OR の代わりに加算を使う版）
 softprac_add_variant(Flags flags.c set_twice_or
-  "flags |= write_mask" "flags = (flags | write_mask) | write_mask")
+  "    flags |= write_mask;  /* セット: OR で対象ビットだけ1にする */"
+  "    flags |= write_mask;\n    flags |= write_mask;")
 softprac_add_variant(Flags flags.c set_twice_add
-  "flags |= write_mask" "flags = (flags + write_mask) + write_mask")
+  "    flags |= write_mask;  /* セット: OR で対象ビットだけ1にする */"
+  "    flags += write_mask;\n    flags += write_mask;")

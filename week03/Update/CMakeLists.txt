@@ -9,9 +9,6 @@ softprac_add_variant(Update update.c plain_assignment
 # 最初の x を 0，-2 に変える
 softprac_add_variant(Update update.c x_0 "int x = 5" "int x = 0")
 softprac_add_variant(Update update.c x_minus2 "int x = 5" "int x = -2")
-# x += 3; と x *= 2; の順番を入れ替える（17 になる）。
-# 置換は順に行われ，各置換前の文字列はその時点で 1 回だけ現れる必要があるので，仮の文字列を経由する
+# x += 3; と x *= 2; の順番を入れ替える（17 になる）
 softprac_add_variant(Update update.c swapped_order
-  "x += 3" "SWAP_PLACEHOLDER"
-  "x *= 2" "x += 3"
-  "SWAP_PLACEHOLDER" "x *= 2")
+  "    x += 3;\n    x *= 2;\n" "    x *= 2;\n    x += 3;\n")
