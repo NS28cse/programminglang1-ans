@@ -1,0 +1,21 @@
+before:
+0: t o y a m a 0 0 0  [toyama]
+1: i s h i k a w a 0  [ishikawa]
+2: f u k u i 0 0 0 0  [fukui]
+after swap_rows(names, 1, 2):
+0: t o y a m a 0 0 0  [toyama]
+1: f u k u i 0 0 0 0  [fukui]
+2: i s h i k a w a 0  [ishikawa]
+row1 == names[1]: 1, row1 = fukui
+after swap_rows(same, 1, 1):
+0: t o y a m a 0 0 0  [toyama]
+1: i s h i k a w a 0  [ishikawa]
+2: f u k u i 0 0 0 0  [fukui]
+after swap_rows(twice, 1, 2) x2:
+0: t o y a m a 0 0 0  [toyama]
+1: i s h i k a w a 0  [ishikawa]
+2: f u k u i 0 0 0 0  [fukui]
+after swap_rows(empty, 1, 2) with "":
+0: t o y a m a 0 0 0  [toyama]
+1: 0 0 0 0 0 0 0 0 0  []
+2: i s h i k a w a 0  [ishikawa]

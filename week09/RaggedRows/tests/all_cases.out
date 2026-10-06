@@ -1,0 +1,17 @@
+row0 sum=6
+row1 sum=9
+original=40
+swapped rows and lengths:
+row0 sum=9
+row1 sum=6
+original=4
+row0[0]=40
+means:
+row0 mean=2.00
+row1 mean=4.50
+all elements: 15 / 5 = 3.00
+mean of row means = 3.25
+dog
+cat
+a
+b

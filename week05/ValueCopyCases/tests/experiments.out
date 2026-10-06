@@ -1,0 +1,8 @@
+original x=10: 10 11
+original x=0: 0 1
+original x=-1: -1 0
+increment(x); -> x=10
+int y = increment(x); -> x=10 y=11
+x = increment(x); -> x=11
+add z: x=10 y=11 z=11
+x = increment(x); twice -> x=12

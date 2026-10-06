@@ -1,0 +1,19 @@
+swap_names(names, 0, 2):
+Nagoya
+Osaka
+Tokyo
+swap_names(same, 1, 1):
+Tokyo
+Osaka
+Nagoya
+swap_names(twice, 0, 2) x2:
+Tokyo
+Osaka
+Nagoya
+Nagoya-city
+Osaka-city
+Tokyo-city
+Nagoya 6
+Osaka 5
+Tokyo 5
+tokyo tokyo

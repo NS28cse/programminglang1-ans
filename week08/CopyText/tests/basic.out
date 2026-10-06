@@ -1,0 +1,5 @@
+char out[4] = "";           src="cat": return=1 out="cat" elements: c a t \0
+char out[3] = "";           src="cat": return=0 out="" elements: \0 \0 \0
+char out[1] = "";           src="": return=1 out="" elements: \0
+char out[4] = "old";        src="cats": return=0 out="old" elements: o l d \0
+char out[] = "aaaaaaaaaa";  src="hoge": return=1 out="hoge" elements: h o g e \0 a a a a a \0
