@@ -11,8 +11,9 @@ int main(void)
     printf("subtract(2.0, 5.0)=%.1f\n", subtract(2.0, 5.0));
 
     /* 検証表の 4 組．毎回 q を 99.0 にしてから呼び，失敗時に q が変わらないことを確かめる */
-    const double pairs[4][2] = {{6.0, 2.0}, {-6.0, 2.0}, {0.0, 2.0}, {6.0, 0.0}};
-    for (int i = 0; i < 4; ++i) {
+    enum { PAIR_COUNT = 4 };
+    const double pairs[PAIR_COUNT][2] = {{6.0, 2.0}, {-6.0, 2.0}, {0.0, 2.0}, {6.0, 0.0}};
+    for (int i = 0; i < PAIR_COUNT; ++i) {
         double q = 99.0;
         int ok = calc_divide(pairs[i][0], pairs[i][1], &q);
         printf("calc_divide(%.1f, %.1f): ok=%d q=%.1f\n",
