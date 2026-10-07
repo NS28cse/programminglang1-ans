@@ -3,7 +3,7 @@
 演習ページ: <https://t-yokoga.github.io/softprac1/ex02.html>（講義: <https://t-yokoga.github.io/softprac1/lec02.html>）
 
 この回は**キーボード入力・条件分岐・繰り返しを使わない**回です。解答も `printf` と変数の宣言・初期化・代入・`sizeof`・`&` だけで書いています。
-値を変えて試す小問は，演習ページの指示どおり「ソースの 1 か所を書き換えた版」をテストにしています（後述の「テストの構成」）。
+値を変えて試す小問や比較用の途中版は，演習ページの指示どおり「ソースの一部（置換前の文字列がちょうど 1 回現れる箇所）を置き換えた版」をテストにしています。置き換えの組は複数指定できます（後述の「テストの構成」）。
 
 ## プロジェクト一覧
 
@@ -11,18 +11,18 @@
 | --- | --- | --- | --- | ---: |
 | 1 | 長方形の面積と再計算 | `Rectangle` | [rectangle.c](Rectangle/rectangle.c) | 3（本体 1 + 書き換え版 2） |
 | 2 | 型と表示の対応 | `Profile` | [profile.c](Profile/profile.c) | 4（本体 1 + 書き換え版 3） |
-| 3 | 値のコピーと交換 | `Exchange` | [exchange.c](Exchange/exchange.c) | 3（本体 1 + 書き換え版 2） |
+| 3 | 値のコピーと交換 | `Exchange` | [exchange.c](Exchange/exchange.c) | 6（本体 1 + 書き換え版 5：別の値 2，2 文だけの版 3） |
 | 4 | 値・サイズ・場所の観察 | `Observe` | [observe.c](Observe/observe.c) | 0（型のサイズは環境ごと（`sizeof(long)` が Windows で 4，Linux で 8），アドレスは実行ごとに変わるため。実行例を下に掲載） |
-| 5 | 発展：小数を使った計算 | `Temperature` | [temperature.c](Temperature/temperature.c) | 4（本体 1 + 書き換え版 3） |
+| 5 | 発展：小数を使った計算 | `Temperature` | [temperature.c](Temperature/temperature.c) | 5（本体 1 + 書き換え版 4：別の値 3，計算後の変更 1） |
 
-合計 14 テスト。GCC 13（`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan）と Clang 18 で警告 0・全テスト成功を確認済み。
+合計 18 テスト。GCC 13（`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan）と Clang 18 で警告 0・全テスト成功を確認済み。
 
 ### テストの構成（書き換え版）
 
-- `<プロジェクト>/tests/basic.out` … フォルダのソース（最終版）の期待する出力。
-- `<プロジェクト>/variants/tests/<ケース>.out` … 「値を変えて確かめる」の書き換え版の期待する出力。
+- `<プロジェクト>/tests/basic.out` … フォルダのソース（本体。演習ページの期待する表示を出す版）の期待する出力。
+- `<プロジェクト>/variants/tests/<ケース>.out` … 「値を変えて確かめる」の書き換え版や比較用の途中版の期待する出力。
   各プロジェクトの `CMakeLists.txt` で `softprac_add_variant(...)`（[cmake/SoftpracVariant.cmake](../cmake/SoftpracVariant.cmake)）を呼び，
-  ソースの文字列（例: `width = 6`）を 1 か所だけ置き換えた版をビルドしてテストします。置き換え前の文字列がソースにちょうど 1 回現れないと構成の段階でエラーになるので，ソースを直したときに気付けます。
+  ソースの一部（置換前の文字列がちょうど 1 回現れる箇所。例: `width = 6`）を置き換えた版をビルドしてテストします。置換前・置換後の組は複数指定でき，`;` や改行を含む文はブラケット引数 `[[ ]]` で書きます。置き換え前の文字列がソースにちょうど 1 回現れないと構成の段階でエラーになるので，ソースを直したときに気付けます。
   書き換え版の実行ファイルは `bin/` ではなくビルドフォルダの `variants/week02/` にでき，Visual Studio の起動構成（`.vs/launch.vs.json`）には現れません。
 
 ### 準備：講義の `variables.c`
@@ -241,13 +241,14 @@ after: a=20 b=10
 | `a = b;` | 20 | 20 | 10 |
 | `b = temp;` | 20 | 10 | 10 |
 
-2 文だけの版（比較用。フォルダには入れていない）:
+2 文だけの版（比較用。本体の `temp` を使う 3 行をこの 4 行に置き換え，最後の `after:` の行を消した版として，テスト `variant_two_statements` でビルド・テストしている）:
 
 ```c
     int a = 10;
     int b = 20;
 
     printf("before: a=%d b=%d\n", a, b);
+
     a = b;
     printf("after a = b;  a=%d b=%d\n", a, b);
     b = a;
@@ -264,11 +265,11 @@ after b = a;  a=20 b=20
 
 ### 別の値でも確認する
 
-| 初期値 | `temp` を使った版（解答） | 2 文だけの版 | テスト |
+| 初期値 | `temp` を使った版（解答） | 2 文だけの版 | テスト（解答 / 2 文だけ） |
 | --- | --- | --- | --- |
-| `a = 10`, `b = 20` | `after: a=20 b=10` | `a=20 b=20` | `basic` |
-| `a = -3`, `b = 8` | `after: a=8 b=-3` | `a=8 b=8` | `variant_a_m3_b_8` |
-| `a = 5`, `b = 5` | `after: a=5 b=5` | `a=5 b=5` | `variant_a_5_b_5` |
+| `a = 10`, `b = 20` | `after: a=20 b=10` | `a=20 b=20` | `basic` / `variant_two_statements` |
+| `a = -3`, `b = 8` | `after: a=8 b=-3` | `a=8 b=8` | `variant_a_m3_b_8` / `variant_two_statements_a_m3_b_8` |
+| `a = 5`, `b = 5` | `after: a=5 b=5` | `a=5 b=5` | `variant_a_5_b_5` / `variant_two_statements_a_5_b_5` |
 
 `temp` を使った版の実行結果（`a = -3`, `b = 8`）:
 
@@ -284,7 +285,7 @@ before: a=5 b=5
 after: a=5 b=5
 ```
 
-2 文だけの版の実行結果（上の比較用コードの初期値を変えたもの）:
+2 文だけの版の実行結果（上の比較用コードの初期値を変えたもの。テスト `variant_two_statements_a_m3_b_8`・`variant_two_statements_a_5_b_5`）:
 
 ```text
 before: a=-3 b=8
@@ -363,7 +364,7 @@ sizeof(long long)=8
 sizeof(double)=8
 ```
 
-同じ実行の中では `&value` は変わらず，起動し直すと別のアドレスになっています（アドレス空間配置のランダム化のため）。
+同じ実行の中では `&value` は変わらず，起動し直すと別のアドレスになっています（アドレス空間配置のランダム化のため）。ここに載せた `&value` は sanitizer なしでビルドしたときの値です。AddressSanitizer 付き（`-DSOFTPRAC_SANITIZE=ON`）でビルドすると，変数が別の領域に置かれ `0x7f04...` のような値になります。
 
 Windows x64（Visual Studio，MSVC）では次の形になります（この環境では MSVC を実行していないため，**アドレスの数字は例**です。`%p` は `0x` なしの 16 桁の大文字 16 進数）。**`sizeof(long)` が 4** になる点が Linux と違います。
 
@@ -456,7 +457,7 @@ Celsius=25.0 Fahrenheit=77.0
 
 ### 計算後に `celsius` を変更した場合
 
-`fahrenheit` は計算した時点の値を保存しているだけなので，`celsius` を変えただけでは更新されません。確認用のコード（フォルダには入れていない）:
+`fahrenheit` は計算した時点の値を保存しているだけなので，`celsius` を変えただけでは更新されません。確認用のコード（本体の表示の行の後に 5 行を追加した版として，テスト `variant_change_after` でビルド・テストしている）:
 
 ```c
     double celsius = 25.0;
