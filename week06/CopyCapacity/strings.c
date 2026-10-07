@@ -1,11 +1,12 @@
-﻿// 第6回 発展 容量の境界（CopyCapacity / strings.c）。講義の strings.c で copy の容量を 16 -> 4 -> 3 と変えた最終版
-// copy[3] には "cat" と終端の4要素が入らないので，条件が偽になりコピー自体を行わない。
+﻿// 第6回 発展 容量の境界（CopyCapacity / strings.c）。講義の strings.c そのもの
+// 演習で copy の容量を 4，3 に変えた版は CMakeLists.txt の variant でテストする。
+// 容量 3 では "cat" と終端の4要素が入らないので，条件が偽になりコピー自体を行わない。
 #include <stdio.h>
 #include <string.h>
 int main(void)
 {
     char word[16] = "cat";
-    char copy[3] = {0};
+    char copy[16] = {0};
     size_t length = strlen(word);
     // 終端用の1要素を残せるとき（length + 1 <= sizeof copy）だけコピーする
     if (length < sizeof copy) {

@@ -1,5 +1,5 @@
-﻿// 第6回 課題3 変換する順序（Average / average.c）。整数拡張・積の型・往復変換を確かめる最終版
-// 最初の版（total / count のキャストの位置を比べる版）は week06/README.md に載せている。
+﻿// 第6回 課題3 変換する順序（Average / average.c）。整数拡張・積の型・往復変換を確かめる「完全なプログラム」
+// 最初の版（total / count のキャストの位置を比べる版）は versions/average_first.c。
 #include <stdio.h>
 int main(void)
 {

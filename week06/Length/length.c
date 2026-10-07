@@ -39,11 +39,6 @@ int main(void)
     printf("text=%s length=%zu capacity=%zu\n",
            text, my_length(text), sizeof text);
 
-    // 最初の終端（添字3）で止まり，その後ろの 'd' と 'e' は読まない
-    char mixed[] = {'a', 'b', 'c', '\0', 'd', 'e'};
-    printf("mixed=%s length=%zu capacity=%zu\n",
-           mixed, my_length(mixed), sizeof mixed);
-
     printf("spaces=%zu %zu %zu\n",
            count_spaces("abc def gh"),
            count_spaces("ijk lmn opq rst"), count_spaces(""));
