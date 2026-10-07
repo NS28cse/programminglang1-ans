@@ -1,6 +1,6 @@
 # 第9回 課題2 Names
 # フォルダのソースは swap_names(names, 0, 2); を呼ぶ最終版。表の他のケースなどは書き換えた版でテストする
-#   direct     … 関数へ分ける前の途中版（versions/names_direct.c をそのままビルド）
+#   direct     … 関数へ分ける前の途中版（versions/names_direct.c をそのままビルド。出力が本体と同じことを確かめるケース）
 #   swap_1_1   … swap_names(names, 1, 1); にした版
 #   swap_twice … swap_names(names, 0, 2); を 2 回呼ぶ版
 #   city       … %s-city で表示し，続けて元の文字列と strlen を表示する版

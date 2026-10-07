@@ -3,7 +3,7 @@
 #   rows1 / rows0         … print_means に渡す rows を 1，0 にした版
 #   low_high / fraction   … 配列を {0,0,0},{100,100,100} / {1,1,2},{2,2,3} にした版
 #   int_division          … fraction の配列で (double) を外した（整数除算の）版
-#   array_param           … 仮引数を int a[][COLS] と書いた版（出力は本体と同じ）
+#   array_param           … 仮引数を int a[][COLS] と書いた版（出力が本体と同じことを確かめるケース）
 #   sizeof_check          … main で sizeof の式を確認する版（バイト数は処理系依存なので式との比較と商を表示）
 #   overall / overall_rows0 … 全体平均を返す関数を追加した版（rows=2 と rows=0）
 softprac_add_program(MatrixMean matrix.c)

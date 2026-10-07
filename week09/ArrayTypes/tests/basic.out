@@ -8,7 +8,7 @@ sizeof *whole == sizeof a: 1
 sizeof *first_row == 3 * sizeof(int): 1
 sizeof *first_int == sizeof(int): 1
 *qq == a: 1, (*qq)[1][2] = 6
-same start: 1 1 1
+same start: 1 1 1 1
 &q is not &a: (void *)qq == (void *)whole is 0
 a[1][2]=6 rows[1][2]=6 pp[1][2]=6
  flat[0]=1 flat[1]=2 flat[2]=3
