@@ -5,22 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <errno.h>
 
 #define MAX_COUNT 1000
-
-// text 全体を 10 進の long へ変換できれば *out に保存して 1，できなければ 0 を返す（*out は変更しない）
-static int parse_long(const char *text, long *out)
-{
-    char *end;
-    errno = 0;
-    long value = strtol(text, &end, 10);
-    if (text == end || *end != '\0' || errno == ERANGE) {
-        return 0;
-    }
-    *out = value;
-    return 1;
-}
 
 // p[0]〜p[n-1] を「label: 値 値 ...」の形で 1 行に表示する（配列は借りるだけ）
 static void print_array(const char *label, const int *p, size_t n)
@@ -42,23 +28,16 @@ static void *try_resize(void *old, size_t bytes)
     return realloc(old, bytes);
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
-    if (argc != 3) {
-        fprintf(stderr, "usage: GrowArrayFail old_n new_n (1..1000)\n");
-        return 1;
-    }
-    long old_count, new_count;
-    if (!parse_long(argv[1], &old_count) || !parse_long(argv[2], &new_count)) {
-        fprintf(stderr, "counts must be integers\n");
-        return 1;
-    }
+    size_t old_n = 3;   // 元の個数（境界の表の値に書き換えて試す）
+    size_t new_n = 5;   // 変更後の個数
 
-    if (old_count < 1 || old_count > MAX_COUNT) {
+    // 最初の確保の前に old_n を検査する（ここで失敗しても解放するものはない）
+    if (old_n == 0 || old_n > MAX_COUNT) {
         fprintf(stderr, "old_n must be 1..1000\n");
         return 1;
     }
-    size_t old_n = (size_t)old_count;
     int *p = calloc(old_n, sizeof *p);
     if (p == NULL) {
         fprintf(stderr, "allocation failed\n");
@@ -70,12 +49,11 @@ int main(int argc, char *argv[])
     }
     print_array("before", p, old_n);
 
-    if (new_count < 1 || new_count > MAX_COUNT) {
+    if (new_n == 0 || new_n > MAX_COUNT) {
         fprintf(stderr, "new_n must be 1..1000\n");
         free(p);
         return 1;
     }
-    size_t new_n = (size_t)new_count;
     if (new_n > SIZE_MAX / sizeof *p) {
         fprintf(stderr, "size overflow\n");
         free(p);

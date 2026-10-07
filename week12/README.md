@@ -11,20 +11,21 @@
 | 課題 | プロジェクト | ソース | テスト |
 | --- | --- | --- | --- |
 | 課題1〜3 | `SplitCalc` | [main.c](SplitCalc/main.c)，[calc.c](SplitCalc/calc.c)，[calc.h](SplitCalc/calc.h) | 1（[basic](SplitCalc/tests/basic.out)：課題1の 2 行＋検証表の 7 行） |
-| 課題4 | `VectorCalc` | [vector_main.c](VectorCalc/vector_main.c)，[vector.c](VectorCalc/vector.c)，[matrix.c](VectorCalc/matrix.c)，[vector.h](VectorCalc/vector.h)，[matrix.h](VectorCalc/matrix.h) | 1（[basic](VectorCalc/tests/basic.out)：講義の 4 行＋手順3〜5） |
+| 課題4 | `VectorCalc` | [vector_main.c](VectorCalc/vector_main.c)，[vector.c](VectorCalc/vector.c)，[matrix.c](VectorCalc/matrix.c)，[vector.h](VectorCalc/vector.h)，[matrix.h](VectorCalc/matrix.h) | 4（[basic](VectorCalc/tests/basic.out)：講義の 4 行，[手順3〜5 の書き換え版](VectorCalc/variants/tests/) 3：`identity`・`alpha0`・`unchanged`） |
 | 発展1（ライブラリ側） | `CalcLib` | [calc.c](CalcLib/calc.c)，[calc.h](CalcLib/calc.h)，[CMakeLists.txt](CalcLib/CMakeLists.txt) | ―（静的ライブラリなので実行しない） |
 | 発展1（アプリ側） | `CalcApp` | [main.c](CalcApp/main.c)，[CMakeLists.txt](CalcApp/CMakeLists.txt) | 1（[basic](CalcApp/tests/basic.out)） |
-| 発展2 | `SortModule` | [sort_main.c](SortModule/sort_main.c)，[intlib.c](SortModule/intlib.c)，[intlib.h](SortModule/intlib.h)，[CMakeLists.txt](SortModule/CMakeLists.txt)，[run.args](SortModule/run.args)（`5`） | 15（[tests/](SortModule/tests/) の 13 ＋ 空文字列 1 ＋ [INT_MAX/INT_MIN 版](SortModule/variants/tests/) 1） |
-| 発展3 | `LibraryCheck` | [library_check.c](LibraryCheck/library_check.c)，[CMakeLists.txt](LibraryCheck/CMakeLists.txt) | 2（[basic](LibraryCheck/tests/basic.out)，[NDEBUG 版](LibraryCheck/variants/tests/ndebug.out)） |
+| 発展2 | `SortModule` | [sort_main.c](SortModule/sort_main.c)，[intlib.c](SortModule/intlib.c)，[intlib.h](SortModule/intlib.h)，[CMakeLists.txt](SortModule/CMakeLists.txt)，[run.args](SortModule/run.args)（`5`） | 18（[tests/](SortModule/tests/) の 17 ＋ [INT_MAX/INT_MIN 版](SortModule/variants/tests/) 1） |
+| 発展3 | `LibraryCheck` | [library_check.c](LibraryCheck/library_check.c)，[CMakeLists.txt](LibraryCheck/CMakeLists.txt) | 2（[basic](LibraryCheck/tests/basic.out)，[NDEBUG 版](LibraryCheck/variants/tests/ndebug.out)：偽の `assert` に変えても終了コード 0） |
 | 課題3・4 のエラー版 | `_BuildErrors`（ビルドしない） | [split/](_BuildErrors/split/)（課題1の正常版と，エラーの 3 版），[noguard/](_BuildErrors/noguard/)，[no_direct_include/](_BuildErrors/no_direct_include/) | ― |
 
-合計 20 テスト（GCC＋ASan/UBSan，Clang ともに警告 0・全成功）。
+合計 26 テスト（GCC＋ASan/UBSan，Clang ともに警告 0・全成功）。
 
 - フォルダ名＝Visual Studio のプロジェクト名＝実行ファイル名。フォルダ内の `.c` はすべて 1 つの実行ファイルにリンクされる（Visual Studio で「ソース ファイル」に登録したのと同じ）。
   `main` を持つのは `SplitCalc/main.c`・`VectorCalc/vector_main.c`・`CalcApp/main.c`・`SortModule/sort_main.c`・`LibraryCheck/library_check.c` の各 1 つだけ。
 - `SplitCalc` は課題2まで反映した**最終版**（`subtract` と `calc_divide` を追加済み）。講義どおりの 3 ファイル（加算・乗算だけ）は [_BuildErrors/split/](_BuildErrors/split/) に置いた。
 - `CalcLib` と `CalcApp` は同じ名前の `calc.h`・`calc.c`・`main.c` を `SplitCalc` とは別のフォルダに持つ（演習の「元の `SplitCalc` は残し，別のソリューションで試す」に合わせた）。
-- `SortModule` と `LibraryCheck` の `CMakeLists.txt` は，ソースの登録は自動の規則と同じで，テストの追加（空文字列の引数・書き換えた版）と `-lm` のためだけに置いている（後述）。
+- `VectorCalc`・`SortModule`・`LibraryCheck` の `CMakeLists.txt` は，ソースの登録は自動の規則と同じで，演習ページの「書き換えて確かめる」版（`softprac_add_variant`）を登録するためだけに置いている。
+  フォルダのソースは講義・演習ページどおりの版のままで，書き換えは CMake がビルド時に行う（学生と同じ書き換えをした別の実行ファイルとしてテストする）。
 
 ---
 
@@ -333,7 +334,7 @@ Clang 18 も同じ段階で失敗する（前処理 `fatal error: 'calc_missing.
 
 ### 補足：`calc.c` が `calc.h` を読まないと，型の不一致を見逃す
 
-講義 3.1 のとおり，実装側も自分のヘッダを読むのは型の不一致をコンパイルで見つけるため。記録 2 の `calc_int_add.c` から `#include "calc.h"` を消すと，**エラーも警告も出ずにビルドが通る**（リンカは C の関数の型を照合しない）。
+講義 3.1 のとおり，実装側も自分のヘッダを読むのは型の不一致をコンパイルで見つけるため。記録 2 の `calc_int_add.c` から `#include "calc.h"` を消すと，**リンクエラーは出ずにビルドが通る**（リンカは C の関数の型を照合しない）。GCC/Clang は警告もなし，MSVC `/W4` では型の不一致ではなく `C4244`（`return` での `double` → `int` の変換）だけが出る。
 GCC で試すと `add=3.5` と表示されたが，これは呼び出し側が `double` を受け取る場所にたまたま計算途中の値が残っていただけで，**未定義動作**である（最適化や環境で結果が変わる）。「動いたから正しい」と判断させないこと。
 
 ### 採点のポイント・よくある誤り
@@ -351,7 +352,8 @@ GCC で試すと `add=3.5` と表示されたが，これは呼び出し側が `
 **要点**: 構造体の型（`Vector`・`Matrix`）を含むモジュールの分割。`matrix.h` は `Vector` を使うので**自分で `vector.h` を読む**。
 `vector_main.c` には `vector.h` が 2 経路で入るが，インクルードガードで同じ翻訳単位に 2 回展開されるのを防ぐ。
 
-ソースは講義 7 の 5 ファイルそのまま（先頭にコメントだけ追加）で，[vector_main.c](VectorCalc/vector_main.c) は講義の `main` の後ろに手順3〜5 の確認を追加した最終版（`printf` を使うので `<stdio.h>` を追加）。
+ソースは講義 7 の 5 ファイルそのまま（先頭にコメントだけ追加）。手順3〜5 は演習ページどおり `vector_main.c` を書き換えて確かめるもので，
+[CMakeLists.txt](VectorCalc/CMakeLists.txt) の `softprac_add_variant` で同じ書き換えをした 3 つの版（`identity`・`alpha0`・`unchanged`）をビルド・テストしている。
 ソースとして登録するのは `vector_main.c`・`vector.c`・`matrix.c` の 3 つで，`SplitCalc` の `main.c` は入れない（入れると `main` が 2 つで `LNK2005`）。
 
 ### 手順1　手計算
@@ -364,26 +366,47 @@ GCC で試すと `add=3.5` と表示されたが，これは呼び出し側が `
 
 ### 実行結果
 
+講義どおりの `vector_main.c`（手順1・2）:
+
 ```text
 [1.0 -1.0]
 [-1.0 1.0]
 (5.0, 8.0)
 (1.0, 6.0)
---- identity ---
+```
+
+講義の出力と一致し，手計算 `2x+y = (5, 8)`・`2Ax+y = (1, 6)` とも一致する（手順2）。
+
+手順3: `Matrix a = {{1.0, -1.0, -1.0, 1.0}};` を `Matrix a = {{1.0, 0.0, 0.0, 1.0}};`（単位行列）に変えた版。3 行目（`axpy(2.0, x, y)` = 2x+y）と 4 行目（`gemv(2.0, a, x, 1.0, y)` = 2Ax+y）が一致する:
+
+```text
 [1.0 0.0]
 [0.0 1.0]
 (5.0, 8.0)
 (5.0, 8.0)
---- alpha=0, beta=1 ---
+```
+
+手順4: `print_vector(gemv(2.0, a, x, 1.0, y));` を `print_vector(gemv(0.0, a, x, 1.0, y));`（`alpha` を 0，`beta` は 1 のまま）に変えた版。4 行目が `y` = (3, 4) になる:
+
+```text
+[1.0 -1.0]
+[-1.0 1.0]
+(5.0, 8.0)
 (3.0, 4.0)
---- x and y after calls ---
+```
+
+手順5: `return 0;` の前に `print_vector(x);` と `print_vector(y);` を追加した版。呼び出し後も `x` = (1, 2)，`y` = (3, 4) のまま（`axpy`・`gemv` は値渡しで新しい `Vector` を返すので，呼び出し側の変数は変わらない）:
+
+```text
+[1.0 -1.0]
+[-1.0 1.0]
+(5.0, 8.0)
+(1.0, 6.0)
 (1.0, 2.0)
 (3.0, 4.0)
 ```
 
-最初の 4 行が講義の出力と一致し，手計算とも一致する（手順2）。`identity` の 2 行（`axpy(2.0, x, y)` と `gemv(2.0, I, x, 1.0, y)`）が一致する（手順3）。
-`alpha=0, beta=1` で結果が `y` になる（手順4）。最後の 2 行で入力 `x`・`y` が変わっていない（手順5）。
-学生が講義どおり `a` を書き換え・`gemv` の引数を書き換える方式で確認した場合も，それぞれ `(5.0, 8.0)`・`(3.0, 4.0)` になれば正解。
+手順3・4 は 1 つずつ試して元に戻す（このリポジトリでも別々の版にしている）。学生が `identity` という別の変数を作って比べた場合なども，同じ値になれば正解。
 
 ### インクルードガードを調べる（`vector.h` のガード 3 行を外す）
 
@@ -410,7 +433,7 @@ MSVC では `error C2371: 'Vector': redefinition; different basic types`（再�
 確認後はガードの 3 行を戻し，ビルドが成功して元の出力に戻ることを確認する。
 
 前処理後の内容（講義 4.2 の `/P`。GCC では `gcc -E`）で `} Vector;` を数えると，ガードありは 1 回，ガードなしは 2 回だった。
-ガードありの `vector_main.c` も前処理後は 598 行（元は 33 行）で，`stdio.h` などの展開で行数が増える。`/P` の設定は必ず戻してリビルドさせる（`/P` のままでは `.obj` が作られない）。
+ガードありの `vector_main.c` も前処理後は 45 行（元は 15 行）に増える（ヘッダの展開と，元の行位置を表す行のため。標準ヘッダを読むファイルではさらに大きく増える）。`/P` の設定は必ず戻してリビルドさせる（`/P` のままでは `.obj` が作られない）。
 
 ### ヘッダの独立性を確認する（直接の `#include "vector.h"` を外す）
 
@@ -420,7 +443,7 @@ MSVC では `error C2371: 'Vector': redefinition; different basic types`（再�
 逆に `matrix.h` の `#include "vector.h"` を外し，`vector_main.c` も `matrix.h` だけを読むと，`matrix.h` の時点で `Vector` が未定義になる（実際の GCC の診断）:
 
 ```text
-In file included from m/vector_main.c:3:
+In file included from m/vector_main.c:2:
 m/matrix.h:10:1: error: unknown type name 'Vector'
    10 | Vector gemv(double alpha, Matrix a, Vector x, double beta, Vector y);
 ```
@@ -489,7 +512,7 @@ subtract=3.0
 
 | 作業 | 何をするか | 失敗するとどうなるか |
 | --- | --- | --- |
-| 1. `calc.h` に宣言を追加して利用側へ見せる | `double subtract(double a, double b);` を追加。`CalcApp` の `main.c` は追加のインクルード ディレクトリからこの宣言を読む | 宣言がないと `main.c` のコンパイルで `C4013`（暗黙の宣言）・エラー |
+| 1. `calc.h` に宣言を追加して利用側へ見せる | `double subtract(double a, double b);` を追加。`CalcApp` の `main.c` は追加のインクルード ディレクトリからこの宣言を読む | 宣言がないと `main.c` のコンパイルで警告 `C4013`（暗黙の宣言。GCC 14 以降や `-Werror`・`/WX` ではエラー）。無視すると `int` を返すと見なされ，正しい値を受け取れない |
 | 2. `calc.c` に実装を追加し，`CalcLib` をビルドして `.lib` を更新する | `subtract` の本体を `CalcLib` でコンパイルし，`CalcLib.lib` を作り直す | `.lib` に `subtract` がないと 4. で `LNK2019` |
 | 3. `CalcApp` の呼び出しをコンパイルする | `main.c` を 1. の宣言でコンパイルし，`subtract` への未解決の参照を持つ `main.obj` を作る | 宣言と呼び出しの型が合わないとここでエラー |
 | 4. `CalcApp` を更新後の `.lib` とリンクする | `main.obj` と新しい `CalcLib.lib` の `subtract` を結び付けて `CalcApp.exe` を作る | 古い `.lib` とリンクすると `LNK2019`。静的ライブラリの更新は再リンクして初めて `.exe` に入る |
@@ -522,7 +545,7 @@ $ touch week12/CalcApp/main.c && cmake --build $B --target CalcApp      ← 利�
 - 検索先（ディレクトリ）とファイル名は別の設定。ライブラリ ディレクトリだけを設定すると `LNK2019`，依存ファイルだけで検索先がないと `LNK1104: ファイル 'CalcLib.lib' を開くことができません`，インクルード ディレクトリがないと `C1083`。
 - `%(...)`／「親またはプロジェクトの既定値から継承」を消すと標準ライブラリなどの既定の設定も失われるので，**既存の継承設定を残して追加**する。
 - 今回の `CalcLib` は静的ライブラリなので，実装は `CalcApp.exe` に組み込まれ，**`CalcLib.dll` は存在せず探す必要もない**。ただし `CalcApp.exe` は Visual C++ ランタイム（既定の `/MD`・`/MDd` なら `vcruntime140.dll`・`ucrtbase.dll` など）には依存する。
-- プラットフォームが違う（x86 の `.lib` を x64 のアプリに）と `LNK4272`（マシンの種類の競合），実行時ライブラリの設定が違う（`/MT` と `/MD`，Debug と Release）と `LNK2038`（`RuntimeLibrary` の不一致）になるので，構成・プラットフォーム・実行時ライブラリをそろえる。
+- プラットフォームが違う（x86 の `.lib` を x64 のアプリに）と `LNK4272`（マシンの種類の競合），実行時ライブラリの設定が違う（`/MT` と `/MD`，Debug と Release）と，C のライブラリでは主に `LNK4098`（既定のライブラリ `LIBCMT` などが他のライブラリと競合する）の警告と，場合により `LNK2005` が出る（C++ では標準ライブラリのヘッダの仕組みで `LNK2038`（`RuntimeLibrary` の不一致）になる）ので，構成・プラットフォーム・実行時ライブラリをそろえる。
 
 ### 採点のポイント・よくある誤り
 
@@ -613,11 +636,11 @@ Visual Studio では `SortModule` の「プロパティ → 構成プロパテ�
 [3] [4]        usage: SortModule N (N is an integer from 0 to 8)         exit=1
 ```
 
-`strtol` の性質により，`+5`・`" 5"`（先頭の空白）・`-0` は受け付け（`+5` は `-2 0 3 7 7`，`-0` は空行），`"5 "`（末尾の空白）は拒否する（第10回の `ParseNumber` と同じ方針。テスト `plus5`・`trailing_space`）。
+`strtol` の性質により，`+5`・`" 5"`（先頭の空白）・`-0`・`08` は受け付け（`+5`・`" 5"` は `-2 0 3 7 7`，`-0` は空行，`08` は 10 進の 8 として全 8 個），`"5 "`（末尾の空白）は拒否する
+（第10回の `ParseNumber` と同じ方針。基数 10 を指定しているので `08` を 8 進とは解釈しない。テスト `plus5`・`leading_space`・`minus_zero`・`leading_zero`・`trailing_space`）。
 
-テストは表のすべての行をケースにした: `n5`・`n0`・`n1`・`n8`・`no_args`・`empty_string`・`abc`・`trailing_x`（`3x`）・`minus1`・`n9`・`huge`・`two_args`（`3 4`）と，`plus5`・`trailing_space`。
+テストは表のすべての行をケースにした: `n5`・`n0`・`n1`・`n8`・`no_args`・`empty_string`（`.args` は空行 1 行＝空文字列の引数 1 つ）・`abc`・`trailing_x`（`3x`）・`minus1`・`n9`・`huge`・`two_args`（`3 4`）と，`plus5`・`leading_space`・`minus_zero`・`leading_zero`・`trailing_space`。
 エラーのケースは標準エラー出力（`.err`）と終了コード（`.code`）も比べている。
-`empty_string` だけは `tests/` の `.args`（空行 1 行）では「引数なし」として渡されてしまうため，[CMakeLists.txt](SortModule/CMakeLists.txt) で `add_test(... COMMAND SortModule "")` として直接登録した。
 
 ### `INT_MAX`・`INT_MIN` で試す
 
@@ -679,7 +702,7 @@ badcmp.c:6:28: runtime error: signed integer overflow: 2147483647 - -2147483648 
 | 関数・マクロ | ヘッダ | 入力条件 | 戻り値・作用の意味 | このプログラムでの値 |
 | --- | --- | --- | --- | --- |
 | `sqrt(x)` | `math.h` | `x ≥ 0`（負だと定義域エラー） | 非負の平方根（`double`） | `sqrt(9.0)` → 3.0 |
-| `pow(x, y)` | `math.h` | `x < 0` で `y` が整数でないと定義域エラー，`x` が 0 で `y` が負だとエラー（極エラー）になり得る。結果が大きすぎると範囲エラー | `x` の `y` 乗（`double`，丸め誤差あり） | `pow(3.0, 2.0)` → 9.0 |
+| `pow(x, y)` | `math.h` | `x < 0` で `y` が整数でないと定義域エラー，`x` も `y` も 0 なら定義域エラーになり得る，`x` が 0 で `y` が負だと極エラーになり得る。結果が大きすぎると範囲エラー | `x` の `y` 乗（`double`，丸め誤差あり） | `pow(3.0, 2.0)` → 9.0 |
 | `fabs(x)` | `math.h` | 任意の `double` | 絶対値 | `fabs(-2.5)` → 2.5 |
 | `isalpha(c)`・`isdigit(c)` | `ctype.h` | `c` は `EOF` か `unsigned char` で表せる値（`char` は `(unsigned char)` に変換して渡す） | 条件に合えば**0 以外**（1 とは限らない），合わなければ 0 | `!= 0` で 0/1 にして 1，1 |
 | `FLT_MIN` | `float.h` | ― | `float` の**最小の正の正規化数**（負の最小値ではない。最も負の値は `-FLT_MAX`） | `FLT_MIN > 0.0f` → 1 |
@@ -708,13 +731,13 @@ in_range=1
 - `same_seed=1`: 同じ種 123 から始めた最初の値は等しい（値そのものは処理系に依存するので表示しない）。`in_range=1`: `u` は 0 以上 1 以下。
 - この 5 行は乱数の値を表示しないので，Windows（MSVC）でも Linux でも同じ表示になる。
 
-Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（libm）にあり，`-lm` に当たるリンク指定が要る（[CMakeLists.txt](LibraryCheck/CMakeLists.txt)。実際に Clang では指定なしで `undefined reference to 'sqrt'` になった）。
+Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（libm）にあり，`-lm` に当たるリンク指定が要る（このリポジトリでは共通の `softprac_apply_options` が GCC/Clang で libm をリンクする。指定がないと Clang では `undefined reference to 'sqrt'` になった。GCC は定数の計算をコンパイル時に済ませて通ることがある）。
 授業の Visual Studio（MSVC）では標準の実行時ライブラリに含まれるので，`-lm` のような設定は入力しない（講義 5）。
 
 ### 追加の観察
 
-1. **`NDEBUG` を定義する**: `#define _CRT_SECURE_NO_WARNINGS` の次（`#include <assert.h>` より前）に `#define NDEBUG` を置いてビルドすると，表示は上と**まったく同じ 5 行**になった
-   （[CMakeLists.txt](LibraryCheck/CMakeLists.txt) の `softprac_add_variant` で同じ書き換えをした版もテストしている）。前処理後を見ると 2 つの `assert(...)` は `((void) (0));` に置き換わっており，式は評価されない。
+1. **`NDEBUG` を定義する**: `#define _CRT_SECURE_NO_WARNINGS` の次（`#include <assert.h>` より前）に `#define NDEBUG` を置いてビルドすると，表示は上と**まったく同じ 5 行**で，終了コードも 0 になった
+   （[CMakeLists.txt](LibraryCheck/CMakeLists.txt) の `softprac_add_variant` で同じ書き換えをした版をテストしている。その版では `assert(bytes[3] == 'c');` を**わざと偽になる** `assert(bytes[3] == 'x');` にも変えてあり，それでも異常終了しないことで `assert` が無効になっていることを確かめている）。前処理後を見ると 2 つの `assert(...)` は `((void) (0));` に置き換わっており，式は評価されない。
    一方，`strcpy`・`memcpy`・`srand`・`rand` は `assert` の外にあるので同じように実行される。`#include <assert.h>` の後で定義しても効かない（マクロは取り込んだ時点の定義で決まる）。Visual Studio では Release 構成が既定で `NDEBUG` を定義する。
 2. **`assert` の式にコピーや `rand` を入れない理由**: `NDEBUG` を定義した構成（Release など）では `assert` の式自体が評価されないので，`assert(strcpy(text, src) != NULL)` や `assert(rand() >= 0)` と書くと，
    その構成ではコピーも乱数の生成も行われず，プログラムの動作が変わる（乱数の系列もずれる）。`assert` は「ここでは必ず成り立つはず」という開発中の前提の確認であり，入力検査や必要な処理は `if` と通常の文で書く。
@@ -725,15 +748,46 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 4. **発展2 の配列を `rand() % 1024` で用意する（任意）**: `sort_main.c` の初期化を次のように変えた版を試した（README だけに載せる。値は処理系に依存するのでテストにはしない）。
 
    ```c
-   srand(123U);  /* 種はループの前に 1 回だけ．同じ種なら同じ処理系では同じ系列 */
-   for (int i = 0; i < n; ++i) {
-       data[i] = rand() % 1024;  /* 0〜1023 */
+   /* 第12回 発展3 追加の観察4: 発展2 の sort_main.c の初期値を rand() % 1024 で用意する版 */
+   #include <stdio.h>
+   #include <stdlib.h>
+   #include "intlib.h"
+   static void print_ints(const int a[], int n)
+   {
+       for (int i = 0; i < n; ++i) {
+           if (i > 0) {
+               printf(" ");
+           }
+           printf("%d", a[i]);
+       }
+       printf("\n");
    }
-   printf("before: ");
-   print_ints(data, n);       /* 1 行に n 個を空白区切りで表示する static 関数 */
-   sort_ints(data, (size_t)n);
-   printf("after:  ");
-   print_ints(data, n);
+   int main(int argc, char *argv[])
+   {
+       int data[INTLIB_CAPACITY];
+       int n;
+
+       if (argc != 2) {
+           fprintf(stderr, "usage: SortModule N (N is an integer from 0 to %d)\n", INTLIB_CAPACITY);
+           return EXIT_FAILURE;
+       }
+       if (!parse_count(argv[1], &n)) {
+           fprintf(stderr, "invalid N: \"%s\" (expected an integer from 0 to %d)\n",
+                   argv[1], INTLIB_CAPACITY);
+           return EXIT_FAILURE;
+       }
+
+       srand(123U);  /* 種はループの前に 1 回だけ．同じ種なら同じ処理系では同じ系列 */
+       for (int i = 0; i < n; ++i) {
+           data[i] = rand() % 1024;  /* 0〜1023 */
+       }
+       printf("before: ");
+       print_ints(data, n);
+       sort_ints(data, (size_t)n);
+       printf("after:  ");
+       print_ints(data, n);
+       return 0;
+   }
    ```
 
    Linux（glibc）での実行例:
@@ -794,7 +848,7 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題2 の検証表（`subtract` の 0−0・2−5，`calc_divide` の 0÷2・6÷0）。発展2 の `N` = 0・1・8，−1・9・巨大な数・`""`・`3x`・`3 4`，`INT_MAX`/`INT_MIN`（すべて自動テスト） |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題2 の検証表（`subtract` の 0−0・2−5，`calc_divide` の 0÷2・6÷0）。発展2 の `N` = 0・1・8，−1・9・巨大な数・`""`・`3x`・`3 4`，`INT_MAX`/`INT_MIN`，課題4 の単位行列・`alpha`=0（すべて自動テスト） |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトが MSVC `/W4`・GCC/Clang `-Wall -Wextra -Wpedantic` で警告 0（`-Werror` でビルド）。課題3 の記録 2 で `C4244`（`double` → `int`），課題2 の `C4013`（暗黙の宣言）の原因を説明 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の考察（宣言 → コンパイル → リンク），課題4 の `Vector`・`Matrix` と値渡し，発展2 の `size_t`・`const void *`・`long` から `int` への変換 |
 | 1 つの実行アプリに `main` が 1 つだけあり，必要な `.c` がすべてビルド対象になっている | `SplitCalc`（`main.c`＋`calc.c`），`VectorCalc`（3 つの `.c`），`SortModule`（2 つの `.c`），`CalcApp`（`main.c`＋`CalcLib` の参照）。課題3 の除外・重複の実験 |
@@ -812,7 +866,7 @@ cmake -S . -B $B -G Ninja -DSOFTPRAC_WEEKS=week12 -DSOFTPRAC_WERROR=ON -DSOFTPRA
 cmake --build $B && ctest --test-dir $B --output-on-failure
 ```
 
-- 結果: 20 テストすべて成功（GCC 13＋ASan/UBSan，Clang 18 とも警告 0）。
+- 結果: 26 テストすべて成功（GCC 13＋ASan/UBSan，Clang 18 とも警告 0）。
 - `SortModule` を別の引数で試すときは，Visual Studio（フォルダーを開く）では [run.args](SortModule/run.args) を書き換えて `python tools/gen_launch_vs.py` を実行するか，
   VS Code では「開いている課題を引数つきで実行」の `args` を書き換える。空文字列の引数は Visual Studio のコマンド引数では `""` と入力する。
 - `_BuildErrors/` のエラー版を GCC で再現するには，そのフォルダで上の「GCC で実際に出た診断」のコマンドを実行する（`no_direct_include/` は `-I ../../VectorCalc` と `vector.c`・`matrix.c` を一緒に渡すとビルドできる）。
