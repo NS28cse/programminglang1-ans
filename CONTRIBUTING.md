@@ -103,4 +103,5 @@ TA が授業で解説・採点に使う資料です。演習ページの**すべ
 ```sh
 python3 tools/normalize_sources.py   # BOM・改行をそろえる
 python3 tools/gen_launch_vs.py       # Visual Studio の起動構成（.vs/launch.vs.json）を作り直す
+python3 tools/gen_readme_index.py    # ルート README の目次（各回の表とテスト数）を作り直す
 ```

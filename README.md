@@ -12,6 +12,23 @@
 ## 目次
 
 <!-- WEEK-TABLE:BEGIN -->
+| 回 | テーマ | プロジェクト | テスト数 | 演習ページ |
+| --- | --- | --- | ---: | --- |
+| [第1回](week01/README.md) | プログラミングの基礎 | Broken，House，Message，Version，Welcome | 9 | [ex01](https://t-yokoga.github.io/softprac1/ex01.html) |
+| [第2回](week02/README.md) | 変数 | Exchange，Observe，Profile，Rectangle，Temperature | 18 | [ex02](https://t-yokoga.github.io/softprac1/ex02.html) |
+| [第3回](week03/README.md) | 演算子 | Conditions，Flags，Leap，TimeParts，Update | 35 | [ex03](https://t-yokoga.github.io/softprac1/ex03.html) |
+| [第4回](week04/README.md) | 制御構造 | EvenSum，Fee，Powers，Table，YearGroup | 111 | [ex04](https://t-yokoga.github.io/softprac1/ex04.html) |
+| [第5回](week05/README.md) | 配列と関数 | Array3D，ColumnSum，Functions，Maximum，SumMean，ValueCopy，Warmup05 | 33 | [ex05](https://t-yokoga.github.io/softprac1/ex05.html) |
+| [第6回](week06/README.md) | 文字列 | AsciiTable，Average，CharCode，CompareJoin，CopyCapacity，Length，Lower | 37 | [ex06](https://t-yokoga.github.io/softprac1/ex06.html) |
+| [第7回](week07/README.md) | 入出力 | ByteCount，Echo，Formats，LetterCount，LineInput，LowerInput，Typing | 89 | [ex07](https://t-yokoga.github.io/softprac1/ex07.html) |
+| [第8回](week08/README.md) | ポインタ1 | CopyText，Decompose，MinMax，PointerWalk，Swap | 42 | [ex08](https://t-yokoga.github.io/softprac1/ex08.html) |
+| [第9回](week09/README.md) | ポインタ2 | ArrayTypes，FindMax，MatrixMean，Names，RaggedRows，ReturnMaximum，SwapRows | 42 | [ex09](https://t-yokoga.github.io/softprac1/ex09.html) |
+| [第10回](week10/README.md) | ファイル | Arguments，Binary，ByteOrder，CheckValue，LineLengths，NumberFormats，ParseNumber，ReadText，WriteSquares，WriteText | 131 | [ex10](https://t-yokoga.github.io/softprac1/ex10.html) |
+| [第11回](week11/README.md) | 構造体 | CopyMembers，PointInit，PointMove，Rect，RectContains，StructLayout，Students | 44 | [ex11](https://t-yokoga.github.io/softprac1/ex11.html) |
+| [第12回](week12/README.md) | コンパイル：分割コンパイルとライブラリ | CalcApp，CalcLib，LibraryCheck，SortModule，SplitCalc，VectorCalc | 34 | [ex12](https://t-yokoga.github.io/softprac1/ex12.html) |
+| [第13回](week13/README.md) | メモリ管理 | Dynamic，DynamicCopy，DynamicVector，DynamicVectorFail，GrowArray，GrowArrayFail，NewPoint，NewPointFail，SharedCount，StorageCount | 54 | [ex13](https://t-yokoga.github.io/softprac1/ex13.html) |
+| [第14回](week14/README.md) | 再帰 | CheckedFactorial，Factorial，Fibonacci，GcdLoop，Trace，TreeTraversal | 53 | [ex14](https://t-yokoga.github.io/softprac1/ex14.html) |
+| | | **合計** | **732** | |
 <!-- WEEK-TABLE:END -->
 
 ## しくみ
@@ -115,6 +132,7 @@ ctest --preset gcc-debug          # すべての自動テスト
 ```sh
 python3 tools/normalize_sources.py   # .c/.h を BOM 付き UTF-8・LF にそろえる
 python3 tools/gen_launch_vs.py       # .vs/launch.vs.json（Visual Studio の起動設定）を作り直す
+python3 tools/gen_readme_index.py    # この README の目次（各回の表とテスト数）を作り直す
 ```
 
 ## よくあるトラブル
