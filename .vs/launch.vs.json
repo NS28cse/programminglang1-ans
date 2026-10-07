@@ -5,9 +5,750 @@
     {
       "type": "default",
       "project": "CMakeLists.txt",
+      "projectTarget": "Broken.exe (bin\\week01\\Broken.exe)",
+      "name": "week01 Broken",
+      "currentDir": "${workspaceRoot}\\week01\\Broken",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "House.exe (bin\\week01\\House.exe)",
+      "name": "week01 House",
+      "currentDir": "${workspaceRoot}\\week01\\House",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Message.exe (bin\\week01\\Message.exe)",
+      "name": "week01 Message",
+      "currentDir": "${workspaceRoot}\\week01\\Message",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Version.exe (bin\\week01\\Version.exe)",
+      "name": "week01 Version",
+      "currentDir": "${workspaceRoot}\\week01\\Version",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
       "projectTarget": "Welcome.exe (bin\\week01\\Welcome.exe)",
       "name": "week01 Welcome",
       "currentDir": "${workspaceRoot}\\week01\\Welcome",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Exchange.exe (bin\\week02\\Exchange.exe)",
+      "name": "week02 Exchange",
+      "currentDir": "${workspaceRoot}\\week02\\Exchange",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Observe.exe (bin\\week02\\Observe.exe)",
+      "name": "week02 Observe",
+      "currentDir": "${workspaceRoot}\\week02\\Observe",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Profile.exe (bin\\week02\\Profile.exe)",
+      "name": "week02 Profile",
+      "currentDir": "${workspaceRoot}\\week02\\Profile",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Rectangle.exe (bin\\week02\\Rectangle.exe)",
+      "name": "week02 Rectangle",
+      "currentDir": "${workspaceRoot}\\week02\\Rectangle",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Temperature.exe (bin\\week02\\Temperature.exe)",
+      "name": "week02 Temperature",
+      "currentDir": "${workspaceRoot}\\week02\\Temperature",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Conditions.exe (bin\\week03\\Conditions.exe)",
+      "name": "week03 Conditions",
+      "currentDir": "${workspaceRoot}\\week03\\Conditions",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Flags.exe (bin\\week03\\Flags.exe)",
+      "name": "week03 Flags",
+      "currentDir": "${workspaceRoot}\\week03\\Flags",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Leap.exe (bin\\week03\\Leap.exe)",
+      "name": "week03 Leap",
+      "currentDir": "${workspaceRoot}\\week03\\Leap",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "TimeParts.exe (bin\\week03\\TimeParts.exe)",
+      "name": "week03 TimeParts",
+      "currentDir": "${workspaceRoot}\\week03\\TimeParts",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Update.exe (bin\\week03\\Update.exe)",
+      "name": "week03 Update",
+      "currentDir": "${workspaceRoot}\\week03\\Update",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "EvenSum.exe (bin\\week04\\EvenSum.exe)",
+      "name": "week04 EvenSum",
+      "currentDir": "${workspaceRoot}\\week04\\EvenSum",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Fee.exe (bin\\week04\\Fee.exe)",
+      "name": "week04 Fee",
+      "currentDir": "${workspaceRoot}\\week04\\Fee",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Powers.exe (bin\\week04\\Powers.exe)",
+      "name": "week04 Powers",
+      "currentDir": "${workspaceRoot}\\week04\\Powers",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Table.exe (bin\\week04\\Table.exe)",
+      "name": "week04 Table",
+      "currentDir": "${workspaceRoot}\\week04\\Table",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "YearGroup.exe (bin\\week04\\YearGroup.exe)",
+      "name": "week04 YearGroup",
+      "currentDir": "${workspaceRoot}\\week04\\YearGroup",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Array3D.exe (bin\\week05\\Array3D.exe)",
+      "name": "week05 Array3D",
+      "currentDir": "${workspaceRoot}\\week05\\Array3D",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ColumnSum.exe (bin\\week05\\ColumnSum.exe)",
+      "name": "week05 ColumnSum",
+      "currentDir": "${workspaceRoot}\\week05\\ColumnSum",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Functions.exe (bin\\week05\\Functions.exe)",
+      "name": "week05 Functions",
+      "currentDir": "${workspaceRoot}\\week05\\Functions",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Maximum.exe (bin\\week05\\Maximum.exe)",
+      "name": "week05 Maximum",
+      "currentDir": "${workspaceRoot}\\week05\\Maximum",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "SumMean.exe (bin\\week05\\SumMean.exe)",
+      "name": "week05 SumMean",
+      "currentDir": "${workspaceRoot}\\week05\\SumMean",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ValueCopy.exe (bin\\week05\\ValueCopy.exe)",
+      "name": "week05 ValueCopy",
+      "currentDir": "${workspaceRoot}\\week05\\ValueCopy",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Warmup05.exe (bin\\week05\\Warmup05.exe)",
+      "name": "week05 Warmup05",
+      "currentDir": "${workspaceRoot}\\week05\\Warmup05",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "AsciiTable.exe (bin\\week06\\AsciiTable.exe)",
+      "name": "week06 AsciiTable",
+      "currentDir": "${workspaceRoot}\\week06\\AsciiTable",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Average.exe (bin\\week06\\Average.exe)",
+      "name": "week06 Average",
+      "currentDir": "${workspaceRoot}\\week06\\Average",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CharCode.exe (bin\\week06\\CharCode.exe)",
+      "name": "week06 CharCode",
+      "currentDir": "${workspaceRoot}\\week06\\CharCode",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CompareJoin.exe (bin\\week06\\CompareJoin.exe)",
+      "name": "week06 CompareJoin",
+      "currentDir": "${workspaceRoot}\\week06\\CompareJoin",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CopyCapacity.exe (bin\\week06\\CopyCapacity.exe)",
+      "name": "week06 CopyCapacity",
+      "currentDir": "${workspaceRoot}\\week06\\CopyCapacity",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Length.exe (bin\\week06\\Length.exe)",
+      "name": "week06 Length",
+      "currentDir": "${workspaceRoot}\\week06\\Length",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Lower.exe (bin\\week06\\Lower.exe)",
+      "name": "week06 Lower",
+      "currentDir": "${workspaceRoot}\\week06\\Lower",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ByteCount.exe (bin\\week07\\ByteCount.exe)",
+      "name": "week07 ByteCount",
+      "currentDir": "${workspaceRoot}\\week07\\ByteCount",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Echo.exe (bin\\week07\\Echo.exe)",
+      "name": "week07 Echo",
+      "currentDir": "${workspaceRoot}\\week07\\Echo",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Formats.exe (bin\\week07\\Formats.exe)",
+      "name": "week07 Formats",
+      "currentDir": "${workspaceRoot}\\week07\\Formats",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "LetterCount.exe (bin\\week07\\LetterCount.exe)",
+      "name": "week07 LetterCount",
+      "currentDir": "${workspaceRoot}\\week07\\LetterCount",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "LineInput.exe (bin\\week07\\LineInput.exe)",
+      "name": "week07 LineInput",
+      "currentDir": "${workspaceRoot}\\week07\\LineInput",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "LowerInput.exe (bin\\week07\\LowerInput.exe)",
+      "name": "week07 LowerInput",
+      "currentDir": "${workspaceRoot}\\week07\\LowerInput",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Typing.exe (bin\\week07\\Typing.exe)",
+      "name": "week07 Typing",
+      "currentDir": "${workspaceRoot}\\week07\\Typing",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CopyText.exe (bin\\week08\\CopyText.exe)",
+      "name": "week08 CopyText",
+      "currentDir": "${workspaceRoot}\\week08\\CopyText",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Decompose.exe (bin\\week08\\Decompose.exe)",
+      "name": "week08 Decompose",
+      "currentDir": "${workspaceRoot}\\week08\\Decompose",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "MinMax.exe (bin\\week08\\MinMax.exe)",
+      "name": "week08 MinMax",
+      "currentDir": "${workspaceRoot}\\week08\\MinMax",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "PointerWalk.exe (bin\\week08\\PointerWalk.exe)",
+      "name": "week08 PointerWalk",
+      "currentDir": "${workspaceRoot}\\week08\\PointerWalk",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Swap.exe (bin\\week08\\Swap.exe)",
+      "name": "week08 Swap",
+      "currentDir": "${workspaceRoot}\\week08\\Swap",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ArrayTypes.exe (bin\\week09\\ArrayTypes.exe)",
+      "name": "week09 ArrayTypes",
+      "currentDir": "${workspaceRoot}\\week09\\ArrayTypes",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "FindMax.exe (bin\\week09\\FindMax.exe)",
+      "name": "week09 FindMax",
+      "currentDir": "${workspaceRoot}\\week09\\FindMax",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "MatrixMean.exe (bin\\week09\\MatrixMean.exe)",
+      "name": "week09 MatrixMean",
+      "currentDir": "${workspaceRoot}\\week09\\MatrixMean",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Names.exe (bin\\week09\\Names.exe)",
+      "name": "week09 Names",
+      "currentDir": "${workspaceRoot}\\week09\\Names",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "RaggedRows.exe (bin\\week09\\RaggedRows.exe)",
+      "name": "week09 RaggedRows",
+      "currentDir": "${workspaceRoot}\\week09\\RaggedRows",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ReturnMaximum.exe (bin\\week09\\ReturnMaximum.exe)",
+      "name": "week09 ReturnMaximum",
+      "currentDir": "${workspaceRoot}\\week09\\ReturnMaximum",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "SwapRows.exe (bin\\week09\\SwapRows.exe)",
+      "name": "week09 SwapRows",
+      "currentDir": "${workspaceRoot}\\week09\\SwapRows",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Arguments.exe (bin\\week10\\Arguments.exe)",
+      "name": "week10 Arguments  [nagano ishikawa]",
+      "currentDir": "${workspaceRoot}\\week10\\Arguments",
+      "args": [
+        "nagano",
+        "ishikawa"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Binary.exe (bin\\week10\\Binary.exe)",
+      "name": "week10 Binary",
+      "currentDir": "${workspaceRoot}\\week10\\Binary",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ByteOrder.exe (bin\\week10\\ByteOrder.exe)",
+      "name": "week10 ByteOrder",
+      "currentDir": "${workspaceRoot}\\week10\\ByteOrder",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CheckValue.exe (bin\\week10\\CheckValue.exe)",
+      "name": "week10 CheckValue  [squares.txt 9]",
+      "currentDir": "${workspaceRoot}\\week10\\CheckValue",
+      "args": [
+        "squares.txt",
+        "9"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "LineLengths.exe (bin\\week10\\LineLengths.exe)",
+      "name": "week10 LineLengths  [input.txt]",
+      "currentDir": "${workspaceRoot}\\week10\\LineLengths",
+      "args": [
+        "input.txt"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "NumberFormats.exe (bin\\week10\\NumberFormats.exe)",
+      "name": "week10 NumberFormats",
+      "currentDir": "${workspaceRoot}\\week10\\NumberFormats",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ParseNumber.exe (bin\\week10\\ParseNumber.exe)",
+      "name": "week10 ParseNumber  [42]",
+      "currentDir": "${workspaceRoot}\\week10\\ParseNumber",
+      "args": [
+        "42"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ReadText.exe (bin\\week10\\ReadText.exe)",
+      "name": "week10 ReadText  [input.txt]",
+      "currentDir": "${workspaceRoot}\\week10\\ReadText",
+      "args": [
+        "input.txt"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "WriteSquares.exe (bin\\week10\\WriteSquares.exe)",
+      "name": "week10 WriteSquares  [4 squares.txt]",
+      "currentDir": "${workspaceRoot}\\week10\\WriteSquares",
+      "args": [
+        "4",
+        "squares.txt"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "WriteText.exe (bin\\week10\\WriteText.exe)",
+      "name": "week10 WriteText",
+      "currentDir": "${workspaceRoot}\\week10\\WriteText",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CopyMembers.exe (bin\\week11\\CopyMembers.exe)",
+      "name": "week11 CopyMembers",
+      "currentDir": "${workspaceRoot}\\week11\\CopyMembers",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "PointInit.exe (bin\\week11\\PointInit.exe)",
+      "name": "week11 PointInit",
+      "currentDir": "${workspaceRoot}\\week11\\PointInit",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "PointMove.exe (bin\\week11\\PointMove.exe)",
+      "name": "week11 PointMove",
+      "currentDir": "${workspaceRoot}\\week11\\PointMove",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Rect.exe (bin\\week11\\Rect.exe)",
+      "name": "week11 Rect",
+      "currentDir": "${workspaceRoot}\\week11\\Rect",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "RectContains.exe (bin\\week11\\RectContains.exe)",
+      "name": "week11 RectContains",
+      "currentDir": "${workspaceRoot}\\week11\\RectContains",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "StructLayout.exe (bin\\week11\\StructLayout.exe)",
+      "name": "week11 StructLayout",
+      "currentDir": "${workspaceRoot}\\week11\\StructLayout",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Students.exe (bin\\week11\\Students.exe)",
+      "name": "week11 Students",
+      "currentDir": "${workspaceRoot}\\week11\\Students",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CalcApp.exe (bin\\week12\\CalcApp.exe)",
+      "name": "week12 CalcApp",
+      "currentDir": "${workspaceRoot}\\week12\\CalcApp",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "LibraryCheck.exe (bin\\week12\\LibraryCheck.exe)",
+      "name": "week12 LibraryCheck",
+      "currentDir": "${workspaceRoot}\\week12\\LibraryCheck",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "SortModule.exe (bin\\week12\\SortModule.exe)",
+      "name": "week12 SortModule  [5]",
+      "currentDir": "${workspaceRoot}\\week12\\SortModule",
+      "args": [
+        "5"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "SplitCalc.exe (bin\\week12\\SplitCalc.exe)",
+      "name": "week12 SplitCalc",
+      "currentDir": "${workspaceRoot}\\week12\\SplitCalc",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "VectorCalc.exe (bin\\week12\\VectorCalc.exe)",
+      "name": "week12 VectorCalc",
+      "currentDir": "${workspaceRoot}\\week12\\VectorCalc",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Dynamic.exe (bin\\week13\\Dynamic.exe)",
+      "name": "week13 Dynamic  [5]",
+      "currentDir": "${workspaceRoot}\\week13\\Dynamic",
+      "args": [
+        "5"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "DynamicCopy.exe (bin\\week13\\DynamicCopy.exe)",
+      "name": "week13 DynamicCopy  [5]",
+      "currentDir": "${workspaceRoot}\\week13\\DynamicCopy",
+      "args": [
+        "5"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "DynamicVector.exe (bin\\week13\\DynamicVector.exe)",
+      "name": "week13 DynamicVector",
+      "currentDir": "${workspaceRoot}\\week13\\DynamicVector",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "DynamicVectorFail.exe (bin\\week13\\DynamicVectorFail.exe)",
+      "name": "week13 DynamicVectorFail",
+      "currentDir": "${workspaceRoot}\\week13\\DynamicVectorFail",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "GrowArray.exe (bin\\week13\\GrowArray.exe)",
+      "name": "week13 GrowArray",
+      "currentDir": "${workspaceRoot}\\week13\\GrowArray",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "GrowArrayFail.exe (bin\\week13\\GrowArrayFail.exe)",
+      "name": "week13 GrowArrayFail",
+      "currentDir": "${workspaceRoot}\\week13\\GrowArrayFail",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "NewPoint.exe (bin\\week13\\NewPoint.exe)",
+      "name": "week13 NewPoint",
+      "currentDir": "${workspaceRoot}\\week13\\NewPoint",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "NewPointFail.exe (bin\\week13\\NewPointFail.exe)",
+      "name": "week13 NewPointFail",
+      "currentDir": "${workspaceRoot}\\week13\\NewPointFail",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "SharedCount.exe (bin\\week13\\SharedCount.exe)",
+      "name": "week13 SharedCount",
+      "currentDir": "${workspaceRoot}\\week13\\SharedCount",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "StorageCount.exe (bin\\week13\\StorageCount.exe)",
+      "name": "week13 StorageCount",
+      "currentDir": "${workspaceRoot}\\week13\\StorageCount",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CheckedFactorial.exe (bin\\week14\\CheckedFactorial.exe)",
+      "name": "week14 CheckedFactorial",
+      "currentDir": "${workspaceRoot}\\week14\\CheckedFactorial",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Factorial.exe (bin\\week14\\Factorial.exe)",
+      "name": "week14 Factorial",
+      "currentDir": "${workspaceRoot}\\week14\\Factorial",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Fibonacci.exe (bin\\week14\\Fibonacci.exe)",
+      "name": "week14 Fibonacci",
+      "currentDir": "${workspaceRoot}\\week14\\Fibonacci",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "GcdLoop.exe (bin\\week14\\GcdLoop.exe)",
+      "name": "week14 GcdLoop",
+      "currentDir": "${workspaceRoot}\\week14\\GcdLoop",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Trace.exe (bin\\week14\\Trace.exe)",
+      "name": "week14 Trace",
+      "currentDir": "${workspaceRoot}\\week14\\Trace",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "TreeTraversal.exe (bin\\week14\\TreeTraversal.exe)",
+      "name": "week14 TreeTraversal",
+      "currentDir": "${workspaceRoot}\\week14\\TreeTraversal",
       "args": []
     }
   ]

@@ -1,0 +1,5 @@
+n=0 result=1 calls=1 depth=1
+n=1 result=1 calls=2 depth=2
+n=5 result=120 calls=6 depth=6
+n=20 result=2432902008176640000 calls=21 depth=21
+0..20 all equal=1

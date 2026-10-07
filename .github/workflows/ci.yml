@@ -47,6 +47,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: File names are valid on Windows
+        run: |
+          git ls-files | python3 -c "
+          import re, sys
+          bad = [l for l in sys.stdin.read().splitlines()
+                 if re.search(r'(^|/)(con|prn|aux|nul|com[0-9]|lpt[0-9])(\.[^/]*)?(/|$)', l, re.I)
+                 or re.search(r'[<>:\"|?*\\\\]', l) or re.search(r'[ .](/|$)', l)]
+          print('\n'.join(bad)); sys.exit(1 if bad else 0)"
       - name: Sources are UTF-8 with BOM and LF
         run: python3 tools/normalize_sources.py --check
       - name: .vs/launch.vs.json and README index are up to date

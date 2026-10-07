@@ -27,8 +27,8 @@
 | [第11回](week11/README.md) | 構造体 | CopyMembers，PointInit，PointMove，Rect，RectContains，StructLayout，Students | 44 | [ex11](https://t-yokoga.github.io/softprac1/ex11.html) |
 | [第12回](week12/README.md) | コンパイル：分割コンパイルとライブラリ | CalcApp，CalcLib，LibraryCheck，SortModule，SplitCalc，VectorCalc | 34 | [ex12](https://t-yokoga.github.io/softprac1/ex12.html) |
 | [第13回](week13/README.md) | メモリ管理 | Dynamic，DynamicCopy，DynamicVector，DynamicVectorFail，GrowArray，GrowArrayFail，NewPoint，NewPointFail，SharedCount，StorageCount | 54 | [ex13](https://t-yokoga.github.io/softprac1/ex13.html) |
-| [第14回](week14/README.md) | 再帰 | CheckedFactorial，Factorial，Fibonacci，GcdLoop，Trace，TreeTraversal | 53 | [ex14](https://t-yokoga.github.io/softprac1/ex14.html) |
-| | | **合計** | **732** | |
+| [第14回](week14/README.md) | 再帰 | CheckedFactorial，Factorial，Fibonacci，GcdLoop，Trace，TreeTraversal | 59 | [ex14](https://t-yokoga.github.io/softprac1/ex14.html) |
+| | | **合計** | **738** | |
 <!-- WEEK-TABLE:END -->
 
 ## しくみ
