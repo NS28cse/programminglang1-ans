@@ -3,4 +3,6 @@
 softprac_add_program(ByteOrder byte_order.c)
 
 softprac_add_variant(ByteOrder byte_order.c value_0x1234
+  [[講義の観察用断片（unsigned short value = 1）]]
+  [[講義の観察用断片の値を 0x1234 へ変更した版]]
   "unsigned short value = 1;" "unsigned short value = 0x1234;")

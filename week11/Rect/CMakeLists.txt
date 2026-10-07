@@ -10,9 +10,11 @@ softprac_add_variant(Rect rect.c negative_coords
 
 # 前提を守らない例: 両方逆なら面積が正になり，片方だけ逆なら負になる
 softprac_add_variant(Rect rect.c reversed_both
+  "// 座標は -1000〜1000 で，upper の x・y はそれぞれ lower 以上にする" "// 誤り: 前提（upper >= lower）を x・y とも守らない座標"
   ".lower = {1.0, 2.0}" ".lower = {5.0, 5.0}"
   ".upper = {5.0, 5.0}" ".upper = {1.0, 2.0}")
 softprac_add_variant(Rect rect.c reversed_y
+  "// 座標は -1000〜1000 で，upper の x・y はそれぞれ lower 以上にする" "// 誤り: 前提（upper >= lower）を y だけ守らない座標"
   ".lower = {1.0, 2.0}" ".lower = {1.0, 5.0}"
   ".upper = {5.0, 5.0}" ".upper = {5.0, 2.0}")
 

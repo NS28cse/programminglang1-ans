@@ -12,8 +12,8 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | 1 文字ずつ読んで表示 | `ReadText` | [read_text.c](ReadText/read_text.c) | `input.txt` | [input.txt](ReadText/input.txt) | 9 |
 | 1 | 行の長さ | `LineLengths` | [line_lengths.c](LineLengths/line_lengths.c) | `input.txt` | [input.txt](LineLengths/input.txt) | 13 |
-| 2 | 数値引数の検査（講義の `parse_number.c`） | `ParseNumber` | [parse_number.c](ParseNumber/parse_number.c) | `42` | なし | 15 + 合計版 `sum` 12 |
-| 2 | 引数を表示して文字列を探す | `Arguments` | [arguments.c](Arguments/arguments.c) | `nagano ishikawa` | なし | 11 |
+| 2 | 数値引数の検査（講義の `parse_number.c`） | `ParseNumber` | [parse_number.c](ParseNumber/parse_number.c) | `42` | なし | 16 + 合計版 `sum` 13 |
+| 2 | 引数を表示して文字列を探す | `Arguments` | [arguments.c](Arguments/arguments.c) | `nagano ishikawa` | なし | 12 |
 | 3 | バイト列を保存（講義の `binary.c`） | `Binary` | [binary.c](Binary/binary.c) | なし | なし（`bytes.bin` は実行時に作る） | 2 + `utf8_a` 1 + `show_n` 1 |
 | 3 | バイト順を調べる（「別の `main`」） | `ByteOrder` | [byte_order.c](ByteOrder/byte_order.c) | なし | なし | 1 + `value_0x1234` 1 |
 | 4 | テキストを書く（モード `w`） | `WriteText` | [write_text.c](WriteText/write_text.c) | なし | なし（`scores.txt` は実行時に作る） | 3 + `mode_a` 3 + `mode_wx` 2 |
@@ -21,11 +21,11 @@
 | 発展2 | 二乗の一覧を書く | `WriteSquares` | [write_squares.c](WriteSquares/write_squares.c) | `4 squares.txt` | なし（`squares.txt` は実行時に作る） | 14 |
 | 発展2 | 一覧を検査して値を探す | `CheckValue` | [check_value.c](CheckValue/check_value.c) | `squares.txt 9` | [squares.txt](CheckValue/squares.txt)（`WriteSquares 4` の出力のコピー） | 37 |
 
-テストは合計 128 件（本体 107 件，variant 21 件）。すべて成功（GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1，どちらも `-Wall -Wextra -Wpedantic -Werror` で警告 0）。
+テストは合計 131 件（本体 109 件，variant 22 件）。すべて成功（GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1，どちらも `-Wall -Wextra -Wpedantic -Werror` で警告 0）。
 
 ### この回の約束（TA 向け）
 
-- **本体（フォルダのソース）は配布コード，または演習ページで最初に作る版**（CONTRIBUTING.md §1）。TA が IDE で本体を実行すると，演習ページ・講義の期待する表示がそのまま出る
+- **本体（フォルダのソース）は演習ページの期待する表示を出す版**（CONTRIBUTING.md §1）。この回は期待する表示がどれも配布コード・最初の版のものなので，本体はその版にし，その後の小問は variant にした。TA が IDE で本体を実行すると，演習ページ・講義の期待する表示がそのまま出る
   （`ParseNumber` は `42`，`Binary` は `41 00 42 0A`，`ByteOrder` は `01 00`，`WriteText` は何回実行しても 3 行，`NumberFormats` は `text=0.50 1.25 -2.00`）。
 - 演習ページの「〜へ置き換えます」「値を変更すると」「モードだけを `a` へ変えます」などの小問は **variant** にした。
   各プロジェクトの `CMakeLists.txt` が全回共通の `softprac_add_variant`（[cmake/SoftpracVariant.cmake](../cmake/SoftpracVariant.cmake)）で本体の一部を置き換えた版を生成し，
@@ -131,7 +131,7 @@ File
 | --- | --- | --- |
 | `Hello`と`File`の2行 | `Hello`，`File` の 2 行をそのまま表示し，正常終了（終了コード 0） | 1文字ずつ最後まで読む |
 | 空ファイル | 何も表示せず正常終了（終了コード 0）。エラーメッセージは出ない | `EOF`は必ずしもエラーではない（最初の `fgetc` が `EOF`，`ferror` は 0） |
-| 最後の`File`の後に改行なし | `Hello` と `File` を表示する。`File` の後に改行が出ないので，次の表示（Ctrl+F5 の「続行するには…」やプロンプト）が同じ行に続く。正常終了 | 改行を前提にしていない（最後の文字も `EOF` の前に処理される） |
+| 最後の`File`の後に改行なし | `Hello` と `File` を表示し，`File` の後に改行を出力しない（出力の最後のバイトが `e`）。ターミナルでは次のプロンプトが `File` と同じ行に続く。正常終了（終了コード 0） | 改行を前提にしていない（最後の文字も `EOF` の前に処理される） |
 | `missing.txt` | 標準エラーに `fopen: No such file or directory`，終了コード 1。`missing.txt` は作られない | 存在しないファイルは`r`で作られない |
 | 引数欄を空にする | 標準エラーに `usage: ReadText filename`，終了コード 1 | ファイル名を受け取れない（`argc` が 1） |
 | 引数欄を`""`にする | 標準エラーに `usage: ReadText filename`，終了コード 1 | 空のファイル名を拒否する（`argc` は 2 だが `argv[1][0] == '\0'`） |
@@ -305,7 +305,7 @@ expected an integer from 0 to 100
 
 **極端に長い整数**: `999999999999999999999999999999` は `strtol` が `LONG_MAX` を返し `errno` を `ERANGE` にするので拒否される。
 `long` は Windows x64 (MSVC) では 4 バイト（最大 2147483647），Linux x64 では 8 バイト（最大 9223372036854775807）。
-例えば `3000000000` は Windows では `ERANGE`，Linux では `long` に収まって `value > 100` で拒否される。理由は違っても両方で拒否されるのは，
+例えば `3000000000` は Windows では `ERANGE`，Linux では `long` に収まって `value > 100` で拒否される（どちらも `expected an integer from 0 to 100`，テスト `ten_digits`）。理由は違っても両方で拒否されるのは，
 「桁数」ではなく `errno` と範囲で判断しているから。「10 桁なら必ず範囲外」とは決められない。
 
 ### 複数の数値を合計するなら（variant `sum`）
@@ -351,10 +351,10 @@ invalid integer
 $ ParseNumber_sum
 expected 1 to 10 integers
 (終了コード 1)
-$ ParseNumber_sum 1 2 3 4 5 6 7 8 9 10 11
+$ ParseNumber_sum 1 2 3 4 5 6 7 8 9 10 11      ← 11 個（テスト sum--eleven_values）
 expected 1 to 10 integers
 (終了コード 1)
-$ ParseNumber_sum 42 50
+$ ParseNumber_sum 42 50                          ← テスト sum--two_values
 92
 ```
 
@@ -377,7 +377,7 @@ hokuriku!
 $ Arguments                       ← 何も表示しない
 $ Arguments Toyama
 arg1=Toyama
-$ Arguments "toyama city" toyama
+$ Arguments "toyama city" toyama        ← テスト space_and_toyama
 arg1=toyama city
 arg2=toyama
 hokuriku!
@@ -777,7 +777,7 @@ Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 �
 | 項目 | 確認できる課題と内容 |
 | --- | --- |
 | 正常な値だけでなく，課題に示された境界の値でも確認した | `ParseNumber`: 0・100（受け付ける），101・-1（拒否），`+42`・`" 42"`・`"42 "`・`12x`・`abc`・非常に長い整数・引数の過不足。合計版の 10 個・11 個。<br>`LineLengths`: 31 文字（改行あり・なし）と 32 文字，空行，空ファイル。<br>`ReadText`: 空ファイル，最後の改行なし，`missing.txt`，引数なし，`""`，空白を含む名前。<br>`WriteText`: `w`・`a`・`wx` を既存ファイルあり・なしで比較。<br>`WriteSquares`: `N` = 0・100・101，既存ファイル。<br>`CheckValue`: 表の 7 種類の異常，0 と 9801，30・31 バイトの行。すべて自動テストにしている |
-| 警告を確認し，原因を説明・修正した | すべてのプロジェクトが GCC/Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で問題になる C4996 は `fopen` を使うファイルの先頭の `#define _CRT_SECURE_NO_WARNINGS` で抑止。`%zu`・`wx` は MSVC 2015 以降で使える）。<br>学生の提出物でよく出る警告: C4996（`fopen`，`_CRT_SECURE_NO_WARNINGS` がない／`#include` の後に書いた），C4244（`long` を `int` に代入），C4018/C4389（`size_t` と `int` の比較），C4100（使わない `argc`） |
+| 警告を確認し，原因を説明・修正した | すべてのプロジェクトが GCC/Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で問題になる C4996 は `fopen` を使うファイルの先頭の `#define _CRT_SECURE_NO_WARNINGS` で抑止。`%zu` は MSVC 2015 以降で使え，現在の UCRT の `fopen` はモードの `x` に対応している）。<br>学生の提出物でよく出る警告: C4996（`fopen`，`_CRT_SECURE_NO_WARNINGS` がない／`#include` の後に書いた），C4244（`char ch = fgetc(fp);` の `int` → `char`。`/W4` で出る。`long` → `int` は MSVC では同じ 4 バイトなので警告にならないが，Linux では値が変わり得る），C4018/C4389（`size_t` と `int` の比較），C4100（使わない `argc`） |
 | 自分の言葉で，処理の流れと使った型を説明できる | `FILE *`（ストリームでありファイルの中身ではない），`fgetc` の戻り値が `int` である理由（課題1），`char *argv[]` と `argc`（課題2），`size_t` と `fread` の戻り値（課題3），`unsigned char *` でオブジェクトの表現を見る（`ByteOrder`），`long` と `strtol`・`errno`（課題2・発展2），`double` のテキスト/バイナリ表現（発展1） |
 
 注: 空文字列の引数は `.args` の空行で表す（空行 1 行だけなら空文字列の引数 1 つ）。`ReadText ""`（`empty_arg`），`ParseNumber ""`（本体 `empty_arg`・合計版 `sum--empty_arg`），`Arguments ""`（`empty_arg`），`WriteSquares 4 ""`，`CheckValue "" 9` を自動テストにしている。

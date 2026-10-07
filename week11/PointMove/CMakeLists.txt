@@ -22,13 +22,16 @@ softprac_add_variant(PointMove structs.c b_x_100
 
 # 3 つの呼び出し方をそれぞれ独立に試す（b の宣言と表示は削除）
 softprac_add_variant(PointMove structs.c call_discard
+  "// b には a のコピーを移動した値が入り，a は変わらない。move_in_place は a 自体を変える" "// 戻り値を受け取らないので a は変わらない"
   "Point b = moved(a, 3.0, -1.0);" "moved(a, 3.0, -1.0);"
   [=[printf("a=(%.1f, %.1f) b=(%.1f, %.1f)\n", a.x, a.y, b.x, b.y);]=] ""
   "move_in_place(&a, 3.0, -1.0);" "")
 softprac_add_variant(PointMove structs.c call_assign
+  "// b には a のコピーを移動した値が入り，a は変わらない。move_in_place は a 自体を変える" "// 移動したコピーを戻り値で受け取り，a へ代入する"
   "Point b = moved(a, 3.0, -1.0);" "a = moved(a, 3.0, -1.0);"
   [=[printf("a=(%.1f, %.1f) b=(%.1f, %.1f)\n", a.x, a.y, b.x, b.y);]=] ""
   "move_in_place(&a, 3.0, -1.0);" "")
 softprac_add_variant(PointMove structs.c call_in_place
+  "// b には a のコピーを移動した値が入り，a は変わらない。move_in_place は a 自体を変える" "// a のアドレスを渡し，a 自体を変える"
   "Point b = moved(a, 3.0, -1.0);" ""
   [=[printf("a=(%.1f, %.1f) b=(%.1f, %.1f)\n", a.x, a.y, b.x, b.y);]=] "")

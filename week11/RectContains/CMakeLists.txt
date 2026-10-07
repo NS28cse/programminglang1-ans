@@ -34,6 +34,7 @@ softprac_add_variant(RectContains rect_contains.c name_test_rect
 
 # 誤り: x だけを比べて 2 点を丸ごと交換する（y の判定を削除）
 softprac_add_variant(RectContains rect_contains.c swap_only_1_4_3_1
+  "// x と y を独立に比べ，小さい方を lower，大きい方を upper に置く" "// 誤り: x だけを比べて 2 点を丸ごと交換する（y は見ない）"
   "result.lower.x = r.upper.x;" "result.lower = r.upper;"
   "result.upper.x = r.lower.x;" "result.upper = r.lower;"
   [=[    if (r.lower.y > r.upper.y) {
@@ -42,6 +43,7 @@ softprac_add_variant(RectContains rect_contains.c swap_only_1_4_3_1
     }
 ]=] "")
 softprac_add_variant(RectContains rect_contains.c swap_only_3_1_1_4
+  "// x と y を独立に比べ，小さい方を lower，大きい方を upper に置く" "// 誤り: x だけを比べて 2 点を丸ごと交換する（y は見ない）"
   "result.lower.x = r.upper.x;" "result.lower = r.upper;"
   "result.upper.x = r.lower.x;" "result.upper = r.lower;"
   [=[    if (r.lower.y > r.upper.y) {
@@ -51,6 +53,7 @@ softprac_add_variant(RectContains rect_contains.c swap_only_3_1_1_4
 ]=] ""
   "${lower}" ".lower = {.x = 3.0, .y = 1.0}" "${upper}" ".upper = {.x = 1.0, .y = 4.0}")
 softprac_add_variant(RectContains rect_contains.c swap_only_3_4_1_1
+  "// x と y を独立に比べ，小さい方を lower，大きい方を upper に置く" "// 誤り: x だけを比べて 2 点を丸ごと交換する（y は見ない）"
   "result.lower.x = r.upper.x;" "result.lower = r.upper;"
   "result.upper.x = r.lower.x;" "result.upper = r.lower;"
   [=[    if (r.lower.y > r.upper.y) {
@@ -62,5 +65,7 @@ softprac_add_variant(RectContains rect_contains.c swap_only_3_4_1_1
 
 # 仕様を「上限も含む」に変えた版では (3, 2) も 1 になる
 softprac_add_variant(RectContains rect_contains.c closed_3_2
+  "// 下限を含み上限を含まない（半開区間）。r は正規化済みであることが前提"
+  "// 上限も含む（閉区間）に変えた版。この課題の仕様とは違う"
   "p.x < r.upper.x" "p.x <= r.upper.x" "p.y < r.upper.y" "p.y <= r.upper.y"
   "${point}" "Point p = {3.0, 2.0};")

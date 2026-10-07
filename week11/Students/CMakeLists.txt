@@ -16,9 +16,11 @@ softprac_add_variant(Students students.c scores_80_70_91
 # 誤り: 整数どうしの割り算（241 / 3 が 80 になる）
 softprac_add_variant(Students students.c int_division
   "${scores}" [=[{{"Aki", 80}, {"Ren", 70}, {"Mio", 91}}]=]
-  "(double)sum / n" "sum / n")
+  "return (double)sum / n; // 整数どうしの割り算にしない"
+  "return sum / n; // 誤り: 整数どうしの割り算（小数部が切り捨てられる）")
 # 誤り: score だけを交換すると名前と点数の対応が壊れる
 softprac_add_variant(Students students.c score_only_swap
+  "// 名前と点数を 1 人分まとめて交換する" "// 誤り: score だけを交換する（名前は元の位置のまま）"
   "Student temp = a[0];" "int temp = a[0].score;"
   "a[0] = a[2];" "a[0].score = a[2].score;"
   "a[2] = temp;" "a[2].score = temp;")
