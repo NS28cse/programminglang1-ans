@@ -1,4 +1,4 @@
-// 第9回 課題3　行ごとの平均（MatrixMean / matrix.c をもとにした最終版）
+﻿// 第9回 課題3　行ごとの平均（MatrixMean / matrix.c をもとにした最終版）
 // 2行3列，値は0〜100，列数は COLS=3 に固定。表の入力・sizeof の確認・全体平均は CMakeLists.txt の variant でテストする。
 #include <stdio.h>
 enum { ROWS = 2, COLS = 3 };

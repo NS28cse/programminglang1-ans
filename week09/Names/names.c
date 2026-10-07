@@ -1,4 +1,4 @@
-// 第9回 課題2　表示順を変更する（Names / names.c）
+﻿// 第9回 課題2　表示順を変更する（Names / names.c）
 // ポインタ配列の要素（ポインタ値）を交換する。文字列本体はコピーも変更もしない。
 // 表の他の呼び出し・-city の表示・変更可能な配列の例は CMakeLists.txt の variant でテストする。
 #include <stdio.h>

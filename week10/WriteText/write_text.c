@@ -1,13 +1,12 @@
-﻿/* 第10回 課題4 WriteText: scores.txt へ 72，85，60 を 1 行ずつ書く
-   最初はモード "w"（上書き）で実行し，次にモードだけを "a"（追記）へ変えた最終版 */
+﻿/* 第10回 課題4 WriteText: scores.txt へ 72，85，60 を 1 行ずつ書く（モード "w"：何回実行しても 3 行） */
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 enum { COUNT = 3 };
 int main(void)
 {
     const int scores[COUNT] = {72, 85, 60};
-    /* a: ファイルがなければ作り，あれば末尾へ追記する（w なら開いた時点で以前の内容を消す） */
-    FILE *fp = fopen("scores.txt", "a");
+    /* w: ファイルがなければ作り，あれば開いた時点で以前の内容を消す（a なら末尾へ追記する） */
+    FILE *fp = fopen("scores.txt", "w");
     if (fp == NULL) {
         perror("fopen");
         return 1;

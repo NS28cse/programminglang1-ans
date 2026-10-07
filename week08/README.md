@@ -7,27 +7,26 @@
 
 | 課題 | 内容 | プロジェクト | ソース | テスト |
 | --- | --- | --- | --- | ---: |
-| 1 | ポインタと`swap` | `Swap` | [`pointers.c`](Swap/pointers.c) | 3（本体 1 + 書き換え版 2） |
-| 2 | 最小値・最大値の出力 | `MinMax` | [`min_max.c`](MinMax/min_max.c) | 5（本体 1 + 書き換え版 4） |
-| 3 | 文字列のコピー | `CopyText` | [`copy_text.c`](CopyText/copy_text.c) | 2（本体 1 + 書き換え版 1） |
-| 4 | 配列・文字列の走査 | `PointerWalk` | [`pointer_walk.c`](PointerWalk/pointer_walk.c) | 8（本体 1 + 書き換え版 7） |
-| 発展 | 数の分解とポインタの戻り値 | `Decompose` | [`decompose.c`](Decompose/decompose.c) | 4（本体 1 + 書き換え版 3） |
-| | | | 合計 | 22 |
+| 1 | ポインタと`swap` | `Swap` | [`pointers.c`](Swap/pointers.c) | 5（本体 1 + 書き換え版 4） |
+| 2 | 最小値・最大値の出力 | `MinMax` | [`min_max.c`](MinMax/min_max.c) | 8（本体 1 + 書き換え版 7） |
+| 3 | 文字列のコピー | `CopyText` | [`copy_text.c`](CopyText/copy_text.c) | 3（本体 1 + 書き換え版 2） |
+| 4 | 配列・文字列の走査 | `PointerWalk` | [`pointer_walk.c`](PointerWalk/pointer_walk.c) | 11（本体 1 + 書き換え版 10） |
+| 発展 | 数の分解とポインタの戻り値 | `Decompose` | [`decompose.c`](Decompose/decompose.c) | 12（本体 1 + 書き換え版 11） |
+| | | | 合計 | 39 |
 
 共通の方針:
 
-- どのプログラムも入力を受け取らず（コマンドライン引数は第10回の内容なので使わない），表示が毎回同じです。
-  本体は 1 回の実行で**演習ページの表のすべての行と境界の値**を表示し，`tests/basic.out` でそれをすべて検査します。
-- さらに，演習ページの「初期値を変える」「配列を変え，`n` も合わせる」「入力を変える」「短い表記に書き換える」などの小問は，
-  学生と同じ書き換えをした版を `softprac_add_variant`（各プロジェクトの `CMakeLists.txt`）でビルドし，`variants/tests/<ケース>.out` と比較します。
-  フォルダのソースは最終版のままです。
-- 最初の数行が演習ページ・講義ページの「期待する表示」と 1 文字も違わないようにし，その後に「値を変えて確かめる」などの追加の確認を表示します。
+- どのプログラムも入力を受け取りません（コマンドライン引数は第10回の内容なので使わない）。フォルダのソースは演習の指示をすべて反映した**最終版**で，
+  演習ページに期待する表示があるもの（`PointerWalk` の 3 行，`Decompose` の 1 行）は本体がその表示**だけ**を出し，`tests/basic.out` で 1 文字ずつ検査します。
+- 検証表の値・境界の値・途中の版・誤りの例（`a = b` の swap，値引数の版など）は，学生と同じ書き換えをした版を `softprac_add_variant`（各プロジェクトの `CMakeLists.txt`）で
+  ビルドし，`variants/tests/<ケース>.out` と比較します（テスト名 `week08/<プロジェクト>/variant_<ケース>`）。本体と書き換え版で同じ確認を重複させていません。
+  README の「書き換え版 `xxx`」はこのケース名です。
 - アドレスは実行ごとに変わるので，プログラムでは表示せず，`p == &x` のような比較（1 か 0）で「どの変数を指すか」を表示します。
   アドレスを表示する版は README に載せ，実行例は「実行ごとに変わる」と明記しました。
 - ソース名は，演習ページが指定する `pointers.c`（課題1「講義の`pointers.c`を実行し」）以外は指定がないため，これまでの回の慣例どおりプロジェクト名を小文字・`_` 区切りにしました。
 - 発展の後半「小さい値の場所を返す」はプロジェクト名の指定がないため，同じ発展課題の `Decompose` プロジェクトに入れました（`main` は 1 つ）。
-- 実行結果は Linux x64（GCC 13.3，`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan 付き）で実際に実行した出力です。
-  Clang 18（`-Werror`，サニタイザなし）でも警告 0 でビルドでき，22 件のテストがすべて成功しました。
+- 実行結果は Linux x64（GCC 13.3，`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan 付き）で実際に実行した出力です（本体・書き換え版とも）。
+  Clang 18（`-Werror`，サニタイザなし）でも警告 0 でビルドでき，39 件のテストがすべて成功しました。
 - コンパイルエラー・警告の例のうち GCC・Clang のものは実際にビルドして得た表示です。MSVC のものはエラー番号と代表的な文面で，バージョンや言語設定によって表記が異なります。
 
 ---
@@ -42,42 +41,38 @@
 
 ### 解答
 
-[`Swap/pointers.c`](Swap/pointers.c)。講義の `pointers.c` の `main` をそのまま残し（最初の 3 行の表示），その後に次の実験を関数に分けて加えました。
+[`Swap/pointers.c`](Swap/pointers.c)。講義の `pointers.c` に，演習の指示を次のように加えた最終版です。
 
-- `trace_swap(x の初期値, y の初期値)`: 宣言・`*p = 5`・`swap` の後の状態を表示（初期値 3/8，3/5，8/8 の 3 通り）
+- `main`: 宣言・`*p = 5`・`swap` の直後に `x`，`y`，`p` が `x` を指すか（`p_is_x`），`*p` を表示（「代入ごとの状態を記録する」の表）。その後は `pointers.c` のとおり
 - `copy_pointer_experiment()`: 演習の「ポインタのコピーを比較する」のコードそのもの
 - `swap_double_by_address()` / `swap_double_by_pointer()`: `swap_double(&a[1], &a[4])` と `swap_double(a + 1, a + 4)` を，**それぞれ初期配列から**1 回だけ実行
 
 `swap_double` は指示どおり `main` の前に，`int` 版の `swap` とは別に定義しています。
-実験を `main` 内のブロックにせず関数に分けたのは，`main` の `p` と同名の変数を内側で宣言すると MSVC `/W4` の C4456（名前の隠蔽）が出るためです。
+独立した実験を `main` 内のブロックにせず関数に分けたのは，`main` の `p` と同名の変数を内側で宣言すると MSVC `/W4` の C4456（名前の隠蔽）が出るためです。
+
+| 書き換え版 | 書き換え | 確かめること |
+| --- | --- | --- |
+| `y_5` | `int x = 3, y = 8` → `int x = 3, y = 5` | `swap` 直前に `x` と `y` が両方 5 |
+| `both_8` | `int x = 3, y = 8` → `int x = 8, y = 8` | 初期値だけ同じでも `*p = 5` が片方を変える |
+| `wrong_swap` | `swap` 内の `*a = *b;` → `a = b;` | 交換にならない（説明すること） |
+| `swap_double_value` | `swap_double` を値引数 `double a, double b` にし，2 つの呼び出しを `swap_double(a[1], a[4]);` に | コピーだけが交換される |
 
 ### 実行結果
 
 ```text
+init:   x=3 y=8 p_is_x=1 *p=3
+*p = 5: x=5 y=8 p_is_x=1 *p=5
+swap:   x=8 y=5 p_is_x=1 *p=8
 x=8 y=5
 sum=60
 c at
-after swap: p_is_x=1 *p=8
-trace x=3 y=8
-  init:     x=3 y=8 p_is_x=1 *p=3
-  *p = 5:   x=5 y=8 p_is_x=1 *p=5
-  swap:     x=8 y=5 p_is_x=1 *p=8
-trace x=3 y=5
-  init:     x=3 y=5 p_is_x=1 *p=3
-  *p = 5:   x=5 y=5 p_is_x=1 *p=5
-  swap:     x=5 y=5 p_is_x=1 *p=5
-trace x=8 y=8
-  init:     x=8 y=8 p_is_x=1 *p=8
-  *p = 5:   x=5 y=8 p_is_x=1 *p=5
-  swap:     x=8 y=5 p_is_x=1 *p=8
 a=3 b=3 p_is_a=1
 a=3 b=7 p_is_b=1
-before: 1.0 5.0 3.0 4.0 2.0 6.0
-swap_double(&a[1], &a[4]): 1.0 2.0 3.0 4.0 5.0 6.0
-swap_double(a + 1, a + 4): 1.0 2.0 3.0 4.0 5.0 6.0
+&a[1], &a[4]: 1.0 2.0 3.0 4.0 5.0 6.0
+a + 1, a + 4: 1.0 2.0 3.0 4.0 5.0 6.0
 ```
 
-最初の 3 行は講義の `pointers.c` の表示（`x=8 y=5`，`sum=60`，`c at`）と一致します。
+1〜3 行目が状態の記録，4〜6 行目が講義の `pointers.c` の表示（`x=8 y=5`，`sum=60`，`c at`）です。
 
 ### `x`，`y`，`p`，`*p` の関係（図）
 
@@ -101,7 +96,16 @@ swap(&x, &y) の後          p ──→ x[ 8 ]      y[ 5 ]     ← p はまだ 
 | `*p = 5`の後 | 5 | 8 | `x` | 5 |
 | `swap(&x, &y)`の後 | 8 | 5 | `x` | 8 |
 
-`y` の初期値を 5 に変えた場合（`trace x=3 y=5`）:
+`y` の初期値を 5 に変えた場合（書き換え版 `y_5`。最初の 6 行）:
+
+```text
+init:   x=3 y=5 p_is_x=1 *p=3
+*p = 5: x=5 y=5 p_is_x=1 *p=5
+swap:   x=5 y=5 p_is_x=1 *p=5
+x=5 y=5
+sum=60
+c at
+```
 
 | 時点 | `x` | `y` | `p`の指す先 | `*p` |
 | --- | ---: | ---: | --- | ---: |
@@ -111,7 +115,14 @@ swap(&x, &y) の後          p ──→ x[ 8 ]      y[ 5 ]     ← p はまだ 
 
 `swap` 直前に `x` と `y` が両方 5 になるので，交換しても値は変わりません（交換は行われているが，同じ値どうしなので見た目が同じ）。
 
-`x` と `y` の初期値だけを同じ 8 にした場合（`trace x=8 y=8`）:
+`x` と `y` の初期値だけを同じ 8 にした場合（書き換え版 `both_8`。最初の 4 行）:
+
+```text
+init:   x=8 y=8 p_is_x=1 *p=8
+*p = 5: x=5 y=8 p_is_x=1 *p=5
+swap:   x=8 y=5 p_is_x=1 *p=8
+x=8 y=5
+```
 
 | 時点 | `x` | `y` | `p`の指す先 | `*p` |
 | --- | ---: | ---: | --- | ---: |
@@ -120,14 +131,6 @@ swap(&x, &y) の後          p ──→ x[ 8 ]      y[ 5 ]     ← p はまだ 
 | `swap(&x, &y)`の後 | 8 | 5 | `x` | 8 |
 
 初期値だけ同じにしても，その後の `*p = 5` が `x` だけを 5 に変えるので，`swap` 直前は 5 と 8 になり，交換で 8 と 5 になります。
-
-例題の `main` そのものを書き換えた版もテストしています（`Swap/CMakeLists.txt`）。最初の行と `after swap:` の行は次のとおりです。
-
-| 書き換え | `x=… y=…` の行 | `after swap:` の行 |
-| --- | --- | --- |
-| なし（`int x = 3, y = 8`） | `x=8 y=5` | `after swap: p_is_x=1 *p=8` |
-| `y_5`: `int x = 3, y = 5` | `x=5 y=5` | `after swap: p_is_x=1 *p=5` |
-| `both_8`: `int x = 8, y = 8` | `x=8 y=5` | `after swap: p_is_x=1 *p=8` |
 
 ### アドレスも表示して確かめる（README のみの版）
 
@@ -172,7 +175,7 @@ pointer=8 object=4
 ```
 
 - 3 回とも `p` と `&x` が同じ値で，`&p` はそれとは別の値です。`p` が指す場所（`x` の箱）と `p` 自身が置かれた場所（`p` の箱）は別物です。
-- Windows（MSVC）では `%p` が `0x` なしの大文字 16 桁（x64，例 `000000A3C6EFF6D4`）で表示されるなど，形式も値も異なります。
+- Windows（MSVC）の x64 では `%p` が `0x` なしの大文字 16 桁で表示されます（`000000A3C6EFF6D4` は**形式の例**で，実測値ではありません）。形式も値も Linux と異なります。
   Debug ビルドでは変数の間に検査用の領域が入るので，`&x` と `&y` が 4 バイト差で並ぶとは限りません。値が見本と違っても誤りではありません。
 - `pointer=8 object=4` は Windows x64（MSVC）と Linux x64 で同じです。32 ビット（x86）向けにビルドすると `pointer=4` になります。
 
@@ -191,8 +194,10 @@ pointer=8 object=4
 
 ### 説明すること：`*a = *b` を `a = b` に変えても交換にならない理由
 
+書き換え版 `wrong_swap`（`swap` の 2 行目だけを変える）:
+
 ```c
-void swap_wrong(int *a, int *b)
+void swap(int *a, int *b)
 {
     int temp = *a;
     a = b;          /* 局所変数 a（ポインタのコピー）の矢印を b と同じ先へ変えるだけ */
@@ -200,28 +205,31 @@ void swap_wrong(int *a, int *b)
 }
 ```
 
-`x=5`，`y=8` で `swap_wrong(&x, &y)` を呼んだ実行結果:
+実行結果（最初の 4 行）:
 
 ```text
+init:   x=3 y=8 p_is_x=1 *p=3
+*p = 5: x=5 y=8 p_is_x=1 *p=5
+swap:   x=5 y=5 p_is_x=1 *p=5
 x=5 y=5
 ```
 
 ```text
-呼び出し直後          swap_wrong の a ──→ x[ 5 ]     swap_wrong の b ──→ y[ 8 ]     temp[ 5 ]
-a = b; の後           swap_wrong の a ──┐  x[ 5 ]     swap_wrong の b ──→ y[ 8 ]
-                                       └───────────────────────────────→ y
-                      書き換わった箱は「swap_wrong の a」（局所変数）だけ．x の箱には何も書かれない
+呼び出し直後          swap の a ──→ x[ 5 ]     swap の b ──→ y[ 8 ]     temp[ 5 ]
+a = b; の後           swap の a ──┐  x[ 5 ]     swap の b ──→ y[ 8 ]
+                                 └──────────────────────────→ y
+                      書き換わった箱は「swap の a」（局所変数）だけ．x の箱には何も書かれない
 *b = temp; の後       x[ 5 ]  y[ 5 ]   ← y にだけ 5 が書かれる
 ```
 
-- 引数 `a`，`b` は `&x`，`&y` という**ポインタ値のコピー**を保存した，`swap_wrong` の局所変数です。
+- 引数 `a`，`b` は `&x`，`&y` という**ポインタ値のコピー**を保存した，`swap` の局所変数です。
   `a = b` が書き換えるのはその局所変数 `a` の箱（矢印）だけで，呼び出し元の `x` の箱にも，`main` の `p` などにも影響しません。
 - `x` へ値を書くには `*a = ...` のように**矢印の先**へ代入する必要があります。上の版では `x` は変わらず，最後の `*b = temp` で `y` だけが 5 になるので，交換になりません。
 - 関数から戻ると局所変数 `a`，`b`，`temp` の寿命は終わるので，`a` を変えたこと自体も呼び出し元には残りません。
 
 ### 配列要素も交換する（`swap_double`）
 
-実行結果（上の出力の最後の 3 行）のとおり，`swap_double(&a[1], &a[4]);` と `swap_double(a + 1, a + 4);` を**別々の初期配列**へ 1 回ずつ実行すると，どちらも `1.0 2.0 3.0 4.0 5.0 6.0` になります。
+実行結果（本体の出力の最後の 2 行）のとおり，`swap_double(&a[1], &a[4]);` と `swap_double(a + 1, a + 4);` を**別々の初期配列**へ 1 回ずつ実行すると，どちらも `1.0 2.0 3.0 4.0 5.0 6.0` になります。
 `&a[1]` と `a + 1` はどちらも「添字 1 の要素の場所」を表す同じ値です（`a + 1` は 1 バイト先ではなく次の `double` 要素）。
 同じ配列に続けて 2 回呼ぶと，同じ 2 要素を 2 回交換して元の `1.0 5.0 3.0 4.0 2.0 6.0` に戻るので，実験を分けています。
 
@@ -234,23 +242,28 @@ Clang: error: passing 'double' to parameter of incompatible type 'double *'; tak
 MSVC:  error C2440: 'function': 'double' から 'double *' に変換できません。（英語版: cannot convert from 'double' to 'double *'）
 ```
 
-仮引数を値引数 `double a`，`double b` に変えた版はビルドできますが，交換されるのはコピーだけです:
+仮引数を値引数 `double a`，`double b` に変えた版（書き換え版 `swap_double_value`。関数内でコピーを表示し，2 つの呼び出しを `swap_double(a[1], a[4]);` にした）はビルドできますが，交換されるのはコピーだけです:
 
 ```c
-void swap_double_value(double a, double b)
+void swap_double(double a, double b)
 {
     double temp = a;
     a = b;
     b = temp;
     printf("in function: a=%.1f b=%.1f\n", a, b);
 }
-/* main: double a[6] = {1.0, 5.0, 3.0, 4.0, 2.0, 6.0}; swap_double_value(a[1], a[4]); のあと a[1], a[4] を表示 */
 ```
+
+実行結果（最後の 4 行）:
 
 ```text
 in function: a=2.0 b=5.0
-a[1]=5.0 a[4]=2.0
+a[1], a[4] (1st): 1.0 5.0 3.0 4.0 2.0 6.0
+in function: a=2.0 b=5.0
+a[1], a[4] (2nd): 1.0 5.0 3.0 4.0 2.0 6.0
 ```
+
+関数内のコピーは 2.0 と 5.0 に入れ替わっていますが，配列は `1.0 5.0 3.0 4.0 2.0 6.0` のままです。
 
 **場所が必要な理由**: C の引数は常に値のコピーです。`a[1]` の値 5.0 を渡すと，関数の仮引数は 5.0 を入れた**別の箱**になり，それを書き換えても配列の要素の箱は変わりません。
 呼び出し元の要素そのものを書き換えるには，その要素が**どこにあるか**（`&a[1]`）を渡し，関数内で `*a = ...` と矢印の先へ書く必要があります。
@@ -300,23 +313,24 @@ void min_max(const int *a, int n, int *low, int *high)
 ```
 
 `main` では `int low;`，`int high;` を宣言し，`min_max(data, 4, &low, &high);` で書き込ませた後に初めて読みます。
-渡しているのは未初期化の値ではなく，`low` と `high` の**場所**です。
-入力は読むだけなので `const int *a` にしています。検証表の配列は `report` 関数で 1 行ずつ表示します。
+渡しているのは未初期化の値ではなく，`low` と `high` の**場所**です。入力は読むだけなので `const int *a` にしています。
+
+| 書き換え版 | 書き換え | 確かめること |
+| --- | --- | --- |
+| `trace` | `*high = a[0];` の後とループ本体の最後に `printf("read %d: *low=%d *high=%d\n", ...)` を入れる | 候補の変化の追跡表 |
+| `single_5` / `same_3` / `all_negative` / `five_elements` | `data` を検証表の配列にし，呼び出しの `n` も 1，3，3，5 に合わせる | 検証表 |
+| `same_address` | `min_max(data, 4, &low, &low)` | 同じアドレスを渡すと壊れる（説明すること） |
+| `overlap` | `min_max(data, 4, &data[1], &high)` | 入力の要素を出力先にすると壊れる（説明すること） |
 
 ### 実行結果
 
 ```text
 min=-2 max=9
-{7, -2, 9, 0} n=4: min=-2 max=9
-{5} n=1: min=5 max=5
-{3, 3, 3} n=3: min=3 max=3
-{-8, -2, -5} n=3: min=-8 max=-2
-{7, 2, 10, 3, 5} n=5: min=2 max=10
 ```
 
 ### 候補の変化を追跡する
 
-各要素を読み終えた時点の値です。関数に追跡用の `printf` を入れた版（下）で実際に確かめました。
+各要素を読み終えた時点の値です。書き換え版 `trace`（関数に追跡用の `printf` を入れた版）の実行結果で確かめました。
 
 | 読み終えた要素 | `*low` | `*high` |
 | --- | ---: | ---: |
@@ -326,8 +340,9 @@ min=-2 max=9
 | 最後の0 | −2 | 9 |
 
 ```c
-void min_max_trace(const int *a, int n, int *low, int *high)
+void min_max(const int *a, int n, int *low, int *high)
 {
+    /* 0 ではなく最初の要素で両候補を初期化する（全部が負の配列でも正しい） */
     *low = a[0];
     *high = a[0];
     printf("read %d: *low=%d *high=%d\n", a[0], *low, *high);
@@ -355,18 +370,17 @@ min=-2 max=9
 
 ### 検証表
 
-| 配列 | `n` | 期待する最小値・最大値 |
-| --- | ---: | --- |
-| {5} | 1 | 最小値 5，最大値 5 |
-| {3, 3, 3} | 3 | 最小値 3，最大値 3 |
-| {-8, -2, -5} | 3 | 最小値 −8，最大値 −2 |
-| {7, 2, 10, 3, 5} | 5 | 最小値 2，最大値 10 |
+| 配列 | `n` | 期待する最小値・最大値 | 書き換え版の表示 |
+| --- | ---: | --- | --- |
+| {5} | 1 | 最小値 5，最大値 5 | `single_5`: `min=5 max=5` |
+| {3, 3, 3} | 3 | 最小値 3，最大値 3 | `same_3`: `min=3 max=3` |
+| {-8, -2, -5} | 3 | 最小値 −8，最大値 −2 | `all_negative`: `min=-8 max=-2` |
+| {7, 2, 10, 3, 5} | 5 | 最小値 2，最大値 10 | `five_elements`: `min=2 max=10` |
 
 - {5}: ループ本体は 1 回も実行されず，`a[0]` での初期化だけで両方 5 になります（`n=1` の境界）。
 - {3, 3, 3}: 等しい値では `<`，`>` がどちらも偽なので候補は変わりません。
 - {-8, -2, -5}: 最大値を 0 から始めると 0 という配列にない値が答えになりますが，`a[0]`（−8）から始めるので −2 が正しく求まります。
-- 演習ページのとおり `main` の配列を各行の配列に変え，`min_max` と `report` の `n` も合わせた版（`single_5`，`same_3`，`all_negative`，`five_elements`）もテストしています。
-  1 行目は順に `min=5 max=5`，`min=3 max=3`，`min=-8 max=-2`，`min=2 max=10` でした。
+- 演習ページのとおり，要素数を変えたら呼び出しの `n` も合わせています（`data` と `n` の 2 か所を書き換える）。
 - `n=0` は「`a[0]` を読める」という契約を満たさないので，この関数には渡しません（`a[0]` を読むと範囲外アクセス）。必要なら呼び出し側で `n >= 1` を確かめてから呼びます。
 
 ### 説明すること：同じアドレスを渡す・入力配列の要素を出力先にする
@@ -378,10 +392,10 @@ min=-2 max=9
 **入力配列の要素を出力先にする場合**: 例えば `min_max(data, 4, &data[1], &high)` とすると，最初の `*low = a[0]` で `data[1]` の −2 が 7 で上書きされ，まだ読んでいない入力が失われます。
 結果は最小値 0（本当は −2）になり，配列も {7, 0, 9, 0} に変わってしまいます。`a` が `const int *` でも，別の経路（`low`）からの書き込みは止められません。
 
-上の 2 つは関数の契約違反の確認として実行した結果です（範囲外や寿命切れではないので，動作自体は定義されています）:
+上の 2 つは関数の契約違反の確認として，書き換え版 `same_address`，`overlap` で実行した結果です（範囲外や寿命切れではないので，動作自体は定義されています。`same_address` では `high` を宣言せず `low` だけを表示）:
 
 ```text
-same address: both=0
+same address: low=0
 overlap: min=0 max=9 data={7, 0, 9, 0}
 ```
 
@@ -390,7 +404,7 @@ overlap: min=0 max=9 data={7, 0, 9, 0}
 ### 採点のポイント・よくある誤り
 
 - 候補を `0` や「十分大きい数」で初期化していないか。{-8, -2, -5} で最大値 0 になる誤りを検証表で見つける。
-- `low = a[i];` のように**ポインタ変数**へ代入していないか（`*low = a[i];` が正しい）。`int *` に `int` を代入するので警告（MSVC C4047，GCC `-Wint-conversion`）が出るはず。
+- `low = a[i];` のように**ポインタ変数**へ代入していないか（`*low = a[i];` が正しい）。`int *` に `int` を代入するので，MSVC は C4047 の警告，GCC 13 は `-Wint-conversion` の警告，GCC 14 以降と Clang（18 で確認）はエラーになる。
 - 呼び出しで `min_max(data, 4, low, high)`（値渡し）としていないか。`&low`，`&high` を渡す。
 - 配列の要素数を変えたのに `n` を変えていない（{7, 2, 10, 3, 5} に `n=4` を渡すなど）誤り。`sizeof data / sizeof data[0]` で求める方法もある。
 - `n=0` を渡して `a[0]` を読む，ループを `i <= n` にするなどの範囲外アクセス。
@@ -430,7 +444,15 @@ int copy_text(char *dst, size_t capacity, const char *src)
 ```
 
 必要な標準ヘッダは `string.h`（`strlen`）と `stdio.h`（`printf`。`size_t` も宣言される）です。
-`main` では表の各ケースをブロック `{ }` に分け，容量には `sizeof out` を渡しています。表示の `elements:` は配列の全要素（終端は `\0` と表示）です。
+`main` では表の 4 ケースと `"aaaaaaaaaa"` の例をブロック `{ }` に分け，容量には `sizeof out` を渡しています。表示の `elements:` は配列の全要素（終端は `\0` と表示）です。
+この課題は演習ページに決まった表示がなく，表の結果を確かめることがプログラムの目的なので，本体が表のケースを表示します。
+
+| 書き換え版 | 書き換え | 確かめること |
+| --- | --- | --- |
+| `index` | 添字版（下）。`size_t length = strlen(src);` と `for` による添字のコピー | ポインタ版と同じ結果 |
+| `short_form` | コピーのループを `while ((*dst++ = *src++) != '\0') { }` に | 短い表記でも同じ結果 |
+
+どちらの書き換え版も，表示は本体の実行結果と 1 文字も違いません。
 
 ### 実行結果
 
@@ -458,25 +480,25 @@ char out[] = "aaaaaaaaaa";  src="hoge": return=1 out="hoge" elements: h o g e \0
 関数内で `sizeof dst` を求めてもポインタ自身のサイズ（x64 で 8）になり，配列の要素数は分かりません。
 そのため呼び出し側（`out` が配列として見える場所）で `sizeof out` を求め，`capacity` として別に渡します。`strlen(dst)` も「今入っている文字列の長さ」であって容量ではありません。
 
-### 添字版（途中の版）
+### 添字版（途中の版。書き換え版 `index`）
 
 ```c
 int copy_text(char *dst, size_t capacity, const char *src)
 {
+    /* 終端まで入れるには strlen(src) + 1 要素が必要．書き込みを始める前に判定する */
     size_t length = strlen(src);
     if (length >= capacity) {
         return 0;
     }
-    for (size_t i = 0; i <= length; ++i) {   /* i == length で終端もコピーする */
+    /* i == length で終端もコピーする */
+    for (size_t i = 0; i <= length; ++i) {
         dst[i] = src[i];
     }
     return 1;
 }
 ```
 
-添字版・ポインタ版・下の短い表記の版の 3 つを同じ `main` でビルド・実行し，上の実行結果と 1 文字も違わないことを確認しました。
-短い表記の版は自動テストにもしています（`CopyText/CMakeLists.txt` の `short_form`。ポインタ版の条件を `(*dst++ = *src++)` に置き換え，本体の `++dst`，`++src` をコメントに置き換えて空の文にした版）。
-添字版は置き換える文字列に `;` が入るため `softprac_add_variant` では作れず，手元でビルドして確認しました。
+この版を `index` としてビルド・テストしており，表示は本体（ポインタ版）と同じです。
 
 ### 添字なしのポインタ版と空文字列での動作
 
@@ -497,11 +519,11 @@ while ((*dst++ = *src++) != '\0') {
 }
 ```
 
-`*dst++` は `*(dst++)`，`*src++` は `*(src++)` です。後置 `++` の式の値は**増やす前の**ポインタ値です。1 回の条件判定で次の順に行われます。
+`*dst++` は `*(dst++)`，`*src++` は `*(src++)` です。後置 `++` の式の値は**増やす前の**ポインタ値です。1 回の条件判定で次の順に行われます（書き換え版 `short_form` でテスト）。
 
-1. **代入**: 移動前の `src` が指す 1 文字を読み，移動前の `dst` が指す要素へ代入する。
-2. **更新**: `dst` と `src` をそれぞれ次の要素へ進める（後置 `++` の副作用。条件式の評価が終わるまでに完了し，次の判定では進んだ位置を使う）。
-3. **判定**: 代入式の値（いま代入した文字）が `'\0'` かを調べ，終端なら繰り返しを終える。
+1. **代入**: 移動前の `src` の 1 文字を，移動前の `dst` の要素へ書く。
+2. **判定**: 代入式の値（いま書いた文字）が `'\0'` かを調べる。終端なら繰り返しを終える。
+3. **更新**: `dst` と `src` を次へ進める（後置 `++` の副作用。条件式の評価が終わるまでに完了する。判定に使うのは代入した文字の値なので，更新のタイミングは結果に影響しない）。
 
 本体は空で，処理はすべて条件式の中にあります。終端もコピーしてから条件が偽になるので，終端の書き込みは別に必要ありません。
 
@@ -538,7 +560,7 @@ out:               [ c ][ a ][ t ][\0 ]
 - 関数内で `sizeof dst` を容量として使っていないか（常に 8 などになる）。
 - `char out[1] = "";` と `""` を「容量不足」としていないか。終端 1 要素分あれば成功。
 - `const char *src` になっているか。`size_t` と `int` を比較して符号の警告（MSVC C4018/C4389）を出していないか。
-- 短い表記の説明で「判定してから代入」「終了時に `dst` は終端を指す」とする誤り。代入 → 更新 → 判定で，終了時は終端の 1 つ先。
+- 短い表記の説明で「判定してから代入」「終了時に `dst` は終端を指す」とする誤り。代入 → 判定 → 更新で，終端を書いた回も更新されるので終了時は終端の 1 つ先。
 - `"hoge"` の例で「残りの `a` が消える」と書く誤り。`%s` の表示と配列の中身を区別する。
 
 ---
@@ -553,8 +575,8 @@ out:               [ c ][ a ][ t ][\0 ]
 
 ### 解答
 
-[`PointerWalk/pointer_walk.c`](PointerWalk/pointer_walk.c)。合計は値を変えた配列にも使うため，`sum_by_index`（添字版）と `sum_by_pointer`（ポインタ版）の関数にしました。
-`pointer_length` と `set_one` は講義のとおりです。`set_one` は `main` より前に定義し，最後に `set_one(a, COUNT);` を呼んで合計を表示しています。
+[`PointerWalk/pointer_walk.c`](PointerWalk/pointer_walk.c)。合計は値を変えた配列にも使えるよう，`sum_by_index`（添字版）と `sum_by_pointer`（ポインタ版）の関数にしました。
+`pointer_length` と `set_one` は講義のとおりで，`set_one` は `main` より前に定義しています。本体の `main` は期待する表示の 3 行だけを出します。
 
 ```c
 int sum_by_pointer(const int *a, int n)
@@ -574,22 +596,26 @@ int sum_by_pointer(const int *a, int n)
 sum=20 20
 distance=2 before=1 equal=0
 length=3
-p - q: distance=-2
-q = a + 1: distance=0 before=0 equal=1
-{0, 0, 0, 0, 0}: sum=0 0
-{1, 2, 3, 4, 5}: sum=15 15
-length("")=0
-length("A")=1
-length("Hello")=5
-after set_one: sum=5 5
 ```
 
-最初の 3 行が演習ページの期待する表示と一致します。4 行目以降は以下の小問の確認です。
+演習ページの期待する表示と一致します。小問は次の書き換え版でテストしています。
 
-### 講義と同じく `main` の中に書いた版（途中の版）
+| 書き換え版 | 書き換え | 表示（変わる行） |
+| --- | --- | --- |
+| `reverse_diff` | `q - p,` → `p - q,` | `distance=-2 before=1 equal=0` |
+| `q_a1` | `int *q = a + 3` → `int *q = a + 1` | `distance=0 before=0 equal=1` |
+| `zeros` | 配列を {0, 0, 0, 0, 0} | `sum=0 0` |
+| `ascending` | 配列を {1, 2, 3, 4, 5} | `sum=15 15` |
+| `length_empty` / `length_A` / `length_Hello` | `pointer_length("cat")` の入力を `""`，`"A"`，`"Hello"` | `length=0` / `length=1` / `length=5` |
+| `set_one_first` | 配列の宣言の直後（合計する前）に `set_one(a, COUNT);` を挿入 | `sum=5 5` |
+| `set_one_first_array_param` | さらに `set_one` の仮引数を `int a[]` に | `sum=5 5`（同じ） |
+| `inline` | [`versions/pointer_walk_inline.c`](PointerWalk/versions/pointer_walk_inline.c)（下の途中の版。置換なし） | `sum=5 5` |
+
+### 講義と同じく `main` の中に書いた版（途中の版。書き換え版 `inline`）
 
 演習ページの文章（`p <= a + COUNT` など）は，講義のように `main` の中でループを書いた形を想定しています。
-`set_one` を「合計する前に」呼ぶとこの版になり，表示は `sum=5 5` に変わります（最終版では元の配列の合計 20 も表示するため，`set_one` を最後に呼んでいます）。
+この版は [`PointerWalk/versions/pointer_walk_inline.c`](PointerWalk/versions/pointer_walk_inline.c) に置き，そのままビルドしてテストしています。
+演習ページの指示どおり「合計する前に」`set_one(a, COUNT);` を呼び，`set_one` の仮引数は `int a[]` と書いています。
 
 ```c
 #include <stdio.h>
@@ -602,7 +628,7 @@ size_t pointer_length(const char *s)
     }
     return (size_t)(s - start);
 }
-void set_one(int a[], int n)        /* int *a と書いても同じ */
+void set_one(int a[], int n)
 {
     for (int i = 0; i < n; ++i) {
         a[i] = 1;
@@ -625,7 +651,6 @@ int main(void)
     int *q = a + 3;
     printf("distance=%td before=%d equal=%d\n", q - p, p < q, p == q);
     printf("length=%zu\n", pointer_length("cat"));
-    printf("sizeof a=%zu sizeof p=%zu\n", sizeof a, sizeof p);
     return 0;
 }
 ```
@@ -634,10 +659,7 @@ int main(void)
 sum=5 5
 distance=2 before=1 equal=0
 length=3
-sizeof a=20 sizeof p=8
 ```
-
-`set_one` の仮引数を `int a[]` にしたこの版でも，`int *a` の最終版と同じく全要素が 1 になり，合計は 5 です。
 
 ### 終了時の位置を説明する
 
@@ -663,29 +685,28 @@ p の位置 → a     a+1   a+2   a+3   a+4    a+5（= a + COUNT）
 
 `int` が 4 バイトなら `q` は `p` から 8 バイト先にありますが，ポインタの差は「何要素離れているか」の 2 です。
 
+`p - q` は書き換え版 `reverse_diff` で `distance=-2` と確かめました。
+
 `q` を `a + 1` に変えた場合の予測と結果: `p` と `q` が同じ要素を指すので，差 `q - p` は 0，`p < q` は 0（偽），`p == q` は 1（真）です。
-実行結果の `q = a + 1: distance=0 before=0 equal=1` と一致しました。
+書き換え版 `q_a1` の 2 行目 `distance=0 before=0 equal=1` と一致しました。
 
 ### 値と終端を変えて確認する
 
 | 変更 | 予測 | 結果 |
 | --- | --- | --- |
-| 配列 {0, 0, 0, 0, 0} | 添字版・ポインタ版とも 0 | `sum=0 0` |
-| 配列 {1, 2, 3, 4, 5} | 添字版・ポインタ版とも 15 | `sum=15 15` |
+| 配列 {0, 0, 0, 0, 0} | 添字版・ポインタ版とも 0 | `zeros`: `sum=0 0` |
+| 配列 {1, 2, 3, 4, 5} | 添字版・ポインタ版とも 15 | `ascending`: `sum=15 15` |
 
 `pointer_length` の `s` が進む回数（`++s` の実行回数）= 終端より前の文字数 = 戻り値です。
 
-| 入力 | `s` が進む回数 | 終了時に `s` が指すもの | 戻り値 |
-| --- | ---: | --- | ---: |
-| `"cat"` | 3 | 終端（添字 3） | 3 |
-| `""` | 0 | 終端（添字 0。最初の判定で偽） | 0 |
-| `"A"` | 1 | 終端（添字 1） | 1 |
-| `"Hello"` | 5 | 終端（添字 5） | 5 |
+| 入力 | `s` が進む回数 | 終了時に `s` が指すもの | 戻り値（表示） |
+| --- | ---: | --- | --- |
+| `"cat"` | 3 | 終端（添字 3） | 3（本体 `length=3`） |
+| `""` | 0 | 終端（添字 0。最初の判定で偽） | 0（`length_empty`: `length=0`） |
+| `"A"` | 1 | 終端（添字 1） | 1（`length_A`: `length=1`） |
+| `"Hello"` | 5 | 終端（添字 5） | 5（`length_Hello`: `length=5`） |
 
 `s` は終端を指したところで止まり，終端の先へは進みません。戻り値は `s - start`（同じ文字列の中のポインタの差）です。
-
-これらの書き換え（`a` の初期値を {0, 0, 0, 0, 0}，{1, 2, 3, 4, 5} に変える，`q` を `a + 1` にする，`pointer_length("cat")` の入力を `""`，`"A"`，`"Hello"` に変える，`set_one` の仮引数を `int a[]` にする）は，
-本体のソースを置き換えた版としてもテストしています（`PointerWalk/CMakeLists.txt`）。例えば `zeros` 版の 1 行目は `sum=0 0`，`length_Hello` 版の 3 行目は `length=5`，`set_one_array_param` 版の出力は本体と完全に同じです。
 
 **`const char *s` なのに `++s` ができる理由**（講義の `const` の表）:
 
@@ -702,15 +723,17 @@ p の位置 → a     a+1   a+2   a+3   a+4    a+5（= a + COUNT）
 
 ### 関数から配列を書き換える（`set_one`）
 
-`set_one(a, COUNT);` の後は元の配列の全要素が 1 になり，添字版・ポインタ版とも合計は 5 です（`after set_one: sum=5 5`）。
-仮引数 `int *a` と `int a[]` はどちらも `int` へのポインタとして扱われ，結果は同じです。
+演習ページの指示どおり，合計する前に `set_one(a, COUNT);` を呼ぶと（書き換え版 `set_one_first`），元の配列の全要素が 1 になり，添字版・ポインタ版とも合計は 5 です（`sum=5 5`）。
+仮引数を `int a[]` にした版（`set_one_first_array_param`，`inline`）も `sum=5 5` で，`int *a` と `int a[]` はどちらも `int` へのポインタとして扱われます。
+本体では期待する表示（`sum=20 20`）を保つため，`set_one` は定義だけしてあります。
 関数にコピーされたのは配列そのものではなく**先頭を指す値**なので，関数内の `a[i] = 1` は呼び出し元の配列の要素へ書き込まれ，変更が残ります。
 
 ### 説明すること：`sizeof a` と `sizeof p`，`a++`，要素数を別に渡す理由
 
 **`sizeof a` と `sizeof p` の違い**: `main` の `a` は `int` 5 要素の配列なので，`sizeof a` は配列全体のサイズ 5 × `sizeof(int)` です。
 `sizeof p` はポインタ変数自身のサイズで，何要素の配列を指していても変わりません。
-上の途中の版の実行では `sizeof a=20 sizeof p=8` でした（Linux x64）。Windows x64（MSVC）も 20 と 8，x86（32 ビット）向けでは 20 と 4 です。
+途中の版の `main` の最後に `printf("sizeof a=%zu sizeof p=%zu\n", sizeof a, sizeof p);` を加えて実行すると `sizeof a=20 sizeof p=8` でした（Linux x64）。
+Windows x64（MSVC）も 20 と 8，x86（32 ビット）向けでは 20 と 4 になる環境依存の値なので，この行はテストにしていません。
 `sizeof a` は配列名がポインタに変換されない例外の 1 つです。
 
 **`a++` で進められない理由**: 配列 `a` は要素の領域そのものであり，「どこを指すか」を保存した変数ではないので，指す先を変える（代入する）ことができません。
@@ -736,7 +759,7 @@ MSVC:  error C2105: '++' には左辺値が必要です。（英語版: '++' nee
 - `pointer_length` の戻り値を `int` にしてキャストなしで差を返し，MSVC C4244（`__int64` から `int`）を出していないか。
 - `const char *s` の説明で「`s` は定数なので本当は進められない」とする誤り。`const` は指す先に付いている。
 - `sizeof a` と `sizeof p` を「同じ」とする誤り。関数の仮引数の `sizeof a` と `main` の配列の `sizeof a` の違いを区別できているか。
-- `set_one` の後に合計が 20 のままなら，`set_one` を合計の後に呼んでいるか，別の配列を渡している。
+- `set_one` を追加した版で合計が 20 のままなら，`set_one` を合計の後に呼んでいるか，別の配列を渡している（期待する表示の 3 行は `set_one` を呼ぶ前の値）。
 
 ---
 
@@ -749,31 +772,27 @@ MSVC:  error C2105: '++' には左辺値が必要です。（英語版: '++' nee
 
 ### 解答
 
-[`Decompose/decompose.c`](Decompose/decompose.c)。最初の 1 行は演習ページのプログラム（`decompose(3.14, &whole, &fraction)`）と同じ表示です。
-その後に検証表の 4 つの入力と，範囲の両端 −100，100，小数部が大きい 99.99，0 方向への切り捨てを確かめる −0.5 を表示します。
-後半の `min_pointer` の実験は `try_min_pointer(x の初期値, y の初期値)` にまとめ，(9, 3)，逆の (3, 9)，同じ値 (5, 5) を実行します。
+[`Decompose/decompose.c`](Decompose/decompose.c)。`main` は演習ページのプログラムそのもの（`decompose(3.14, &whole, &fraction)`）で，その表示 1 行だけを出します。
+後半の `min_pointer` は講義のとおり `main` の前に定義してあり，演習の `main` 内の実験は書き換え版でテストします
+（発展の後半にはプロジェクト名の指定がないため，同じ発展課題の `Decompose` に入れました）。
+
+| 書き換え版 | 書き換え | 表示 |
+| --- | --- | --- |
+| （本体） | — | `whole=3 fraction=0.14` |
+| `minus_3_14` | `decompose(3.14,` → `decompose(-3.14,` | `whole=-3 fraction=-0.14` |
+| `zero` | → `decompose(0.0,` | `whole=0 fraction=0.00` |
+| `five` | → `decompose(5.0,` | `whole=5 fraction=0.00` |
+| `minus_100` | → `decompose(-100.0,`（範囲の下端） | `whole=-100 fraction=0.00` |
+| `plus_100` | → `decompose(100.0,`（範囲の上端） | `whole=100 fraction=0.00` |
+| `x_99_99` | → `decompose(99.99,`（小数部が大きい） | `whole=99 fraction=0.99` |
+| `minus_0_5` | → `decompose(-0.5,`（0 方向への切り捨て） | `whole=0 fraction=-0.50` |
+| `value_args` | 仮引数を `long whole, double fraction` にし，呼び出しの `&` を外す | 下の「値引数にした場合」 |
+| `min_pointer_9_3` / `_3_9` / `_5_5` | `main` の中身を演習の `min_pointer` の実験にし，`x`，`y` の初期値を 9/3，3/9，5/5 に | 下の「小さい値の場所を返す」 |
 
 ### 実行結果
 
 ```text
 whole=3 fraction=0.14
-x=3.14: whole=3 fraction=0.14
-x=-3.14: whole=-3 fraction=-0.14
-x=0.00: whole=0 fraction=0.00
-x=5.00: whole=5 fraction=0.00
-x=-100.00: whole=-100 fraction=0.00
-x=100.00: whole=100 fraction=0.00
-x=99.99: whole=99 fraction=0.99
-x=-0.50: whole=0 fraction=-0.50
-[x=9 y=3]
-minimum=3 points_to_y=1
-x=9 y=0
-[x=3 y=9]
-minimum=3 points_to_y=0
-x=0 y=9
-[x=5 y=5]
-minimum=5 points_to_y=1
-x=5 y=0
 ```
 
 ### 整数部と小数部を分ける
@@ -785,45 +804,63 @@ x=5 y=0
 | 0.0 | 0 | 0.00 |
 | 5.0 | 5 | 0.00 |
 
-- 演習ページのプログラムの `decompose(3.14, ...)` を −3.14，0.0，5.0 に書き換えた版もテストしており，1 行目はそれぞれ `whole=-3 fraction=-0.14`，`whole=0 fraction=0.00`，`whole=5 fraction=0.00` です。
+- 表の 4 行は本体と書き換え版 `minus_3_14`，`zero`，`five` の実際の表示です。
 - `(long)x` は 0 方向への切り捨てです。−3.14 は −4（床関数）ではなく −3，−0.5 は −1 でも四捨五入でもなく 0 になり，小数部は −0.50 です。
 - 小数部は近似です。例えば 3.14 − 3 は 0.14 ちょうどではなく 0.14000000000000012 程度，99.99 − 99 は 0.98999999999999488 程度ですが，`%.2f` で小数点以下 2 桁に丸めて表示するので 0.14，0.99 になります。
 - `long` は Windows（MSVC）では 32 ビット，Linux x64 では 64 ビットですが，−100〜100 なのでどちらでも範囲内です。表示は `%ld`。
 - `*fraction = x - *whole;` では `long` の値が `double` に変換されてから引き算されます（通常の算術型変換）。
 
-**値引数にした場合，呼び出し元の値が変わらない理由**:
+**値引数にした場合，呼び出し元の値が変わらない理由**（書き換え版 `value_args`）:
 
 ```c
-void decompose_value(double x, long whole, double fraction)
+void decompose(double x, long whole, double fraction)
 {
-    whole = (long)x;
+    whole = (long)x;           /* 変わるのは関数内のコピーだけ */
     fraction = x - whole;
+    printf("in function: whole=%ld fraction=%.2f\n", whole, fraction);
 }
 int main(void)
 {
-    long whole = 0;          /* 比較の場合も 0 に初期化し，未初期化の値を渡さない */
+    long whole = 0;            /* 比較の場合も 0 に初期化し，未初期化の値を渡さない */
     double fraction = 0.0;
-    decompose_value(3.14, whole, fraction);
+    decompose(3.14, whole, fraction);
     printf("whole=%ld fraction=%.2f\n", whole, fraction);
     return 0;
 }
 ```
 
 ```text
+in function: whole=3 fraction=0.14
 whole=0 fraction=0.00
 ```
 
-`decompose_value` の `whole`，`fraction` は，呼び出し時に `main` の値 0 と 0.0 をコピーした**別の局所変数**です。代入で変わるのはそのコピーだけで，関数から戻るとコピーの寿命も終わります。
-`main` の変数の場所を知らないので，`main` の `whole`，`fraction` へは書き込めません。
-（GCC はこの版で `parameter 'fraction' set but not used [-Wunused-but-set-parameter]` と警告します。代入した値がどこにも使われないことの表れです。`whole` は `x - whole` で読まれるので警告されません。）
+関数内のコピーは 3 と 0.14 になっていますが，`main` の `whole`，`fraction` は 0 と 0.00 のままです。
+値引数の `whole`，`fraction` は，呼び出し時に `main` の値 0 と 0.0 をコピーした**別の局所変数**で，代入で変わるのはそのコピーだけです。関数から戻るとコピーの寿命も終わります。
+関数は `main` の変数の場所を知らないので，`main` の `whole`，`fraction` へは書き込めません。
+（関数内の `printf` がない版では，GCC・Clang とも `parameter 'fraction' set but not used [-Wunused-but-set-parameter]` と警告します。代入した値がどこにも使われないことの表れです。`whole` は `x - whole` で読まれるので警告されません。）
 
 ### 小さい値の場所を返す（`min_pointer`）
 
-| `x`，`y` の初期値 | 予測した表示 | 結果 |
+書き換え版 `min_pointer_9_3` の `main`（演習のコードそのもの）:
+
+```c
+int main(void)
+{
+    int x = 9;
+    int y = 3;
+    int *result = min_pointer(&x, &y);
+    printf("minimum=%d points_to_y=%d\n", *result, result == &y);
+    *result = 0;
+    printf("x=%d y=%d\n", x, y);
+    return 0;
+}
+```
+
+| `x`，`y` の初期値 | 予測した表示 | 実行結果（書き換え版） |
 | --- | --- | --- |
-| 9，3（演習のコード） | `minimum=3 points_to_y=1` / `x=9 y=0` | 一致 |
-| 3，9（逆にした場合） | `minimum=3 points_to_y=0` / `x=0 y=9` | 一致 |
-| 5，5（同じ値の場合） | `minimum=5 points_to_y=1` / `x=5 y=0` | 一致 |
+| 9，3（演習のコード） | `minimum=3 points_to_y=1` / `x=9 y=0` | `min_pointer_9_3`: 一致 |
+| 3，9（逆にした場合） | `minimum=3 points_to_y=0` / `x=0 y=9` | `min_pointer_3_9`: 一致 |
+| 5，5（同じ値の場合） | `minimum=5 points_to_y=1` / `x=5 y=0` | `min_pointer_5_5`: 一致 |
 
 - `min_pointer` が返すのは値 3 ではなく，3 が入っている**場所**（`&y`）です。そのため `*result = 0;` で `y` が 0 になります。
 - 逆にすると小さい方は `x` なので `result` は `x` を指し，`x` が 0 になります（`points_to_y=0`）。
@@ -917,9 +954,9 @@ MSVC:  warning C4172: ローカル変数またはテンポラリのアドレス�
 
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題2 の {5}（`n=1`），{3, 3, 3}，全部が負の {-8, -2, -5}／課題3 の容量ちょうど（`out[4]` と `"cat"`），1 不足（`out[3]`），空文字列（`out[1]` と `""`），不足時に変更なし（`"old"`）／課題4 の `""`，`q = a + 1`／発展の 0.0，5.0，−100，100，−0.5，同じ値の `min_pointer`。すべて `tests/basic.out` と書き換え版のテスト（計 22 件）で自動検査 |
-| 警告を確認し，原因を説明・修正した | 全プロジェクトを GCC・Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で問題になる隠蔽 C4456 を避けて実験を関数に分けた）。警告・エラーの例: `swap_double(a[1], a[4])`（課題1），`a++`（課題4），関数の仮引数の `sizeof`（課題4），値引数版 `decompose_value`，局所変数のアドレスを返す関数（発展） |
-| 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の状態表，課題2 の追跡表，課題3 の短い表記の「代入・更新・判定」，課題4 の `ptrdiff_t`／`size_t`／`const char *` |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の同じ値（`y_5`，`both_8`）／課題2 の {5}（`n=1`），{3, 3, 3}，全部が負の {-8, -2, -5}／課題3 の容量ちょうど（`out[4]` と `"cat"`），1 不足（`out[3]`），空文字列（`out[1]` と `""`），不足時に変更なし（`"old"`）／課題4 の `""`，`q = a + 1`／発展の 0.0，5.0，−100，100，−0.5，同じ値の `min_pointer`。すべて本体と書き換え版のテスト（計 39 件）で自動検査 |
+| 警告を確認し，原因を説明・修正した | 全プロジェクトを GCC・Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で問題になる隠蔽 C4456 を避けて実験を関数に分けた）。警告・エラーの例: `swap_double(a[1], a[4])`（課題1），`low = a[i]`（課題2），`a++`（課題4），関数の仮引数の `sizeof`（課題4），値引数版の `-Wunused-but-set-parameter`，局所変数のアドレスを返す関数（発展） |
+| 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の状態表，課題2 の追跡表，課題3 の短い表記の「代入・判定・更新」，課題4 の `ptrdiff_t`／`size_t`／`const char *` |
 | ポインタの矢印と，指す先の値を分けて追跡した | 課題1 の図・状態表・ポインタのコピーの表（`p_is_x`，`p_is_a`，`p_is_b`），発展の `points_to_y` |
 | 範囲外や寿命切れのポインタを実行して確かめていない | 課題4 の `p <= a + COUNT`，課題3 の終了時のポインタ（1 つ先），発展の `local` のアドレスは図と理由だけで説明し，実行していない（局所変数の例はビルドして警告を見ただけ） |
 | 関数の入力条件，出力先の条件，容量の条件を説明できる | 課題2 の契約（`n >= 1`，出力先が互いに異なり入力と重ならない），課題3 の契約（終端のある入力，重ならない，`capacity` 要素），発展の契約（−100〜100 の有限な値，有効な出力先，返す対象の寿命） |

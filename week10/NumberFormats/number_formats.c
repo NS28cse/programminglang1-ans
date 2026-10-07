@@ -1,5 +1,4 @@
-﻿/* 第10回 発展1 NumberFormats: 3 つの double をテキスト（numbers.txt）とバイナリ（numbers.bin）で保存して読み戻す
-   data[0] を 0.125 にし，最後の 2 行の表示書式だけ %.3f へ変えた最終版（保存の書式は %.2f のまま） */
+﻿/* 第10回 発展1 NumberFormats: 3 つの double をテキスト（numbers.txt）とバイナリ（numbers.bin）で保存して読み戻す */
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 enum { COUNT = 3 };
@@ -9,7 +8,7 @@ int read_text(const char *filename, double values[], int count);
 int read_binary(const char *filename, double values[], int count);
 int main(void)
 {
-    const double data[COUNT] = {0.125, 1.25, -2.0};
+    const double data[COUNT] = {0.5, 1.25, -2.0};
     double text_values[COUNT];
     double binary_values[COUNT];
     /* どれかが失敗したら，読み戻せなかった値は表示しない */
@@ -19,8 +18,8 @@ int main(void)
         !read_binary("numbers.bin", binary_values, COUNT)) {
         return 1;
     }
-    printf("text=%.3f %.3f %.3f\n", text_values[0], text_values[1], text_values[2]);
-    printf("binary=%.3f %.3f %.3f\n", binary_values[0], binary_values[1], binary_values[2]);
+    printf("text=%.2f %.2f %.2f\n", text_values[0], text_values[1], text_values[2]);
+    printf("binary=%.2f %.2f %.2f\n", binary_values[0], binary_values[1], binary_values[2]);
     return 0;
 }
 /* テキスト形式: 1 行目に個数，続く各行に値を小数点以下 2 桁で書く（ここで桁が失われる）。成功なら 1 */

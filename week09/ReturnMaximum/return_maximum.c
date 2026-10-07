@@ -1,4 +1,4 @@
-// 第9回 課題1　値を返す版と場所を返す版の比較（ReturnMaximum / return_maximum.c）
+﻿// 第9回 課題1　値を返す版と場所を返す版の比較（ReturnMaximum / return_maximum.c）
 // 期待する表示は before=12 12 と after=12 99。負の配列・場所の版だけ n=0 などは CMakeLists.txt の variant でテストする。
 #include <stdio.h>
 
