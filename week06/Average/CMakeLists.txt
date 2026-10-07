@@ -12,6 +12,9 @@ softprac_add_variant(Average average.c page_literal
                      [[int large = 300;
     unsigned char small = (unsigned char)large;]]
                      [[unsigned char small = (unsigned char)300;]])
+# 演習ページどおりの (unsigned char)300 は MSVC /W4 で C4310（cast truncates constant value）になる
+# （CI の MSVC 19.51 で確認）。この版は「同じ 4 行を表示する」ことを確かめるためのものなので，C4310 だけ止める
+target_compile_options(Average_page_literal PRIVATE $<$<C_COMPILER_ID:MSVC>:/wd4310>)
 softprac_add_variant(Average average.c i_100 "int i = 50000" "int i = 100")
 softprac_add_variant(Average average.c i_100_no_cast
                      "int i = 50000" "int i = 100" "(long long)i * i" "i * i")
