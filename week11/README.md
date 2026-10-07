@@ -467,23 +467,75 @@ p2 [アドレス] -------> buffer [ H o g e \0 ]    ← p2 のアドレスは変
 
 ### 全体を別の文字列へ変える場合
 
-演習ページの断片で `a1.text[0] = 'H';` を置き換え，同様のコピーを `buffer` へも行い，アドレスも表示した版の実行結果（Linux x64 / GCC。アドレスは実行ごとに変わる）:
+演習ページの断片で `a1.text[0] = 'H';` を置き換え，同様のコピーを `p1.text[0] = 'H';` の代わりに `buffer` へ行った版（テスト `variant_replace_fuga`）:
 
 ```c
 const char replacement[] = "fuga";
 for (size_t i = 0; i < sizeof replacement; ++i) {
     a1.text[i] = replacement[i];
 }
+...
+for (size_t i = 0; i < sizeof replacement; ++i) {
+    buffer[i] = replacement[i];
+}
 ```
 
 ```text
 array=fuga hoge
 pointer=fuga fuga same=1
-&p1=0x7ffeaa865c50 &p2=0x7ffeaa865c58 p1.text=0x7ffeaa865c83 p2.text=0x7ffeaa865c83 buffer=0x7ffeaa865c83
+redirect=fuga fuga same=0
+```
+
+3 行目は `p1`（`other`）も `p2`（`buffer`）も `fuga` で内容は同じだが，指す配列が違うので `same=0` になる。`==` がアドレスの比較であることがよく分かる。
+
+アドレスも表示した版（アドレスは実行ごとに変わるのでテストにはせず，Linux x64 / GCC での実行例を載せる）:
+
+```c
+#include <stdio.h>
+typedef struct {
+    char text[7];
+} TextArray;
+typedef struct {
+    char *text;
+} TextPointer;
+int main(void)
+{
+    TextArray a1 = {"hoge"};
+    TextArray a2 = a1;
+    const char replacement[] = "fuga";
+    for (size_t i = 0; i < sizeof replacement; ++i) {
+        a1.text[i] = replacement[i];
+    }
+    printf("array=%s %s\n", a1.text, a2.text);
+
+    char buffer[] = "hoge";
+    char other[] = "fuga";
+    TextPointer p1 = {0};
+    p1.text = buffer;
+    TextPointer p2 = p1;
+    for (size_t i = 0; i < sizeof replacement; ++i) {
+        buffer[i] = replacement[i];
+    }
+    printf("pointer=%s %s same=%d\n", p1.text, p2.text, p1.text == p2.text);
+    printf("&p1=%p &p2=%p p1.text=%p p2.text=%p buffer=%p\n",
+           (void *)&p1, (void *)&p2, (void *)p1.text, (void *)p2.text, (void *)buffer);
+    p1.text = other;
+    printf("redirect=%s %s same=%d\n", p1.text, p2.text, p1.text == p2.text);
+    printf("p1.text=%p other=%p\n", (void *)p1.text, (void *)other);
+    return 0;
+}
+```
+
+```text
+array=fuga hoge
+pointer=fuga fuga same=1
+&p1=0x7ffee46279a8 &p2=0x7ffee46279b0 p1.text=0x7ffee46279de p2.text=0x7ffee46279de buffer=0x7ffee46279de
+redirect=fuga fuga same=0
+p1.text=0x7ffee46279e3 other=0x7ffee46279e3
 ```
 
 `sizeof replacement` は終端を含めて 5 なので 5 個コピーする（`a1.text` は 7 要素で収まる）。配列版では `a1` だけが `fuga`，ポインタ版では `p1`・`p2` の両方から `fuga` が見える。
-アドレスは，構造体自体の `&p1` と `&p2` は別，メンバに保存された `p1.text` と `p2.text` は同じ（`buffer` と一致）。Windows では `000000A1B2CFF6E0` のような形式で表示されるが，数値ではなく「同じか違うか」を見る。
+アドレスは，構造体自体の `&p1` と `&p2` は別，メンバに保存された `p1.text` と `p2.text` は同じ（`buffer` と一致）で，向け直した後の `p1.text` は `other` と一致する。Windows では `000000A1B2CFF6E0` のような形式で表示されるが，数値ではなく「同じか違うか」を見る。
 任意の長さの文字列を受け付けるなら，第8回の容量検査が必要（この固定入力が収まることを一般化しない）。
 
 （補足）解答では `TextPointer p1 = {0}; p1.text = buffer;` と宣言後にアドレスを代入した。`TextPointer p1 = {buffer};` も標準 C として正しいが，
@@ -498,7 +550,7 @@ MSVC は自動変数のアドレスで集成体を初期化すると `/W4` で C
    関数の終了とともに寿命が終わる。返されたポインタは無効（ダングリングポインタ）で，`printf("%s")` で読むのは未定義動作（偶然表示される・別の値に上書きされる・異常終了する）。
    ポインタのコピーは寿命を延ばさない。配列を構造体の内部に持たせて（`TextArray`）値で返すか，呼び出し元が用意した配列を指すようにする。
 3. **未初期化の `TextPointer` へ，いきなり `text[0]` を書き込む**: ローカル変数 `TextPointer p;` の `p.text` は不定の値で，どこも有効に指していない。そこへの書き込みは未定義動作で，
-   無関係なメモリを壊したり異常終了したりする。MSVC は C4700（初期化されていないローカル変数の使用），GCC は `-Wall`（最適化時）で `-Wuninitialized` を出すことがあるが，常に検出されるとは限らない。
+   無関係なメモリを壊したり異常終了したりする。MSVC は C4700（初期化されていないローカル変数の使用），GCC は `-Wall` で `'p.text' is used uninitialized` を出すことが多いが，常に検出されるとは限らない（警告が出なくても誤り）。
    使う前に有効な配列のアドレスを入れる（`p.text = buffer;`）。
 
 ### 採点のポイント・よくある誤り
@@ -540,10 +592,12 @@ assigned=-1.0 4.0
 
 ### 宣言順と指定順を比較する
 
-`Point a = {2.0, 10.0};` と `{.y = 2.0, .x = 10.0}` を比較用に並べて実行した結果:
+`Point a = {.y = 2.0, .x = 10.0};` を `Point a = {2.0, 10.0};` に書き換えた版（テスト `variant_positional`）の実行結果:
 
 ```text
-a=2.0 10.0 b=10.0 2.0
+a=2.0 10.0 result=5.0 15.0
+partial=3.0 0.0 zero=0.0 0.0
+assigned=-1.0 4.0
 ```
 
 名前を指定しない初期化は宣言順（`x`，`y`）に対応するので `x=2.0`，`y=10.0` となり，同じ意味にはならない。
@@ -589,7 +643,7 @@ MSVC では `.c` を C17（`/std:c17`・`/TC`）でコンパイルしていな�
 
 解答: [RectContains/rect_contains.c](RectContains/rect_contains.c)（`normalized` と `contains` は講義のコードどおり）
 
-既定の入力は 3 行目の交差した組合せ (1, 4)，(3, 1) と点 (2, 2)。引数 `RectContains px py` で点だけ，`RectContains x1 y1 x2 y2 px py` で 2 点も変えられる。
+初期値は正規化の表の 3 行目の交差した組合せ (1, 4)，(3, 1) と点 (2, 2)。表の他の行は `.lower`・`.upper`・`Point p` の初期値を書き換えた版でテストした。
 
 ### 実行結果（演習ページの期待する表示と一致）
 
@@ -606,21 +660,20 @@ inside=1 original=1.0 4.0
 
 | 入力の2点 | 正規化後の`lower` | 正規化後の`upper` | 実際の 1 行目 | テスト |
 | --- | --- | --- | --- | --- |
-| (1, 1)，(3, 4) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` | `order_1_1_3_4` |
-| (3, 4)，(1, 1) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` | `order_3_4_1_1` |
-| (1, 4)，(3, 1) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` | `order_1_4_3_1` |
-| (3, 1)，(1, 4) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` | `order_3_1_1_4` |
+| (1, 1)，(3, 4) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` | `variant_order_1_1_3_4` |
+| (3, 4)，(1, 1) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` | `variant_order_3_4_1_1` |
+| (1, 4)，(3, 1) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` | `basic`（初期値） |
+| (3, 1)，(1, 4) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` | `variant_order_3_1_1_4` |
 
 2 行目の `original` はそれぞれ `1.0 1.0`，`3.0 4.0`，`1.0 4.0`，`3.0 1.0`（入力のまま）。
 
-2 点を一括で交換するだけの版（`x` だけを比べて `lower` と `upper` を丸ごと交換）と比べた実行結果:
+2 点を一括で交換するだけの版（`normalized` の `x` の交換を `result.lower = r.upper;`・`result.upper = r.lower;` に変え，`y` の判定を削除）と比べた。
 
-```text
-swap only: lower=1.0 1.0 upper=3.0 4.0 / normalized test_rect: lower=1.0 1.0 upper=3.0 4.0
-swap only: lower=1.0 1.0 upper=3.0 4.0 / normalized test_rect: lower=1.0 1.0 upper=3.0 4.0
-swap only: lower=1.0 4.0 upper=3.0 1.0 / normalized test_rect: lower=1.0 1.0 upper=3.0 4.0
-swap only: lower=1.0 4.0 upper=3.0 1.0 / normalized test_rect: lower=1.0 1.0 upper=3.0 4.0
-```
+| 入力の2点 | 一括交換の版の表示 | テスト |
+| --- | --- | --- |
+| (3, 4)，(1, 1) | `sample lower=1.0 1.0 upper=3.0 4.0` / `inside=1 original=3.0 4.0`（偶然正しい） | `variant_swap_only_3_4_1_1` |
+| (1, 4)，(3, 1) | `sample lower=1.0 4.0 upper=3.0 1.0` / `inside=0 original=1.0 4.0` | `variant_swap_only_1_4_3_1` |
+| (3, 1)，(1, 4) | `sample lower=1.0 4.0 upper=3.0 1.0` / `inside=0 original=3.0 1.0` | `variant_swap_only_3_1_1_4` |
 
 一括交換では 3 行目・4 行目の `y` が逆のまま残る。各軸を独立に比べればよく，`x` を交換した後の値を使って `y` を判定する必要はない。
 
@@ -633,7 +686,7 @@ swap only: lower=1.0 4.0 upper=3.0 1.0 / normalized test_rect: lower=1.0 1.0 upp
 | `name` | `Rect result = r;` で配列ごとコピーした値（座標の並べ替えでは触らない） |
 
 未初期化の `Rect` に座標だけ書き込むと `name` が不定のまま返り，表示すると未定義動作になる。
-名前の保持を確かめるため `.name = "test_rect"` に変えて実行した結果:
+名前の保持を確かめるため `.name = "test_rect"` に変えた版（テスト `variant_name_test_rect`）の実行結果:
 
 ```text
 test_rect lower=1.0 1.0 upper=3.0 4.0
@@ -642,33 +695,34 @@ inside=1 original=1.0 4.0
 
 ### 内側・外側・境界を調べる（表）
 
-`lower=(1, 1)`，`upper=(3, 4)` へ正規化した長方形（既定の 2 点）で，点を引数 `px py` で変えた。
+`lower=(1, 1)`，`upper=(3, 4)` へ正規化した長方形（初期値の 2 点）で，`Point p = {2.0, 2.0};` の初期値を書き換えた。
 
 | 点 | 結果 | 理由 | テスト |
 | --- | ---: | --- | --- |
-| (2, 2) | 1 | 内側 | `point_2_2` |
-| (1, 1) | 1 | 下限を含む | `point_1_1` |
-| (1, 3) | 1 | `x`が下限でも`y`が範囲内 | `point_1_3` |
-| (3, 2) | 0 | `x`の上限を含まない | `point_3_2` |
-| (2, 4) | 0 | `y`の上限を含まない | `point_2_4` |
-| (0, 2) | 0 | `x`が下限より小さい | `point_0_2` |
-| (2, 5) | 0 | `y`が上限より大きい | `point_2_5` |
+| (2, 2) | 1 | 内側 | `basic`（初期値） |
+| (1, 1) | 1 | 下限を含む | `variant_point_1_1` |
+| (1, 3) | 1 | `x`が下限でも`y`が範囲内 | `variant_point_1_3` |
+| (3, 2) | 0 | `x`の上限を含まない | `variant_point_3_2` |
+| (2, 4) | 0 | `y`の上限を含まない | `variant_point_2_4` |
+| (0, 2) | 0 | `x`が下限より小さい | `variant_point_0_2` |
+| (2, 5) | 0 | `y`が上限より大きい | `variant_point_2_5` |
 
 ```text
-$ RectContains 3 2
+（p=(3, 2) の版）
 sample lower=1.0 1.0 upper=3.0 4.0
 inside=0 original=1.0 4.0
 ```
 
-幅 0 の長方形 `lower=(1, 1)`，`upper=(1, 4)` で `p=(1, 2)` は 0（`p.x >= 1` と `p.x < 1` を同時に満たせない）:
+幅 0 の長方形 `lower=(1, 1)`，`upper=(1, 4)` で `p=(1, 2)` は 0（`p.x >= 1` と `p.x < 1` を同時に満たせない。テスト `variant_zero_width`）:
 
 ```text
-$ RectContains 1 1 1 4 1 2
+（lower=(1, 1)，upper=(1, 4)，p=(1, 2) の版）
 sample lower=1.0 1.0 upper=1.0 4.0
 inside=0 original=1.0 1.0
 ```
 
 半開区間にすると，隣り合う長方形（例: x が [1, 3) と [3, 5)）の境界上の点をちょうど一方だけに数えられる。境界を含めたい（閉じた図形）なら仕様を変えて `<=` にするが，まず仕様を決めてから比較演算子を選ぶ。
+上限側の 2 つの `<` を `<=` に変えた版では (3, 2) が `inside=1` になる（テスト `variant_closed_3_2`）。この課題の仕様では誤りである。
 
 ### 採点のポイント・よくある誤り
 
@@ -684,20 +738,21 @@ inside=0 original=1.0 1.0
 
 **要点**: 構造体にはアラインメントのためのパディング（隙間）が入ることがあり，`sizeof` はメンバのサイズの合計と等しいとは限らない。位置は `offsetof` で調べる。
 
-解答: [StructLayout/struct_layout.c](StructLayout/struct_layout.c)（演習ページの断片に，メンバのサイズの合計を表示する行を加えた）
+解答: [StructLayout/struct_layout.c](StructLayout/struct_layout.c)（演習ページの断片どおりの 1 行を表示する）
 
 ### 実行結果（環境依存のためテストにしない）
 
 | 環境 | 表示 |
 | --- | --- |
-| Windows x64（Visual Studio / MSVC 既定設定） | `size=12 tag=0 count=4 flag=8`（演習ページの記載どおり），`members=1+4+1=6` |
+| Windows x64（Visual Studio / MSVC 既定設定） | `size=12 tag=0 count=4 flag=8`（演習ページの記載どおり） |
 | Linux x64（GCC 13・Clang 18，実際に実行） | 下記のとおり Windows x64 と同じ |
 
 ```text
 $ StructLayout
 size=12 tag=0 count=4 flag=8
-members=1+4+1=6
 ```
+
+メンバのサイズの単純な合計は `sizeof(char) + sizeof(int) + sizeof(char)` = 1＋4＋1 = 6 バイト（両環境とも）なので，`sizeof(Record)` との差 6 バイトが隙間である。
 
 両環境とも `int` は 4 バイトで 4 の倍数の位置に置く必要があるため同じ値になるが，C の規格が決めているのは「最初のメンバの位置は 0」「メンバは宣言順に並ぶ」までで，隙間の大きさは処理系が決める。
 `#pragma pack` などの配置設定や，`int` の大きさ・アラインメントが違う処理系では別の値になり得るので，異なる値でも直ちに誤りではない。
@@ -739,7 +794,7 @@ members=1+4+1=6
 
 ## 確認問題
 
-1. **struct point の定義と `Point p;` は何が違うか** — 定義は型（データの形: `x` と `y` という `double` を持つ）を決めるだけで，保存場所は作らない。`Point p;` はその型の変数（実体）を作り，メモリを確保する。
+1. **struct point の定義と `Point p;` は何が違うか** — 定義は型（データの形: `x` と `y` という `double` を持つ）を決めるだけである。`Point p;` はその型の変数（保存場所を持つ実体）を定義する。型の定義や `typedef` だけでは保存場所は作られない。
    `typedef` も別名を付けるだけで変数を作らない（発展1の表）。
 2. **指定初期化子で `.y` を先に書くと，値の対応は変わるか** — 変わらない。`{.y = 2.0, .x = 10.0}` は名前で対応するので `x=10.0`，`y=2.0`（発展1の `a=10.0 2.0`）。
    変わるのは名前を指定しない `{2.0, 10.0}` で，こちらは宣言順に `x=2.0`，`y=10.0` になる。
@@ -759,6 +814,6 @@ members=1+4+1=6
 
 | 項目 | 確認できる課題・方法 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 移動量 0，0（`move_0_0`）と座標範囲の上限（`limit_999_m1000`）／課題2 `n=1`・全員 0・全員 100・割り切れない 80，70，91／課題3 幅 0・高さ 0・負の座標／発展2 下限 (1, 1)・上限 (3, 2)，(2, 4)・外側・幅 0 の長方形。すべて `tests/` のケースとして自動で確認できる。範囲外（`n=0`・`n=4`，座標 1001 など）は実行せず引数で拒否する |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 移動量 0，0（`variant_move_0_0`）／課題2 `n=1`・全員 0・全員 100・割り切れない 80，70，91／課題3 幅 0・高さ 0・負の座標・名前 20 文字と 21 文字／発展2 下限 (1, 1)・上限 (3, 2)，(2, 4)・外側・幅 0 の長方形。すべて初期値を書き換えた版（`softprac_add_variant`）のテストとして自動で確認できる。範囲外（`n=0`・`n=4` など）は未定義動作・0 除算になるので実行しない |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトを GCC/Clang の `-Wall -Wextra -Wpedantic -Werror` でビルドして警告 0（MSVC /W4 を想定し，暗黙の型変換・未初期化変数・C4221 になる書き方を避けた）。課題3・発展1・課題2 の「書けない式」はエラーの診断を表に示した。`%zu` と `size_t`（発展3），平均の整数除算（課題2，警告が出ない誤り）も説明できるか確認する |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の箱と矢印の図（`p` 自体と `p` が指す `Point`），課題2 の `a[1].name[0]` の型の表，課題3 の `r.lower.x` と `r->lower.x` の違い，課題4 の配列メンバ・ポインタメンバの図，発展2 の `result` の各メンバの値の出どころ，発展3 の配置図 |
