@@ -1,0 +1,3 @@
+before: a=10 b=20
+after a = b;  a=20 b=20
+after b = a;  a=20 b=20

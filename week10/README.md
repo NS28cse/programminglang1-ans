@@ -341,20 +341,20 @@ int main(int argc, char *argv[])
 各値 0〜100・最大 10 個なので合計は最大 1000 で，配列を作らず `long total` へ順に加えられる（オーバーフローしない）。実行結果（`ParseNumber_sum`）:
 
 ```text
-$ ParseNumber 12 23 34
+$ ParseNumber_sum 12 23 34
 69
-$ ParseNumber 0 100
+$ ParseNumber_sum 0 100
 100
-$ ParseNumber 12 x 34
+$ ParseNumber_sum 12 x 34
 invalid integer
 (終了コード 1)
-$ ParseNumber
+$ ParseNumber_sum
 expected 1 to 10 integers
 (終了コード 1)
-$ ParseNumber 1 2 3 4 5 6 7 8 9 10 11
+$ ParseNumber_sum 1 2 3 4 5 6 7 8 9 10 11
 expected 1 to 10 integers
 (終了コード 1)
-$ ParseNumber 42 50
+$ ParseNumber_sum 42 50
 92
 ```
 
@@ -404,13 +404,9 @@ hokuriku!
 **要点**: `wb`/`rb` は改行変換をしない。`fread`/`fwrite` の戻り値は「処理した要素の個数」で，`size = 1` のときだけバイト数と一致する。
 読んだ個数 `n` だけを使い，配列の残り（未初期化）や `%s` を使わない。
 
-### 置き換え前の版（講義の `binary.c`）
+### 本体（講義の `binary.c`）
 
-`data` が `{0x41, 0x00, 0x42, 0x0A}` の講義どおりの版（`Binary_sample` としてテスト）:
-
-```c
-    const unsigned char data[] = {0x41, 0x00, 0x42, 0x0A};
-```
+解答: [Binary/binary.c](Binary/binary.c)（講義の `binary.c` にコメントを加えたもの。`data` は `{0x41, 0x00, 0x42, 0x0A}`）。
 
 ```text
 $ Binary
@@ -420,26 +416,32 @@ $ Binary
 `bytes.bin` は 4 バイト（`41 00 42 0A`）。途中の `00` も普通のデータとして読める（文字列ではないので `%s` で表示しない）。
 繰り返し実行すると同じ名前のファイルを上書きし，常に 4 バイトになる（テスト `overwrite`: 20 バイトの古い `bytes.bin` があっても 4 バイトになる）。
 
-**読み取った個数だけを使う**: `buffer` は 16 要素だが，`fread` が返す `n` は 4。表示するのは `buffer[0]`〜`buffer[3]` だけで，残り 12 個は値が決まっていない（読んではいけない）。
-`n` を確かめるために表示を 1 行足すと（任意）:
+**読み取った個数だけを使う**（variant `show_n`）: `buffer` は 16 要素だが，`fread` が返す `n` は 4。表示するのは `buffer[0]`〜`buffer[3]` だけで，残り 12 個は値が決まっていない（読んではいけない）。
+`n` を確かめるために，表示のループの直前へ 1 行足した版:
 
 ```c
     printf("n=%zu\n", n);
+    for (size_t i = 0; i < n; ++i) {
 ```
 
 ```text
+$ Binary_show_n
 n=4
-E3 81 82 0A
+41 00 42 0A
 ```
 
-（上は最終版に足した場合。講義の版なら 2 行目が `41 00 42 0A`。）ファイルが 16 バイトより大きいと 1 回の `fread` では全部読めない。「`fread` を呼んだ = ファイル全体を読んだ」ではない。
+`size = 1` なので `n` はバイト数と一致する。ファイルが 16 バイトより大きいと 1 回の `fread` では全部読めない。「`fread` を呼んだ = ファイル全体を読んだ」ではない。
 
-### UTF-8 をバイトとして観察する（フォルダのソース = 最終版）
+### UTF-8 をバイトとして観察する（variant `utf8_a`）
 
-解答: [Binary/binary.c](Binary/binary.c)（`data` を `{0xE3, 0x81, 0x82, 0x0A}` に置き換えた版）。
+`data` を次の 4 バイトに置き換えた版（`Binary_utf8_a`）:
+
+```c
+    const unsigned char data[] = {0xE3, 0x81, 0x82, 0x0A};
+```
 
 ```text
-$ Binary
+$ Binary_utf8_a
 E3 81 82 0A
 ```
 
@@ -452,17 +454,19 @@ E3 81 82 0A
 解答: [ByteOrder/byte_order.c](ByteOrder/byte_order.c)。講義の観察用断片を別の `main` にし，`sizeof value` を `%zu` で表示してから 1 バイトずつ 16 進数で表示する。
 最後に演習ページの 2 進数表示の断片を加えた。
 
-変更前（`unsigned short value = 1;`，`ByteOrder_value_1` としてテスト）:
+本体（`unsigned short value = 1;`）:
 
 ```text
+$ ByteOrder
 sizeof value = 2
 01 00
 00000001
 ```
 
-最終版（`value = 0x1234`）:
+値を `0x1234` へ変更した版（variant `value_0x1234`，`unsigned short value = 0x1234;`）:
 
 ```text
+$ ByteOrder_value_0x1234
 sizeof value = 2
 34 12
 00000001
@@ -487,13 +491,10 @@ sizeof value = 2
 **要点**: `w` は開いた時点で以前の内容を消す，`a` は末尾へ追記する，`wx` は既存ファイルがあれば開くのに失敗する。
 `fprintf` が成功しても，バッファに残った出力は `fclose` のときに書かれるので `fclose` の戻り値も調べる。
 
-### 最初の版（モード `w`，`WriteText_mode_w` としてテスト）
+### 本体（モード `w`）
 
-```c
-    FILE *fp = fopen("scores.txt", "w");
-```
-
-フォルダのソース [WriteText/write_text.c](WriteText/write_text.c) の `fopen` のモードが `"w"` の版。画面には何も表示しない（結果はファイル）。
+解答: [WriteText/write_text.c](WriteText/write_text.c)（`fopen("scores.txt", "w")`）。画面には何も表示しない（結果はファイル）。
+IDE で何回実行しても `scores.txt` は 3 行のままなので，本体はこの版にしている。
 
 ```text
 $ WriteText            ← 1 回目
@@ -507,33 +508,35 @@ $ WriteText            ← 2 回目（同じ条件）: 再び 3 行。6 行に�
 `scores.txt` のバイト数: Windows（テキストモードで `\n` が CRLF になる）では 3 行 ×（2 文字 + CR LF）= **12 バイト**，Linux/macOS では **9 バイト**。
 `"wb"` で書けば Windows でも 9 バイトになる（「バイナリで保存した場合とバイト数が異なることがある」の答え）。`ReadText` で読み返した表示はどちらも同じ。
 
-### モードを `a` に変えた版（フォルダのソース = 最終版）
+### モードを `a` に変えた版（variant `mode_a`）
 
-解答: [WriteText/write_text.c](WriteText/write_text.c)。
+```c
+    FILE *fp = fopen("scores.txt", "a");
+```
 
 ```text
 （scores.txt が 3 行ある状態で）
-$ WriteText     → 6 行（72 85 60 72 85 60）
-$ WriteText     → 9 行
+$ WriteText_mode_a     → 6 行（72 85 60 72 85 60）
+$ WriteText_mode_a     → 9 行
 （scores.txt を削除してから）
-$ WriteText     → 3 行（a はファイルがなければ新しく作る）
+$ WriteText_mode_a     → 3 行（a はファイルがなければ新しく作る）
 ```
 
-（行数は実行後に `scores.txt` を数えたもの。テスト `new_file`・`append_to_3_lines`・`append_to_6_lines` で内容まで比較している。）
+（行数は実行後に `scores.txt` を数えたもの。テスト `mode_a--new_file`・`mode_a--append_to_3_lines`・`mode_a--append_to_6_lines` で内容まで比較している。）
 
 ### 表「上書きと追記を比較する」（実際の結果）
 
 | モード | 実行前に3行ある場合 | 注意 | 確かめたこと（テスト） |
 | --- | --- | --- | --- |
-| `w` | 今回の3行だけになる | 以前の内容を消す | 3 行 → 3 行，`old data` などの別の内容 → 3 行（`mode_w--overwrite_*`） |
-| `a` | 以前の3行と今回の3行で6行 | 繰り返すたびに増える | 3 → 6 → 9 行，なければ 3 行で作成（`append_*`，`new_file`） |
+| `w` | 今回の3行だけになる | 以前の内容を消す | 3 行 → 3 行，`old data` などの別の内容 → 3 行（本体の `overwrite_*`） |
+| `a` | 以前の3行と今回の3行で6行 | 繰り返すたびに増える | 3 → 6 → 9 行，なければ 3 行で作成（`mode_a--*`） |
 | `wx` | 開くのに失敗 | 既存ファイルを保護する | `fopen: File exists`，終了コード 1，元の内容のまま（`mode_wx--existing_file`）。なければ 3 行で作成 |
 
-`wx` の版（`fopen("scores.txt", "wx")`）の実行結果:
+`wx` の版（variant `mode_wx`，`fopen("scores.txt", "wx")`）の実行結果:
 
 ```text
 （scores.txt がある状態で）
-$ WriteText
+$ WriteText_mode_wx
 fopen: File exists
 (終了コード 1)
 ```
@@ -561,7 +564,7 @@ fopen: File exists
 解答: [NumberFormats/number_formats.c](NumberFormats/number_formats.c)。`write_text`・`write_binary`・`read_text`・`read_binary` の 4 関数に分け，
 それぞれが開いたファイルを必ず閉じ，失敗なら 0 を返す。`main` はどれかが失敗したら値を表示せずに終了コード 1 で終わる。
 
-### 変更前の版（`data` が `{0.5, 1.25, -2.0}`，表示が `%.2f`。`NumberFormats_basic` としてテスト）
+### 本体（`data` が `{0.5, 1.25, -2.0}`，表示が `%.2f`）
 
 ```c
     const double data[COUNT] = {0.5, 1.25, -2.0};
@@ -597,19 +600,28 @@ numbers.bin（25 バイト = 1 + 3 * sizeof(double)。16 進数）
   この小さな例ではテキストの方が小さい。テキスト・バイナリのどちらが常に小さい・速いということはない。
 - `numbers.bin` は「同じ処理系で読み戻す専用」。`double` のサイズ・表現・バイト順が違う処理系とは交換できない。
 
-### `data[0]` を 0.125，表示を `%.3f` にした版（フォルダのソース = 最終版）
+### `data[0]` を 0.125，表示を `%.3f` にした版（variant `precision_0125`）
 
-保存の書式は `%.2f` のまま，最後の 2 行の表示書式だけ `%.3f` に変えた。
+保存の書式は `%.2f` のまま，`data[0]` を 0.125 にし，最後の 2 行の表示書式だけ `%.3f` に変えた版:
+
+```c
+    const double data[COUNT] = {0.125, 1.25, -2.0};
+    ...
+    printf("text=%.3f %.3f %.3f\n", text_values[0], text_values[1], text_values[2]);
+    printf("binary=%.3f %.3f %.3f\n", binary_values[0], binary_values[1], binary_values[2]);
+```
 
 ```text
-$ NumberFormats
+$ NumberFormats_precision_0125
 text=0.120 1.250 -2.000
 binary=0.125 1.250 -2.000
 ```
 
 `numbers.txt` は `3`・`0.12`・`1.25`・`-2.00`（保存した時点で 0.125 の 3 桁目が失われた），`numbers.bin` の 1 個目は `00 00 00 00 00 00 C0 3F`（0.125 そのもの）。
 バイナリ側は文字列への変換を通らないので 0.125 を保つ。テキスト側が 0.12 と 0.13 のどちらになるか（丸めの境界）は本質ではない：0.125 は 2 進数で正確に表せるちょうど中間の値で，
-glibc（Linux）と現在の Windows の UCRT はどちらも偶数側へ丸めて `0.12` を出す（古い UCRT は `0.13` を出していた）。注目するのは「`%.2f` で保存した時点で桁が失われた」こと。
+glibc（Linux）と現在の Windows の UCRT はどちらも偶数側へ丸めて `0.12` を保存するので `text=0.120` になる。
+ただし古い UCRT や，旧来の丸めに戻す `legacy_stdio_float_rounding.obj` をリンクした場合は `0.13` を保存して `text=0.130` になる（学生の結果が 0.130 でも誤りではない）。
+注目するのは「`%.2f` で保存した時点で桁が失われ，0.125 とは一致しない」こと。
 
 ### 補足
 
@@ -666,8 +678,9 @@ usage: WriteSquares count filename
 1 行は `fgets` で文字列として読み（容量を決める），`strtol` で検査する（`%d` では範囲外を安全に扱えない）。
 
 解答: [CheckValue/check_value.c](CheckValue/check_value.c)。
-- `read_value`: 1 行（30 バイト + 改行 + 終端の配列）を読み，改行と末尾の空白（スペース・タブ・CR）を除いて，0〜上限の整数 1 個なら 1，行がなければ 0，形式の誤りなら -1 を返す。
-  失敗したときは値を書き込まないので，呼び出し側は得られなかった値を使わない。先頭の空白は `strtol` が読み飛ばす。31 バイト以上の行は拒否する。
+- `read_value`: 1 行（30 バイト + 改行 + 終端の配列）を読み，改行と末尾の空白（スペース・タブ・CR）を除いて，0〜上限の整数 1 個なら 1，行がなければ 0，形式の誤りなら -1，
+  31 バイト以上の行なら -2 を返す。失敗したときは値を書き込まないので，呼び出し側は得られなかった値を使わない。先頭の空白は `strtol` が読み飛ばす。
+- `report_line_error`: 失敗の種類ごとに `line N: missing count/value`・`line N: line too long`・`line N: expected a ...`・`line N: read error` を標準エラーへ出す。
 - `check_file`: 1 行目を個数（0〜100）として読み，続く `N` 行を値（0〜9801）として読む。見つけても `return` せずフラグを立てるだけにし，
   `N` 行の後に 1 文字でも残っていれば（空行も）`extra data` で拒否する。最後の行の改行はなくてもよい。
 - `main`: 引数の個数と検索値（0〜9801）を先に検査し，ファイルを開いて `check_file` を呼び，必ず `fclose` する。形式が正しいときだけ `found`/`not found` を表示する。
@@ -687,6 +700,10 @@ expected a value from 0 to 9801
 形式は正しいが二乗ではないファイル（`2`・`5`・`6`）も受け付ける（`CheckValue bad.txt 6` → `found`）。このプログラムは「ファイル形式の検査」をしているだけで，
 値が 0，1，4，9 という特定の計算結果になっているかは検査しない。また，1 行目の個数そのものは検索対象ではない（`2`・`0`・`1` のファイルで 2 を探すと `not found`）。
 
+**前提として検査しないこと**: 形式の約束（ASCII・`NUL` なし）は前提とし，`NUL` や非 ASCII のバイトは検査しない。
+例えば `9`，`NUL`，`x` の行は `fgets` の後の文字列が `"9"` で終わるので 9 として読む（テスト `nul_not_checked` → `found`）。
+BOM 付き UTF-8 で保存した `squares.txt` は，先頭の `EF BB BF` が数字ではないので `line 1: expected a count from 0 to 100` で拒否される（テスト `bad_bom`）。
+
 ### 表「異常なデータも別ファイルで確認する」（記入済み・実際の結果）
 
 正常な `squares.txt`（`4`・`0`・`1`・`4`・`9`）のコピーを `bad.txt` として変更し，`CheckValue bad.txt 9` で実行した。
@@ -704,9 +721,18 @@ expected a value from 0 to 9801
 （行番号はファイルの何行目かで，表示はすべて標準エラー。どの異常でも `found`/`not found` は表示しない。）
 
 そのほかテストで確かめていること: 値の前後の空白・タブ（受け付ける），CRLF のファイル（受け付ける），途中の空行・空白だけの行（拒否），
-30 バイトの行（受け付ける）と 31 バイトの行（拒否），`N` = 0 のファイル，`N` = 100 のファイルで 9801（`found`）と 9800（`not found`），
+30 バイトの行（受け付ける）と 31 バイトの行（`line 5: line too long` で拒否。31 バイト以上のヘッダも `line 1: line too long`），`N` = 0 のファイル，`N` = 100 のファイルで 9801（`found`）と 9800（`not found`），
 **見つけた後の行が壊れている場合**（`4`・`0`・`1`・`abc`・`9` で 1 を探すと，1 は 3 行目で見つかるが 4 行目の `abc` で `line 4: …` となり `found` は出ない），
 検索値 9802・-1・`12x`，存在しないファイル，空白を含むファイル名，引数の個数の誤り，空のファイル名。
+
+```text
+$ CheckValue long.txt 9      ← 5 行目が空白 30 個 + "9"（31 バイト）
+line 5: line too long
+(終了コード 1)
+```
+
+環境差: Windows のテキストモードは CRLF を LF に変換するので，CRLF のファイルでも「30 バイト + 改行」の行は受け付ける。
+Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 バイトの値の行は CR 込みで 31 バイトとなり `line too long` で拒否される（29 バイト以下の行は CR を末尾の空白として除くので受け付ける）。
 
 `read_value` が失敗したときは，その呼び出しで得られなかった値を読まない（`*value` は書き換えず，呼び出し側もすぐ失敗として終わる）。
 検索だけなら 1 個ずつ比較すれば足りるので，値全体を配列に保存していない。
@@ -718,6 +744,8 @@ expected a value from 0 to 9801
 - ヘッダの個数をそのまま信用してループし，行が足りなくても成功にする。見つけた直後に `return` して残りを検査しない。
 - 30 バイトを超える行を 2 行として読んでしまう（`fgets` の容量で切れた残りを次の値として扱う）。
 - `CheckValue` の作業ディレクトリに `squares.txt` をコピーしていない（`WriteSquares` のフォルダにしかない）。
+- メモ帳などで `squares.txt` を **BOM 付き UTF-8** で保存し直すと，先頭の `EF BB BF` のため `line 1: expected a count from 0 to 100` で拒否される。
+  学生が「正しいファイルなのに拒否される」と言ったら，まず BOM（エンコードの「UTF-8 (BOM 付き)」）を疑う。これは仕様どおりの拒否で，プログラムの誤りではない。
 
 ---
 
@@ -731,7 +759,7 @@ expected a value from 0 to 9801
 4. **そうとは限らない。** `fread` の戻り値は完全に読めた**要素の個数**。`size` が 1 のときだけバイト数と一致する。`fread(buf, 4, 4, fp)` が 3 を返したら 4 バイトの要素が 3 個（12 バイト分）で，
    一部だけ読めた 4 個目は数えられない。また要求より少ないこともあるので，`ferror` と終端を確かめる（`Binary`・`NumberFormats`）。
 5. **変換されない。** 拡張子はファイル名の一部で，名前を変えても中のバイトは同じ。テキストとして扱うかバイナリとして扱うかは，`fopen` のモード（`b` の有無）と，読み書きするプログラムが決めた保存形式で決まる。
-6. **同じではない。** 「あ」は見た目 1 文字（コードポイント U+3042 の 1 個）だが，UTF-8 では `E3 81 82` の 3 バイト（`Binary` で確認）。`strlen` はバイト数を数えるので 3 になる。
+6. **同じではない。** 「あ」は見た目 1 文字（コードポイント U+3042 の 1 個）だが，UTF-8 では `E3 81 82` の 3 バイト（`Binary` の variant `utf8_a` で確認）。`strlen` はバイト数を数えるので 3 になる。
    見た目の 1 文字が複数のコードポイントからできている場合もあり，バイト数・コードポイント数・見た目の文字数はそれぞれ別。
 7. **よくない。** ファイルの個数（ヘッダ）は壊れていたり，わざと大きくされていたりするかもしれない。配列の容量以内か（`NumberFormats` は 3 と一致するか，`CheckValue` は 0〜100 か）を確かめ，
    さらにその個数のデータが本当にあるか（`fread` の戻り値，`CheckValue` の `missing value`）を確かめてから使う。
@@ -752,4 +780,4 @@ expected a value from 0 to 9801
 | 警告を確認し，原因を説明・修正した | すべてのプロジェクトが GCC/Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で問題になる C4996 は `fopen` を使うファイルの先頭の `#define _CRT_SECURE_NO_WARNINGS` で抑止。`%zu`・`wx` は MSVC 2015 以降で使える）。<br>学生の提出物でよく出る警告: C4996（`fopen`，`_CRT_SECURE_NO_WARNINGS` がない／`#include` の後に書いた），C4244（`long` を `int` に代入），C4018/C4389（`size_t` と `int` の比較），C4100（使わない `argc`） |
 | 自分の言葉で，処理の流れと使った型を説明できる | `FILE *`（ストリームでありファイルの中身ではない），`fgetc` の戻り値が `int` である理由（課題1），`char *argv[]` と `argc`（課題2），`size_t` と `fread` の戻り値（課題3），`unsigned char *` でオブジェクトの表現を見る（`ByteOrder`），`long` と `strtol`・`errno`（課題2・発展2），`double` のテキスト/バイナリ表現（発展1） |
 
-注: 空文字列の引数は `.args` の空行で表す（空行 1 行だけなら空文字列の引数 1 つ）。`ReadText ""`（`empty_arg`），`ParseNumber ""`（合計版 `empty_arg`・置き換え前の版 `single--empty_arg`），`Arguments ""`（`empty_arg`），`WriteSquares 4 ""`，`CheckValue "" 9` を自動テストにしている。
+注: 空文字列の引数は `.args` の空行で表す（空行 1 行だけなら空文字列の引数 1 つ）。`ReadText ""`（`empty_arg`），`ParseNumber ""`（本体 `empty_arg`・合計版 `sum--empty_arg`），`Arguments ""`（`empty_arg`），`WriteSquares 4 ""`，`CheckValue "" 9` を自動テストにしている。
