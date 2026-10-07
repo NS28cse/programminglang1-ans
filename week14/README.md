@@ -5,33 +5,28 @@
 
 ## プロジェクト一覧
 
-| 課題 | プロジェクト | ソース | テスト数 |
+| 課題 | プロジェクト | ソース | テスト数（本体 + 書き換え版） |
 | --- | --- | --- | --- |
-| 課題1 階乗の境界 | `Factorial` | [recursion.c](Factorial/recursion.c) | 11 + 書き換え版 3 |
-| 課題2 再帰の復帰順 | `Trace` | [trace.c](Trace/trace.c) | 9 + 書き換え版 3 |
-| 課題3 互除法を反復へ書き換える | `GcdLoop` | [gcd_loop.c](GcdLoop/gcd_loop.c) | 12 + 書き換え版 1 |
-| 課題4 再帰の入口を安全にする | `CheckedFactorial` | [checked_factorial.c](CheckedFactorial/checked_factorial.c) | 9 |
-| 発展1 再帰の呼び出し数 | `Fibonacci` | [fibonacci.c](Fibonacci/fibonacci.c) | 12 + 書き換え版 1 |
-| 発展2 二分木の3つの走査 | `TreeTraversal` | [tree.c](TreeTraversal/tree.c) | 1 |
+| 課題1 階乗の境界 | `Factorial` | [recursion.c](Factorial/recursion.c) | 1 + 9 |
+| 課題2 再帰の復帰順 | `Trace` | [trace.c](Trace/trace.c) | 1 + 9 |
+| 課題3 互除法を反復へ書き換える | `GcdLoop` | [gcd_loop.c](GcdLoop/gcd_loop.c) | 1 + 8 |
+| 課題4 再帰の入口を安全にする | `CheckedFactorial` | [checked_factorial.c](CheckedFactorial/checked_factorial.c) | 1 + 6 |
+| 発展1 再帰の呼び出し数 | `Fibonacci` | [fibonacci.c](Fibonacci/fibonacci.c) | 1 + 10 |
+| 発展2 二分木の3つの走査 | `TreeTraversal` | [tree.c](TreeTraversal/tree.c) | 1 + 5 |
 | 発展3 帰りがけ順と解放の順序 | （プロジェクトなし） | 本 README の[参考コード](#発展3-帰りがけ順と解放の順序) | — |
 
 ファイル名を指定しているのは `recursion.c`・`trace.c`・`fibonacci.c`・`tree.c` だけなので，課題3・4 のソース名（`gcd_loop.c`・`checked_factorial.c`）は内容から付けた。
 発展3 は「完成した動的な木の構築プログラムは要求しません」とあるので，プロジェクトは作らず，ASan で確認した参考コードを README に載せた。
 
-「書き換え版」は，小問や「出力位置を変える」のようにソースを書き換えて試す版である。フォルダのソースは最終版のまま，
-各プロジェクトの `CMakeLists.txt` の `softprac_add_variant` で書き換えた版をビルドし，期待する出力（`variants/tests/<ケース>.out`）と比較する。
-対象: `Factorial` の `base_0`（基底値 0。n=5，0，20），`Trace` の `enter_after_check`（n=3，0）・`leave_before_call`（表示位置の変更），
-`GcdLoop` の `overwrite_first`（更新順序の誤り），`Fibonacci` の `no_reset`（`stats` を初期化せずにもう一度呼ぶ）。
-書き換えた版のソースは README に載せたコードと同じ形になる。合計 62 テスト（本体 54，書き換え版 8）。
+### 値の変え方とテスト（全プロジェクト共通）
 
-### 値の変え方（全プロジェクト共通）
+演習ページの手順どおり，値は **`main` の初期値を書き換えて**変える（`unsigned int n = 5;` を `unsigned int n = 21;` にするなど）。
+Visual Studio では書き換えて保存し，Ctrl+Shift+B でビルドしてから Ctrl+F5 で実行する。ビルドに失敗したときに古い実行ファイルの結果を読まないように，出力ウィンドウで「ビルド: 1 正常終了」を確かめる。
 
-演習ページは「`main` の `n` を書き換えて再ビルドする」手順だが，検証表のすべての値を自動テストにするため，
-`TreeTraversal` 以外は**コマンドライン引数で値を渡せる**ようにした（第10回の `argc`/`argv` と `strtol` の検査）。
-
-- 引数なしで実行すると，演習ページ・講義と同じ値（`Factorial` は 5，`Trace` は 3，`GcdLoop` は 48 18，`CheckedFactorial` は 5，`Fibonacci` は 4）になり，講義の「期待する表示」と同じ出力になる。
-- Visual Studio では「プロジェクトのプロパティ → 構成プロパティ → デバッグ → コマンド引数」に `20` のように書く（第10回と同じ手順）。演習どおり `main` の初期値を書き換えても同じ結果になる。
-- 整数として読めない引数（`12x` など）・引数の個数の誤りは，再帰へ入る前に `stderr` へメッセージを出して終了コード 1 で終わる。
+フォルダのソースは演習ページ・講義の値（`Factorial` は `n = 5`，`Trace` は `n = 3`，`GcdLoop` は `a = 48`・`b = 18`，`CheckedFactorial` は `n = 5`，`Fibonacci` は `input = 4`）のままにし，
+検証表の他の値・小問の書き換えは，各プロジェクトの `CMakeLists.txt` の `softprac_add_variant` で**学生と同じ書き換え**をした版をビルドしてテストする
+（期待する出力は `variants/tests/<ケース>.out`，エラー終了の版は `.err`・`.code` も）。以下の実行結果の見出しにある `n_21` などがそのケース名である。
+テストは本体 6 件，書き換え版 47 件の合計 53 件。
 
 ### 何が小さくなるから止まるのか（全課題のまとめ）
 

@@ -1,0 +1,5 @@
+pre: 3 4 5
+in: 4 3 5 2 6 1 9 8 7 10
+post: 4 5 3 6 2 9 8 10 7 1
+count: all=10 nodes[3]=1 null=0
+height: all=4 nodes[3]=1 null=0
