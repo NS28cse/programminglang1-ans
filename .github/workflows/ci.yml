@@ -12,7 +12,8 @@ jobs:
       - name: Configure (MSVC, /W4 /WX)
         run: cmake -S . -B build -A x64 -DSOFTPRAC_WERROR=ON
       - name: Build
-        run: cmake --build build --config Debug
+        # エラーと警告だけを表示する（失敗したプロジェクトを見つけやすくする）
+        run: cmake --build build --config Debug -- /m /nologo "/clp:ErrorsOnly;WarningsOnly;Summary"
       - name: Test
         run: ctest --test-dir build -C Debug --output-on-failure
 
