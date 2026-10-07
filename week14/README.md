@@ -7,26 +7,27 @@
 
 | 課題 | プロジェクト | ソース | テスト数（本体 + 書き換え版） |
 | --- | --- | --- | --- |
-| 課題1 階乗の境界 | `Factorial` | [recursion.c](Factorial/recursion.c) | 1 + 9 |
+| 課題1 階乗の境界 | `Factorial` | [recursion.c](Factorial/recursion.c) | 1 + 10 |
 | 課題2 再帰の復帰順 | `Trace` | [trace.c](Trace/trace.c) | 1 + 9 |
-| 課題3 互除法を反復へ書き換える | `GcdLoop` | [gcd_loop.c](GcdLoop/gcd_loop.c) | 1 + 8 |
+| 課題3 互除法を反復へ書き換える | `GcdLoop` | [gcd_loop.c](GcdLoop/gcd_loop.c) | 1 + 11 |
 | 課題4 再帰の入口を安全にする | `CheckedFactorial` | [checked_factorial.c](CheckedFactorial/checked_factorial.c) | 1 + 6 |
 | 発展1 再帰の呼び出し数 | `Fibonacci` | [fibonacci.c](Fibonacci/fibonacci.c) | 1 + 10 |
-| 発展2 二分木の3つの走査 | `TreeTraversal` | [tree.c](TreeTraversal/tree.c) | 1 + 5 |
-| 発展3 帰りがけ順と解放の順序 | （プロジェクトなし） | 本 README の[参考コード](#発展3-帰りがけ順と解放の順序) | — |
+| 発展2 二分木の3つの走査 | `TreeTraversal` | [tree.c](TreeTraversal/tree.c) | 1 + 7 |
+| 発展3 帰りがけ順と解放の順序 | （プロジェクトなし） | 参考コード [TreeTraversal/versions/destroy_tree.c](TreeTraversal/versions/destroy_tree.c) | （`TreeTraversal` の `destroy` に含む） |
 
 ファイル名を指定しているのは `recursion.c`・`trace.c`・`fibonacci.c`・`tree.c` だけなので，課題3・4 のソース名（`gcd_loop.c`・`checked_factorial.c`）は内容から付けた。
-発展3 は「完成した動的な木の構築プログラムは要求しません」とあるので，プロジェクトは作らず，ASan で確認した参考コードを README に載せた。
+発展3 は「完成した動的な木の構築プログラムは要求しません」とあるので，プロジェクトは作らず，参考コードを `TreeTraversal/versions/` に置いて ASan 付きでテストした。
 
 ### 値の変え方とテスト（全プロジェクト共通）
 
 演習ページの手順どおり，値は **`main` の初期値を書き換えて**変える（`unsigned int n = 5;` を `unsigned int n = 21;` にするなど）。
 Visual Studio では書き換えて保存し，Ctrl+Shift+B でビルドしてから Ctrl+F5 で実行する。ビルドに失敗したときに古い実行ファイルの結果を読まないように，出力ウィンドウで「ビルド: 1 正常終了」を確かめる。
 
-フォルダのソースは演習ページ・講義の値（`Factorial` は `n = 5`，`Trace` は `n = 3`，`GcdLoop` は `a = 48`・`b = 18`，`CheckedFactorial` は `n = 5`，`Fibonacci` は `input = 4`）のままにし，
+フォルダのソースは演習ページ・講義の値（`Factorial` は `n = 5`，`Trace` は `n = 3`，`GcdLoop` は `a = 48`・`b = 18`，`CheckedFactorial` は `n = 5`，`Fibonacci` は `input = 4`，`TreeTraversal` は `preorder(&nodes[0])` と講義の接続）のままにし，
 検証表の他の値・小問の書き換えは，各プロジェクトの `CMakeLists.txt` の `softprac_add_variant` で**学生と同じ書き換え**をした版をビルドしてテストする
 （期待する出力は `variants/tests/<ケース>.out`，エラー終了の版は `.err`・`.code` も）。以下の実行結果の見出しにある `n_21` などがそのケース名である。
-テストは本体 6 件，書き換え版 47 件の合計 53 件。
+確認用の計測プログラム（呼び出し回数・深さを数えるものなど）や発展3 の参考コードは `versions/` に別ソースとして置き，置換なしの `softprac_add_variant` でテストする（README には実行結果とケース名を載せる）。
+テストは本体 6 件，書き換え版・確認用 53 件の合計 59 件。
 
 ### 何が小さくなるから止まるのか（全課題のまとめ）
 
@@ -45,7 +46,7 @@ Visual Studio では書き換えて保存し，Ctrl+Shift+B でビルドして�
 
 **要点**: 基底条件 `n == 0` で 1 を返し，`n` を 1 ずつ減らして 0 に近づける。結果が `unsigned long long` に収まる 0〜20 だけを受け付け，21 は `main` の入力検査で再帰に入る前に拒否する。再帰版と反復版の戻り値を比べ，積を作るタイミングの違いを説明する。
 
-解答: [Factorial/recursion.c](Factorial/recursion.c)（講義の `recursion.c` に `factorial_loop` と比較の断片を追加した最終版）
+解答: [Factorial/recursion.c](Factorial/recursion.c)（講義の `recursion.c` に `factorial_loop` と比較の断片を追加した版。演習ページの指示をすべて反映したもの。先頭の表示は講義の出力と同じ）
 
 ```c
 unsigned long long factorial(unsigned int n)
@@ -129,44 +130,7 @@ n must be 0..20          ← 標準エラー出力。標準出力には何も出
 
 - 呼び出し回数・最大深さは 1 本道の再帰なので，どちらも `n + 1`（`factorial(n)` 〜 `factorial(0)`）。分岐しないので回数と深さが一致する（発展1 の `fib` とは違う）。
 - 表は「1 回の `factorial(n)` の計算」についての値である。解答の `main` は比較の断片でもう一度 `factorial(n)` を呼ぶので，**プログラム全体では `factorial` が 2(n+1) 回**呼ばれる（n=5 で 12 回）。最大深さは各回とも n+1 で変わらない。
-- 回数と深さは解答コードでは表示しないが，次の計測用コピー（解答には含めない）で確かめた。
-
-```c
-#include <stdio.h>
-unsigned long long calls;
-unsigned int max_depth;
-unsigned long long factorial(unsigned int n, unsigned int depth)
-{
-    ++calls;
-    if (depth > max_depth) { max_depth = depth; }
-    if (n == 0) { return 1; }
-    return n * factorial(n - 1, depth + 1);
-}
-unsigned long long factorial_loop(unsigned int n)
-{
-    unsigned long long result = 1;
-    for (unsigned int i = 1; i <= n; ++i) {
-        result *= i;
-    }
-    return result;
-}
-int main(void)
-{
-    unsigned int list[] = {0, 1, 5, 20};
-    for (int i = 0; i < 4; ++i) {
-        calls = 0; max_depth = 0;
-        unsigned long long r = factorial(list[i], 1);
-        printf("n=%u result=%llu calls=%llu depth=%u\n", list[i], r, calls, max_depth);
-    }
-    int all = 1;
-    for (unsigned int n = 0; n <= 20; ++n) {
-        calls = 0; max_depth = 0;
-        if (factorial(n, 1) != factorial_loop(n)) { all = 0; printf("differ at %u\n", n); }
-    }
-    printf("0..20 all equal=%d\n", all);
-    return 0;
-}
-```
+- 回数と深さは解答コードでは表示しないが，確認用の [Factorial/versions/factorial_count.c](Factorial/versions/factorial_count.c)（`factorial` に深さの引数と回数・最大深さの記録を加えたもの。ケース `count`）で確かめた:
 
 ```text
 n=0 result=1 calls=1 depth=1
@@ -497,39 +461,24 @@ a and b must not both be zero          ← 標準エラー出力。終了コー�
 | 3 回目 | 12 | 6 | 0 | (6, 0) |
 | 終了 | 6 | 0 | （計算しない: `b != 0` が偽） | `a = 6` を返す |
 
-次の確認用コピー（解答には含めない）で各回の値を表示した:
-
-```c
-#include <stdio.h>
-int main(void)
-{
-    unsigned int a = 48, b = 18;
-    int k = 1;
-    while (b != 0) {
-        unsigned int remainder = a % b;
-        printf("loop %d: a=%u b=%u remainder=%u\n", k++, a, b, remainder);
-        a = b;
-        b = remainder;
-    }
-    printf("end: a=%u b=%u -> %u\n", a, b, a);
-    return 0;
-}
-```
+`gcd_loop` の `remainder` を求めた直後に `printf("loop: a=%u b=%u remainder=%u\n", a, b, remainder);` を 1 行挿入した版（`trace_48_18`）で各回の値を表示した:
 
 ```text
-loop 1: a=48 b=18 remainder=12
-loop 2: a=18 b=12 remainder=6
-loop 3: a=12 b=6 remainder=0
-end: a=6 b=0 -> 6
+loop: a=48 b=18 remainder=12
+loop: a=18 b=12 remainder=6
+loop: a=12 b=6 remainder=0
+gcd(48, 18): loop=6 recursive=6 equal=1
 ```
+
+3 回目の後に `b` が 0 になり，ループを抜けて `a = 6` を返す（表の「終了」の行）。
 
 再帰版の呼び出し `gcd(48,18)` → `gcd(18,12)` → `gcd(12,6)` → `gcd(6,0)` の引数の列と，ループの各回の `(a, b)` が一致する。`gcd` は末尾再帰（戻った後に処理がない）なので，引数を更新して先頭へ戻るだけの `while` に素直に書き換えられる。
 
-余りを保存する前に `a` を上書きした誤りの例（確認用コピー。`b = a % b;` の `a` は元の `b` なので，常に `b % b = 0`）:
+余りを保存する前に `a` を上書きした誤りの版（`overwrite_first`。`b = a % b;` の `a` は元の `b` なので，常に `b % b = 0`）:
 
 ```c
-#include <stdio.h>
-unsigned int gcd_wrong(unsigned int a, unsigned int b)
+/* 誤った反復版: 余りを保存する前に a を上書きする */
+unsigned int gcd_loop(unsigned int a, unsigned int b)
 {
     while (b != 0) {
         a = b;          /* 誤り: 余りを保存する前に a を上書き */
@@ -537,21 +486,17 @@ unsigned int gcd_wrong(unsigned int a, unsigned int b)
     }
     return a;
 }
-int main(void)
-{
-    printf("%u %u %u\n", gcd_wrong(48, 18), gcd_wrong(13, 8), gcd_wrong(7, 0));
-    return 0;
-}
 ```
 
-```text
-18 8 7
-```
-
-正しくは 6，1，7。解答の `gcd_loop` だけをこの順序に書き換えた版（`overwrite_first`）では，再帰版との比較で誤りが分かる:
+同じ書き換えで `main` の `a`・`b` を変えた結果（再帰版との比較で誤りが分かる）:
 
 ```text
+a = 48, b = 18（overwrite_first）
 gcd(48, 18): loop=18 recursive=6 equal=0
+a = 13, b = 8（overwrite_first_a13_b8）
+gcd(13, 8): loop=8 recursive=1 equal=0
+a = 7, b = 0（overwrite_first_a7_b0）
+gcd(7, 0): loop=7 recursive=7 equal=1
 ```
 
 元の `a`（48）を失い，`b % b` を計算するので常に 1 回で終わって `b` を返してしまう。(7, 0) のように最初から基底条件の組では偶然正しいので，検証表の組を全部試すことが大切。
@@ -733,24 +678,11 @@ n must be 0..20          ← 同上
 ### 計測結果の読み方
 
 1. **最初の呼び出しも数えるので，`n=0`で`calls`は0にならない。** → `fib` の先頭で `++stats->calls` してから基底条件を判定するので，`n=0` でも `calls=1`，`depth=1`（表の 1 行目）。`main` は数えない。
-2. **`stats`を初期化せずに再び`fib`を呼べば，`calls`は加算され続ける。** → `stats` は `main` の 1 つの変数をポインタで共有しているので，前の測定の値に足される。`main` を次に置き換えた確認用コピー（`fib` などの関数は `fibonacci.c` と同じ）で `fib(4)` を 2 回続けて呼んだ結果:
-   ```c
-   Stats stats = {0, 0};
-   unsigned long long r1 = fib(4, 1, &stats);
-   printf("1st: fib=%llu calls=%llu depth=%u\n", r1, stats.calls, stats.max_depth);
-   unsigned long long r2 = fib(4, 1, &stats);   /* 初期化し直さない */
-   printf("2nd: fib=%llu calls=%llu depth=%u\n", r2, stats.calls, stats.max_depth);
-   Stats fresh = {0, 0};                        /* 別の測定は新しく {0, 0} から */
-   unsigned long long r3 = fib(4, 1, &fresh);
-   printf("reset: fib=%llu calls=%llu depth=%u\n", r3, fresh.calls, fresh.max_depth);
-   ```
+2. **`stats`を初期化せずに再び`fib`を呼べば，`calls`は加算され続ける。** → `stats` は `main` の 1 つの変数をポインタで共有しているので，前の測定の値に足される。解答の `main` で `unsigned long long result = fib(n, 1, &stats);` の直後に `result = fib(n, 1, &stats);` を（初期化し直さずに）加えた書き換え版（`no_reset`）の結果:
    ```text
-   1st: fib=3 calls=9 depth=4
-   2nd: fib=3 calls=18 depth=4
-   reset: fib=3 calls=9 depth=4
+   fib=3 calls=18 depth=4 loop=3
    ```
-   解答の `main` で `unsigned long long result = fib(n, 1, &stats);` の直後に `result = fib(n, 1, &stats);` を（初期化し直さずに）加えた書き換え版（`no_reset`）でも `fib=3 calls=18 depth=4 loop=3` になる。
-   `calls` は 18 に積み上がり，`max_depth` は「最大値」なので 4 のまま（増えないので誤りに気付きにくい）。別の測定は新しく `{0, 0}` で初期化する。
+   `calls` は 1 回分の 9 に 2 回目の 9 が足されて 18 に積み上がり，`max_depth` は「最大値」なので 4 のまま（増えないので誤りに気付きにくい）。別の測定は `Stats fresh = {0, 0};` のように新しく `{0, 0}` で初期化した変数を使う（本体の 1 回の測定が `calls=9`）。
 3. **左右は順番に処理するため，呼び出しの木にある全ノードを同時にスタックへ積むわけではない。** → `left` の計算（左の部分木全体）が終わってその呼び出しがすべて戻ってから，`right` の呼び出しが始まる。同時に待機しているのは根から現在の呼び出しまでの 1 本の経路だけなので，`fib(4)` で同時に存在する `fib` は最大 4 個（9 個ではない）。
 4. **`depth`は対象関数の論理的な深さであり，実際に何バイトのスタックを使ったかを測っているわけではない。** → 1 段あたりの領域（引数・局所変数・戻り先など）の大きさは処理系・最適化・呼び出し規約で変わり，`printf` など他の関数の分も含まれない。`depth=20` だから何バイト，とは言えない。
 
@@ -774,7 +706,7 @@ n must be 0..20          ← 同上
 
 **要点**: `NULL` に来たら何もしないことが基底条件。自分を処理する位置（子の前・間・後）だけで行きがけ・通りがけ・帰りがけ順が決まる。ノード数・高さも「空の木」を基底条件にして左右の結果を組み合わせる。
 
-解答: [TreeTraversal/tree.c](TreeTraversal/tree.c)（講義の `tree.c` に `node_count`・`tree_height` と，その検証の 2 行を追加した最終版。走査関数と木の接続は講義と同じ）
+解答: [TreeTraversal/tree.c](TreeTraversal/tree.c)（講義の `tree.c` に `node_count`・`tree_height` と，その検証の 2 行を追加した版。演習ページの指示をすべて反映したもの。先頭の表示は講義の出力と同じ。走査関数と木の接続は講義と同じ）
 
 講義の木（配列の添字と値は別。`nodes[0]` の値が 1）:
 
@@ -911,32 +843,7 @@ height: all=10 nodes[3]=7 null=0
 
 予測と一致した。一直線の木では `nodes[3]`（値 4）はもう葉ではなく，4〜10 の 7 ノードからなる部分木の根なので，ノード数・高さとも 7 になる。
 
-元の木と一直線の木の比較（次の確認用コピーで，行きがけ順の 1 回の走査の呼び出し回数と深さを計測した。解答には含めない）:
-
-```c
-#include <stdio.h>
-typedef struct node { int value; struct node *left; struct node *right; } Node;
-unsigned calls, nullcalls, maxd, maxreal;
-void pre(const Node *p, unsigned d)
-{
-    ++calls; if (d > maxd) maxd = d;
-    if (p == NULL) { ++nullcalls; return; }
-    if (d > maxreal) maxreal = d;
-    pre(p->left, d + 1); pre(p->right, d + 1);
-}
-int main(void)
-{
-    Node a[10] = {0}, b[10] = {0};
-    for (int i = 0; i < 10; ++i) { a[i].value = b[i].value = i + 1; }
-    a[0].left = &a[1]; a[0].right = &a[6]; a[1].left = &a[2]; a[1].right = &a[5];
-    a[2].left = &a[3]; a[2].right = &a[4]; a[6].left = &a[7]; a[6].right = &a[9]; a[7].left = &a[8];
-    for (int i = 0; i < 9; ++i) b[i].right = &b[i + 1];
-    pre(&a[0], 1); printf("orig calls=%u null=%u maxdepth(incl NULL)=%u real=%u\n", calls, nullcalls, maxd, maxreal);
-    calls = nullcalls = maxd = maxreal = 0;
-    pre(&b[0], 1); printf("line calls=%u null=%u maxdepth(incl NULL)=%u real=%u\n", calls, nullcalls, maxd, maxreal);
-    return 0;
-}
-```
+元の木と一直線の木の比較（確認用の [TreeTraversal/versions/traversal_depth.c](TreeTraversal/versions/traversal_depth.c) で，行きがけ順の 1 回の走査の呼び出し回数と深さを数えた。ケース `depth`）:
 
 
 | 比較 | 元の木 | 一直線の木 |
@@ -972,26 +879,10 @@ line calls=21 null=11 maxdepth(incl NULL)=11 real=10
 
 ### 参考: 動的な木を作って解放する（プロジェクトには含めない）
 
-演習は構築プログラムを要求していないが，TA の説明用に，講義の木と同じ形を個別の `malloc` で作り，`destroy_tree` で解放する例を作成し，GCC の AddressSanitizer（LeakSanitizer）でリーク・不正アクセスがないことを確認した（`destroy_tree(root);` を消すと `240 byte(s) leaked in 10 allocation(s)` と検出されることも確認した）。解放の順序を見るために `destroy_tree` に表示を 1 行加えている。
+演習は構築プログラムを要求していないが，TA の説明用に，講義の木と同じ形を個別の `malloc` で作り，`destroy_tree` で解放する例を [TreeTraversal/versions/destroy_tree.c](TreeTraversal/versions/destroy_tree.c) に置いた（ケース `destroy`）。
+テストは AddressSanitizer（LeakSanitizer）付きで実行されるので，リーク・不正アクセスがないことも毎回確かめられる（`destroy_tree(root);` を消すと `240 byte(s) leaked in 10 allocation(s)` と検出されることも確認した）。解放の順序を見るために `destroy_tree` に表示を 1 行加えている。
 
 ```c
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct node {
-    int value;
-    struct node *left;
-    struct node *right;
-} Node;
-
-void preorder(const Node *p)
-{
-    if (p == NULL) { return; }
-    printf(" %d", p->value);
-    preorder(p->left);
-    preorder(p->right);
-}
-
 /* 前提：共有・循環がなく，各ノードが個別にmallocされている */
 void destroy_tree(Node *p)
 {
@@ -1000,42 +891,12 @@ void destroy_tree(Node *p)
     }
     destroy_tree(p->left);
     destroy_tree(p->right);
-    printf(" %d", p->value);    /* 解放する順を見るための表示 */
+    printf(" %d", p->value);           /* 解放する順を見るための表示 */
     free(p);
 }
-
-int main(void)
-{
-    Node *nodes[10] = {NULL};
-    for (int i = 0; i < 10; ++i) {
-        nodes[i] = malloc(sizeof *nodes[i]);
-        if (nodes[i] == NULL) {
-            fprintf(stderr, "allocation failed\n");
-            for (int j = 0; j < i; ++j) {   /* まだつないでいないので個別に解放する */
-                free(nodes[j]);
-            }
-            return 1;
-        }
-        nodes[i]->value = i + 1;
-        nodes[i]->left = NULL;
-        nodes[i]->right = NULL;
-    }
-    nodes[0]->left = nodes[1];  nodes[0]->right = nodes[6];
-    nodes[1]->left = nodes[2];  nodes[1]->right = nodes[5];
-    nodes[2]->left = nodes[3];  nodes[2]->right = nodes[4];
-    nodes[6]->left = nodes[7];  nodes[6]->right = nodes[9];
-    nodes[7]->left = nodes[8];
-
-    Node *root = nodes[0];           /* 以後は root が木全体を所有する */
-    printf("pre:");
-    preorder(root);
-    printf("\nfree:");
-    destroy_tree(root);
-    putchar('\n');
-    root = NULL;                     /* destroy_tree は呼び出し元の root を変えない */
-    return 0;
-}
 ```
+
+`main` では 10 個のノードを 1 つずつ `malloc` し（失敗したら作成済みのノードを個別に `free` して終了），講義と同じ接続をしてから，`root` に木全体の所有を移して `preorder(root)` と `destroy_tree(root)` を呼び，最後に `root = NULL;` とする。
 
 ```text
 pre: 1 2 3 4 5 6 7 8 9 10
@@ -1075,7 +936,7 @@ free: 4 5 3 6 2 9 8 10 7 1
 
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の 0・1・20・21，課題2 の 0・100・−1・101，課題3 の (7,0)・(0,7)・(0,0)，課題4 の 0・20・−1・21・`NULL`，発展1 の 0・1・20・−1・21，発展2 の `NULL`・葉・一直線の木。すべて `main` の初期値や引数を書き換えた版（`variants/tests/`）の自動テストとしてある |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の 0・1・20・21，課題2 の 0・100・−1・101，課題3 の (7,0)・(0,7)・(0,0)，課題4 の 0・20・−1・21・`NULL`，発展1 の 0・1・20・−1・21，発展2 の `NULL`・葉・一直線の木。すべて `main` の初期値や `preorder` の呼び出しの引数を書き換えた版（`variants/tests/`）の自動テストとしてある |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC・Clang の `-Wall -Wextra -Wpedantic`（`-Werror`）で警告 0（`-Wconversion -Wsign-conversion` でも 0）。レビュー問題 1・4 でコンパイラが出す警告（`-Winfinite-recursion`/C4717，`-Wsequence-point`）と，課題2 の未初期化の `result`（C4700）を説明 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1（`unsigned long long` と `%llu`，`unsigned int` と `%u`），課題2（`int` で 5050），課題4（入口の `int` と内部の `unsigned int`），発展2（`size_t` と `%zu`） |
 | 基底条件と，呼び出すたびに小さくなる量を説明できる | 冒頭の[まとめの表](#何が小さくなるから止まるのか全課題のまとめ)，課題1 小問 2，課題4 レビュー問題 1〜4 |
@@ -1094,7 +955,7 @@ cmake -S . -B $B -G Ninja -DSOFTPRAC_WEEKS=week14 -DSOFTPRAC_WERROR=ON -DSOFTPRA
 cmake --build $B && ctest --test-dir $B --output-on-failure
 ```
 
-- GCC 13（AddressSanitizer/UBSan 付き）: 警告 0，テスト 53 件（本体 6 件，書き換え版 47 件）すべて成功。
-- Clang 18（`-DCMAKE_C_COMPILER=clang`，この環境には Clang の sanitizer ランタイムがないため `SOFTPRAC_SANITIZE` なし）: 警告 0，テスト 53 件すべて成功。
+- GCC 13（AddressSanitizer/UBSan 付き）: 警告 0，テスト 59 件（本体 6 件，書き換え版・確認用 53 件）すべて成功。
+- Clang 18（`-DCMAKE_C_COMPILER=clang`，この環境には Clang の sanitizer ランタイムがないため `SOFTPRAC_SANITIZE` なし）: 警告 0，テスト 59 件すべて成功。
 - 追加で `-Wconversion -Wsign-conversion -Wshadow` を付けても GCC・Clang とも警告 0（MSVC `/W4` の C4244・C4267・C4389 に相当する型変換の警告がないことの確認）。
 - 実行結果は Windows x64 (MSVC) と Linux x64 で同じ（`unsigned long long` はどちらも 64 ビット，`unsigned int`・`int` は 32 ビット，`size_t` の表示は `%zu`）。アドレスなど環境で変わる値は表示していない。
