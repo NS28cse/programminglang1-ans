@@ -8,7 +8,9 @@ softprac_add_program(DynamicVectorFail vector.c "${normal_dir}/vector_main.c" "$
 target_include_directories(DynamicVectorFail PRIVATE "${normal_dir}")
 
 foreach(n 0 1 3)
-  softprac_add_variant(DynamicVectorFail vector.c fail_on_call_${n} "fail_on_call = 2" "fail_on_call = ${n}")
+  softprac_add_variant(DynamicVectorFail vector.c fail_on_call_${n}
+    "この版は演習ページの値 2。" "この版は fail_on_call = ${n} に書き換えた版（演習ページの値は 2）。"
+    "fail_on_call = 2" "fail_on_call = ${n}")
   # 書き換えた vector.c に，分割した残りのソースとヘッダの場所を加える
   target_sources(DynamicVectorFail_fail_on_call_${n} PRIVATE "${normal_dir}/vector_main.c")
   target_include_directories(DynamicVectorFail_fail_on_call_${n} PRIVATE "${normal_dir}")

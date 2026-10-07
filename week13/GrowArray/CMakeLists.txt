@@ -4,6 +4,8 @@ softprac_add_program(GrowArray grow_array.c)
 
 function(grow_array_variant case old_n new_n)
   softprac_add_variant(GrowArray grow_array.c ${case}
+    [=[// old_n = 3 要素を calloc して 0 を確認してから 1〜old_n を代入し，realloc で new_n = 5 要素へ拡張して，]=]
+    "// 境界の表の組 (old_n, new_n) = (${old_n}, ${new_n}) に書き換えた版。old_n 要素を calloc して 1〜old_n を代入し，realloc で new_n 要素へ変更して，"
     "size_t old_n = 3;" "size_t old_n = ${old_n};"
     "size_t new_n = 5;" "size_t new_n = ${new_n};")
 endfunction()

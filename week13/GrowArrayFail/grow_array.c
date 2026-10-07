@@ -1,4 +1,4 @@
-﻿// 第13回 発展1「realloc の失敗を模擬する」（GrowArrayFail / grow_array.c）
+// 第13回 発展1「realloc の失敗を模擬する」（GrowArrayFail / grow_array.c）
 // GrowArray のコピー。realloc の呼び出しだけを試験用の try_resize に置き換え（simulate_failure = 1），
 // 再確保に失敗しても元の領域が残っていること（p[0] が 1 のまま）を確かめてから解放して終了する。
 // 正常版は GrowArray フォルダに残してある。
@@ -63,8 +63,8 @@ int main(void)
     int *next = try_resize(p, new_n * sizeof *p);
     if (next == NULL) {
         // 再確保が失敗した経路だけで元の領域を読む：p はまだ有効で，p[0] は 1 のまま
-        printf("p[0]=%d\n", p[0]);
         fprintf(stderr, "reallocation failed\n");
+        printf("p[0]=%d\n", p[0]);     // free する直前に表示する
         free(p);
         return 1;
     }
