@@ -12,24 +12,35 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | 1 文字ずつ読んで表示 | `ReadText` | [read_text.c](ReadText/read_text.c) | `input.txt` | [input.txt](ReadText/input.txt) | 9 |
 | 1 | 行の長さ | `LineLengths` | [line_lengths.c](LineLengths/line_lengths.c) | `input.txt` | [input.txt](LineLengths/input.txt) | 13 |
-| 2 | 数値引数の検査（最終版 = 合計版） | `ParseNumber` | [parse_number.c](ParseNumber/parse_number.c) | `12 23 34` | なし | 13 + 置き換え前の版 15 |
+| 2 | 数値引数の検査（講義の `parse_number.c`） | `ParseNumber` | [parse_number.c](ParseNumber/parse_number.c) | `42` | なし | 15 + 合計版 `sum` 12 |
 | 2 | 引数を表示して文字列を探す | `Arguments` | [arguments.c](Arguments/arguments.c) | `nagano ishikawa` | なし | 11 |
-| 3 | バイト列を保存（最終版 = UTF-8 の「あ」） | `Binary` | [binary.c](Binary/binary.c) | なし | なし（`bytes.bin` は実行時に作る） | 2 + 置き換え前の版 1 |
-| 3 | バイト順を調べる（「別の `main`」） | `ByteOrder` | [byte_order.c](ByteOrder/byte_order.c) | なし | なし | 1 + 変更前の版 1 |
-| 4 | テキストを書く（最終版 = 追記 `a`） | `WriteText` | [write_text.c](WriteText/write_text.c) | なし | なし（`scores.txt` は実行時に作る） | 3 + `w` 版 3 + `wx` 版 2 |
-| 発展1 | 数値をテキスト・バイナリで往復 | `NumberFormats` | [number_formats.c](NumberFormats/number_formats.c) | なし | なし（`numbers.txt`・`numbers.bin` は実行時に作る） | 2 + 変更前の版 1 |
+| 3 | バイト列を保存（講義の `binary.c`） | `Binary` | [binary.c](Binary/binary.c) | なし | なし（`bytes.bin` は実行時に作る） | 2 + `utf8_a` 1 + `show_n` 1 |
+| 3 | バイト順を調べる（「別の `main`」） | `ByteOrder` | [byte_order.c](ByteOrder/byte_order.c) | なし | なし | 1 + `value_0x1234` 1 |
+| 4 | テキストを書く（モード `w`） | `WriteText` | [write_text.c](WriteText/write_text.c) | なし | なし（`scores.txt` は実行時に作る） | 3 + `mode_a` 3 + `mode_wx` 2 |
+| 発展1 | 数値をテキスト・バイナリで往復 | `NumberFormats` | [number_formats.c](NumberFormats/number_formats.c) | なし | なし（`numbers.txt`・`numbers.bin` は実行時に作る） | 2 + `precision_0125` 1 |
 | 発展2 | 二乗の一覧を書く | `WriteSquares` | [write_squares.c](WriteSquares/write_squares.c) | `4 squares.txt` | なし（`squares.txt` は実行時に作る） | 14 |
-| 発展2 | 一覧を検査して値を探す | `CheckValue` | [check_value.c](CheckValue/check_value.c) | `squares.txt 9` | [squares.txt](CheckValue/squares.txt)（`WriteSquares 4` の出力のコピー） | 34 |
+| 発展2 | 一覧を検査して値を探す | `CheckValue` | [check_value.c](CheckValue/check_value.c) | `squares.txt 9` | [squares.txt](CheckValue/squares.txt)（`WriteSquares 4` の出力のコピー） | 37 |
 
-テストは合計 125 件（フォルダのソース 102 件，途中の版 23 件）。すべて成功（GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1，どちらも `-Wall -Wextra -Wpedantic -Werror` で警告 0）。
+テストは合計 128 件（本体 107 件，variant 21 件）。すべて成功（GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1，どちらも `-Wall -Wextra -Wpedantic -Werror` で警告 0）。
 
 ### この回の約束（TA 向け）
 
-- **フォルダのソースは最終版**（CONTRIBUTING.md）。演習ページが「〜へ置き換えます」「モードだけを `a` へ変えます」と段階的に変更させる課題
-  （`ParseNumber`・`Binary`・`ByteOrder`・`WriteText`・`NumberFormats`）は，すべての変更を反映した版をフォルダに置いた。
-  変更前の版（講義の `parse_number.c`・`binary.c` そのもの，モード `w` の `WriteText` など）は，各プロジェクトの `CMakeLists.txt` が
-  最終版の一部を置き換えて生成し，別の実行ファイルとしてビルド・テストしている（全回共通の `softprac_add_variant`（[cmake/SoftpracVariant.cmake](../cmake/SoftpracVariant.cmake)），
-  期待値は `<プロジェクト>/variants/tests/<版>.out` または `<版>--<ケース>.out`，テスト名は `week10/<プロジェクト>/variant_<版>[--<ケース>]`）。この README の「変更前の版」のコードと実行結果は，その生成物を実際に実行したもの。
+- **本体（フォルダのソース）は配布コード，または演習ページで最初に作る版**（CONTRIBUTING.md §1）。TA が IDE で本体を実行すると，演習ページ・講義の期待する表示がそのまま出る
+  （`ParseNumber` は `42`，`Binary` は `41 00 42 0A`，`ByteOrder` は `01 00`，`WriteText` は何回実行しても 3 行，`NumberFormats` は `text=0.50 1.25 -2.00`）。
+- 演習ページの「〜へ置き換えます」「値を変更すると」「モードだけを `a` へ変えます」などの小問は **variant** にした。
+  各プロジェクトの `CMakeLists.txt` が全回共通の `softprac_add_variant`（[cmake/SoftpracVariant.cmake](../cmake/SoftpracVariant.cmake)）で本体の一部を置き換えた版を生成し，
+  別の実行ファイル `<プロジェクト>_<版>` としてビルド・テストする（期待値は `<プロジェクト>/variants/tests/<版>.out` または `<版>--<ケース>.out`，
+  テスト名は `week10/<プロジェクト>/variant_<版>[--<ケース>]`）。この README の variant のコードと実行結果は，その生成物を実際に実行したもの。
+
+  | プロジェクト | variant | 演習ページの小問 |
+  | --- | --- | --- |
+  | `ParseNumber` | `sum` | 複数の数値を合計するなら（検査・変換部分を断片へ置き換え） |
+  | `Binary` | `utf8_a` | UTF-8 をバイトとして観察する（`data` を `E3 81 82 0A` へ） |
+  | `Binary` | `show_n` | `n` の値が 4 であることを `printf` で追加表示する |
+  | `ByteOrder` | `value_0x1234` | 値を `0x1234` へ変更する |
+  | `WriteText` | `mode_a`，`mode_wx` | モードだけを `a` へ変える，表の `wx` |
+  | `NumberFormats` | `precision_0125` | `data[0]` を 0.125，最後の 2 行の表示を `%.3f` にする |
+
 - `ByteOrder` は演習ページの「講義の `unsigned short` の観察用断片を別の `main` で実行します」に対応する。演習ページにプロジェクト名がないので，
   解答で名前を付けた（全回で重複しない名前）。学生のプロジェクト名は自由でよい。
 - プログラムが書き出すファイル（`bytes.bin`・`scores.txt`・`numbers.txt`・`numbers.bin`・`squares.txt`）はリポジトリに置いていない。
@@ -71,7 +82,8 @@
 
 ### ターミナルから実行する
 
-作業ディレクトリをプロジェクトフォルダにしてから，ビルドした実行ファイルを相対パスで起動する（ビルド先は `out/build/<プリセット>/bin/week10/`）。
+作業ディレクトリをプロジェクトフォルダにしてから，ビルドした実行ファイルを相対パスで起動する（ビルド先は `out/build/<プリセット>/bin/week10/`。
+variant は `out/build/<プリセット>/variants/week10/<プロジェクト>_<版>`，例: `WriteText_mode_a.exe`）。
 
 ```bat
 rem Windows の cmd（プリセット msvc-debug）
@@ -86,6 +98,9 @@ cd week10\ReadText
 cd week10/ReadText
 ../../out/build/gcc-debug/bin/week10/ReadText input.txt
 ../../out/build/gcc-debug/bin/week10/ReadText "my input.txt"
+# variant の例（追記モードの WriteText）
+cd ../WriteText
+../../out/build/gcc-debug/variants/week10/WriteText_mode_a
 ```
 
 - 空文字列の引数 `""` は cmd・bash・zsh では 1 個の空の引数として渡るが，**Windows PowerShell 5.1 は空の引数を落とす**（`argc` が 1 になる）。`""` の確認は cmd か Visual Studio の「コマンド引数」欄で行う。
@@ -222,10 +237,10 @@ $ LineLengths empty.txt    ← 空ファイル: 何も表示しない（終了�
 **要点**: `argv[1]` は数値ではなく文字列。`strtol` の `end`（変換が終わった位置）と `errno == ERANGE`，範囲 0〜100 を組み合わせて，
 「数字がない」「余分な文字が残る」「`long` の範囲外」「課題の範囲外」をすべて拒否する。
 
-### 置き換え前の版（講義の `parse_number.c`）と検証表
+### 本体（講義の `parse_number.c`）と検証表
 
-演習ページの前半（検証表）は講義の `parse_number.c` そのもので確かめる。フォルダのソースは後半の合計版に置き換えた最終版なので，
-置き換え前の版は `ParseNumber/CMakeLists.txt` が `ParseNumber_single` として生成し，次の表の値をすべてテストしている（[variants/tests/single--*](ParseNumber/variants/tests)）。
+解答: [ParseNumber/parse_number.c](ParseNumber/parse_number.c)（講義の `parse_number.c` に先頭のコメントだけを加えたもの）。既定の引数（`run.args`）は `42`。
+次の実行例と表の値はすべて本体のテスト（[ParseNumber/tests](ParseNumber/tests)）にしている。
 
 ```c
 #include <stdio.h>
@@ -286,17 +301,44 @@ expected an integer from 0 to 100
 | `abc` | `expected an integer from 0 to 100`，終了コード 1 | 数字を読めない（`end == argv[1]`） |
 | 42 50 | `usage: ParseNumber integer`，終了コード 1 | 引数が多すぎる（`argc` が 3） |
 
-そのほか: 引数なしは `usage: ParseNumber integer`（終了コード 1）。`""`（空文字列）は `end == argv[1]` なので `expected an integer from 0 to 100`（終了コード 1，テスト `single--empty_arg`）。
+そのほか: 引数なしは `usage: ParseNumber integer`（終了コード 1）。`""`（空文字列）は `end == argv[1]` なので `expected an integer from 0 to 100`（終了コード 1，テスト `empty_arg`）。
 
 **極端に長い整数**: `999999999999999999999999999999` は `strtol` が `LONG_MAX` を返し `errno` を `ERANGE` にするので拒否される。
 `long` は Windows x64 (MSVC) では 4 バイト（最大 2147483647），Linux x64 では 8 バイト（最大 9223372036854775807）。
 例えば `3000000000` は Windows では `ERANGE`，Linux では `long` に収まって `value > 100` で拒否される。理由は違っても両方で拒否されるのは，
 「桁数」ではなく `errno` と範囲で判断しているから。「10 桁なら必ず範囲外」とは決められない。
 
-### 複数の数値を合計するなら（フォルダのソース = 最終版）
+### 複数の数値を合計するなら（variant `sum`）
 
-解答: [ParseNumber/parse_number.c](ParseNumber/parse_number.c)（`main` の検査・変換部分を演習ページの断片へ置き換え，最後は `return 0;`）。
-各値 0〜100・最大 10 個なので合計は最大 1000 で，配列を作らず `long total` へ順に加えられる（オーバーフローしない）。
+本体の `main` の検査・変換部分（`if (argc != 2)` から `printf("%ld\n", value);` まで）を演習ページの断片へ置き換え，最後は元の `return 0;` で終わる版。
+`ParseNumber/CMakeLists.txt` が `ParseNumber_sum` として生成してテストしている（[variants/tests/sum--*](ParseNumber/variants/tests)）。
+
+```c
+int main(int argc, char *argv[])
+{
+    if (argc < 2 || argc > 11) {
+        fprintf(stderr, "expected 1 to 10 integers\n");
+        return 1;
+    }
+    /* 各値は 0〜100，最大 10 個なので合計は 1000 以下で long の範囲内 */
+    long total = 0;
+    for (int i = 1; i < argc; ++i) {
+        char *end;
+        errno = 0;
+        long value = strtol(argv[i], &end, 10);
+        if (end == argv[i] || *end != '\0' || errno == ERANGE ||
+            value < 0 || value > 100) {
+            fprintf(stderr, "invalid integer\n");
+            return 1;
+        }
+        total += value;
+    }
+    printf("%ld\n", total);
+    return 0;
+}
+```
+
+各値 0〜100・最大 10 個なので合計は最大 1000 で，配列を作らず `long total` へ順に加えられる（オーバーフローしない）。実行結果（`ParseNumber_sum`）:
 
 ```text
 $ ParseNumber 12 23 34
