@@ -24,6 +24,12 @@ def normalized(data: bytes) -> bytes:
 
 
 def main():
+    if any(a in ("-h", "--help") for a in sys.argv[1:]):
+        print(__doc__)
+        return
+    unknown = [a for a in sys.argv[1:] if a.startswith("-") and a != "--check"]
+    if unknown:
+        sys.exit(f"不明なオプション: {' '.join(unknown)}")
     check = "--check" in sys.argv
     weeks = [a for a in sys.argv[1:] if not a.startswith("--")] or ["week[0-9][0-9]"]
     bad = []
