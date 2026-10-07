@@ -420,7 +420,7 @@ $ Binary
 `n` を確かめるために，表示のループの直前へ 1 行足した版:
 
 ```c
-    printf("n=%zu\n", n);
+    printf("n=%zu\n", n);   /* size=1 なので n は読めたバイト数 */
     for (size_t i = 0; i < n; ++i) {
 ```
 
@@ -437,6 +437,7 @@ n=4
 `data` を次の 4 バイトに置き換えた版（`Binary_utf8_a`）:
 
 ```c
+    /* ソースに日本語を直接書かずに，UTF-8 の「あ」（E3 81 82）と LF をバイト列で指定する（BOM は付けない） */
     const unsigned char data[] = {0xE3, 0x81, 0x82, 0x0A};
 ```
 
@@ -511,6 +512,7 @@ $ WriteText            ← 2 回目（同じ条件）: 再び 3 行。6 行に�
 ### モードを `a` に変えた版（variant `mode_a`）
 
 ```c
+    /* a: ファイルがなければ作り，あれば以前の内容を残して末尾へ追記する */
     FILE *fp = fopen("scores.txt", "a");
 ```
 
