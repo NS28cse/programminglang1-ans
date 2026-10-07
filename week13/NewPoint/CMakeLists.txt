@@ -6,4 +6,5 @@ softprac_add_variant(NewPoint new_point.c point_0_0 "new_point(3.0, 4.0)" "new_p
 softprac_add_variant(NewPoint new_point.c point_m2_5 "new_point(3.0, 4.0)" "new_point(-2.0, 5.0)")
 # 複合リテラルに置き換える前の 2 文の版（同じ出力になることを確かめる）
 softprac_add_variant(NewPoint new_point.c two_statements
-  "    *p = (Point){.x = x, .y = y};" "    p->x = x;\n    p->y = y;")
+  "    *p = (Point){.x = x, .y = y};   // 左辺は p ではなく本体の *p"
+  "    p->x = x;\n    p->y = y;")

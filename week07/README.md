@@ -205,6 +205,8 @@ character=b
 new line
 ```
 
+ほかに `abc` Enter `XYZ` Enter（`character=` 6 行と `new line` 2 行。`variant_visible--two_lines`），Enter だけ（`new line` 1 行。`variant_visible--newline_only`），空の入力（出力なし。`variant_visible--empty`）もテストしています。
+
 `getchar` は 3 回呼ばれ，`'a'`・`'b'`・`'\n'` を 1 バイトずつ返しています。キーボードでは `a`，`b` を押した時点では何も表示されず，Enter を押したときにまとめて 3 行が出ます。
 これは**コンソールが 1 行分をためてから渡す**ためで，`getchar` が 1 行ずつ読むわけではありません（「Enter でまとめて届く」と「`getchar` を 3 回呼ぶ」は別のこと）。
 
