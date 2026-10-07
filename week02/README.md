@@ -364,7 +364,7 @@ sizeof(long long)=8
 sizeof(double)=8
 ```
 
-同じ実行の中では `&value` は変わらず，起動し直すと別のアドレスになっています（アドレス空間配置のランダム化のため）。ここに載せた `&value` は sanitizer なしでビルドしたときの値です。AddressSanitizer 付き（`-DSOFTPRAC_SANITIZE=ON`）でビルドすると，変数が別の領域に置かれ `0x7f04...` のような値になります。
+同じ実行の中では `&value` は変わらず，起動し直すと別のアドレスになっています（アドレス空間配置のランダム化のため）。ここに載せた `&value` は sanitizer なしでビルドしたときの値です。AddressSanitizer 付き（`-DSOFTPRAC_SANITIZE=ON`）でビルドすると，変数が別の領域に置かれ，`0x7f3c77700020` のような `0x7f...` で始まる値になります（実際に確認した値。実行ごとに変わる）。
 
 Windows x64（Visual Studio，MSVC）では次の形になります（この環境では MSVC を実行していないため，**アドレスの数字は例**です。`%p` は `0x` なしの 16 桁の大文字 16 進数）。**`sizeof(long)` が 4** になる点が Linux と違います。
 

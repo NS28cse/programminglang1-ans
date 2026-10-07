@@ -9,14 +9,19 @@
 
 | 課題 | 内容 | プロジェクト | ソース | テスト |
 | --- | --- | --- | --- | --- |
-| 1 | 最初のプログラム | `Welcome` | [welcome.c](Welcome/welcome.c) | 1（[basic](Welcome/tests/basic.out)） |
-| 2 | 改行と特殊な文字 | `Message` | [message.c](Message/message.c) | 1（[basic](Message/tests/basic.out)） |
+| 1 | 最初のプログラム | `Welcome` | [welcome.c](Welcome/welcome.c)，[CMakeLists.txt](Welcome/CMakeLists.txt) | 2（[basic](Welcome/tests/basic.out)，[variant_one_printf](Welcome/variants/tests/one_printf.out)） |
+| 2 | 改行と特殊な文字 | `Message` | [message.c](Message/message.c)，[CMakeLists.txt](Message/CMakeLists.txt) | 2（[basic](Message/tests/basic.out)，[variant_backslash_n_only](Message/variants/tests/backslash_n_only.out)） |
 | 3 | エラーの修正（修正後） | `Broken` | [broken.c](Broken/broken.c) | 1（[basic](Broken/tests/basic.out)） |
 | 3 | エラーの修正（修正前，ビルドしない） | `_Broken` | [broken.c](_Broken/broken.c) | なし（ビルドエラーを再現する用） |
-| 4 | ソースと実行ファイルの区別（最終版 = Version B） | `Version` | [version.c](Version/version.c) | 1（[basic](Version/tests/basic.out)） |
-| 5 | 発展：文字で図を描く | `House` | [house.c](House/house.c) | 1（[basic](House/tests/basic.out)） |
+| 4 | ソースと実行ファイルの区別（最終版 = Version B） | `Version` | [version.c](Version/version.c)，[CMakeLists.txt](Version/CMakeLists.txt) | 2（[basic](Version/tests/basic.out)，[variant_version_a](Version/variants/tests/version_a.out)） |
+| 5 | 発展：文字で図を描く | `House` | [house.c](House/house.c)，[CMakeLists.txt](House/CMakeLists.txt) | 2（[basic](House/tests/basic.out)，[variant_single_backslash](House/variants/tests/single_backslash.out)） |
 
-- どのプログラムも入力を取らず，表示が 1 通りに決まるので，テストは各 1 ケース（標準出力の完全一致と終了コード 0）で網羅している。
+- どのプログラムも入力を取らず，表示が 1 通りに決まるので，本体のテスト（`basic`）は各 1 ケース（標準出力の完全一致と終了コード 0）。合計 9 件。
+- README で取り上げた別の書き方・途中版・誤りの例は，本体を変えずに `softprac_add_variant`（各フォルダの `CMakeLists.txt`）でソースの一部を置き換えた版をビルドしてテストしている（期待値は `variants/tests/`）。
+  - `Welcome/one_printf`: 2 つの `printf` を 1 つにまとめた版（出力は本体と同じ）
+  - `Message/backslash_n_only`: `Backslash: \\\n` を `\\n` と書いた誤りの例（`\` と `n` が表示され改行されない）
+  - `Version/version_a`: 手順 1 の最初の版（`Version A`）
+  - `House/single_backslash`: `\` を 1 つしか書かなかった誤りの例（1 行目と 3 行目）
 - `_Broken/` は名前が `_` で始まるのでビルド対象外（CMake も `.vs/launch.vs.json` も無視する）。TA がエラーを再現するときは，このファイルを Visual Studio の空のプロジェクトに追加してビルドする。
   診断の行番号を演習ページのコード（1〜7 行目）と一致させるため，説明のコメントはファイルの末尾に置いている。
 - 修正後の `Broken/broken.c` も同じ理由でコメントを末尾に置き，行番号を演習ページと一致させている（5 行目が `;` を追加した行）。
@@ -49,7 +54,7 @@ int main(void)
 }
 ```
 
-`printf` 1 回で 2 行を表示する方法でもよい（同じ出力になることを確認済み）。
+`printf` 1 回で 2 行を表示する方法でもよい（テスト `Welcome/variant_one_printf` で同じ出力になることを確認）。
 
 ```c
     printf("Welcome to Programming Languages 1.\nI can build and run a C program.\n");
@@ -131,13 +136,16 @@ Progress: 100%
 `printf` が受け取るのは既に改行文字なので，画面では次の行へ移るだけで `\` と `n` は出ない（上の `od` の出力でも改行は 1 バイト）。
 なお Windows では，C ランタイムがテキストモードの標準出力（`stdout`）に書き出すときに改行文字（LF）を CR+LF に変換する。変換するのはコンソールではなく C ランタイムなので，出力をファイルへリダイレクトした場合も CR+LF になる。どちらにしても `\` と `n` の 2 文字にはならない。
 
-`\` と `n` の 2 文字を表示したいときは `\\n` と書く（`\\` が `\` 1 文字，`n` はそのまま）。実際に `printf("Backslash: \\n");` を実行すると，次のように `\n` が文字として表示され，改行されない。
+`\` と `n` の 2 文字を表示したいときは `\\n` と書く（`\\` が `\` 1 文字，`n` はそのまま）。実際に `message.c` の `Backslash` の行を `printf("Backslash: \\n");` に置き換えて実行すると（テスト `Message/variant_backslash_n_only` の実際の出力），次のように `\n` が文字として表示され，改行されない。
 
 ```text
-Backslash: \nShe said, "Hello!"
+My first C program
+
+She said, "Hello!"
+Backslash: \nProgress: 100%
 ```
 
-（2 つ目の `printf("She said, \"Hello!\"\n");` の出力が同じ行に続いている。）
+（次の `printf("Progress: 100%%\n");` の出力が同じ行に続いている。）
 
 `%%` はエスケープシーケンスではなく `printf` の書式の規則（`%` は変換指定の始まりなので，`%` そのものは `%%` と書く）。`printf` を使わない文字列では `%` は 1 つでよい。
 
@@ -246,7 +254,7 @@ GCC/Clang は「直前のトークンの直後」に位置を戻して 5 行目�
 
 **要点**: 保存はソースファイルを書き換える操作，ビルドはソースから実行ファイルを作り直す操作であり，保存しただけでは `Version.exe` は変わらないことを確かめる。
 
-**解答**: フォルダのソースは手順 3 で書き換えた最終版（[Version/version.c](Version/version.c)，`Version B` を表示）。手順 1 の最初の版は次のとおり。
+**解答**: フォルダのソースは手順 3 で書き換えた最終版（[Version/version.c](Version/version.c)，`Version B` を表示）。手順 1 の最初の版は次のとおり（テスト `Version/variant_version_a` で `Version A` と表示されることを確認）。
 
 ```c
 #include <stdio.h>
@@ -358,7 +366,7 @@ eadd5aea45dd00af3b40772bee154bb2d55a8f621582cec57efc817e4981dd23  Version
   - `printf(" /  \ \n");` のように `\` の後に空白 → 未定義のエスケープシーケンス。MSVC は C4129（`' ': unrecognized character escape sequence`，`\` を無視して空白を表示），GCC は `warning: unknown escape sequence: '\040'`，Clang は `warning: unknown escape sequence '\ '`。
   - `printf("/____\");` → `\"` で文字列が閉じず，コンパイルエラー（MSVC: C2001，GCC: `missing terminating " character`）。
 - `/` はエスケープ不要。`\/` と書くと MSVC は C4129 の警告を出す（Microsoft のドキュメントの例と同じ）。
-- 実際に間違えた版を実行すると次のようになる（Linux で確認。1 行目を `"  /\\n"`，3 行目を `"/____\n"` とした場合）。ビルドが成功しても表示が正しいとは限らない例（確認問題 6）。
+- 実際に間違えた版を実行すると次のようになる（テスト `House/variant_single_backslash` の実際の出力。1 行目を `"  /\\n"`，3 行目を `"/____\n"` とした場合）。ビルドが成功しても表示が正しいとは限らない例（確認問題 6）。
 
   ```text
     /\n /  \
@@ -400,6 +408,8 @@ Ctrl+F5 で実行すると，コンソールの最後に例えば次のように
 C:\Users\<ユーザ名>\Documents\PL1\week01\Welcome\x64\Debug\Welcome.exe (プロセス 12345) は、コード 0 で終了しました。
 ```
 
+Visual Studio のバージョンによっては `コード 0 (0x0) で終了しました。` のように 16 進数も付く。
+
 **5. 編集・保存した後にビルドが失敗した。以前からある `exe` が動けば，修正したプログラムが正しいといえるか。**
 
 結論: **いえない。**
@@ -420,7 +430,7 @@ Visual Studio が「最後に成功したビルドを実行しますか?」と�
 | --- | --- |
 | Visual Studio でプロジェクトを作成し，C のソースファイルを追加できる | 課題1〜5 の各プロジェクト（空のプロジェクト，拡張子 `.c`，`/TC`・C17・`/W4`）。確認問題1 |
 | 課題ごとのプロジェクトと，`welcome.c`，`message.c`，修正済みの `broken.c`，`version.c` を保存した | プロジェクト一覧の表（`Welcome`・`Message`・`Broken`・`Version`。`House` は発展）。`broken.c` は修正後（5 行目に `;`），`version.c` は `Version B` の最終版 |
-| 警告やエラーを確認したうえで，それぞれのプログラムをビルド・実行できる | 全プログラムが警告 0 でビルドでき，テスト 5 件が成功（MSVC `/W4`，GCC/Clang `-Wall -Wextra -Wpedantic -Werror`）。課題3でエラーを確認 |
+| 警告やエラーを確認したうえで，それぞれのプログラムをビルド・実行できる | 全プログラムが GCC/Clang（`-Wall -Wextra -Wpedantic -Werror`）で警告 0 でビルドでき，テスト 9 件が成功（MSVC `/W4` でも警告が出る構文は使っていない）。課題3でエラーを確認 |
 | 課題2 の空行・引用符・バックスラッシュ・パーセントを正しく表示できる | 課題2 の実行結果と `od -c` の出力（`\n\n`，`\"`，`\\`，`%%`），テスト `Message/basic` |
 | 課題3 の診断と修正箇所，課題4 の結果の違いを説明できる | 課題3「記録すること」の表（C2143，6 行目，5 行目末尾に `;`），課題4 の表（保存だけでは `Version A` のまま，再ビルドで `Version B`） |
 
@@ -432,5 +442,5 @@ Visual Studio が「最後に成功したビルドを実行しますか?」と�
 B=/tmp/build-week01
 cmake -S . -B $B -G Ninja -DSOFTPRAC_WEEKS=week01 -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
 cmake --build $B
-ctest --test-dir $B --output-on-failure    # 5 件すべて成功
+ctest --test-dir $B --output-on-failure    # 9 件すべて成功
 ```

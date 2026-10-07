@@ -15,11 +15,11 @@
 | 1 | 最大の点数 | `Maximum` | [maximum.c](Maximum/maximum.c) | 5（本体 1 + 書き換え版 4：表の 4 つの配列） |
 | 2 | 列ごとの合計 | `ColumnSum` | [arrays.c](ColumnSum/arrays.c) | 4（本体 1 + 書き換え版 3：`table` 2 通り，`sum` の初期化位置の誤り） |
 | 2 補足 | 三次元配列の添字 | `Array3D` | [array3d.c](Array3D/array3d.c) | 1（basic） |
-| 3 | 値渡し（最終版 = `z` を追加した版） | `ValueCopy` | [valuecopy.c](ValueCopy/valuecopy.c) | 10（本体 1 + 書き換え版 9：元のプログラム，初期値 0/−1，3 つの呼び出し方，2 回代入，スコープ） |
+| 3 | 値渡し（本体 = 演習ページのプログラム） | `ValueCopy` | [valuecopy.c](ValueCopy/valuecopy.c) | 8（本体 1 + 書き換え版 7：初期値 0/−1，3 つの呼び出し方，2 回代入，`z` の追加，スコープ） |
 | 4 | 平均と累乗の関数 | `Functions` | [functions.c](Functions/functions.c) | 9（本体 1 + 書き換え版 8：表の 6 呼び出し，範囲の端，`result = 0` の誤り，変数に保存する前の版） |
-| 発展 | 合計と平均の役割分担 | `SumMean` | [summean.c](SumMean/summean.c) | 4（本体 1 + 書き換え版 3） |
+| 発展 | 合計と平均の役割分担 | `SumMean` | [summean.c](SumMean/summean.c) | 5（本体 1 + 書き換え版 4：表の 2 通り，範囲の最大，合計関数単独の `n = 0`） |
 
-合計 34 テスト。GCC 13.3（`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan）と Clang 18.1（`-Werror`）で警告 0・全テスト成功を確認済み。
+合計 33 テスト。GCC 13.3（`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan）と Clang 18.1（`-Werror`）で警告 0・全テスト成功を確認済み。
 
 - 演習ページがプロジェクト名を指定しているのは `Maximum`・`ColumnSum`・`ValueCopy`・`Functions` だけ。ソース名の指定は課題2の `arrays.c`（講義の例題を入れる）だけなので，
   ほかはプロジェクト名を小文字にした名前（`Warmup05` だけは回の番号を除いた `warmup.c`）にした。
@@ -27,7 +27,7 @@
 
 ### テストの構成（書き換え版）
 
-- `<プロジェクト>/tests/basic.out` … フォルダのソース（最終版）の期待する出力。
+- `<プロジェクト>/tests/basic.out` … フォルダのソース（本体。演習ページの期待する表示を出す版）の期待する出力。期待する表示が指定されていない課題では，指示をすべて反映した版。
 - `<プロジェクト>/variants/tests/<ケース>.out` … 「値を変えて確かめる」「`main` の中だけを変更する」などの書き換え版の期待する出力。
   各プロジェクトの `CMakeLists.txt` で `softprac_add_variant(...)`（[cmake/SoftpracVariant.cmake](../cmake/SoftpracVariant.cmake)）を呼び，
   提出用のソースの文字列（例: `{72, 85, 60, 93, 80}` → `{0}`）を置き換えた版をビルドしてテストする。学生が初期値を書き換えて再ビルドするのと同じ操作を CMake が行う。
@@ -294,22 +294,27 @@ last=7 count=24
 
 - 実行前に書き出すこと: 配列は使わない。関数へ渡す値は `main` の `x` の値 10（仮引数 `x` へコピーされる），返される値は 11。
 
-**解答**: [ValueCopy/valuecopy.c](ValueCopy/valuecopy.c)。フォルダには，演習ページの指示「最初の呼び出しの後に `int z = increment(x);` を追加」まで反映した最終版を置いた（`x`，`y`，`z` を表示）。
+**解答**: [ValueCopy/valuecopy.c](ValueCopy/valuecopy.c)（演習ページのプログラムそのもの）
 
 ```c
+int increment(int x)
+{
+    x = x + 1;
+    return x;
+}
+
 int main(void)
 {
     int x = 10;
     int y = increment(x);
-    int z = increment(x);
-    printf("%d %d %d\n", x, y, z);
+    printf("%d %d\n", x, y);
     return 0;
 }
 ```
 
-演習ページの各実験は，この最終版の `main` の一部を書き換えた版としてビルドし，テストしている（[ValueCopy/CMakeLists.txt](ValueCopy/CMakeLists.txt)）。
+演習ページのその後の実験（呼び出し方の変更，初期値の変更，`z` の追加，スコープ）は，この本体の `main` の一部を書き換えた版としてビルドし，テストしている（[ValueCopy/CMakeLists.txt](ValueCopy/CMakeLists.txt)）。
 
-**元のプログラム（演習ページのまま。`z` の行を除き `printf("%d %d\n", x, y);`）の実行結果**（予測: `10 11`，テスト `variant_original`）
+**実行結果**（予測: `10 11`，テスト `basic`）
 
 ```text
 10 11
@@ -332,24 +337,30 @@ int main(void)
 | `int x = 10;` の後 | 実行結果 | テスト |
 | --- | --- | --- |
 | `increment(x);` / `printf("%d\n", x);` | `10` | `variant_call_discard` |
-| `int y = increment(x);` / `printf("%d %d\n", x, y);` | `10 11` | `variant_original` |
+| `int y = increment(x);` / `printf("%d %d\n", x, y);`（本体のまま） | `10 11` | `basic` |
 | `x = increment(x);` / `printf("%d\n", x);` | `11` | `variant_call_assign` |
 
 ### 初期値を 0，−1 へ変更した場合（元の完全なプログラムの `int x = 10;` を書き換えた版）
 
 | `main` の初期値 | 予測 | 実行結果 | テスト |
 | ---: | --- | --- | --- |
-| 10 | `10 11` | `10 11` | `variant_original` |
-| 0 | `0 1` | `0 1` | `variant_original_x_0` |
-| −1 | `-1 0` | `-1 0` | `variant_original_x_m1` |
-
-参考: `z` を追加した最終版で初期値を変えると，`0 1 1`（`variant_x_0`），`-1 0 0`（`variant_x_m1`）。
+| 10 | `10 11` | `10 11` | `basic` |
+| 0 | `0 1` | `0 1` | `variant_x_0` |
+| −1 | `-1 0` | `-1 0` | `variant_x_m1` |
 
 範囲 −100〜100 では `x + 1` が `int` の範囲を超えないので，どの値でも「`x` はそのまま，`y` は `x + 1`」になる。
 
 ### 呼び出しごとに別の局所変数になる
 
-`int z = increment(x);` を追加した最終版の実行結果（予測: `x = 10`，`y = 11`，`z = 11`，テスト `basic`）
+最初の呼び出しの後に `int z = increment(x);` を追加し，表示を `printf("%d %d %d\n", x, y, z);` にした版の実行結果（予測: `x = 10`，`y = 11`，`z = 11`，テスト `variant_add_z`）
+
+```c
+    int x = 10;
+    int y = increment(x);
+    int z = increment(x);
+    printf("%d %d %d\n", x, y, z);
+```
+
 
 ```text
 10 11 11
@@ -493,9 +504,10 @@ power=32
   （実際に `int result = 0;` にすると `average=3.0` / `power=0` と表示される。テスト `variant_result_0`）。掛け算の初期値は単位元の 1 にする。こうすると `exponent = 0` で本体を 0 回実行したときも，正しく 1（= base<sup>0</sup>）が返る。
   足し算で合計を求める `sum` を 0 で初期化するのと対になっている。
 - **`return` を `for` の外へ置く理由**: `return` を実行するとその場で関数が終わり呼び出し元へ戻る。`for` の中に置くと 1 回掛けただけで返り，`exponent` 回の繰り返しにならない。
-  また `exponent = 0` のときは本体を 1 回も実行しないので，`for` の中の `return` には到達せず値を返さない経路ができる（未定義動作。GCC は `-Wreturn-type`，MSVC は `C4715` の警告）。
-- **プロトタイプ宣言の末尾にセミコロンが必要な理由**: プロトタイプ宣言は本体を持たない**宣言**で，変数の宣言と同じく `;` で終わる。`;` がないと，コンパイラは続く部分を関数の定義（本体の `{`）の続きとして読もうとし，
-  次の行の `int main(void)` のところでエラーになる（GCC: `error: expected '=', ',', ';', 'asm' or '__attribute__' before '{' token`。MSVC でも次の行の位置で構文エラーになる。例: `C2085: 'main': not in formal parameter list`。続けて別のエラーが出ることもある）。
+  また `exponent = 0` のときは本体を 1 回も実行しないので，`for` の中の `return` に到達せず，値を返さずに関数の終わりに達する（コンパイラが警告。GCC は `-Wreturn-type`，MSVC は `C4715`。その戻り値を使うと未定義動作）。
+- **プロトタイプ宣言の末尾にセミコロンが必要な理由**: プロトタイプ宣言は本体を持たない**宣言**で，変数の宣言と同じく `;` で終わる。`;` がないと，コンパイラは次の行の `int main(void)` を，その関数の旧式の仮引数宣言（本体の前に仮引数の型を並べる古い書き方）の続きとして読み，
+  `main` の本体の `{` でエラーになる（`int power(int base, int exponent)` の `;` を消して確かめると，GCC は `main` の `{` の行で `error: expected '=', ',', ';', 'asm' or '__attribute__' before '{' token`。
+  MSVC の `C2085: 'main': not in formal parameter list` も，`main` を仮引数宣言として読んだという同じ理由。続けて別のエラーが出ることもある）。
   定義（`{ … }` の本体を持つ）の後には `;` を付けない。
 
 **プロトタイプ宣言を書かなかった場合**（関数を `main` の後ろに置いたまま宣言を消した例）: `main` で呼ぶ時点で `average` を知らないので，
@@ -582,12 +594,14 @@ total=390 mean=78.0
 | `int scores[COUNT] = {0};`，`int n = 1;` | `total=0 mean=0.0` | `variant_zero_n_1` |
 | `int scores[COUNT] = {100, 100, 100};`，`int n = 3;` | `total=300 mean=100.0` | `variant_hundred_n_3` |
 | `int scores[COUNT] = {100, 100, 100, 100, 100};`，`int n = COUNT;`（範囲の最大） | `total=500 mean=100.0` | `variant_full_100` |
+| （合計関数単独）`int n = 0;`，表示を `printf("total=%d\n", total);` に | `total=0` | `variant_sum_only_n_0` |
 
 **説明**
 
 - `(double)total / n` は `total` を `double` に変換してから割るので，浮動小数点の除算になる。`total / n` と書くと `int` 同士の整数除算で小数部が切り捨てられる（例えば合計 7，`n = 2` なら 3）。
   `(double)(total / n)` も，先に整数除算してから変換するので誤り。
 - 合計を返す `sum_array` は，`n = 0` なら本体を 0 回実行して 0 を返すので，関数単独では `n = 0` を受け付けてよい（講義の契約「`n` は 0 以上」）。
+  `int n = 0;` にして平均を表示せず `printf("total=%d\n", total);` だけにした版で `total=0` と表示されることをテスト `variant_sum_only_n_0` で確認した。
   一方，`main` の平均は `n` で割るので `n = 0` は 0 除算になる。だから**この `main` の `n` は 1 以上**という前提が必要（関数の契約と，呼び出し側の前提は別に考える）。
 - 範囲（要素数 1〜5，値 0〜100）なら合計は最大 500 で `int` に収まる。
 
@@ -631,7 +645,7 @@ total=390 mean=78.0
 
 | 項目 | どこで確認できるか |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1の {0}・`n = 1`（本体 0 回）と最初・最後が最大の配列（`Maximum` の `variant_zero`〜`variant_last`），課題2の全要素 0（`ColumnSum` の `variant_zero`），課題3の初期値 0・−1（`ValueCopy` の `variant_original_x_0`・`variant_original_x_m1`），課題4の `power(2, 0)`・`power(5, 5)` と範囲の端（`Functions` の `variant_a_…`），発展の `n = 1` と {100, 100, 100}（`SumMean` の `variant_zero_n_1`・`variant_hundred_n_3`）。すべて自動テストで確認済み |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1の {0}・`n = 1`（本体 0 回）と最初・最後が最大の配列（`Maximum` の `variant_zero`〜`variant_last`），課題2の全要素 0（`ColumnSum` の `variant_zero`），課題3の初期値 0・−1（`ValueCopy` の `variant_x_0`・`variant_x_m1`），課題4の `power(2, 0)`・`power(5, 5)` と範囲の端（`Functions` の `variant_a_…`），発展の `n = 1` と {100, 100, 100}（`SumMean` の `variant_zero_n_1`・`variant_hundred_n_3`）。すべて自動テストで確認済み |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC 13.3／Clang 18.1 の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で警告になる書き方 ―― VLA，`double` から `float` への暗黙の変換，宣言のない呼び出し ―― も避けている）。よく出る警告: プロトタイプ宣言なし（C4013），`return` がループ内で値を返さない経路（C4715），`double` から `float` への変換（C4244/C4305），グローバル変数の隠蔽（C4459）。課題1・4・確認問題6 で説明 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1の `best` の追跡表，課題2の訪問順の表，課題4の関数の型の表（`float average(float, float)`，`int power(int, int)`），発展の `(double)` の説明 |
 | 添字の範囲と，関数に渡す要素数が一致している | 課題1・発展で配列の大きさと渡す長さに同じ `COUNT`／`n` を使う。課題2の `table[col][row]` が範囲外になる理由，確認問題2・4 |
