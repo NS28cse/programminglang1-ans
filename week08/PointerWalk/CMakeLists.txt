@@ -5,8 +5,7 @@
 #   zeros / ascending             … 配列を {0, 0, 0, 0, 0}，{1, 2, 3, 4, 5} へ変える
 #   length_empty / _A / _Hello    … pointer_length の入力を ""，"A"，"Hello" へ変える
 #   set_one_first                 … 合計する前に set_one(a, COUNT); を呼ぶ（合計 5）
-#   set_one_first_array_param     … さらに set_one の仮引数を int a[] にする（同じ結果）
-#   inline                        … versions/ の，講義と同じく main の中でループを書いた版（置換なし）
+#   inline                        … versions/ の，講義と同じ書き方の版（main の中でループ，set_one の仮引数は int a[]。置換なし）
 softprac_add_program(PointerWalk pointer_walk.c)
 
 set(array_line "    int a[COUNT] = {2, 4, 6, 3, 5};")
@@ -21,8 +20,4 @@ softprac_add_variant(PointerWalk pointer_walk.c length_Hello [=[pointer_length("
 softprac_add_variant(PointerWalk pointer_walk.c set_one_first
   "${array_line}" "${array_line}
     set_one(a, COUNT);")
-softprac_add_variant(PointerWalk pointer_walk.c set_one_first_array_param
-  "${array_line}" "${array_line}
-    set_one(a, COUNT);"
-  "void set_one(int *a, int n)" "void set_one(int a[], int n)")
 softprac_add_variant(PointerWalk versions/pointer_walk_inline.c inline)

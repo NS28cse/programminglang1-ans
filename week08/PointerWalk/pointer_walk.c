@@ -17,7 +17,7 @@ int sum_by_index(const int *a, int n)
 int sum_by_pointer(const int *a, int n)
 {
     int sum = 0;
-    /* 本体では p は a[0]〜a[n-1] のどれかを指す．1 つ先 a + n に着いたら読まずに終わる */
+    /* ループの本体では p は a[0]〜a[n-1] のどれかを指す．1 つ先 a + n に着いたら読まずに終わる */
     for (const int *p = a; p != a + n; ++p) {
         sum += *p;
     }

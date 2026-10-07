@@ -1,4 +1,4 @@
-/*
+﻿/*
  * 第8回 課題1 Swap: 講義の配布コード pointers.c（docs/sample/08/pointers.c）そのもの
  * 演習の実験（状態の記録・初期値の変更・a = b の swap・ポインタのコピー・swap_double）は
  * CMakeLists.txt の書き換え版と versions/ の版でテストする．
