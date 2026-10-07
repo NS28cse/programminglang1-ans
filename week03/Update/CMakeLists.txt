@@ -12,3 +12,6 @@ softprac_add_variant(Update update.c x_minus2 "int x = 5" "int x = -2")
 # x += 3; と x *= 2; の順番を入れ替える（17 になる）
 softprac_add_variant(Update update.c swapped_order
   "    x += 3;\n    x *= 2;\n" "    x *= 2;\n    x += 3;\n")
+# 誤りの例（README の採点のポイント）: 2 段階の更新を x = x + 3 * 2; の 1 行にする → * が先なので 13
+softprac_add_variant(Update update.c wrong_one_line
+  "    x += 3;\n    x *= 2;\n" "    x = x + 3 * 2;\n")

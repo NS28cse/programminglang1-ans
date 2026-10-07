@@ -13,3 +13,5 @@ softprac_add_variant(TimeParts time_parts.c seconds_10000 "seconds = 3671" "seco
 softprac_add_variant(TimeParts time_parts.c int_division_61
   "seconds = 3671" "seconds = 61"
   "seconds / 60.0" "seconds / 60")
+# 誤りの例（README の採点のポイント）: 元の 3671 のまま右辺を seconds / 60 にする → 61.00
+softprac_add_variant(TimeParts time_parts.c int_division_3671 "seconds / 60.0" "seconds / 60")

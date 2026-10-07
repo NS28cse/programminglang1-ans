@@ -12,3 +12,9 @@ softprac_add_variant(Flags flags.c set_twice_or
 softprac_add_variant(Flags flags.c set_twice_add
   "    flags |= write_mask;  /* セット: OR で対象ビットだけ1にする */"
   "    flags += write_mask;\n    flags += write_mask;")
+# 誤りの例（README の採点のポイント）: クリアに論理否定 ! を使う → flags 全体が 0 になる
+softprac_add_variant(Flags flags.c wrong_clear_not "flags &= ~read_mask" "flags &= !read_mask")
+# 誤りの例: クリアに XOR を使う → 読む権限が 0 のとき（初期値 0u）に逆に 1 になる
+softprac_add_variant(Flags flags.c wrong_clear_xor_start_0
+  "flags = 1u" "flags = 0u"
+  "flags &= ~read_mask" "flags ^= read_mask")

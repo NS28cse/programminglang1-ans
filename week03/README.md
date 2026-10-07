@@ -12,13 +12,14 @@
 
 | 課題 | 内容 | プロジェクト | ソース | テスト |
 | --- | --- | --- | --- | --- |
-| 1 | 秒を分と秒へ分解する | `TimeParts` | [time_parts.c](TimeParts/time_parts.c) | 7（[basic](TimeParts/tests/basic.out) と値を変えた版 6） |
-| 2 | 前置・後置と複合代入 | `Update` | [update.c](Update/update.c) | 5（[basic](Update/tests/basic.out) と書き換えた版 4） |
+| 1 | 秒を分と秒へ分解する | `TimeParts` | [time_parts.c](TimeParts/time_parts.c) | 8（[basic](TimeParts/tests/basic.out) と値を変えた版 6・誤りの例 1） |
+| 2 | 前置・後置と複合代入 | `Update` | [update.c](Update/update.c) | 6（[basic](Update/tests/basic.out) と書き換えた版 4・誤りの例 1） |
 | 3 | 範囲の判定と短絡評価 | `Conditions` | [conditions.c](Conditions/conditions.c) | 7（[basic](Conditions/tests/basic.out) と値を変えた版 6） |
-| 4 | うるう年の条件式 | `Leap` | [leap.c](Leap/leap.c) | 4（[basic](Leap/tests/basic.out) と値を変えた版 3） |
-| 5 | 発展：権限フラグ | `Flags` | [flags.c](Flags/flags.c) | 5（[basic](Flags/tests/basic.out) と値・書き方を変えた版 4） |
+| 4 | うるう年の条件式 | `Leap` | [leap.c](Leap/leap.c) | 7（[basic](Leap/tests/basic.out) と値を変えた版 3・1 つの式で書いた版 2・誤りの例 1） |
+| 5 | 発展：権限フラグ | `Flags` | [flags.c](Flags/flags.c) | 7（[basic](Flags/tests/basic.out) と値・書き方を変えた版 4・誤りの例 2） |
 
-合計 28 テスト。フォルダのソースは**演習ページの最初の値（最終的に戻す値）の版**で，`tests/basic.out` がその出力。
+合計 35 テスト。フォルダのソース（本体）は**演習ページの期待する表示を出す版**（配布どおりの最初の値。値を変えた版・誤りの例は `softprac_add_variant` でテスト）で，`tests/basic.out` がその出力。
+「採点のポイント・よくある誤り」に挙げた誤りの例のうち，ビルドできるもの（警告も出ないもの）は `wrong_*` の版として実際の出力をテストしている。`0 <= score <= 100` と `flags & exec_mask != 0` は警告が出て `-Werror` のビルドが止まるので，テストにせず README に実行例だけを載せた。
 
 ### 「値を変えて試す」小問のテスト（`variants/tests/`）
 
@@ -116,7 +117,7 @@ decimal minutes=1.00
 ### 採点のポイント・よくある誤り
 
 - 表示が 1 文字も違わないか: `61 min 11 sec`（単語の間は空白 1 つ），`decimal minutes=61.18`（`decimal` と `minutes` の間に空白，`=` の前後に空白なし，小数点以下 2 桁）。最後の行にも改行があるか。
-- `double decimal_minutes = seconds / 60;` のまま → `61.00` と表示される。ビルドは成功し警告も出ないので，出力を見て指摘する。
+- `double decimal_minutes = seconds / 60;` のまま → `61 min 11 sec` / `decimal minutes=61.00` と表示される（テスト `variant_int_division_3671` で確認）。ビルドは成功し警告も出ないので，出力を見て指摘する。
 - `(double)(seconds / 60)` も整数除算の後に変換するので `61.00`。キャスト（`(double)seconds / 60`）は第6回で扱う内容なので，今回は `60.0` を使うのが期待する解答。
 - `printf("%d", decimal_minutes)` のように `double` を `%d` で表示 → 型が合わず未定義動作（MSVC `/W4` では C4477 の警告，GCC/Clang でも `-Wformat` の警告）。
 - `%.2lf` は C99 以降の `printf` では `%.2f` と同じ意味なので誤りではない。`float` を使っている場合は指定（`double`）と違うので指摘する。
@@ -219,7 +220,7 @@ final x=17
 - `before=5 after=7 x=7` になっているか。`after=6`（`++x` も元の 5 に足すと誤解）や `x=6`（後置の増加が文の後に反映されないと誤解）は前置・後置の理解不足。
 - **`printf` の引数に `x++` や `++x` をまとめている**（例: `printf("%d %d %d\n", x++, ++x, x);`）→ 同じ変数の変更と参照の順序が決まらず未定義動作。表示がたまたま合っていても誤り。GCC は `warning: operation on 'x' may be undefined [-Wsequence-point]`，Clang は `warning: unsequenced modification and access to 'x' [-Wunsequenced]` を出す（`printf("%d %d\n", x++, x);` で確認）。MSVC は警告しないことが多いので，コードを見て判断する。
 - 演習ページの指示どおり，`before` への代入，`after` への代入，`printf` が別々の文になっているか。
-- 後半を `x = x + 3 * 2;`（= 13。`*` が先）と書く誤り。`x = (x + 3) * 2;` は値は合うが，「3 を加算して保存し，さらに 2 倍して保存する」という 2 段階の更新になっていない（`+=` と `*=` を使うのが期待する解答）。
+- 後半を `x = x + 3 * 2;` と書く誤り（`*` が先なので 7 + 6 = 13。テスト `variant_wrong_one_line` の出力は `final x=13`）。`x = (x + 3) * 2;` は値は合うが，「3 を加算して保存し，さらに 2 倍して保存する」という 2 段階の更新になっていない（`+=` と `*=` を使うのが期待する解答）。
 - 表の「実行前の予測」が空欄，または結果を写しただけになっていないか。
 
 ---
@@ -279,7 +280,7 @@ C では比較演算子は左から順にまとまるので，`0 <= score <= 100
 - `score = 101`: `0 <= 101` は 1 → `1 <= 100` は 1 → 範囲外なのに 1
 - `score = -1`: `0 <= -1` は 0 → `0 <= 100` は 1 → 範囲外なのに 1
 
-実際に `valid` をこの式に変えて実行すると（`invalid` は正しい式のまま），次のように範囲外でも `valid=1` になる。
+実際に `valid` をこの式に変え，`score` を -1，75，101 にして実行すると（`invalid` は正しい式のまま），次のように範囲外でも `valid=1` になる（各実行の 1 行目だけを抜粋）。
 
 ```text
 score=-1 valid=1 invalid=1
@@ -343,7 +344,7 @@ MSVC の `/W4` では警告されないことがあるので，警告に頼ら�
 ```
 
 書き出した 3 つの条件を変数 `div4`・`not_div100`・`div400` に保存し，`leap` はそれらを `&&` と `||` で組み合わせた 1 つの条件式で求めている（「かつ」「または」との対応がそのまま読める）。
-3 つの変数を使わずに講義の例題と同じ `int leap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;` と書いても同じ結果になる（4 年すべてで確認済み）。
+3 つの変数を使わずに講義の例題と同じ `int leap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;` と書いても同じ結果になる（4 年すべてで確認済み。例外の 1900 年と 2000 年はテスト `variant_one_expr_1900`・`variant_one_expr_2000` で `leap=0`・`leap=1`）。
 3 つの条件の表示は確認用で，`leap` だけを表示する解答でも演習の要求は満たす。
 
 **実行結果**
@@ -390,7 +391,7 @@ leap=0
 
 - `year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)` も正しい（同じ結果）。4 年すべてで正しい値になるかで判断する。
 - `year % 4 == 0 && year % 100 != 0 && year % 400 == 0` → 常に 0（100 で割り切れず 400 で割り切れる数はない）。2000・2024 で誤りが分かる。
-- `year % 4 == 0 || year % 400 == 0` のように 100 の例外を落とす → 1900 が 1 になる。1900 を試していない記録は減点対象。
+- `year % 4 == 0 || year % 400 == 0` のように 100 の例外を落とす → 1900 が 1 になる（テスト `variant_wrong_no_100_rule_1900` の出力は `leap=1`）。1900 を試していない記録は減点対象。
 - `year / 4 == 0`（商と余りの取り違え）や，`year % 100 == 0` の向きの誤り。
 - `year % 4 = 0`（`==` を `=` と書く）→ コンパイルエラー（GCC: `error: lvalue required as left operand of assignment`，Clang: `error: expression is not assignable`，MSVC: `C2106`（英語版: `'=': left operand must be l-value`））。
 - 括弧のない `a && b || c` は値は正しいが，警告を有効にした環境（`-Werror` など）ではビルドが止まる。可読性の点で括弧を付けるよう指導する。
@@ -516,9 +517,9 @@ exec=0
 
 - `flags` が `unsigned int` で，表示が `%u` か（`int` と `%d` でも今回の小さい値では同じ表示になるが，講義の「ビット操作には `unsigned int`」に反する）。マスクに `1u` の `u` が付いているか。
 - 表示が 001 → 011 → 010 → 110 に対応する 1 → 3 → 2 → 6，最後が 1 になっているか。毎回初期値 1u に戻して操作していないか（その場合は 3，0，5 になる）。
-- `(flags & exec_mask) != 0` の括弧を忘れて `flags & exec_mask != 0` と書く → `flags & (exec_mask != 0)`，つまり `flags & 1` になり，`flags = 6` で **`exec=0`** と誤った結果になる（実際に確認。GCC は `warning: suggest parentheses around comparison in operand of '&' [-Wparentheses]`）。
-- クリアに `flags &= !read_mask;` と書く → `!read_mask` は論理否定で 0 になり，`flags` 全体が 0 になる（実際に確認すると `clear read=0`，`toggle exec=4`）。ビットの反転は `~`。
-- クリアに `flags ^= read_mask;` や `flags -= read_mask;` を使う → 初期値 1u ではたまたま同じ結果だが，読む権限が 0 のとき（初期値 0u）に誤る。`^` の版を 0u で実行すると `clear read=3`，`toggle exec=7` になる（正しくは 2，6）。0u と 7u で試す小問はこの誤りを見つけるためのもの。
+- `(flags & exec_mask) != 0` の括弧を忘れて `flags & exec_mask != 0` と書く → `flags & (exec_mask != 0)`，つまり `flags & 1` になり，`flags = 6` で **`exec=0`** と誤った結果になる（実際に確認。GCC 13 は `warning: suggest parentheses around comparison in operand of '&' [-Wparentheses]`，Clang 18 は `warning: & has lower precedence than !=; != will be evaluated first [-Wparentheses]` を出す）。
+- クリアに `flags &= !read_mask;` と書く → `!read_mask` は論理否定で 0 になり，`flags` 全体が 0 になる（テスト `variant_wrong_clear_not` の出力は `clear read=0`，`toggle exec=4`）。ビットの反転は `~`。
+- クリアに `flags ^= read_mask;` や `flags -= read_mask;` を使う → 初期値 1u ではたまたま同じ結果だが，読む権限が 0 のとき（初期値 0u）に誤る。`^` の版を 0u で実行すると `clear read=3`，`toggle exec=7` になる（正しくは 2，6。テスト `variant_wrong_clear_xor_start_0`）。0u と 7u で試す小問はこの誤りを見つけるためのもの。
 - 調べる式に `flags && exec_mask` を使う → `flags` が 0 でなければ常に 1（論理演算とビット演算の混同）。
 - `0b011` のような 2 進リテラルは C17 の標準にはない（C23 で導入。GCC/Clang は `-Wpedantic` で警告し，処理系によっては拡張として受け付けるが，講義どおり `3u` や `0x03u` で書く）。`011` と書くと 8 進数の 9 になる。
 
