@@ -77,7 +77,7 @@ unsigned long long factorial_loop(unsigned int n)
 | 1 | 0 | 1 | 1 × 1 = **1** |
 | 0 | 呼ばない | なし（子を呼ばない） | **1**（基底条件） |
 
-`n = 3` で実行した結果（`Factorial 3`）:
+`main` の `n` を 3 に変えて実行した結果（`n_3`）:
 
 ```text
 3! = 6
@@ -87,27 +87,36 @@ recursive=6 loop=6 equal=1
 
 ### 実行結果を比較する
 
-実行結果（Linux x64，GCC 13。Windows x64 (MSVC) でも同じ表示。`unsigned long long` はどちらも 64 ビット）:
+`main` の `unsigned int n = 5;` を 0，1，20，21 に書き換えて実行した結果（Linux x64，GCC 13。Windows x64 (MSVC) でも同じ表示。`unsigned long long` はどちらも 64 ビット）:
 
 ```text
-$ ./Factorial 0
+n = 0（n_0）
 0! = 1
 gcd=6
 recursive=1 loop=1 equal=1
-$ ./Factorial 1
+
+n = 1（n_1）
 1! = 1
 gcd=6
 recursive=1 loop=1 equal=1
-$ ./Factorial          （引数なし = 講義と同じ n=5）
+
+n = 5（配布どおり。本体）
 5! = 120
 gcd=6
 recursive=120 loop=120 equal=1
-$ ./Factorial 20
+
+n = 10（n_10）
+10! = 3628800
+gcd=6
+recursive=3628800 loop=3628800 equal=1
+
+n = 20（n_20）
 20! = 2432902008176640000
 gcd=6
 recursive=2432902008176640000 loop=2432902008176640000 equal=1
-$ ./Factorial 21
-n must be 0..20         （標準エラー出力。終了コード 1）
+
+n = 21（n_21）
+n must be 0..20          ← 標準エラー出力。標準出力には何も出ず，終了コード 1
 ```
 
 | `n` | 階乗の出力 | `factorial`の呼び出し回数 | 最大深さ |
@@ -119,9 +128,11 @@ n must be 0..20         （標準エラー出力。終了コード 1）
 | 21 | 表示なし（`stderr` に `n must be 0..20`，終了コード 1） | 0（呼ばれない） | 0（再帰に入らない） |
 
 - 呼び出し回数・最大深さは 1 本道の再帰なので，どちらも `n + 1`（`factorial(n)` 〜 `factorial(0)`）。分岐しないので回数と深さが一致する（発展1 の `fib` とは違う）。
-- 回数と深さは解答コードでは表示しないが，次の計測用コピー（解答には含めない）で確かめた。`factorial` は比較の断片で 2 回目も呼ばれるが，表は「1 回の `factorial(n)` の計算」についての値である。
+- 表は「1 回の `factorial(n)` の計算」についての値である。解答の `main` は比較の断片でもう一度 `factorial(n)` を呼ぶので，**プログラム全体では `factorial` が 2(n+1) 回**呼ばれる（n=5 で 12 回）。最大深さは各回とも n+1 で変わらない。
+- 回数と深さは解答コードでは表示しないが，次の計測用コピー（解答には含めない）で確かめた。
 
 ```c
+#include <stdio.h>
 unsigned long long calls;
 unsigned int max_depth;
 unsigned long long factorial(unsigned int n, unsigned int depth)
@@ -130,6 +141,30 @@ unsigned long long factorial(unsigned int n, unsigned int depth)
     if (depth > max_depth) { max_depth = depth; }
     if (n == 0) { return 1; }
     return n * factorial(n - 1, depth + 1);
+}
+unsigned long long factorial_loop(unsigned int n)
+{
+    unsigned long long result = 1;
+    for (unsigned int i = 1; i <= n; ++i) {
+        result *= i;
+    }
+    return result;
+}
+int main(void)
+{
+    unsigned int list[] = {0, 1, 5, 20};
+    for (int i = 0; i < 4; ++i) {
+        calls = 0; max_depth = 0;
+        unsigned long long r = factorial(list[i], 1);
+        printf("n=%u result=%llu calls=%llu depth=%u\n", list[i], r, calls, max_depth);
+    }
+    int all = 1;
+    for (unsigned int n = 0; n <= 20; ++n) {
+        calls = 0; max_depth = 0;
+        if (factorial(n, 1) != factorial_loop(n)) { all = 0; printf("differ at %u\n", n); }
+    }
+    printf("0..20 all equal=%d\n", all);
+    return 0;
 }
 ```
 
@@ -142,7 +177,7 @@ n=20 result=2432902008176640000 calls=21 depth=21
 ```
 
 - 20! = 2432902008176640000 は 64 ビットの `unsigned long long` の最大値 18446744073709551615 以下だが，21! = 51090942171709440000 は超える。だから 21 は**計算する前に**拒否する。計算してしまうと符号なしの回り込みで 51090942171709440000 mod 2^64 = 14197454024290336768 という誤った値が「正常に」表示される（エラーにはならない）。
-- 21 では `factorial` も `gcd` も実行されず，`gcd=6` も表示されない（演習ページの「`n=21`では階乗も互除法も実行せず，`main`の入力検査で終了します」のとおり）。
+- 21 は `unsigned int n = 21;` に書き換えて確認する（`unsigned int` に負数を代入して試す必要はない）。21 では `factorial` も `gcd` も実行されず，`gcd=6` も表示されない（演習ページの「`n=21`では階乗も互除法も実行せず，`main`の入力検査で終了します」のとおり）。
 
 ### 反復版との比較
 
@@ -150,17 +185,17 @@ n=20 result=2432902008176640000 calls=21 depth=21
 
 - **再帰版**: 呼び出すときは掛け算をせず，`n` の値を各段に残したまま 0 まで進む。基底条件が 1 を返した後，**復帰するとき**に各段が「戻った値 × 自分の `n`」を計算して積が完成する（1 → 1 → 2 → 6 …）。各段の `n` は別々の変数で，待っている段の数だけ領域が要る。
 - **反復版**: `result` という 1 つの変数に，ループの各回で `result *= i` と**その場で積を更新**する（1 → 1 → 2 → 6 …）。戻る処理はなく，追加の領域は `n` に比例して増えない。`n = 0` ならループを 1 回も実行せず 1 を返す。
-- 掛ける順番は違う（再帰は 1×1×2×…×n の順に復帰しながら，反復は 1×1×2×…×n の順に前から）が，整数の乗算なので結果は同じ。
+- 掛ける値の順序はどちらも 1, 2, …, n で同じ（再帰は基底条件の 1 に，復帰しながら 1, 2, …, n を順に掛ける）。違うのは**積を作る時点**（再帰は基底条件から戻るとき，反復はループの各回）と，途中の `n` を**各段の呼び出しに残す**か **1 つの `result` に蓄える**か。
 
 ### 小問
 
-1. **基底値を0にしたら，他の`n`の計算はどうなるか。** → すべての `n` で 0 になる。どの `n` の計算も最後は `factorial(0)` の値に掛け算を重ねるだけなので，出発点が 0 だと積は常に 0。0! = 1 は「0 のときだけの特別扱い」ではなく，積を組み立てる出発点（乗法の単位元）である。`if (n == 0) { return 0; }` に書き換えた版（テスト `variant_base_0`，n=5）の結果:
+1. **基底値を0にしたら，他の`n`の計算はどうなるか。** → すべての `n` で 0 になる。どの `n` の計算も最後は `factorial(0)` の値に掛け算を重ねるだけなので，出発点が 0 だと積は常に 0。0! = 1 は「0 のときだけの特別扱い」ではなく，積を組み立てる出発点（乗法の単位元）である。`if (n == 0) { return 0; }` に書き換えた版（`base_0`，n=5）の結果:
    ```text
    5! = 0
    gcd=6
    recursive=0 loop=120 equal=0
    ```
-   反復版（`result = 1` から始まる）とは一致しなくなる。同じ版を n=0（`variant_base_0--n0`）と n=20（`variant_base_0--n20`）で実行しても
+   反復版（`result = 1` から始まる）とは一致しなくなる。同じ書き換えに加えて `n` を 0（`base_0_n0`），20（`base_0_n20`）にしても
    `0! = 0`（`recursive=0 loop=1 equal=0`），`20! = 0`（`recursive=0 loop=2432902008176640000 equal=0`）。n を 0〜5 に変えたコピーでも `0! = 0`，`1! = 0`，…，`5! = 0` とすべて 0 だった。
 2. **`n`を減らさず`factorial(n)`を呼ぶと，なぜ止まらないか。** → 呼び出し先の `n` が自分と同じなので，`n == 0` 以外から始めると基底条件に一歩も近づかない。同じ状態の呼び出しが無限に続き，実際にはスタックの限界を超えて異常終了する（実行はしない）。基底条件を書くだけでなく「呼ぶたびに小さくなる量」が必要。
 3. **`unsigned long long`なら，どんな`n`の階乗でも求められるか。** → 求められない。64 ビットでは 20! までしか収まらず，21! 以上は回り込んで誤った値になる（エラーにならないので気付きにくい）。また再帰の深さも `n + 1` になるので，大きな `n` ではスタックの問題もある。範囲 0〜20 を契約として決め，計算前に検査する。
@@ -179,7 +214,7 @@ n=20 result=2432902008176640000 calls=21 depth=21
 
 **要点**: `enter` は呼び出し時（再帰の前），`leave` は復帰時（再帰の後）に表示されるので，`enter` は n, n−1, …, 0，`leave` は 0, 1, …, n の順になる。各段の `n` は独立しており，後入れ先出し（LIFO）で戻る。
 
-解答: [Trace/trace.c](Trace/trace.c)（講義の `trace.c` に引数での値の指定を加えたもの。`sum_to` は講義と同じ）
+解答: [Trace/trace.c](Trace/trace.c)（講義の `trace.c` と同じ。コメントだけ加えた）
 
 ### 表示順を完全に書き出す（`n=2`）
 
@@ -197,20 +232,25 @@ sum=3
 
 ### `n` を 0，1，2，3，100，−1，101 に変えた結果
 
+`main` の `int n = 3;` を書き換えて実行した結果:
+
 ```text
-$ ./Trace 0
+n = 0（n_0）
 enter 0
 leave 0: 0
 sum=0
-$ ./Trace 1
+
+n = 1（n_1）
 enter 1
 enter 0
 leave 0: 0
 leave 1: 1
 sum=1
-$ ./Trace 2
-（上の n=2 と同じ）
-$ ./Trace            （引数なし = 講義と同じ n=3）
+
+n = 2（n_2）
+（上の「表示順を完全に書き出す」と同じ 7 行）
+
+n = 3（配布どおり。本体）
 enter 3
 enter 2
 enter 1
@@ -220,7 +260,8 @@ leave 1: 1
 leave 2: 3
 leave 3: 6
 sum=6
-$ ./Trace 100
+
+n = 100（n_100）
 enter 100
 enter 99
 （中略: enter 98 〜 enter 1）
@@ -232,10 +273,12 @@ leave 2: 3
 leave 99: 4950
 leave 100: 5050
 sum=5050
-$ ./Trace -1
-n must be 0..100      （標準エラー出力。終了コード 1。enter は 1 行も出ない）
-$ ./Trace 101
-n must be 0..100      （同上）
+
+n = -1（n_minus1）
+n must be 0..100          ← 標準エラー出力。終了コード 1。enter は 1 行も出ない
+
+n = 101（n_101）
+n must be 0..100          ← 同上
 ```
 
 - `n=0` でも `sum_to` は 1 回呼ばれる（`enter 0` が出る）が，再帰呼び出しは追加しない。
@@ -277,7 +320,7 @@ main
 
 ### 出力位置を変える
 
-**(1) `enter` の表示だけを `n==0` の判定の後へ移した版**（別コピーで実行。`main` は講義と同じ `n = 3`。テスト `variant_enter_after_check`）
+**(1) `enter` の表示だけを `n==0` の判定の後へ移した版**（別コピーで実行。`main` は講義と同じ `n = 3`。`enter_after_check`）
 
 ```c
 int sum_to(int n)
@@ -304,9 +347,9 @@ leave 3: 6
 sum=6
 ```
 
-予測どおり `enter 0` だけが消える。`sum_to(0)` は基底条件で `return` するので，判定の後の `enter` に到達しない。`n=0` で実行すると（テスト `variant_enter_after_check--n0`）`leave 0: 0` と `sum=0` の 2 行だけになり，「関数に入った」ことが表示から分からなくなる。結果の値（6）は変わらない。
+予測どおり `enter 0` だけが消える。`sum_to(0)` は基底条件で `return` するので，判定の後の `enter` に到達しない。`n=0` で実行すると（`enter_after_check_n0`）`leave 0: 0` と `sum=0` の 2 行だけになり，「関数に入った」ことが表示から分からなくなる。結果の値（6）は変わらない。
 
-**(2) `leave` の表示を再帰呼び出しより前へ移す案**（`result` はまだ計算されていないので `n` だけを表示する。テスト `variant_leave_before_call`）
+**(2) `leave` の表示を再帰呼び出しより前へ移す案**（`result` はまだ計算されていないので `n` だけを表示する。`leave_before_call`）
 
 ```c
 int sum_to(int n)
@@ -398,29 +441,29 @@ unsigned int gcd_loop(unsigned int a, unsigned int b)
 }
 ```
 
-`main` は (0,0) を呼び出しより前に拒否する（演習ページの断片そのまま）。負数や整数でない引数も，`unsigned int` へ変換する前に拒否する（負数を `unsigned` へ変換して対応させる方法は採らない）。
+`main` では `a` と `b` を変数（`unsigned int a = 48;`，`unsigned int b = 18;`）として用意し，(0,0) を呼び出しより前に拒否する（演習ページの断片そのまま）。課題の入力は非負なので負数は扱わない（負数を `unsigned` へ変換して対応させる方法は採らない）。
 
 ### 実行結果
 
+`main` の `a` と `b` の初期値を書き換えて実行した結果:
+
 ```text
-$ ./GcdLoop            （引数なし = 48 18）
+a = 48, b = 18（配布どおり。本体）
 gcd(48, 18): loop=6 recursive=6 equal=1
-$ ./GcdLoop 18 48
+a = 18, b = 48（a18_b48）
 gcd(18, 48): loop=6 recursive=6 equal=1
-$ ./GcdLoop 7 0
+a = 7, b = 0（a7_b0）
 gcd(7, 0): loop=7 recursive=7 equal=1
-$ ./GcdLoop 0 7
+a = 0, b = 7（a0_b7）
 gcd(0, 7): loop=7 recursive=7 equal=1
-$ ./GcdLoop 7 7
+a = 7, b = 7（a7_b7）
 gcd(7, 7): loop=7 recursive=7 equal=1
-$ ./GcdLoop 13 8
+a = 13, b = 8（a13_b8）
 gcd(13, 8): loop=1 recursive=1 equal=1
-$ ./GcdLoop 100 25
+a = 100, b = 25（a100_b25）
 gcd(100, 25): loop=25 recursive=25 equal=1
-$ ./GcdLoop 0 0
-a and b must not both be zero      （標準エラー出力。終了コード 1）
-$ ./GcdLoop -48 18
-a and b must be integers from 0 to 2147483647      （同上）
+a = 0, b = 0（a0_b0）
+a and b must not both be zero          ← 標準エラー出力。終了コード 1
 ```
 
 ### 入力の組を増やす
@@ -454,7 +497,24 @@ a and b must be integers from 0 to 2147483647      （同上）
 | 3 回目 | 12 | 6 | 0 | (6, 0) |
 | 終了 | 6 | 0 | （計算しない: `b != 0` が偽） | `a = 6` を返す |
 
-確認用のコピーで各回の値を表示した結果:
+次の確認用コピー（解答には含めない）で各回の値を表示した:
+
+```c
+#include <stdio.h>
+int main(void)
+{
+    unsigned int a = 48, b = 18;
+    int k = 1;
+    while (b != 0) {
+        unsigned int remainder = a % b;
+        printf("loop %d: a=%u b=%u remainder=%u\n", k++, a, b, remainder);
+        a = b;
+        b = remainder;
+    }
+    printf("end: a=%u b=%u -> %u\n", a, b, a);
+    return 0;
+}
+```
 
 ```text
 loop 1: a=48 b=18 remainder=12
@@ -465,21 +525,30 @@ end: a=6 b=0 -> 6
 
 再帰版の呼び出し `gcd(48,18)` → `gcd(18,12)` → `gcd(12,6)` → `gcd(6,0)` の引数の列と，ループの各回の `(a, b)` が一致する。`gcd` は末尾再帰（戻った後に処理がない）なので，引数を更新して先頭へ戻るだけの `while` に素直に書き換えられる。
 
-余りを保存する前に `a` を上書きした誤りの例（確認用コピー）:
+余りを保存する前に `a` を上書きした誤りの例（確認用コピー。`b = a % b;` の `a` は元の `b` なので，常に `b % b = 0`）:
 
 ```c
-while (b != 0) {
-    a = b;          /* 誤り: 余りを保存する前に a を上書き */
-    b = a % b;      /* ここでの a は元の b なので，常に b % b = 0 */
+#include <stdio.h>
+unsigned int gcd_wrong(unsigned int a, unsigned int b)
+{
+    while (b != 0) {
+        a = b;          /* 誤り: 余りを保存する前に a を上書き */
+        b = a % b;
+    }
+    return a;
 }
-return a;
+int main(void)
+{
+    printf("%u %u %u\n", gcd_wrong(48, 18), gcd_wrong(13, 8), gcd_wrong(7, 0));
+    return 0;
+}
 ```
 
 ```text
-gcd_wrong(48, 18) = 18，gcd_wrong(13, 8) = 8，gcd_wrong(7, 0) = 7
+18 8 7
 ```
 
-解答の `main` で `gcd_loop` だけをこの順序に書き換えた版（テスト `variant_overwrite_first`）では，再帰版との比較で誤りが分かる:
+正しくは 6，1，7。解答の `gcd_loop` だけをこの順序に書き換えた版（`overwrite_first`）では，再帰版との比較で誤りが分かる:
 
 ```text
 gcd(48, 18): loop=18 recursive=6 equal=0
@@ -526,29 +595,31 @@ int factorial_checked(int n, unsigned long long *out)
 }
 ```
 
-`main` は演習ページの断片（`result = 99` で初期化して `ok=%d result=%llu` を表示）に，`out` に `NULL` を渡したときの戻り値を確かめる 1 行（`null: ok=%d`）を加えた。
+`main` は演習ページの「呼び出す断片」そのまま（`int n = 5;`，`unsigned long long result = 99;`，`ok=%d result=%llu` の 1 行を表示）。
 
 ### 実行結果
 
+`main` の `int n = 5;` を書き換えて実行した結果:
+
 ```text
-$ ./CheckedFactorial 0
+n = 0（n_0）
 ok=1 result=1
-null: ok=0
-$ ./CheckedFactorial 1
+n = 1（n_1）
 ok=1 result=1
-null: ok=0
-$ ./CheckedFactorial            （引数なし = 断片と同じ n=5）
+n = 5（配布どおり。本体）
 ok=1 result=120
-null: ok=0
-$ ./CheckedFactorial 20
+n = 20（n_20）
 ok=1 result=2432902008176640000
-null: ok=0
-$ ./CheckedFactorial -1
+n = -1（n_minus1）
 ok=0 result=99
-null: ok=0
-$ ./CheckedFactorial 21
+n = 21（n_21）
 ok=0 result=99
-null: ok=0
+```
+
+`factorial_checked(n, &result)` を `factorial_checked(n, NULL)` に書き換えた版（`null_out`，n = 5）:
+
+```text
+ok=0 result=99
 ```
 
 | `n` | `ok` | `result` |
@@ -560,9 +631,9 @@ null: ok=0
 | −1 | 0 | 99（変更されない） |
 | 21 | 0 | 99（変更されない） |
 
-- `out` に `NULL` を渡すと，`n` が正しくても 0（`null: ok=0`）。
+- `out` に `NULL` を渡すと，`n` が正しくても 0 を返し，`result` は 99 のまま（`null_out`）。
 - 失敗時の 99 は計算結果ではなく，呼び出し前に入れた目印がそのまま残っているだけ。`ok` を確かめてから `result` を使うことが契約の一部。
-- この `main` では −1・21 は「`factorial_checked` の失敗を観察するための値」なので，終了コードは 0 にしている。整数として読めない引数（`12x`）は `n must be an int` で終了コード 1。
+- この `main` は失敗を観察する断片なので，`ok=0` でも終了コードは 0（断片どおり）。実際のプログラムでは `ok` が 0 なら `result` を使わずにエラー処理をする。
 - `NULL` 以外の無効なアドレス（解放済みの領域など）は検査できない。`NULL` 以外の `out` は有効な `unsigned long long` を指すことを呼び出し側が保証する。
 
 ### 入口で検査する設計の理由
@@ -573,7 +644,7 @@ null: ok=0
 
 ### 実行しないレビュー問題
 
-1. **基底条件の`if`を削除する。** → 停止条件がなくなる。`n` は 0 の次に `0 - 1` で `UINT_MAX`（4294967295）へ回り込み，以後も減り続けて止まらない（数学的には約 43 億回で一周するが，実際にはその前にスタックの限界を超えて異常終了する）。結果の値も意味を失う。コンパイラも警告する（GCC/Clang: `-Winfinite-recursion`「all paths through this function will call itself」，MSVC: C4717「すべての制御パスで再帰しています。実行時にスタック オーバーフローが発生します」）。
+1. **基底条件の`if`を削除する。** → 停止条件がなくなる。`n` は 0 の次に `0 - 1` で `UINT_MAX`（4294967295）へ回り込み，以後も減り続けて止まらない（数学的には約 43 億回で一周するが，実際にはその前にスタックの限界を超えて異常終了する）。結果の値も意味を失う。コンパイラも警告する（GCC: `infinite recursion detected`，Clang: `all paths through this function will call itself`。どちらも `-Winfinite-recursion`。MSVC は C4717 で，趣旨は「すべての制御パスで再帰しており，実行時にスタック オーバーフローが発生する」）。
 2. **再帰呼び出しの引数を`n`にする。** → 停止条件はあるが進行がない。`n = 0` 以外では同じ `n` で呼び続け，基底条件に近づかないので止まらない（`n = 0` のときだけ偶然 1 を返す）。`if` があるのでコンパイラの警告は出ないことが多く，見逃しやすい。
 3. **再帰呼び出しの引数を`n+1`にする。** → 基底条件から遠ざかる（進行の向きが逆）。`unsigned int` なので理論上は `UINT_MAX` から 0 へ回り込むが，それまでに約 43 億段の深さが必要で，スタックの限界を超える。途中の積もあふれて意味のない値になる。
 4. **再帰呼び出しの引数を`n--`にする。** → 後置デクリメントの値は減らす**前**の `n` なので，呼び出し先には同じ `n` が渡り，2. と同じく進行しない。さらに `return n * factorial(n--);` は同じ式の中で `n` の読み出し（左の `n`）と変更（`n--`）が順序付けられていないので**未定義動作**になる（GCC `-Wsequence-point`「operation on 'n' may be undefined」，Clang `-Wunsequenced`）。副作用を使わず `n - 1` と書く。
@@ -594,7 +665,7 @@ null: ok=0
 
 **要点**: 1 回の呼び出しから 2 つに分かれる再帰では，総呼び出し回数と最大深さが一致しない。素朴な再帰は同じ値を何度も計算するが，同時にスタックに積まれるのは深さの分だけ。
 
-解答: [Fibonacci/fibonacci.c](Fibonacci/fibonacci.c)（演習ページのコードそのまま。`input` を引数で変えられるようにしただけ）
+解答: [Fibonacci/fibonacci.c](Fibonacci/fibonacci.c)（演習ページのコードそのまま。コメントだけ加えた）
 
 ### `fib(4)` の呼び出しの木
 
@@ -617,27 +688,29 @@ null: ok=0
 
 ### 小さい値から比較する
 
+`main` の `int input = 4;` を書き換えて実行した結果:
+
 ```text
-$ ./Fibonacci 0
+input = 0（n_0）
 fib=0 calls=1 depth=1 loop=0
-$ ./Fibonacci 1
+input = 1（n_1）
 fib=1 calls=1 depth=1 loop=1
-$ ./Fibonacci 2
+input = 2（n_2）
 fib=1 calls=3 depth=2 loop=1
-$ ./Fibonacci 3
+input = 3（n_3）
 fib=2 calls=5 depth=3 loop=2
-$ ./Fibonacci            （引数なし = 演習ページと同じ input=4）
+input = 4（配布どおり。本体）
 fib=3 calls=9 depth=4 loop=3
-$ ./Fibonacci 5
+input = 5（n_5）
 fib=5 calls=15 depth=5 loop=5
-$ ./Fibonacci 10
+input = 10（n_10）
 fib=55 calls=177 depth=10 loop=55
-$ ./Fibonacci 20
+input = 20（n_20）
 fib=6765 calls=21891 depth=20 loop=6765
-$ ./Fibonacci -1
-n must be 0..20      （標準エラー出力。終了コード 1）
-$ ./Fibonacci 21
-n must be 0..20      （同上）
+input = -1（n_minus1）
+n must be 0..20          ← 標準エラー出力。終了コード 1
+input = 21（n_21）
+n must be 0..20          ← 同上
 ```
 
 | `n` | `fib(n)` | `calls` | `depth` |
@@ -660,7 +733,7 @@ n must be 0..20      （同上）
 ### 計測結果の読み方
 
 1. **最初の呼び出しも数えるので，`n=0`で`calls`は0にならない。** → `fib` の先頭で `++stats->calls` してから基底条件を判定するので，`n=0` でも `calls=1`，`depth=1`（表の 1 行目）。`main` は数えない。
-2. **`stats`を初期化せずに再び`fib`を呼べば，`calls`は加算され続ける。** → `stats` は `main` の 1 つの変数をポインタで共有しているので，前の測定の値に足される。確認用コピーで `fib(4)` を 2 回続けて呼んだ結果:
+2. **`stats`を初期化せずに再び`fib`を呼べば，`calls`は加算され続ける。** → `stats` は `main` の 1 つの変数をポインタで共有しているので，前の測定の値に足される。`main` を次に置き換えた確認用コピー（`fib` などの関数は `fibonacci.c` と同じ）で `fib(4)` を 2 回続けて呼んだ結果:
    ```c
    Stats stats = {0, 0};
    unsigned long long r1 = fib(4, 1, &stats);
@@ -676,7 +749,7 @@ n must be 0..20      （同上）
    2nd: fib=3 calls=18 depth=4
    reset: fib=3 calls=9 depth=4
    ```
-   解答の `main` で `result = fib(n, 1, &stats);` をもう一度（初期化し直さずに）実行する書き換え版（テスト `variant_no_reset`）でも `fib=3 calls=18 depth=4 loop=3` になる。
+   解答の `main` で `unsigned long long result = fib(n, 1, &stats);` の直後に `result = fib(n, 1, &stats);` を（初期化し直さずに）加えた書き換え版（`no_reset`）でも `fib=3 calls=18 depth=4 loop=3` になる。
    `calls` は 18 に積み上がり，`max_depth` は「最大値」なので 4 のまま（増えないので誤りに気付きにくい）。別の測定は新しく `{0, 0}` で初期化する。
 3. **左右は順番に処理するため，呼び出しの木にある全ノードを同時にスタックへ積むわけではない。** → `left` の計算（左の部分木全体）が終わってその呼び出しがすべて戻ってから，`right` の呼び出しが始まる。同時に待機しているのは根から現在の呼び出しまでの 1 本の経路だけなので，`fib(4)` で同時に存在する `fib` は最大 4 個（9 個ではない）。
 4. **`depth`は対象関数の論理的な深さであり，実際に何バイトのスタックを使ったかを測っているわけではない。** → 1 段あたりの領域（引数・局所変数・戻り先など）の大きさは処理系・最適化・呼び出し規約で変わり，`printf` など他の関数の分も含まれない。`depth=20` だから何バイト，とは言えない。
