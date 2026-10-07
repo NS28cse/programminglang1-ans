@@ -1,4 +1,4 @@
-/* 第14回 課題1 階乗の境界（Factorial）
+﻿/* 第14回 課題1 階乗の境界（Factorial）
  * 講義の recursion.c に，反復版 factorial_loop と比較の断片を追加した版。
  * n は main の初期値を書き換えて変える（0，1，5，20，21 など）。
  */

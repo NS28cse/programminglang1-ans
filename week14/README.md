@@ -774,7 +774,7 @@ n must be 0..20          ← 同上
 
 **要点**: `NULL` に来たら何もしないことが基底条件。自分を処理する位置（子の前・間・後）だけで行きがけ・通りがけ・帰りがけ順が決まる。ノード数・高さも「空の木」を基底条件にして左右の結果を組み合わせる。
 
-解答: [TreeTraversal/tree.c](TreeTraversal/tree.c)（講義の `tree.c` に，小さい木からの走査，`node_count`，`tree_height` と，右へ一直線の木を追加した最終版）
+解答: [TreeTraversal/tree.c](TreeTraversal/tree.c)（講義の `tree.c` に `node_count`・`tree_height` と，その検証の 2 行を追加した最終版。走査関数と木の接続は講義と同じ）
 
 講義の木（配列の添字と値は別。`nodes[0]` の値が 1）:
 
@@ -810,33 +810,36 @@ n must be 0..20          ← 同上
 1. 行きがけ順（自分 → 左 → 右）: `1 2 3 4 5 6 7 8 9 10`
 2. 通りがけ順（左 → 自分 → 右）: `4 3 5 2 6 1 9 8 7 10`
 3. 帰りがけ順（左 → 右 → 自分）: `4 5 3 6 2 9 8 10 7 1`
-4. 実行結果（全体。先頭 3 行が講義の出力と同じ）:
+4. 実行結果（本体。先頭 3 行が講義の出力と同じ。続く 2 行は後述の `node_count`・`tree_height`）:
 
 ```text
 pre: 1 2 3 4 5 6 7 8 9 10
 in: 4 3 5 2 6 1 9 8 7 10
 post: 4 5 3 6 2 9 8 10 7 1
-pre NULL:
-pre nodes[3]: 4
-pre nodes[2]: 3 4 5
-pre nodes[6]: 7 8 9 10
-count: all=10 leaf=1 null=0
-height: all=4 leaf=1 null=0
-line pre: 1 2 3 4 5 6 7 8 9 10
-line in: 1 2 3 4 5 6 7 8 9 10
-line post: 10 9 8 7 6 5 4 3 2 1
-line count=10 height=10
+count: all=10 nodes[3]=1 null=0
+height: all=4 nodes[3]=1 null=0
 ```
 
 予測と実行結果は一致した。通りがけ順は昇順ではない（この木は値の大小で配置した二分探索木ではない）。根 1 は通りがけ順では左部分木（4 3 5 2 6）の後，帰りがけ順では最後に出る。
 
 ### 小さい木で基底条件を確認する
 
-演習では `main` の呼び出しの引数だけを変えるが，最終版ではすべての開始位置を 1 回の実行で表示するように並べた（上の出力の `pre NULL:`〜`pre nodes[6]:` の 4 行）。
+演習の指示どおり，`main` の `preorder(&nodes[0]);` の引数だけを `NULL`，`&nodes[3]`，`&nodes[2]`，`&nodes[6]` に変えて実行した（`start_null`，`start_nodes3`，`start_nodes2`，`start_nodes6`）。変わるのは `pre:` の行だけで，他の行は本体と同じ。
+
+```text
+preorder(NULL);（start_null）
+pre:
+preorder(&nodes[3]);（start_nodes3）
+pre: 4
+preorder(&nodes[2]);（start_nodes2）
+pre: 3 4 5
+preorder(&nodes[6]);（start_nodes6）
+pre: 7 8 9 10
+```
 
 | 走査の開始位置 | 行きがけ順の値 | 確認すること |
 | --- | --- | --- |
-| `NULL` | 何も表示しない（`pre NULL:` の後に何も出ない） | 最初の `if (p == NULL) { return; }` で，`p->value` を読む前に終了する |
+| `NULL` | 何も表示しない（`pre:` の後に何も出ない） | 最初の `if (p == NULL) { return; }` で，`p->value` を読む前に終了する |
 | `&nodes[3]` | 4だけ | 葉: 自分を表示した後，左右の `NULL` の呼び出しがすぐ戻る |
 | `&nodes[2]` | 3 4 5 | 3 を根とする小さい部分木（自分 → 左の 4 → 右の 5） |
 | `&nodes[6]` | 7 8 9 10 | 8 には右の子がない（`nodes[7].right == NULL`）。9 を表示した後，8 の右の `NULL` で戻り，7 の右の 10 へ進む |
@@ -854,7 +857,7 @@ size_t node_count(const Node *p)
 | 対象 | 予測 | 実行結果 |
 | --- | --- | --- |
 | 全体（`&nodes[0]`） | 10 | `all=10` |
-| 葉（`&nodes[3]`） | 1 | `leaf=1` |
+| 葉（`&nodes[3]`） | 1 | `nodes[3]=1` |
 | `NULL` | 0 | `null=0` |
 
 ### 高さを返す関数
@@ -874,33 +877,67 @@ size_t tree_height(const Node *p)
 | 対象 | 予測 | 実行結果 |
 | --- | --- | --- |
 | 全体（`&nodes[0]`） | 4（1→2→3→4 や 1→7→8→9） | `all=4` |
-| 葉（`&nodes[3]`） | 1 | `leaf=1` |
+| 葉（`&nodes[3]`） | 1 | `nodes[3]=1` |
 | `NULL` | 0 | `null=0` |
 
 `left` と `right` を変数に分けて，同じ部分木の高さを 2 回計算しないようにしている（`tree_height(p->left) > tree_height(p->right) ? tree_height(p->left) : ...` と書くと重複計算になる）。
 
 ### 木の形を変える（右へ一直線の木）
 
-演習は「正常版を保存し，接続の代入文を外して書き換え，確認後に元へ戻す」手順だが，最終版では元の `nodes` の接続を変えずに，別の局所配列 `line` で同じ形を作って比較した（`line[i].right = &line[i + 1];`，i = 0〜8。最後のノードの `right` は `NULL` のままで循環は作らない）。演習の手順どおりに `nodes` を書き換えた場合も同じ表示になる。
+演習の手順どおり，ノードをつなぐ代入文（5 行）をすべて外し，次のループだけを置いた版（`line`）で確かめた。最後のノード（`nodes[9]`）の `right` は `NULL` のままで，循環は作らない。フォルダのソースは元の接続のまま（「確認後は元の接続に戻します」）。
 
 ```c
-Node line[10] = {0};
-for (int i = 0; i < 10; ++i) {
-    line[i].value = i + 1;
-}
 for (int i = 0; i < 9; ++i) {
-    line[i].right = &line[i + 1];
+    nodes[i].right = &nodes[i + 1];
 }
 ```
 
-予測と実行結果（上の出力の `line` の 4 行）:
+予測:
 
 - ノード数 10，高さ 10。
 - 行きがけ順 `1 2 3 4 5 6 7 8 9 10`（自分を表示してから右へ）。
 - 通りがけ順 `1 2 3 4 5 6 7 8 9 10`（左がすべて `NULL` なので，自分 → 右になり行きがけ順と同じ）。
 - 帰りがけ順 `10 9 8 7 6 5 4 3 2 1`（右の部分木をすべて処理してから自分を表示するので逆順）。
 
-元の木と一直線の木の比較（深さを数える確認用コピーで，行きがけ順の 1 回の走査を計測した）:
+実行結果（`line`）:
+
+```text
+pre: 1 2 3 4 5 6 7 8 9 10
+in: 1 2 3 4 5 6 7 8 9 10
+post: 10 9 8 7 6 5 4 3 2 1
+count: all=10 nodes[3]=7 null=0
+height: all=10 nodes[3]=7 null=0
+```
+
+予測と一致した。一直線の木では `nodes[3]`（値 4）はもう葉ではなく，4〜10 の 7 ノードからなる部分木の根なので，ノード数・高さとも 7 になる。
+
+元の木と一直線の木の比較（次の確認用コピーで，行きがけ順の 1 回の走査の呼び出し回数と深さを計測した。解答には含めない）:
+
+```c
+#include <stdio.h>
+typedef struct node { int value; struct node *left; struct node *right; } Node;
+unsigned calls, nullcalls, maxd, maxreal;
+void pre(const Node *p, unsigned d)
+{
+    ++calls; if (d > maxd) maxd = d;
+    if (p == NULL) { ++nullcalls; return; }
+    if (d > maxreal) maxreal = d;
+    pre(p->left, d + 1); pre(p->right, d + 1);
+}
+int main(void)
+{
+    Node a[10] = {0}, b[10] = {0};
+    for (int i = 0; i < 10; ++i) { a[i].value = b[i].value = i + 1; }
+    a[0].left = &a[1]; a[0].right = &a[6]; a[1].left = &a[2]; a[1].right = &a[5];
+    a[2].left = &a[3]; a[2].right = &a[4]; a[6].left = &a[7]; a[6].right = &a[9]; a[7].left = &a[8];
+    for (int i = 0; i < 9; ++i) b[i].right = &b[i + 1];
+    pre(&a[0], 1); printf("orig calls=%u null=%u maxdepth(incl NULL)=%u real=%u\n", calls, nullcalls, maxd, maxreal);
+    calls = nullcalls = maxd = maxreal = 0;
+    pre(&b[0], 1); printf("line calls=%u null=%u maxdepth(incl NULL)=%u real=%u\n", calls, nullcalls, maxd, maxreal);
+    return 0;
+}
+```
+
 
 | 比較 | 元の木 | 一直線の木 |
 | --- | --- | --- |
@@ -1038,7 +1075,7 @@ free: 4 5 3 6 2 9 8 10 7 1
 
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の 0・1・20・21，課題2 の 0・100・−1・101，課題3 の (7,0)・(0,7)・(0,0)，課題4 の 0・20・−1・21・`NULL`，発展1 の 0・1・20・−1・21，発展2 の `NULL`・葉。すべて `tests/` に自動テストとしてある |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の 0・1・20・21，課題2 の 0・100・−1・101，課題3 の (7,0)・(0,7)・(0,0)，課題4 の 0・20・−1・21・`NULL`，発展1 の 0・1・20・−1・21，発展2 の `NULL`・葉・一直線の木。すべて `main` の初期値や引数を書き換えた版（`variants/tests/`）の自動テストとしてある |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC・Clang の `-Wall -Wextra -Wpedantic`（`-Werror`）で警告 0（`-Wconversion -Wsign-conversion` でも 0）。レビュー問題 1・4 でコンパイラが出す警告（`-Winfinite-recursion`/C4717，`-Wsequence-point`）と，課題2 の未初期化の `result`（C4700）を説明 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1（`unsigned long long` と `%llu`，`unsigned int` と `%u`），課題2（`int` で 5050），課題4（入口の `int` と内部の `unsigned int`），発展2（`size_t` と `%zu`） |
 | 基底条件と，呼び出すたびに小さくなる量を説明できる | 冒頭の[まとめの表](#何が小さくなるから止まるのか全課題のまとめ)，課題1 小問 2，課題4 レビュー問題 1〜4 |
@@ -1057,7 +1094,7 @@ cmake -S . -B $B -G Ninja -DSOFTPRAC_WEEKS=week14 -DSOFTPRAC_WERROR=ON -DSOFTPRA
 cmake --build $B && ctest --test-dir $B --output-on-failure
 ```
 
-- GCC 13（AddressSanitizer/UBSan 付き）: 警告 0，テスト 62 件（本体 54 件，書き換え版 8 件）すべて成功。
-- Clang 18（`-DCMAKE_C_COMPILER=clang`，この環境には Clang の sanitizer ランタイムがないため `SOFTPRAC_SANITIZE` なし）: 警告 0，テスト 62 件すべて成功。
+- GCC 13（AddressSanitizer/UBSan 付き）: 警告 0，テスト 53 件（本体 6 件，書き換え版 47 件）すべて成功。
+- Clang 18（`-DCMAKE_C_COMPILER=clang`，この環境には Clang の sanitizer ランタイムがないため `SOFTPRAC_SANITIZE` なし）: 警告 0，テスト 53 件すべて成功。
 - 追加で `-Wconversion -Wsign-conversion -Wshadow` を付けても GCC・Clang とも警告 0（MSVC `/W4` の C4244・C4267・C4389 に相当する型変換の警告がないことの確認）。
-- 実行結果の数値は Windows x64 (MSVC) と Linux x64 で同じ（`unsigned long long` はどちらも 64 ビット）。違うのは `long` の大きさ（Windows は 32 ビット，Linux x64 は 64 ビット）で，影響するのは `strtol` で範囲外になる非常に大きい引数の扱いだけ（どちらでも拒否される）。
+- 実行結果は Windows x64 (MSVC) と Linux x64 で同じ（`unsigned long long` はどちらも 64 ビット，`unsigned int`・`int` は 32 ビット，`size_t` の表示は `%zu`）。アドレスなど環境で変わる値は表示していない。
