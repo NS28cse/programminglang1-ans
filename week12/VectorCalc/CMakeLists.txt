@@ -12,3 +12,7 @@ softprac_add_variant(VectorCalc vector_main.c unchanged
   "    return 0;" [=[    print_vector(x);
     print_vector(y);
     return 0;]=])
+# ヘッダの独立性: 直接の #include "vector.h" を外しても matrix.h 経由で読まれるのでビルドでき，講義の 4 行が出る
+softprac_add_variant(VectorCalc vector_main.c no_direct_include
+  [=[#include "vector.h"
+]=] "")

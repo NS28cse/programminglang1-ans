@@ -7,3 +7,10 @@ target_include_directories(CalcApp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../CalcL
 # CalcLib は ../CalcLib/CMakeLists.txt で定義する．フォルダ名順では CalcApp より後に読まれるが，
 # target_link_libraries のターゲット名は全体を読み終えた後で解決されるので参照できる
 target_link_libraries(CalcApp PRIVATE CalcLib)
+
+# 「まず講義の加算・乗算だけの 3 ファイルで確認」: subtract の呼び出しを除いた版（variants/tests/lecture.out）
+softprac_add_variant(CalcApp main.c lecture
+  [=[    printf("subtract=%.1f\n", subtract(5.0, 2.0));
+]=] "")
+target_include_directories(CalcApp_lecture PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../CalcLib")
+target_link_libraries(CalcApp_lecture PRIVATE CalcLib)
