@@ -37,3 +37,20 @@ foreach(n 1 9 10)
 ]=]
     "n = 10" "n = ${n}")
 endforeach()
+
+# 回数の確認: 条件判定（test）・本体（body）・加算（add）の回数を数えて合計の後に表示する版
+# （確認用。判定のたびに数えるため，継続条件の前にコンマ演算子で ++test を入れている）
+set(count_print [=[    printf("%d\n", sum);
+    printf("test=%d body=%d add=%d\n", test, body, add);]=])
+foreach(n 0 1 2 4 10 100)
+  softprac_add_variant(EvenSum even_sum.c count_n_${n}
+    "int n = 10;" "int n = ${n};\n    int test = 0;\n    int body = 0;\n    int add = 0;"
+    "for (int i = 1; i <= n; ++i) {" "for (int i = 1; ++test, i <= n; ++i) {\n        ++body;"
+    "            sum += i;" "            sum += i;\n            ++add;"
+    [=[    printf("%d\n", sum);]=] "${count_print}")
+  softprac_add_variant(EvenSum versions/even_sum_step2.c count_step2_n_${n}
+    "int n = 10;" "int n = ${n};\n    int test = 0;\n    int body = 0;\n    int add = 0;"
+    "for (int i = 2; i <= n; i += 2) {" "for (int i = 2; ++test, i <= n; i += 2) {\n        ++body;"
+    "        sum += i;" "        sum += i;\n        ++add;"
+    [=[    printf("%d\n", sum);]=] "${count_print}")
+endforeach()

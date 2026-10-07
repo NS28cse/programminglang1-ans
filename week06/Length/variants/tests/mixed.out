@@ -2,6 +2,6 @@ length("")=0
 length("A")=1
 length("Hello")=5
 length("A B")=3
-length=3 capacity=10
-text=a length=1 capacity=10
+length=3 capacity=6
+text=a length=1 capacity=6
 spaces=2 3 0
