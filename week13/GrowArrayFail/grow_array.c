@@ -35,7 +35,7 @@ int main(void)
 
     // 最初の確保の前に old_n を検査する（ここで失敗しても解放するものはない）
     if (old_n == 0 || old_n > MAX_COUNT) {
-        fprintf(stderr, "old_n must be 1..1000\n");
+        fprintf(stderr, "old_n must be 1..%d\n", MAX_COUNT);
         return 1;
     }
     int *p = calloc(old_n, sizeof *p);
@@ -50,7 +50,7 @@ int main(void)
     print_array("before", p, old_n);
 
     if (new_n == 0 || new_n > MAX_COUNT) {
-        fprintf(stderr, "new_n must be 1..1000\n");
+        fprintf(stderr, "new_n must be 1..%d\n", MAX_COUNT);
         free(p);
         return 1;
     }

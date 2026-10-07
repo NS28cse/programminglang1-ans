@@ -11,7 +11,7 @@
 | 課題 | プロジェクト | ソース | テスト数 |
 | --- | --- | --- | --- |
 | 課題1・課題2 | `Dynamic` | [dynamic.c](Dynamic/dynamic.c)，[CMakeLists.txt](Dynamic/CMakeLists.txt) | 16（うち書き換え版 1） |
-| 課題2「追加：独立したコピー」 | `DynamicCopy` | [dynamic.c](DynamicCopy/dynamic.c) | 5 |
+| 課題2「追加：独立したコピー」 | `DynamicCopy` | [dynamic.c](DynamicCopy/dynamic.c)，[CMakeLists.txt](DynamicCopy/CMakeLists.txt) | 11（うち書き換え版 1） |
 | 課題3 | `NewPoint` | [new_point.c](NewPoint/new_point.c)，[CMakeLists.txt](NewPoint/CMakeLists.txt) | 4（うち書き換え版 3） |
 | 課題3「失敗を模擬する」 | `NewPointFail` | [new_point.c](NewPointFail/new_point.c)，[CMakeLists.txt](NewPointFail/CMakeLists.txt) | 2（うち書き換え版 1） |
 | 課題4 | （実行しない。この README で解答） | — | — |
@@ -24,7 +24,7 @@
 | 発展3 | `DynamicVector` | [vector.h](DynamicVector/vector.h)，[vector.c](DynamicVector/vector.c)，[vector_main.c](DynamicVector/vector_main.c) | 1 |
 | 発展3「途中で失敗した場合」 | `DynamicVectorFail` | [vector.c](DynamicVectorFail/vector.c)，[CMakeLists.txt](DynamicVectorFail/CMakeLists.txt)（`vector_main.c`・`vector.h` は `DynamicVector` のもの） | 4（うち書き換え版 3） |
 
-合計 48 テスト（うち書き換え版 19）。
+合計 54 テスト（うち書き換え版 21）。
 
 ### 失敗を模擬する版・値を変えた版の置き方
 
@@ -33,6 +33,7 @@
 - **正常版**（`NewPoint`，`GrowArray`，`DynamicVector`）は，試験用の関数を含まない最終版（`malloc`／`realloc` を直接呼ぶ版）です。「試験設定を戻した」状態に当たります。
 - **模擬する版**は演習ページのとおり別プロジェクトのコピーにしました: `NewPointFail`（`point_allocate`，`simulate_failure = 1`），`GrowArrayFail`（`try_resize`，`simulate_failure = 1`），`DynamicVectorFail`（`vector_allocate`，`fail_on_call = 2`）。
   `DynamicVectorFail` は書き換える `vector.c` だけを持ち，`vector_main.c` と `vector.h` は `../DynamicVector` のものを使います（`CMakeLists.txt` で指定）。
+  学生は 3 ファイルをコピーした別プロジェクトを作り，その中の `vector.c` だけを書き換えます。ここでは同じ内容の 2 ファイルを重複させないために正常版を参照しています。
 - 値や書き方を変えて試す版（`simulate_failure = 0`，`fail_on_call = 0，1，3`，発展1の `old_n`・`new_n` の組，`Point` の値，複合リテラル前の 2 文の版，`count` の 3 種類，課題2の全要素交換）は，
   共通関数 `softprac_add_variant`（`cmake/SoftpracVariant.cmake`）で**ソースの文字列を学生と同じように書き換えた別の実行ファイル**としてビルドし，`<プロジェクト>/variants/tests/` の期待値でテストしています。
   フォルダのソースは最終版のまま書き換えません。どの文字列をどう書き換えたかは各フォルダの `CMakeLists.txt` に書いてあります。
@@ -53,6 +54,14 @@ Windows（Visual Studio，x64）でも表示は同じです（`%zu` などは VS
 
 起動引数の個数を**検査してから**バイト数を計算し，`malloc` の戻り値を確認して，初期化してから読み，最後に `free` します。
 確保前のエラーには解放対象がなく，確保後のすべての終了経路では解放が必要，という区別がポイントです。
+
+### 準備（起動引数の設定）
+
+- Visual Studio（プロジェクト方式）: ソリューションエクスプローラーでプロジェクトを右クリック →「プロパティ」→「構成プロパティ」→「デバッグ」→「コマンド引数」に `5` だけを入力します。**実行ファイル名（`Dynamic.exe`）は含めません**（`argv[0]` は自動で渡される）。
+  ダイアログ上部の「構成」と「プラットフォーム」を，実際に実行する構成（ツールバーの `Debug` と `x64`）に合わせてから設定します。
+- よくある誤り: `Release` や `Win32` の構成に引数を設定し，`Debug | x64` で実行している。その構成には引数がないので，`argc` が 1 になり `usage: Dynamic count (1..1000)` と表示して終了コード 1 で終わります。プログラムの誤りではなく設定の誤りです。
+- このリポジトリ（CMake のフォルダーを開く方式）では，[Dynamic/run.args](Dynamic/run.args) の `5` が既定の引数になります（Visual Studio は `.vs/launch.vs.json`）。別の値で試すときは，起動構成の `args`（Visual Studio は `.vs/launch.vs.json`，VS Code は `.vscode/launch.json` の「引数つきで実行」）を書き換えます。
+- 予測: `5` なら `n=5 sum=15 mean=3.0`。0，-1，1001，`abc` などは**確保の前に**診断を出して終了し，合計は表示されない。
 
 ### 解答コード
 
@@ -308,6 +317,13 @@ copy: 5 4 3 2 1
 - `int *copy = values;` は**ポインタ値のコピー**で，領域は 1 つのままです。`copy` を通して逆順にすると `values` から見ても逆順になり，さらに両方を `free` すると二重解放になります。
 - 要素をコピーするには**別の領域を確保**し，要素を 1 つずつ代入します。所有する領域が 2 つになるので，解放も 2 回（それぞれ 1 回ずつ）必要です。
 - `copy` の確保に失敗した経路では，すでに確保済みの `values` を解放してから終了します（この経路のリークが最もよくある誤り）。
+  この経路は，`copy = malloc(n * sizeof *copy);` を `copy = NULL;` に書き換えた版（variants の `copy_alloc_fail`。課題3の失敗模擬と同じ考え方）でテストしています。`free(values)` を消すと LeakSanitizer が `20 byte(s) leaked` を報告してテストが失敗することも確かめました。
+  ```text
+  > DynamicCopy_copy_alloc_fail 5   （copy の確保失敗を模擬した版）
+  n=5 sum=15 mean=3.0
+  allocation failed
+  （終了コード 1）
+  ```
 - `copy` も同じ `int` の `n` 要素なので，`n > SIZE_MAX / sizeof *values` の検査がそのまま `copy` のバイト数にも有効です（演習ページの「サイズ検査はすでに済んでいる」）。
 
 ### 採点のポイント・よくある誤り
@@ -426,7 +442,7 @@ x=3.0 y=4.0
 - `simulate_failure=1` では `point_allocate` が `NULL` を返し，`new_point` は**メンバに触れずに** `NULL` を返し，`main` は `allocation failed` を出して `return 1` します。`p->x` を読む `printf` には到達しません。
 - ステップ実行での確認: `main` の `if (p == NULL)` にブレークポイントを置き，F11 で `new_point` へ入ると，`point_allocate` が `NULL` を返して `return NULL;` に進み，`*p = ...` の行が実行されないことが分かります。`main` に戻ると `p` が `0x0000000000000000` で，次に `fprintf` → `return 1` へ進み，`printf("x=...")` の行は通りません。
 - `point_allocate` は `errno` を設定しません。この試験で確かめているのは「`NULL` を見て失敗を判定し，安全に終了できること」であり，本物の `malloc` のメモリ不足や OS の診断を再現したわけではありません。
-- Release 構成（最適化あり）で `simulate_failure` を定数にすると，MSVC が到達しない側の `return` に C4702（到達できないコード）を出すことがあります。試験用の版なので Debug 構成で確認します（CI も Debug）。
+- `const int simulate_failure = 1; if (simulate_failure)` は演習ページのコードどおりです。条件が実質的に定数なので，MSVC `/W4` では C4127（条件式が定数）が，Release 構成（最適化あり）では到達しない側の `return` に C4702（到達できないコード）が出る可能性があります。試験用の版であり，警告の原因は分かっているので，Debug 構成で確認します（CI も Debug）。
 
 ### 戻り方を比較する
 
@@ -584,7 +600,7 @@ main:       free(p); p = NULL;  ──→ 寿命が終わる
 4. `int *next = realloc(p, new_n * sizeof *p);` → `NULL` なら `p` を解放して終了。成功なら `p = next;`。
 5. 増えた部分 `p[old_n]`〜`p[new_n-1]` だけに `old_n+1`〜`new_n` を代入（縮小・同じ個数ならループは 0 回）。表示して `free`。
 
-個数は `size_t` なので負にはならず，「1 未満」は `old_n == 0` で調べます。値は今は定数ですが，書き換えて試す前提なので検査を省略しません（境界の表の (3, 0)，(0, 5)，(3, 1001) の行はこの検査の確認です）。
+上限 1000 は `#define MAX_COUNT 1000` の 1 か所で決め，検査とメッセージ（`"old_n must be 1..%d\n", MAX_COUNT`）の両方に使っているので，上限を変えても表示がずれません。個数は `size_t` なので負にはならず，「1 未満」は `old_n == 0` で調べます。値は今は定数ですが，書き換えて試す前提なので検査を省略しません（境界の表の (3, 0)，(0, 5)，(3, 1001) の行はこの検査の確認です）。
 
 ```c
     // 結果は別の変数で受け取り，成功するまで p を上書きしない
@@ -806,7 +822,7 @@ total=2
 
 外部リンケージを持つ `total` の定義が 2 つの翻訳単位にあるので，**リンクで多重定義**になります（コンパイルは各ファイルとも成功）。
 
-- MSVC: `error LNK2005: total は既に counter.obj で定義されています` と `fatal error LNK1169: 1 つ以上の複数回定義されているシンボルが見つかりました`
+- MSVC: `error LNK2005: total は既に counter.obj で定義されています`（どちらの `.obj` 名になるかはリンク順による） と `fatal error LNK1169: 1 つ以上の複数回定義されているシンボルが見つかりました`
 - GCC（実際の出力の抜粋）:
   ```text
   /usr/bin/ld: ...:(.bss+0x0): multiple definition of `total'; ...:(.bss+0x0): first defined here
@@ -1018,7 +1034,7 @@ void vector_destroy(Vector **p)
 | 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1の検証表（1，1000，0，-1，1001，`abc`，`3x`，`""`，`ERANGE`，引数の不足・過剰）と `Dynamic/tests/`，課題2の 1・2・5，発展1の境界の表と `GrowArray/tests/`（`old_n`・`new_n` の 7 組と上限の組） |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトを GCC・Clang の `-Wall -Wextra -Wpedantic -Werror` と MSVC `/W4 /WX`（CI）でビルド。`(double)sum / (double)n` の明示的な変換，`(size_t)count` の範囲確認後の変換，`%zu`。複合リテラルの左辺の誤り（C2440）は課題3 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1の 6 つの役割のコメントと追跡表（`size_t`，`long`，`long long`，`int *`），課題3の寿命の表，発展3の生成・解放の対応表 |
-| 確保した各領域の所有者を1つに決め，途中失敗の経路でも解放した | 課題4の所有者の図，`DynamicCopy` の `copy` 確保失敗時の `free(values)`，`GrowArray` の `new_n = 0`／`1001`，`DynamicVectorFail` の `fail_on_call` 表（LeakSanitizer・valgrind でリークなし） |
+| 確保した各領域の所有者を1つに決め，途中失敗の経路でも解放した | 課題4の所有者の図，`DynamicCopy` の `copy` 確保失敗時の `free(values)`（variants の `copy_alloc_fail`），`GrowArray` の `new_n = 0`／`1001`，`GrowArrayFail` の再確保失敗，`DynamicVectorFail` の `fail_on_call` 表。いずれもテストで LeakSanitizer がリークを報告しないことを確認し，`fail_on_call` と `GrowArrayFail` は valgrind でも確保・解放の回数が一致した |
 | ポインタの`sizeof`と要素の`sizeof`を区別し，積を計算する前に検査した | 課題1「確保量を説明する」（`sizeof *values=4`，`sizeof values=8`），`n > SIZE_MAX / sizeof *values`，発展1の `new_n > SIZE_MAX / sizeof *p`，課題4の `malloc(n * sizeof p)` |
 | `realloc`成功後には古い参照を使わず，追加部分を初期化した | 発展1の `p = next;` と `for (i = old_n; i < new_n; ++i)`，`p[3]` の説明，確認問題4 |
 | 未初期化領域の読み取り，解放後の使用，巨大な確保実験を行っていない | `malloc` の領域は代入してから読む（課題1の (5)），`calloc` の 0 だけを表示，`free` 後は `NULL` を代入。失敗は試験用関数で模擬し，巨大な確保はしていない。ASan のテストで解放後の使用・範囲外アクセスがないことを確認 |
