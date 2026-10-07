@@ -1,6 +1,5 @@
-﻿/* 第14回 発展2 二分木の3つの走査（TreeTraversal）
- * 講義の tree.c に，部分木からの走査，node_count，tree_height と，
- * 右へ一直線の木との比較を追加した版。
+/* 第14回 発展2 二分木の3つの走査（TreeTraversal）
+ * 講義の tree.c に，ノード数を返す node_count と高さを返す tree_height を追加した版。
  * ノードはすべて main の局所配列の要素なので free しない。
  */
 #include <stdio.h>
@@ -73,37 +72,10 @@ int main(void)
     postorder(&nodes[0]);
     putchar('\n');
 
-    /* 小さい木で基底条件を確認する（行きがけ順の開始位置だけを変える） */
-    printf("pre NULL:");
-    preorder(NULL);
-    printf("\npre nodes[3]:");
-    preorder(&nodes[3]);
-    printf("\npre nodes[2]:");
-    preorder(&nodes[2]);
-    printf("\npre nodes[6]:");
-    preorder(&nodes[6]);
-    putchar('\n');
-
-    /* 全体・葉・NULL で検証する */
-    printf("count: all=%zu leaf=%zu null=%zu\n",
+    /* 全体（nodes[0]）・葉（nodes[3]）・NULL で検証する */
+    printf("count: all=%zu nodes[3]=%zu null=%zu\n",
            node_count(&nodes[0]), node_count(&nodes[3]), node_count(NULL));
-    printf("height: all=%zu leaf=%zu null=%zu\n",
+    printf("height: all=%zu nodes[3]=%zu null=%zu\n",
            tree_height(&nodes[0]), tree_height(&nodes[3]), tree_height(NULL));
-
-    /* 右へ一直線の 10 ノードの木。元の nodes の接続は変えずに別の配列で作る */
-    Node line[10] = {0};
-    for (int i = 0; i < 10; ++i) {
-        line[i].value = i + 1;
-    }
-    for (int i = 0; i < 9; ++i) {
-        line[i].right = &line[i + 1];  /* 最後のノードの right は NULL のまま（循環を作らない） */
-    }
-    printf("line pre:");
-    preorder(&line[0]);
-    printf("\nline in:");
-    inorder(&line[0]);
-    printf("\nline post:");
-    postorder(&line[0]);
-    printf("\nline count=%zu height=%zu\n", node_count(&line[0]), tree_height(&line[0]));
     return 0;
 }

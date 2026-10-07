@@ -1,10 +1,8 @@
-﻿/* 第14回 発展1 再帰の呼び出し数（Fibonacci）
+/* 第14回 発展1 再帰の呼び出し数（Fibonacci）
  * 演習ページの fibonacci.c。呼び出し回数と最大深さを Stats へのポインタで共有する。
- * input は引数で変えられる（引数なしなら 4）。例: Fibonacci 20
+ * input は main の初期値を書き換えて変える（0〜5，10，20，-1，21）。
  */
 #include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
 
 typedef struct {
     unsigned long long calls;
@@ -40,21 +38,9 @@ unsigned long long fib_loop(unsigned int n)
     return a;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
-    long input = 4;
-    if (argc > 2) {
-        fprintf(stderr, "usage: Fibonacci [n]\n");
-        return 1;
-    }
-    if (argc == 2) {
-        char *end;
-        errno = 0;
-        input = strtol(argv[1], &end, 10);
-        if (argv[1] == end || *end != '\0' || errno == ERANGE) {
-            input = -1;                /* 整数でなければ下の範囲検査で拒否する */
-        }
-    }
+    int input = 4;
     /* 再帰へ入る前に拒否する */
     if (input < 0 || input > 20) {
         fputs("n must be 0..20\n", stderr);

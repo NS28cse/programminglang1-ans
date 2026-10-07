@@ -1,12 +1,9 @@
-﻿/* 第14回 課題4 再帰の入口を安全にする（CheckedFactorial）
+/* 第14回 課題4 再帰の入口を安全にする（CheckedFactorial）
  * 入口 factorial_checked で検査し，再帰は内部関数 factorial_impl だけで行う。
- * n は引数で変えられる（引数なしなら 5）。例: CheckedFactorial -1
+ * n は main の初期値を書き換えて変える（0，1，5，20，-1，21）。
  */
 #include <stdio.h>
-#include <stdlib.h>
 #include <stddef.h>
-#include <errno.h>
-#include <limits.h>
 
 /* 内部関数: n は 0〜20 を前提とする（検査は入口で済んでいる） */
 static unsigned long long factorial_impl(unsigned int n)
@@ -27,27 +24,11 @@ int factorial_checked(int n, unsigned long long *out)
     return 1;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
-    long input = 5;
-    if (argc > 2) {
-        fprintf(stderr, "usage: CheckedFactorial [n]\n");
-        return 1;
-    }
-    if (argc == 2) {
-        char *end;
-        errno = 0;
-        input = strtol(argv[1], &end, 10);
-        if (argv[1] == end || *end != '\0' || errno == ERANGE ||
-            input < INT_MIN || input > INT_MAX) {
-            fprintf(stderr, "n must be an int\n");
-            return 1;
-        }
-    }
-    int n = (int)input;
+    int n = 5;
     unsigned long long result = 99;    /* 失敗時に変更されないことを確かめる目印 */
     int ok = factorial_checked(n, &result);
     printf("ok=%d result=%llu\n", ok, result);
-    printf("null: ok=%d\n", factorial_checked(n, NULL)); /* out が NULL なら常に 0 */
     return 0;
 }
