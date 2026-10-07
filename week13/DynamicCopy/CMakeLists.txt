@@ -4,5 +4,7 @@
 softprac_add_program(DynamicCopy dynamic.c)
 
 softprac_add_variant(DynamicCopy dynamic.c copy_alloc_fail
+  [=[// copy だけを逆順にして両方を表示する。所有する領域は values と copy の 2 つ。]=]
+  [=[// （失敗経路の確認版）copy の確保を NULL に置き換え，先に確保した values を解放して終了することを確かめる。]=]
   "    copy = malloc(n * sizeof *copy);"
   "    copy = NULL;   // 試験用：copy の確保失敗を模擬")

@@ -10,9 +10,9 @@
 
 | 課題 | プロジェクト | ソース | テスト数 |
 | --- | --- | --- | --- |
-| 課題1・課題2 | `Dynamic` | [dynamic.c](Dynamic/dynamic.c)，[CMakeLists.txt](Dynamic/CMakeLists.txt) | 16（うち書き換え版 1） |
-| 課題2「追加：独立したコピー」 | `DynamicCopy` | [dynamic.c](DynamicCopy/dynamic.c)，[CMakeLists.txt](DynamicCopy/CMakeLists.txt) | 11（うち書き換え版 1） |
-| 課題3 | `NewPoint` | [new_point.c](NewPoint/new_point.c)，[CMakeLists.txt](NewPoint/CMakeLists.txt) | 4（うち書き換え版 3） |
+| 課題1・課題2 | `Dynamic` | [dynamic.c](Dynamic/dynamic.c)，[CMakeLists.txt](Dynamic/CMakeLists.txt) | 21（うち書き換え版 5） |
+| 課題2「追加：独立したコピー」 | `DynamicCopy` | [dynamic.c](DynamicCopy/dynamic.c)，[CMakeLists.txt](DynamicCopy/CMakeLists.txt) | 14（うち書き換え版 1） |
+| 課題3 | `NewPoint` | [new_point.c](NewPoint/new_point.c)，[versions/return_styles.c](NewPoint/versions/return_styles.c)，[CMakeLists.txt](NewPoint/CMakeLists.txt) | 5（うち書き換え版・比較用 4） |
 | 課題3「失敗を模擬する」 | `NewPointFail` | [new_point.c](NewPointFail/new_point.c)，[CMakeLists.txt](NewPointFail/CMakeLists.txt) | 2（うち書き換え版 1） |
 | 課題4 | （実行しない。この README で解答） | — | — |
 | 発展1 | `GrowArray` | [grow_array.c](GrowArray/grow_array.c)，[CMakeLists.txt](GrowArray/CMakeLists.txt) | 9（うち書き換え版 8） |
@@ -21,22 +21,26 @@
 | 発展2「共有変数の宣言」 | `SharedCount` | [counter.h](SharedCount/counter.h)，[counter.c](SharedCount/counter.c)，[main.c](SharedCount/main.c) | 1 |
 | 発展2 変更1（リンクエラー） | `_SharedCountNoDef`（ビルドしない） | [counter.c](_SharedCountNoDef/counter.c) ほか | — |
 | 発展2 変更2（リンクエラー） | `_SharedCountDupDef`（ビルドしない） | [main.c](_SharedCountDupDef/main.c) ほか | — |
-| 発展3 | `DynamicVector` | [vector.h](DynamicVector/vector.h)，[vector.c](DynamicVector/vector.c)，[vector_main.c](DynamicVector/vector_main.c) | 1 |
+| 発展3 | `DynamicVector` | [vector.h](DynamicVector/vector.h)，[vector.c](DynamicVector/vector.c)，[vector_main.c](DynamicVector/vector_main.c)，[CMakeLists.txt](DynamicVector/CMakeLists.txt) | 2（うち書き換え版 1） |
 | 発展3「途中で失敗した場合」 | `DynamicVectorFail` | [vector.c](DynamicVectorFail/vector.c)，[CMakeLists.txt](DynamicVectorFail/CMakeLists.txt)（`vector_main.c`・`vector.h` は `DynamicVector` のもの） | 4（うち書き換え版 3） |
 
-合計 54 テスト（うち書き換え版 21）。
+合計 64 テスト（うち書き換え版・比較用 27）。
 
 ### 失敗を模擬する版・値を変えた版の置き方
 
+各フォルダのソース（本体）は，演習ページの期待する表示を出す版です。表示が変わらない断片の追加・置き換え（6 つの役割のコメント，複合リテラル，`ok=0 out=99.0` の断片など）や，累積的な指示（課題2の逆順の追加）は本体に反映しました。
+値を変えて試す版，確認のために `printf` を差し込む版は，本体を変えずに書き換えた版（variants）としてテストしています。
+
 演習ページは「正常版を残した別プロジェクトかコピーで行い，完了したら試験設定を戻す」と指示しています。そこで次のようにしました。
 
-- **正常版**（`NewPoint`，`GrowArray`，`DynamicVector`）は，試験用の関数を含まない最終版（`malloc`／`realloc` を直接呼ぶ版）です。「試験設定を戻した」状態に当たります。
+- **正常版**（`NewPoint`，`GrowArray`，`DynamicVector`）は，試験用の関数を含まない，試験設定を戻した正常版（`malloc`／`realloc` を直接呼ぶ版）です。
 - **模擬する版**は演習ページのとおり別プロジェクトのコピーにしました: `NewPointFail`（`point_allocate`，`simulate_failure = 1`），`GrowArrayFail`（`try_resize`，`simulate_failure = 1`），`DynamicVectorFail`（`vector_allocate`，`fail_on_call = 2`）。
   `DynamicVectorFail` は書き換える `vector.c` だけを持ち，`vector_main.c` と `vector.h` は `../DynamicVector` のものを使います（`CMakeLists.txt` で指定）。
   学生は 3 ファイルをコピーした別プロジェクトを作り，その中の `vector.c` だけを書き換えます。ここでは同じ内容の 2 ファイルを重複させないために正常版を参照しています。
-- 値や書き方を変えて試す版（`simulate_failure = 0`，`fail_on_call = 0，1，3`，発展1の `old_n`・`new_n` の組，`Point` の値，複合リテラル前の 2 文の版，`count` の 3 種類，課題2の全要素交換）は，
+- 値や書き方を変えて試す版（`simulate_failure = 0`，`fail_on_call = 0，1，3`，発展1の `old_n`・`new_n` の組，`Point` の値，複合リテラル前の 2 文の版，`count` の 3 種類，課題2の全要素交換）と，確認用の `printf` を差し込む版（課題1の追跡表，課題2の交換の組，発展3の解放後の `NULL`）は，
   共通関数 `softprac_add_variant`（`cmake/SoftpracVariant.cmake`）で**ソースの文字列を学生と同じように書き換えた別の実行ファイル**としてビルドし，`<プロジェクト>/variants/tests/` の期待値でテストしています。
-  フォルダのソースは最終版のまま書き換えません。どの文字列をどう書き換えたかは各フォルダの `CMakeLists.txt` に書いてあります。
+  フォルダのソース（本体）は書き換えません。どの文字列をどう書き換えたかは各フォルダの `CMakeLists.txt` に書いてあります（書き換えた版のファイル先頭のコメントも，その版の内容に合わせて書き換えています）。
+- 課題3「戻り方を比較する」の比較コードは別ソース [NewPoint/versions/return_styles.c](NewPoint/versions/return_styles.c) にし，置換なしの variant `return_styles` としてテストしています。
 - 演習ページがコマンドライン引数を使うのは課題1（`Dynamic`）だけです。発展1の `GrowArray` も演習ページどおり `old_n = 3`，`new_n = 5` を `main` の中に書き，境界の表の組は値を書き換えた版で確かめます（テストのために引数を追加することはしていません）。
 
 Visual Studio で 1 つのプロジェクトだけを使う場合は，学生と同じく `simulate_failure` や `fail_on_call` の値を書き換えて 1 回ずつビルド・実行し直せば同じ結果になります。
@@ -65,7 +69,7 @@ Windows（Visual Studio，x64）でも表示は同じです（`%zu` などは VS
 
 ### 解答コード
 
-[Dynamic/dynamic.c](Dynamic/dynamic.c)。講義の `dynamic.c` に，演習ページの 6 つの役割のコメント `(1)`〜`(6)` と，課題2の逆順処理を加えた最終版です。
+[Dynamic/dynamic.c](Dynamic/dynamic.c)。講義の `dynamic.c` に，演習ページの 6 つの役割のコメント `(1)`〜`(6)` と，課題2の逆順処理を加えた版（本体）です。
 
 ```c
     // (1) 引数の個数と数値を調べる（数字がない・末尾に余計な文字・long の範囲外・1〜1000 以外を拒否）
@@ -158,7 +162,7 @@ reversed: 5 4 3 2 1
 
 ### 確保量を説明する
 
-`n=5` で `sizeof *values` が 4 なら，必要量は 5 × 4 = 20 バイトです。確認のために一時的に次の行を追加して実行しました（提出版には入れていません）。
+`n=5` で `sizeof *values` が 4 なら，必要量は 5 × 4 = 20 バイトです。確認のために一時的に次の行を追加して実行しました（本体には入れていません。`sizeof values` が環境で変わるため，テストにはせず実行例だけを載せます）。
 
 ```c
 printf("sizeof *values=%zu sizeof values=%zu bytes=%zu\n", sizeof *values, sizeof values, n * sizeof *values);
@@ -184,7 +188,18 @@ reversed: 5 4 3 2 1
 | 3 回目 | 2 | 3 | 6 |
 | （判定） | 3 | — | `i < n` が偽なので終了 |
 
-（ループ内に `printf` を一時的に追加して実行し，`i=0 values[i]=1 sum=1`，`i=1 values[i]=2 sum=3`，`i=2 values[i]=3 sum=6` を確認しました。表示は `n=3 sum=6 mean=2.0`。）
+ループ内に `printf("i=%zu values[i]=%d sum=%lld\n", i, values[i], sum);` を差し込んだ版（variants の `trace`）を `n=3` で実行した結果です。
+
+```text
+> Dynamic_trace 3
+i=0 values[i]=1 sum=1
+i=1 values[i]=2 sum=3
+i=2 values[i]=3 sum=6
+n=3 sum=6 mean=2.0
+reversed: 3 2 1
+```
+
+本体を `3` で実行した結果（`n=3 sum=6 mean=2.0`，`reversed: 3 2 1`）もテスト `three_3` にしています。
 
 ```text
 values ─→ [  1  ][  2  ][  3  ] │ ここから先は確保していない
@@ -254,7 +269,19 @@ reversed: 5 4 3 2 1
 | 2 | (0, 1) | `2 1` |
 | 5 | (0, 4)，(1, 3)（中央の 2 は交換しない） | `5 4 3 2 1` |
 
-（交換のたびに組を表示する行を一時的に追加して実行し，`n=2` で `swap values[0] <-> values[1]`，`n=5` で `swap values[0] <-> values[4]`，`swap values[1] <-> values[3]` の 2 回だけであることを確認しました。）
+交換のたびに組を表示する行 `printf("swap values[%zu] <-> values[%zu]\n", i, n - 1 - i);` を差し込んだ版（variants の `swap_pairs`。`n=1，2，5` でテスト）の結果です。`n=1` では交換の行が出ません。
+
+```text
+> Dynamic_swap_pairs 2
+n=2 sum=3 mean=1.5
+swap values[0] <-> values[1]
+reversed: 2 1
+> Dynamic_swap_pairs 5
+n=5 sum=15 mean=3.0
+swap values[0] <-> values[4]
+swap values[1] <-> values[3]
+reversed: 5 4 3 2 1
+```
 
 `sum` と `mean` は要素の集合が同じなので順序を変えても変わりません。
 **奇数個の中央要素を交換しなくてよい理由**: 中央の添字 `m = (n-1)/2` では `n-1-m == m` となり，相手が自分自身です。自分と交換しても値は変わらないので，組を作る必要がありません。
@@ -400,7 +427,7 @@ int main(void)
 
 ### 複合リテラルで初期化する
 
-最初は次の 2 文で書き，後で複合リテラル 1 文へ置き換えました（フォルダのソースは置き換え後の最終版）。
+最初は次の 2 文で書き，後で複合リテラル 1 文へ置き換えました（本体は置き換え後の版）。
 
 ```c
     p->x = x;
@@ -442,20 +469,22 @@ x=3.0 y=4.0
 - `simulate_failure=1` では `point_allocate` が `NULL` を返し，`new_point` は**メンバに触れずに** `NULL` を返し，`main` は `allocation failed` を出して `return 1` します。`p->x` を読む `printf` には到達しません。
 - ステップ実行での確認: `main` の `if (p == NULL)` にブレークポイントを置き，F11 で `new_point` へ入ると，`point_allocate` が `NULL` を返して `return NULL;` に進み，`*p = ...` の行が実行されないことが分かります。`main` に戻ると `p` が `0x0000000000000000` で，次に `fprintf` → `return 1` へ進み，`printf("x=...")` の行は通りません。
 - `point_allocate` は `errno` を設定しません。この試験で確かめているのは「`NULL` を見て失敗を判定し，安全に終了できること」であり，本物の `malloc` のメモリ不足や OS の診断を再現したわけではありません。
-- `const int simulate_failure = 1; if (simulate_failure)` は演習ページのコードどおりです。条件が実質的に定数なので，MSVC `/W4` では C4127（条件式が定数）が，Release 構成（最適化あり）では到達しない側の `return` に C4702（到達できないコード）が出る可能性があります。試験用の版であり，警告の原因は分かっているので，Debug 構成で確認します（CI も Debug）。
+- `const int simulate_failure = 1; if (simulate_failure)` は演習ページのコードどおりです。条件が実質的に定数なので，MSVC では次の警告が出る可能性があります。どちらも試験用の版で原因が分かっている警告です。
+  - C4127（条件式が定数です。レベル 4）: コンパイラの前段（構文解析時）の警告なので，Debug・Release の構成によらず出る可能性があります。C では `const int` の変数は定数式ではないため通常は出ませんが，出た場合は試験用の設定であることを確認して進めます。
+  - C4702（到達できないコード）: 最適化で分岐が消えるときに出る警告なので，Release 構成（最適化あり）でだけ出る可能性があります。Debug 構成（CI も Debug）では出ません。
 
 ### 戻り方を比較する
 
-3 つの方法を 1 つのプログラムにまとめて確認しました（README 用の比較コード。リポジトリには入れていません）。
+3 つの方法を 1 つのプログラム [NewPoint/versions/return_styles.c](NewPoint/versions/return_styles.c) にまとめて確認しました（置換なしの variant `return_styles` としてテスト）。
 
 ```c
-/* (a) 値として返す：本体は呼び出し元の変数にコピーされる。失敗はなく，解放も不要 */
+// (a) 値として返す：本体は呼び出し元の変数にコピーされる。失敗はなく，解放も不要
 Point make_point(double x, double y)
 {
     return (Point){.x = x, .y = y};
 }
 
-/* (b) 呼び出し元が用意した Point へ書き込む：領域の寿命・所有者は呼び出し元 */
+// (b) 呼び出し元が用意した Point へ書き込む：領域の寿命・所有者は呼び出し元
 int init_point(Point *out, double x, double y)
 {
     if (out == NULL) {
@@ -465,7 +494,7 @@ int init_point(Point *out, double x, double y)
     return 1;
 }
 
-/* (c) malloc した Point * を返す：失敗なら NULL，成功時は呼び出し元が free する（new_point と同じ） */
+// (c) malloc した Point * を返す：new_point と同じ（成功時は呼び出し元が free する．失敗なら NULL）
 ```
 
 ```text
@@ -687,8 +716,8 @@ new_n must be 1..1000
     int *next = try_resize(p, new_n * sizeof *p);
     if (next == NULL) {
         // 再確保が失敗した経路だけで元の領域を読む：p はまだ有効で，p[0] は 1 のまま
-        printf("p[0]=%d\n", p[0]);
         fprintf(stderr, "reallocation failed\n");
+        printf("p[0]=%d\n", p[0]);     // free する直前に表示する
         free(p);
         return 1;
     }
@@ -698,8 +727,8 @@ new_n must be 1..1000
 > GrowArrayFail   （simulate_failure = 1，old_n = 3，new_n = 5）
 calloc: 0 0 0
 before: 1 2 3
-p[0]=1
 reallocation failed
+p[0]=1
 （終了コード 1）
 > GrowArrayFail_simulate_failure_0   （simulate_failure = 0 に書き換えた版）
 calloc: 0 0 0
@@ -890,7 +919,13 @@ ok=0 out=99.0
 4. **`&x` を渡す理由**: `vector_destroy(Vector **p)` は呼び出し元の**ポインタ変数 `x` 自身のアドレス**を受け取り，`free(*p)` の後 `*p = NULL;` で `x` を `NULL` に書き換えます。
    `void vector_destroy(Vector *p)` のように `x` の値を渡すと，関数の中の `p` は `x` のコピーなので，`p = NULL;` としても呼び出し元の `x` は古いアドレスのまま残ります。
 5. **解放後に `NULL` になること**: Visual Studio では `return status;` にブレークポイントを置き，ウォッチで `x`，`y`，`result` がすべて `0x0000000000000000` になっていることを確認します（`x->v` などメンバの参照はしない）。
-   ここでは確認のため `cleanup` の後に `printf` を一時的に追加して実行し，`x=NULL y=NULL result=NULL` と表示されることを確かめました。
+   リポジトリでは，`return status;` の前に `vector_destroy(&x);` をもう一度呼ぶ文と，3 つのポインタが `NULL` かを表示する `printf` を差し込んだ版（variants の `destroy_again`）でテストしています。
+   ```text
+   > DynamicVector_destroy_again
+   result=5.0 8.0
+   ok=0 out=99.0
+   x=NULL y=NULL result=NULL
+   ```
 
 ### 途中で失敗した場合（`DynamicVectorFail`）
 
@@ -942,7 +977,7 @@ allocation failed
 
 ### 二重ポインタの意味
 
-すべての後始末の後に `vector_destroy(&x);` をもう一度呼んでも，`x` はすでに `NULL` なので `free(NULL)` となり何も起きません（実際に追加して実行し，異常がないことを AddressSanitizer 付きで確認しました）。
+すべての後始末の後に `vector_destroy(&x);` をもう一度呼んでも，`x` はすでに `NULL` なので `free(NULL)` となり何も起きません（上の `destroy_again` の版で実際に 2 回目を呼んでおり，AddressSanitizer 付きのテストで二重解放の報告がないことを確認しています）。
 しかし，このAPIは**すべての二重解放を防ぐ魔法ではありません**。
 
 ```c
@@ -1019,7 +1054,7 @@ void vector_destroy(Vector **p)
    → **いいえ。** `p = NULL;` は変数 `p` だけを書き換えます。`q` には解放前のアドレスが残り，`q` を参照すれば解放後の使用，`free(q)` は二重解放です（課題4，発展3の `alias`）。別名も含めて使わないようにします。
 
 4. **`realloc`失敗後の元の配列と，成功後の古い要素ポインタは同じ扱いか。**
-   → **いいえ。** 正のサイズへの `realloc` が失敗したとき，元の配列は**有効なまま**で，引き続き使ったり `free` したりできます（`GrowArrayFail` で `p[0]=1`）。成功したときは，古いポインタや古い要素を指すポインタは**無効**で，返されたポインタから参照を作り直す必要があります（同じアドレスに見えても同じ扱い）。
+   → **いいえ。** 正のサイズへの `realloc` が失敗したとき，元の配列は**有効なまま**で，引き続き使ったり `free` したりできます（`GrowArrayFail` で `p[0]=1`）。成功したときは，古いポインタや古い要素を指すポインタは**無効**で，返されたポインタから参照を作り直す必要があります（`next == p` で同じアドレスに見えても，古いポインタは無効として扱い，`p = next;` の後の `p` から参照を作り直す）。
 
 5. **動的な配列を含む構造体の本体だけを`free`すれば，配列も自動で解放されるか。**
    → **いいえ。** `free` は渡された 1 つの領域だけを解放し，中のポインタメンバの指す先までは解放しません。配列を先に `free` してから本体を `free` します（課題4の `buffer`，発展3「動的なメンバ」）。本体を先に解放するとメンバを読めなくなり，配列がリークします。

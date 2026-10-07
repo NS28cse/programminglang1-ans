@@ -26,9 +26,9 @@
 | [第10回](week10/README.md) | ファイル | Arguments，Binary，ByteOrder，CheckValue，LineLengths，NumberFormats，ParseNumber，ReadText，WriteSquares，WriteText | 131 | [ex10](https://t-yokoga.github.io/softprac1/ex10.html) |
 | [第11回](week11/README.md) | 構造体 | CopyMembers，PointInit，PointMove，Rect，RectContains，StructLayout，Students | 44 | [ex11](https://t-yokoga.github.io/softprac1/ex11.html) |
 | [第12回](week12/README.md) | コンパイル：分割コンパイルとライブラリ | CalcApp，CalcLib，LibraryCheck，SortModule，SplitCalc，VectorCalc | 34 | [ex12](https://t-yokoga.github.io/softprac1/ex12.html) |
-| [第13回](week13/README.md) | メモリ管理 | Dynamic，DynamicCopy，DynamicVector，DynamicVectorFail，GrowArray，GrowArrayFail，NewPoint，NewPointFail，SharedCount，StorageCount | 60 | [ex13](https://t-yokoga.github.io/softprac1/ex13.html) |
+| [第13回](week13/README.md) | メモリ管理 | Dynamic，DynamicCopy，DynamicVector，DynamicVectorFail，GrowArray，GrowArrayFail，NewPoint，NewPointFail，SharedCount，StorageCount | 64 | [ex13](https://t-yokoga.github.io/softprac1/ex13.html) |
 | [第14回](week14/README.md) | 再帰 | CheckedFactorial，Factorial，Fibonacci，GcdLoop，Trace，TreeTraversal | 59 | [ex14](https://t-yokoga.github.io/softprac1/ex14.html) |
-| | | **合計** | **744** | |
+| | | **合計** | **748** | |
 <!-- WEEK-TABLE:END -->
 
 ## しくみ
