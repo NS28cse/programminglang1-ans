@@ -10,18 +10,30 @@ softprac_add_variant(Lower lower.c AZaz09 [["Hello C17!"]] [["AZaz09"]])
 softprac_add_variant(Lower lower.c at_AZ_bracket [["Hello C17!"]] [["@AZ["]])
 softprac_add_variant(Lower lower.c A_space_B [["Hello C17!"]] [["A B"]])
 
-set(inline_if_old [[text[i] = lower(text[i]);]])
-set(inline_if_new [[if (text[i] >= 'A' && text[i] <= 'Z') {
+set(inline_if_old [[// 終端の手前まで処理する。返された文字を代入しないと text は変わらない
+    for (size_t i = 0; text[i] != '\0'; ++i) {
+        text[i] = lower(text[i]);]])
+set(inline_if_new [[// 最初の版: ループの中で範囲を確かめて直接変換する
+    for (size_t i = 0; text[i] != '\0'; ++i) {
+        if (text[i] >= 'A' && text[i] <= 'Z') {
             text[i] = (char)(text[i] + ('a' - 'A'));
         }]])
-softprac_add_variant(Lower lower.c inline_if "${inline_if_old}" "${inline_if_new}")
+# 1 行目のコメントも，その版の説明に置き換える
+set(inline_if_title_old [[1文字の変換を関数 lower に分けた版]])
+set(inline_if_title_new [[最初の版（ループ内の if で変換。lower は使わない）]])
+softprac_add_variant(Lower lower.c inline_if "${inline_if_old}" "${inline_if_new}"
+                     "${inline_if_title_old}" "${inline_if_title_new}")
 softprac_add_variant(Lower lower.c inline_if_empty
-                     "${inline_if_old}" "${inline_if_new}" [["Hello C17!"]] [[""]])
+                     "${inline_if_old}" "${inline_if_new}"
+                     "${inline_if_title_old}" "${inline_if_title_new}" [["Hello C17!"]] [[""]])
 softprac_add_variant(Lower lower.c inline_if_AZaz09
-                     "${inline_if_old}" "${inline_if_new}" [["Hello C17!"]] [["AZaz09"]])
+                     "${inline_if_old}" "${inline_if_new}"
+                     "${inline_if_title_old}" "${inline_if_title_new}" [["Hello C17!"]] [["AZaz09"]])
 softprac_add_variant(Lower lower.c inline_if_at_AZ_bracket
-                     "${inline_if_old}" "${inline_if_new}" [["Hello C17!"]] [["@AZ["]])
+                     "${inline_if_old}" "${inline_if_new}"
+                     "${inline_if_title_old}" "${inline_if_title_new}" [["Hello C17!"]] [["@AZ["]])
 softprac_add_variant(Lower lower.c inline_if_A_space_B
-                     "${inline_if_old}" "${inline_if_new}" [["Hello C17!"]] [["A B"]])
+                     "${inline_if_old}" "${inline_if_new}"
+                     "${inline_if_title_old}" "${inline_if_title_new}" [["Hello C17!"]] [["A B"]])
 
 softprac_add_variant(Lower lower.c no_assign [[text[i] = lower(text[i]);]] [[lower(text[i]);]])

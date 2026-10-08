@@ -9,14 +9,25 @@ softprac_add_program(Average average.c)
 softprac_add_variant(Average versions/average_first.c first)
 softprac_add_variant(Average versions/average_first.c first_total_minus7 "int total = 7" "int total = -7")
 softprac_add_variant(Average average.c page_literal
-                     [[int large = 300;
+                     [[// 演習ページの (unsigned char)300 は定数を切り詰めるキャストで MSVC /W4 の C4310 になるため，
+    // 300 をいったん int の変数に入れてから変換する（結果は同じ 44。README 参照）
+    int large = 300;
     unsigned char small = (unsigned char)large;]]
-                     [[unsigned char small = (unsigned char)300;]])
+                     [[// 演習ページどおりの書き方（MSVC /W4 では C4310。この版だけ /wd4310 でビルドする）
+    unsigned char small = (unsigned char)300;]])
 # 演習ページどおりの (unsigned char)300 は MSVC /W4 で C4310（cast truncates constant value）になる
 # （CI の MSVC 19.51 で確認）。この版は「同じ 4 行を表示する」ことを確かめるためのものなので，C4310 だけ止める
 target_compile_options(Average_page_literal PRIVATE $<$<C_COMPILER_ID:MSVC>:/wd4310>)
 softprac_add_variant(Average average.c i_100 "int i = 50000" "int i = 100")
+set(i_comment [[// 掛ける前に long long へ広げる（i * i を int のまま計算するとオーバーフローする）
+    int i = 50000;]])
 softprac_add_variant(Average average.c i_100_no_cast
-                     "int i = 50000" "int i = 100" "(long long)i * i" "i * i")
+                     "${i_comment}"
+                     [[// i = 100 なら積 10000 は int の範囲内なので，キャストなしでも同じ結果（大きな値では安全でない）
+    int i = 100;]]
+                     "(long long)i * i" "i * i")
 softprac_add_variant(Average average.c i_100_late_cast
-                     "int i = 50000" "int i = 100" "(long long)i * i" "(long long)(i * i)")
+                     "${i_comment}"
+                     [[// 計算後に変換する形。i = 100 なら範囲内なので同じ結果になるが，解決にはならない
+    int i = 100;]]
+                     "(long long)i * i" "(long long)(i * i)")
