@@ -11,28 +11,30 @@
 
 | 課題 | プロジェクト | ソース | テスト数 | データファイル |
 | --- | --- | --- | ---: | --- |
-| 1 複写 | `Echo` | [`echo.c`](Echo/echo.c)（講義の例題にコメントだけ追加） | 5＋変更版 8 | [`input.txt`](Echo/input.txt) |
+| 1 複写 | `Echo` | [`echo.c`](Echo/echo.c)（講義の例題にコメントだけ追加） | 5＋変更版 10 | [`input.txt`](Echo/input.txt) |
 | 1 小文字化フィルタ | `LowerInput` | [`lower_input.c`](LowerInput/lower_input.c) | 9＋変更版 3 | [`input.txt`](LowerInput/input.txt)，[`ab.txt`](LowerInput/ab.txt)（課題4の入力ファイル） |
 | 2 英字数 | `LetterCount` | [`letter_count.c`](LetterCount/letter_count.c) | 11＋変更版 2 | [`input.txt`](LetterCount/input.txt) |
 | 2 バイト数 | `ByteCount` | [`byte_count.c`](ByteCount/byte_count.c)（演習ページのコードにコメントだけ追加） | 8 | [`input.txt`](ByteCount/input.txt) |
 | 3 行の容量 | `LineInput` | [`line.c`](LineInput/line.c)（講義の例題にコメントだけ追加） | 11＋変更版 6 | [`input.txt`](LineInput/input.txt) |
 | 4 書式 | `Formats` | [`formats.c`](Formats/formats.c)（演習ページのコードにコメントだけ追加） | 1＋変更版 3 | なし（入力を待たない） |
-| 発展 タイピング | `Typing` | [`typing.c`](Typing/typing.c) | 14＋変更版 8 | [`input.txt`](Typing/input.txt) |
-| | | | **89**（うち変更版 30） | |
+| 発展 タイピング | `Typing` | [`typing.c`](Typing/typing.c) | 15＋変更版 8 | [`input.txt`](Typing/input.txt) |
+| | | | **92**（うち変更版 32） | |
 
 - 演習ページはソース名を指定していないため，講義の例題（`echo.c`，`line.c`）はその名前を使い，ほかはプロジェクト名を小文字・`_` 区切りにしました。
 - 演習ページの「一時的に置き換える」「`line[8]`へ変更する」「`n`を123456へ変更する」などの**実験用の変更**はフォルダのソース（本体）に入れません。
   本体は講義の例題・演習ページの配布コードのまま（演習ページの期待する表示を出す版）とし，変更した版は README にコードブロックで載せ，`softprac_add_variant` でテストしています。
   `Echo` の検証①〜③・`LineInput` の 31/32 個の `A`・`Formats` の期待する表示は，すべて変更前のコードに対する仕様だからです。
 - 変更版（`Echo` の `character=`/`new line` 表示と `putchar('/')` の追加，`line[8]`，`n`・`base` の値，大文字・小文字を区別する比較）と，
-  採点のポイントで挙げた**誤りの例**（`LetterCount` の 1 範囲判定，`LowerInput` の `>`/`<` 判定，`Typing` の「一致したときだけ位置を進める」），
+  採点のポイントで挙げた**誤りの例**（`Echo` の括弧を省いた `while` と `char ch`，`LetterCount` の 1 範囲判定，`LowerInput` の `>`/`<` 判定，`Typing` の「一致したときだけ位置を進める」），
   課題4のプログラム `A`（`LowerInput` に処理状況の `stderr` 出力・`Ready` の `stdout` 出力を加えた版）は，
   各フォルダの `CMakeLists.txt` の `softprac_add_variant` で README と同じ書き換えをした版をビルドしてテストしています。
   期待値とテスト名は，同じ版に複数の入力を与える `Echo`・`LowerInput`・`LetterCount`・`LineInput`・`Typing` では `variants/tests/<版>--<入力>.*`（テスト名 `variant_<版>--<入力>`），
   入力のない `Formats` では `variants/tests/<版>.out`（テスト名 `variant_<版>`）です。
 - `Typing` は演習ページの「作成する最終版」（大文字・小文字を区別しない版）です。区別する版は README に載せ，`softprac_add_variant` でテストしています。
 
-ビルドとテスト（警告 0・89 テスト成功を確認済み。GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1（sanitizer なし）でも同じ）:
+ビルドとテスト（警告 0・92 テスト成功を確認済み。GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1（sanitizer なし）でも同じ）。
+MSVC `/W4 /WX` でも CI（GitHub Actions の windows-msvc-* ジョブ）でビルド・テストが成功している（コミット 3e12fbc の時点）。
+その後に追加した `Echo` の誤りの例 2 版（`no_parens`・`char_ch`。MSVC の警告をその版だけ抑止）と `Typing` の `max_1000` は，MSVC ではまだ確認していません。
 
 ```sh
 cmake -S . -B /tmp/build-week07 -G Ninja -DSOFTPRAC_WEEKS=week07 -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
@@ -75,7 +77,7 @@ rem stderr だけを err.txt へ（stdout は画面のまま）
 LineInput.exe < input.txt 2> err.txt
 ```
 
-**PowerShell**（VS Code の既定のターミナル）: `<` は使えません（「`<` 演算子は将来使用するために予約されています」というエラーになる）。
+**PowerShell**（VS Code の既定のターミナル）: `<` は使えません（`The '<' operator is reserved for future use.` というエラーになる。日本語版での表示の例は「`<` 演算子は将来使用するために予約されています」）。
 
 ```powershell
 Get-Content input.txt | .\Echo.exe                      # 入力ファイルを標準入力へ（行ごとに送られる）
@@ -284,12 +286,31 @@ azaz09
 
 ### 採点のポイント・よくある誤り（課題1）
 
-- `ch` を `char` で宣言している → 誤り（確認問題1）。MSVC `/W4` では `C4244`（`int` から `char` への変換）の警告が出る。
-- `while (ch = getchar() != EOF)` と括弧を省く → `ch` には比較結果 1 が入り，`ab` Enter で `\x01` が 3 バイト出力される（実際に試した結果。GCC は `-Wparentheses`，MSVC は `C4706` を出す）。
+- `ch` を `char` で宣言している → 誤り（確認問題1）。`char` が符号付きの環境では，バイト 0xFF が `EOF` と等しくなって途中で止まる
+  （下の誤りの版 `char_ch` に `ab` 0xFF `cd` と改行を与えると `ab` だけ出る。テスト `variant_char_ch--ab_ff_cd`）。
+  GCC・Clang の `-Wall -Wextra -Wpedantic` では（`char` が符号付きなら）警告が出ないので，警告だけでは気付けない。
+  0xFF で止まることと GCC・Clang で警告が出ないことは Linux で確認。MSVC の `C4244`（`int` から `char` への変換）は番号の例（この環境では未確認）。
+- `while (ch = getchar() != EOF)` と括弧を省く → `!=` が `=` より先に評価され，`ch` には比較結果 1 が入る。`ab` Enter で `\x01` が 3 バイト出力される
+  （実際に試した結果。GCC・Clang は `-Wparentheses` を出す。下の誤りの版 `no_parens` のテスト `variant_no_parens--ab`）。
+  `\x01` 3 バイトと GCC の `-Wparentheses` は Linux で確認。MSVC の `C4706` は番号の例（この環境では未確認）。
 - `putchar(ch + 32)` のように範囲判定なしで変換 → 数字・記号・改行まで変わる。`'a' - 'A'` または `- 'A' + 'a'` を使い，32 を直接書かない方が意図が明確。
 - 範囲を `ch > 'A'` / `ch < 'Z'` とする境界の誤り → `AZaz09` で `A`・`Z` が変わらず `AZaz09` のまま出力される（この誤りの版のテスト `variant_strict--azaz09`）。
 - Enter を押しても終わらないのを「止まった」と誤解し，強制停止している → `EOF` の知らせ方（行頭で Ctrl+Z, Enter）を確認させる。
 - 記録で，コンソールが映した入力行と `putchar` の出力行を区別していない（`abc` が 2 回見えるのは正常）。
+
+#### 誤りの例をビルドして確かめる（`Echo` の `no_parens`・`char_ch` 版）
+
+上の 2 つの誤りは，`Echo/CMakeLists.txt` の `softprac_add_variant` で `echo.c` を書き換えた版をビルドしてテストしています（期待値は `Echo/variants/tests/`）。
+どちらも警告をエラーにする設定ではビルドが止まる書き方なので，誤りの動作を確かめるために**その版だけ**警告を抑止しています。
+
+| 版 | 書き換えた行 | 入力 | 標準出力 | テスト | 警告の抑止（その版だけ） |
+| --- | --- | --- | --- | --- | --- |
+| `no_parens` | `while (ch = getchar() != EOF) {` | `ab` と改行 | `\x01` が 3 バイト（改行なし） | `variant_no_parens--ab` | GCC/Clang `-Wno-parentheses`，MSVC `/wd4706` |
+| `char_ch` | `char ch;` | `ab` 0xFF `cd` と改行（`.in` にバイナリで置く） | `ab`（終了コード 0） | `variant_char_ch--ab_ff_cd` | MSVC `/wd4244`。GCC/Clang は `-fsigned-char` を付ける |
+
+`char` が符号付きか符号なしかは処理系定義です（MSVC と x86/x64 の GCC・Clang は符号付き，Linux の ARM などは符号なし）。
+テストの結果を環境によらず固定するため，`char_ch` 版は GCC/Clang でも `-fsigned-char` で符号付きにしてビルドしています（MSVC の `char` は既定で符号付き）。
+符号なしの環境では 0xFF でも `EOF` でも止まらず無限ループになるので，テストにはしていません（Linux で `-funsigned-char` を付けると，GCC は `ch != EOF` に `-Wtype-limits`（比較が常に真）の警告を出す）。
 
 ---
 
@@ -663,9 +684,12 @@ score=13
 | 追加 | `EOF` だけ / 改行なしの `This` | （なし）/ `This` | 0 / 4 | 0 / 4 | `eof_only` / `no_final_newline` |
 | 追加 | 最初の改行で採点を終える | `This` Enter `This is a pen` | 4 | 4 | `first_line_only` |
 | 追加 | CR LF で終わる行 | `This is a pen` と CR LF | 13 | 13 | `crlf` |
+| 追加 | 入力上限（1 行 1000 バイト）ちょうど | `This is a pen` に続けて `x` 987 個（本文 1000 バイト）と Enter | 13 | 13 | `max_1000` |
 
 `Txxxxxxxxxp` は 11 文字で，位置 0 の `T` と位置 10 の `p` だけがお手本（`This is a pen` の位置 0 が `T`，位置 10 が `p`）と一致するので 2 点です。
 `Thi is a pen` は位置 3 以降がお手本より 1 つ前にずれるため，`Thi` の 3 点だけです（位置を合わせ直す処理はしない仕様）。
+入力は配列に保存せず 1 文字ずつ比較するので，プログラムに長さの上限はありません（`position` は `size_t` で数え，14 文字目以降は範囲の確認で比較しない）。
+演習ページの上限（1 行 1000 バイト以内）ちょうどの `max_1000` でも，14 文字目以降の 987 バイトは加点されず 13 です。
 
 ### 大文字・小文字を区別する版
 
@@ -703,8 +727,10 @@ score=13
 
 1. **`getchar` の戻り値を `char` へ先に保存しないのはなぜか**
    → `char` では `EOF` と文字を正しく区別できないからです。`getchar` は 256 通りのバイト値（0〜255）と，それらと異なる負の値 `EOF` の合わせて 257 通りを `int` で返しますが，`char` には 256 通りしか入りません。
-   `char` が符号付きの環境（MSVC，x86 の GCC）ではバイト 0xFF が −1 になり `EOF` と等しくなって途中で止まります（Linux で `char ch` 版に `ab` 0xFF `cd` を与えると `ab` だけ出力して終了しました）。
-   `char` が符号なしの環境では `EOF` が 255 になり，`EOF` と一度も等しくならず止まりません。MSVC `/W4` では `C4244` の警告が出ます。
+   `char` が符号付きの環境（MSVC，x86 の GCC）ではバイト 0xFF が −1 になり `EOF` と等しくなって途中で止まります
+   （`Echo` の誤りの版 `char_ch` に `ab` 0xFF `cd` と改行を与えると `ab` だけ出力して終了します。テスト `variant_char_ch--ab_ff_cd`。課題1の採点のポイントを参照）。
+   `char` が符号なしの環境では `EOF` が 255 になり，`EOF` と一度も等しくならず止まりません（無限ループになるのでテストはしていない）。
+   GCC・Clang の `-Wall -Wextra` では（`char` が符号付きなら）警告が出ません。MSVC `/W4` の `C4244` は番号の例です（この環境では未確認）。
 
 2. **`'0'`，`'\0'`，`'\n'`，`EOF` の役割**
    → `'0'` は数字の文字ゼロ（ASCII で 48）で，`getchar` で読める普通の文字です。`'\0'` は値 0 の文字で，**配列の中で文字列の終わりを示す終端**です（入力の末尾に自動で流れてくるものではない）。
@@ -743,8 +769,8 @@ score=13
 
 | 項目 | 確認できる課題と内容 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 ``@AZ[`az{``（`A`/`Z`/`a`/`z` の前後），課題2 `@AZ[`・空行・`EOF` だけ，課題3 `A` 30/31/32 個と `line[8]` の 6/7/8 文字，発展 14 文字目以降（`This is a pen!`）。すべて `tests/` または `variants/tests/` にテストケースがある |
-| 警告を確認し，原因を説明・修正した | 全プログラム（変更版を含む）が GCC 13・Clang 18 の `-Wall -Wextra -Wpedantic -Werror` で警告 0（`-DSOFTPRAC_WERROR=ON` でビルドして確認）。MSVC `/W4` で出る警告（C4244・C4706・C4996 など）の原因になる書き方（`getchar` の結果の `char` への代入，条件式全体が代入になる書き方，`scanf` 等）も使っていない（MSVC での実ビルドは未確認）。`char ch`（C4244）や括弧なしの代入（C4706，`-Wparentheses`）の警告の原因を課題1の採点ポイントで説明 |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 ``@AZ[`az{``（`A`/`Z`/`a`/`z` の前後），課題2 `@AZ[`・空行・`EOF` だけ，課題3 `A` 30/31/32 個と `line[8]` の 6/7/8 文字，発展 14 文字目以降（`This is a pen!`）と 1 行 1000 バイト（`max_1000`）。すべて `tests/` または `variants/tests/` にテストケースがある |
+| 警告を確認し，原因を説明・修正した | 全プログラム（変更版を含む）が GCC 13・Clang 18 の `-Wall -Wextra -Wpedantic -Werror` で警告 0（`-DSOFTPRAC_WERROR=ON` でビルドして確認）。MSVC `/W4 /WX` でも CI（GitHub Actions の windows-msvc-* ジョブ）でビルド・テストが成功している（コミット 3e12fbc の時点。その後に追加した `Echo` の `no_parens`・`char_ch` 版と `Typing` の `max_1000` は MSVC では未確認）。誤りの例の `no_parens` 版（括弧なしの代入）と `char_ch` 版（`char ch`）だけは，誤りの動作を確かめるためにその版だけ警告を抑止してビルドし，原因を課題1の採点ポイントで説明（`-Wparentheses` は Linux で確認。MSVC の `C4706`・`C4244` は番号の例で，この環境では未確認） |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1の読み取り順の表，`getchar` を `int` で受ける理由（確認問題1），`strlen` の `size_t`（課題3），`long long` と `%lld`（課題4） |
 | Enter による改行，`EOF` による終了，強制停止を区別できる | 課題1 ①②③（空の入力と空行），課題2（`LetterCount` は Enter で表示，`ByteCount` は `EOF` で表示，強制停止では表示されない），共通の「入力終了」の表 |
 | 入力文字の表示と，プログラム自身の出力を区別して記録した | 課題1・課題3・発展のコンソールでの実行例（入力行と出力行に注記），`character=` 版の確認 |

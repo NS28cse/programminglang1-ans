@@ -1,6 +1,12 @@
 # 第7回 課題3 LineInput
 # 本体（講義の line.c，容量 32）に加えて，「容量を小さくして仕組みを見る」（line[32] を line[8] に変える）版をテストする
-# 期待値は variants/tests/line8--<入力の名前>.*
+# 期待値は variants/tests/line8--<入力の名前>.*。先頭行と容量に関するコメントも 8（本文 7 バイト）に合わせて置き換える
 softprac_add_program(LineInput line.c)
 
-softprac_add_variant(LineInput line.c line8 "char line[32];" "char line[8];")
+softprac_add_variant(LineInput line.c line8
+  [=[// 第7回 課題3: 1 行を配列へ読み込み，本文の長さを表示する（講義の line.c）]=]
+  [=[// 第7回 課題3: 容量を小さくして仕組みを見る版（講義の line.c の line[32] を line[8] に変えた）]=]
+  [=[    char line[32]; // 本文 31 バイト＋改行または終端]=]
+  [=[    char line[8]; // 本文 7 バイト＋改行または終端（line[32] から容量を小さくした版）]=]
+  [=[        // 改行が入らなかった: ちょうど 31 バイトか，超過か，改行なしで終了したか]=]
+  [=[        // 改行が入らなかった: ちょうど 7 バイトか，超過か，改行なしで終了したか]=])
