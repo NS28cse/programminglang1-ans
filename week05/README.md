@@ -19,7 +19,7 @@
 | 4 | 平均と累乗の関数 | `Functions` | [functions.c](Functions/functions.c) | 9（本体 1 + 書き換え版 8：表の 6 呼び出し，範囲の端，`result = 0` の誤り，変数に保存する前の版） |
 | 発展 | 合計と平均の役割分担 | `SumMean` | [summean.c](SumMean/summean.c) | 5（本体 1 + 書き換え版 4：表の 2 通り，範囲の最大，合計関数単独の `n = 0`） |
 
-合計 36 テスト。GCC 13.3（`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan）と Clang 18.1（`-Werror`）で警告 0・全テスト成功を確認済み。CI の MSVC（`/W4 /WX`）でもビルド・テストが成功している（統合担当の CI で確認）。
+合計 36 テスト。GCC 13.3（`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan）と Clang 18.1（`-Werror`）で警告 0・全テスト成功を確認済み。MSVC（`/W4 /WX`）では，CI（GitHub Actions）で第5回の全プロジェクトがエラー・警告なしでビルドできることを確認した。ただし `return_in_loop`・`plus_one`・`shadow_count` の 3 版は，その後に追加したので MSVC では未確認。
 
 - 演習ページがプロジェクト名を指定しているのは `Maximum`・`ColumnSum`・`ValueCopy`・`Functions` だけ。ソース名の指定は課題2の `arrays.c`（講義の例題を入れる）だけなので，
   ほかはプロジェクト名を小文字にした名前（`Warmup05` だけは回の番号を除いた `warmup.c`）にした。
@@ -652,7 +652,7 @@ total=390 mean=78.0
 | 項目 | どこで確認できるか |
 | --- | --- |
 | 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1の {0}・`n = 1`（本体 0 回）と最初・最後が最大の配列（`Maximum` の `variant_zero`〜`variant_last`），課題2の全要素 0（`ColumnSum` の `variant_zero`），課題3の初期値 0・−1（`ValueCopy` の `variant_x_0`・`variant_x_m1`），課題4の `power(2, 0)`・`power(5, 5)` と範囲の端（`Functions` の `variant_a_…`），発展の `n = 1` と {100, 100, 100}（`SumMean` の `variant_zero_n_1`・`variant_hundred_n_3`）。すべて自動テストで確認済み |
-| 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC 13.3／Clang 18.1 の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で警告になる書き方 ―― VLA，`double` から `float` への暗黙の変換，宣言のない呼び出し ―― も避けている。誤りを示すためにわざと書いた `Maximum` の `return_in_loop` 版と確認問題6 の `shadow_count` 版だけは，その警告を版ごとに抑止し理由を書いている）。CI の MSVC `/W4 /WX` でも成功。よく出る警告: プロトタイプ宣言なし（C4013），`return` がループ内で値を返さない経路（C4715），`double` から `float` への変換（C4244/C4305），グローバル変数の隠蔽（C4459）。課題1・4・確認問題6 で説明 |
+| 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC 13.3／Clang 18.1 の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で警告になる書き方 ―― VLA，`double` から `float` への暗黙の変換，宣言のない呼び出し ―― も避けている。誤りを示すためにわざと書いた `Maximum` の `return_in_loop` 版と確認問題6 の `shadow_count` 版だけは，その警告を版ごとに抑止し理由を書いている）。MSVC `/W4 /WX` では，3 版を追加する前に CI でビルドできることを確認した。よく出る警告: プロトタイプ宣言なし（C4013），`return` がループ内で値を返さない経路（C4715），`double` から `float` への変換（C4244/C4305），グローバル変数の隠蔽（C4459）。課題1・4・確認問題6 で説明 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1の `best` の追跡表，課題2の訪問順の表，課題4の関数の型の表（`float average(float, float)`，`int power(int, int)`），発展の `(double)` の説明 |
 | 添字の範囲と，関数に渡す要素数が一致している | 課題1・発展で配列の大きさと渡す長さに同じ `COUNT`／`n` を使う。課題2の `table[col][row]` が範囲外になる理由，確認問題2・4 |
 | 値を返すこと，変数へ代入すること，画面へ表示することを区別できる | 課題3の 3 つの呼び出し方の表，課題4の「戻り値と表示を分ける」，確認問題5（`variant_plus_one`）・7 |
