@@ -44,6 +44,8 @@ def expected_codes(project: pathlib.Path, args):
 
 
 def main():
+    # Windows の CI などコンソールが日本語を表示できない環境でも落ちないようにする
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     if len(sys.argv) != 2 or sys.argv[1] in ("-h", "--help"):
         print(__doc__)
         return 0 if len(sys.argv) == 2 else 2
