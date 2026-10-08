@@ -31,7 +31,7 @@ softprac_add_variant(Echo echo.c visible
         }]=])
 
 # 誤りの例 1: 括弧を省くと != が先に評価され，ch には比較結果 1 が入る（ab と Enter で 0x01 が 3 バイト出る）。
-# 条件式の中の代入なので GCC/Clang は -Wparentheses，MSVC は C4706 の警告を出し，警告をエラーにする設定では
+# 条件式の中の代入なので GCC/Clang は -Wparentheses，MSVC は C4706（番号はドキュメントによる例）の警告を出し，警告をエラーにする設定では
 # ビルドが止まる。この版は誤りの動作を確かめるためのものなので，この版だけその警告を抑止する
 softprac_add_variant(Echo echo.c no_parens
   [=[// 第7回 課題1: 入力をそのまま出力する（講義の echo.c）]=]
@@ -43,7 +43,7 @@ target_compile_options(Echo_no_parens PRIVATE $<IF:$<C_COMPILER_ID:MSVC>,/wd4706
 # 誤りの例 2: char で受けると，char が符号付きの環境ではバイト 0xFF が -1 になり EOF と等しくなって途中で止まる
 # （ab 0xFF cd と改行を与えると ab だけ出る）。char の符号は処理系定義なので，結果を固定するため
 # GCC/Clang では -fsigned-char を付ける（MSVC の char は既定で符号付き）。
-# MSVC は int から char への代入に C4244 を出すので，この版だけ抑止する（GCC/Clang の -Wall -Wextra では警告なし）
+# MSVC は int から char への代入に C4244（番号はドキュメントによる例）を出すので，この版だけ抑止する（GCC/Clang の -Wall -Wextra では警告なし）
 softprac_add_variant(Echo echo.c char_ch
   [=[// 第7回 課題1: 入力をそのまま出力する（講義の echo.c）]=]
   [=[// 第7回 課題1: よくある誤りの例（getchar の戻り値を char で受けた版。char が符号付きなら 0xFF で止まる）]=]

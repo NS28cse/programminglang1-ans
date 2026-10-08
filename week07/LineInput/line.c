@@ -3,7 +3,7 @@
 #include <string.h>
 int main(void)
 {
-    char line[32]; // 本文 31 バイト＋改行または終端
+    char line[32]; // 本文は最大 31 バイト＋終端（改行まで入るのは本文 30 バイト以下）
     printf("Text: ");
     fflush(stdout); // 改行のない入力案内を先に送り出す
     if (fgets(line, sizeof line, stdin) == NULL) {
