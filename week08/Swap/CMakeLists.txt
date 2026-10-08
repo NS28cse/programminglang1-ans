@@ -27,7 +27,7 @@ set(steps_traced [=[    int *p = &x;
 set(trace_note [=[ * 指す先はアドレスではなく p == &x の比較（1 か 0）で表示する（アドレスは実行ごとに変わるため）．]=])
 softprac_add_variant(Swap pointers.c trace
   "${head}" " * 第8回 課題1 Swap（書き換え版 trace）: 講義の pointers.c の各文の後に，
- * x, y, p が x を指すか, *p を表示する版（「代入ごとの状態を記録する」の表）．
+ * x，y，p が x を指すか，*p を表示する版（「代入ごとの状態を記録する」の表）．
 ${trace_note}"
   "${steps}" "${steps_traced}")
 softprac_add_variant(Swap pointers.c y_5

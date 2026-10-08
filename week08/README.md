@@ -1,7 +1,7 @@
 # 第8回 演習 解答・解説（ポインタ1）
 
-- 演習ページ: <https://t-yokoga.github.io/softprac1/ex08/>（資料リポジトリの `docs/ex08.md`）
-- 講義ページ: <https://t-yokoga.github.io/softprac1/lec08/>（`docs/lec08.md`，例題 `docs/sample/08/pointers.c`）
+- 演習ページ: <https://t-yokoga.github.io/softprac1/ex08.html>（資料リポジトリの `docs/ex08.md`）
+- 講義ページ: <https://t-yokoga.github.io/softprac1/lec08.html>（`docs/lec08.md`，例題 `docs/sample/08/pointers.c`）
 
 ## プロジェクト一覧
 
@@ -29,6 +29,7 @@
 - 発展の後半「小さい値の場所を返す」はプロジェクト名の指定がないため，同じ発展課題の `Decompose` プロジェクトに入れました（`main` は 1 つ）。
 - 実行結果は Linux x64（GCC 13.3，`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan 付き）で実際に実行した出力です（本体・書き換え版とも）。
   Clang 18（`-Werror`，サニタイザなし）でも警告 0 でビルドでき，43 件のテストがすべて成功しました。
+  MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクトのビルドとテストが成功している（コミット a76876f の時点）。`variants/`・`versions/` の版も含む。
 - コンパイルエラー・警告の例のうち GCC・Clang のものは実際にビルドして得た表示です。MSVC のものはエラー番号と代表的な文面で，バージョンや言語設定によって表記が異なります。
 
 ---
@@ -58,7 +59,7 @@
 | `swap_double_value` | `versions/swap_double.c` の `swap_double` を値引数にし，呼び出しを `swap_double(a[1], a[4]);` に | コピーだけが交換される |
 
 ポインタのコピーの実験と `swap_double` を `pointers.c` の `main` に入れず別ソースにしたのは，本体を配布コードのまま保つためと，
-`main` の `p` と同名の変数を内側のブロックで宣言すると MSVC `/W4` の C4456（名前の隠蔽）が出るためです。`swap_double` は別ソース [`versions/swap_double.c`](Swap/versions/swap_double.c) の `main` の前に，`int` 版の `swap` とは別に定義しています（本体 `pointers.c` は配布コードのまま）。
+`main` の `p` と同名の変数を内側のブロックで宣言すると MSVC `/W4` で名前の隠蔽の警告 C4456（番号は例）が出るためです。`swap_double` は別ソース [`versions/swap_double.c`](Swap/versions/swap_double.c) の `main` の前に，`int` 版の `swap` とは別に定義しています（本体 `pointers.c` は配布コードのまま）。
 
 ### 実行結果
 
@@ -263,7 +264,7 @@ a: 1.0 2.0 3.0 4.0 5.0 6.0
 GCC:   error: incompatible type for argument 1 of 'swap_double'
        note: expected 'double *' but argument is of type 'double'
 Clang: error: passing 'double' to parameter of incompatible type 'double *'; take the address with &
-MSVC:  error C2440: 'function': 'double' から 'double *' に変換できません。（英語版: cannot convert from 'double' to 'double *'）
+MSVC（例）: error C2440: 'function': 'double' から 'double *' に変換できません。（英語版: cannot convert from 'double' to 'double *'。文面はドキュメントによる例。このリポジトリでは再現していない）
 ```
 
 仮引数を値引数 `double a`，`double b` に変えた版（書き換え版 `swap_double_value`。関数内でコピーを表示し，呼び出しを `swap_double(a[1], a[4]);` にした）はビルドできますが，交換されるのはコピーだけです:
@@ -409,7 +410,7 @@ min=-2 max=9
 
 **`low` と `high` へ同じアドレスを渡すと 2 つの結果を同時に保持できない理由**:
 `*low` と `*high` が同じ 1 つの `int` の箱になるので，片方への書き込みがもう片方の結果を上書きします。箱が 1 つしかない以上，最小値と最大値の 2 つの値を同時に入れておくことはできません。
-さらに途中の比較も壊れます。例えば {7, −2, 9, 0} で `min_max(data, 4, &both, &both)` とすると，箱は 7 → −2（最小の更新）→ 9（最大の更新，比較相手はもう −2）→ 0（最小の更新，比較相手は 9）と変わり，最小値でも最大値でもない 0 が残ります。
+さらに途中の比較も壊れます。例えば {7, −2, 9, 0} で `min_max(data, 4, &low, &low)` とすると，箱は 7 → −2（最小の更新）→ 9（最大の更新，比較相手はもう −2）→ 0（最小の更新，比較相手は 9）と変わり，最小値でも最大値でもない 0 が残ります。
 
 **入力配列の要素を出力先にする場合**: 例えば `min_max(data, 4, &data[1], &high)` とすると，最初の `*low = a[0]` で `data[1]` の −2 が 7 で上書きされ，まだ読んでいない入力が失われます。
 結果は最小値 0（本当は −2）になり，配列も {7, 0, 9, 0} に変わってしまいます。`a` が `const int *` でも，別の経路（`low`）からの書き込みは止められません。
@@ -426,7 +427,7 @@ overlap: min=0 max=9 data={7, 0, 9, 0}
 ### 採点のポイント・よくある誤り
 
 - 候補を `0` や「十分大きい数」で初期化していないか。{-8, -2, -5} で最大値 0 になる誤りを検証表で見つける。
-- `low = a[i];` のように**ポインタ変数**へ代入していないか（`*low = a[i];` が正しい）。`int *` に `int` を代入するので，MSVC は C4047 の警告，GCC 13 は `-Wint-conversion` の警告，GCC 14 以降と Clang（18 で確認）はエラーになる。
+- `low = a[i];` のように**ポインタ変数**へ代入していないか（`*low = a[i];` が正しい）。`int *` に `int` を代入するので，MSVC（例）は C4047 の警告（番号はドキュメントによる例。このリポジトリでは再現していない），GCC 13 は `-Wint-conversion` の警告，GCC 14 以降と Clang（18 で確認）はエラーになる。
 - 呼び出しで `min_max(data, 4, low, high)`（値渡し）としていないか。`&low`，`&high` を渡す。
 - 配列の要素数を変えたのに `n` を変えていない（{7, 2, 10, 3, 5} に `n=4` を渡すなど）誤り。`sizeof data / sizeof data[0]` で求める方法もある。
 - `n=0` を渡して `a[0]` を読む，ループを `i <= n` にするなどの範囲外アクセス。
@@ -479,11 +480,11 @@ int copy_text(char *dst, size_t capacity, const char *src)
 ### 実行結果
 
 ```text
-char out[4] = "";           src="cat": return=1 out="cat" elements: c a t \0
-char out[3] = "";           src="cat": return=0 out="" elements: \0 \0 \0
-char out[1] = "";           src="": return=1 out="" elements: \0
-char out[4] = "old";        src="cats": return=0 out="old" elements: o l d \0
-char out[] = "aaaaaaaaaa";  src="hoge": return=1 out="hoge" elements: h o g e \0 a a a a a \0
+char out[4] = ""; src="cat": return=1 out="cat" elements: c a t \0
+char out[3] = ""; src="cat": return=0 out="" elements: \0 \0 \0
+char out[1] = ""; src="": return=1 out="" elements: \0
+char out[4] = "old"; src="cats": return=0 out="old" elements: o l d \0
+char out[] = "aaaaaaaaaa"; src="hoge": return=1 out="hoge" elements: h o g e \0 a a a a a \0
 ```
 
 ### 容量と変更の有無を確認する
@@ -581,7 +582,7 @@ out:               [ c ][ a ][ t ][\0 ]
 - 終端をコピーしていない（`while (*src != '\0')` で本体だけコピーし，`*dst = '\0'` がない）。空文字列のケースで分かる。
 - 関数内で `sizeof dst` を容量として使っていないか（常に 8 などになる）。
 - `char out[1] = "";` と `""` を「容量不足」としていないか。終端 1 要素分あれば成功。
-- `const char *src` になっているか。`size_t` と `int` を比較して符号の警告（MSVC C4018/C4389）を出していないか。
+- `const char *src` になっているか。`size_t` と `int` を比較して符号の警告（MSVC の C4018/C4389 など。番号は例）を出していないか。
 - 短い表記の説明で「判定してから代入」「終了時に `dst` は終端を指す」とする誤り。代入 → 判定 → 更新で，終端を書いた回も更新されるので終了時は終端の 1 つ先。
 - `"hoge"` の例で「残りの `a` が消える」と書く誤り。`%s` の表示と配列の中身を区別する。
 
@@ -604,7 +605,7 @@ out:               [ c ][ a ][ t ][\0 ]
 int sum_by_pointer(const int *a, int n)
 {
     int sum = 0;
-    /* 本体では p は a[0]〜a[n-1] のどれかを指す．1 つ先 a + n に着いたら読まずに終わる */
+    /* ループの本体では p は a[0]〜a[n-1] のどれかを指す．1 つ先 a + n に着いたら読まずに終わる */
     for (const int *p = a; p != a + n; ++p) {
         sum += *p;
     }
@@ -637,7 +638,7 @@ length=3
 
 演習ページの文章（`p <= a + COUNT` など）は，講義のように `main` の中でループを書いた形を想定しています。
 この版は [`PointerWalk/versions/pointer_walk_inline.c`](PointerWalk/versions/pointer_walk_inline.c) に置き，そのままビルドしてテストしています。
-演習ページの指示どおり「合計する前に」`set_one(a, COUNT);` を呼び，`set_one` の仮引数は `int a[]` と書いています。
+演習ページの指示どおり「合計する前に」`set_one(a, COUNT);` を呼び，`set_one` の仮引数は `int a[]` と書いています（先頭コメントは省略）。
 
 ```c
 #include <stdio.h>
@@ -764,7 +765,7 @@ Windows x64（MSVC）も 20 と 8，x86（32 ビット）向けでは 20 と 4 �
 ```text
 GCC:   error: lvalue required as increment operand
 Clang: error: cannot increment value of type 'int[5]'
-MSVC:  error C2105: '++' には左辺値が必要です。（英語版: '++' needs l-value）
+MSVC（例）: error C2105: '++' には左辺値が必要です。（英語版: '++' needs l-value。文面はドキュメントによる例。このリポジトリでは再現していない）
 ```
 
 走査するときは `int *p = a;` のようにポインタ変数を別に用意し，`p` を進めます。
@@ -778,7 +779,7 @@ MSVC:  error C2105: '++' には左辺値が必要です。（英語版: '++' nee
 - 期待する表示（3 行）と 1 文字ずつ一致するか。`distance` を `%d` で表示していないか（`ptrdiff_t` は `%td`。MSVC x64 では `%d` だと型が合わない）。
 - ポインタ版の条件を `p <= a + COUNT` や `p < a + COUNT + 1` にしていないか。
 - `q - p` の単位を「バイト」と答える誤り（正しくは要素数 2）。
-- `pointer_length` の戻り値を `int` にしてキャストなしで差を返し，MSVC C4244（`__int64` から `int`）を出していないか。
+- `pointer_length` の戻り値を `int` にしてキャストなしで差を返し，MSVC の C4244（`__int64` から `int`。番号は例）を出していないか。
 - `const char *s` の説明で「`s` は定数なので本当は進められない」とする誤り。`const` は指す先に付いている。
 - `sizeof a` と `sizeof p` を「同じ」とする誤り。関数の仮引数の `sizeof a` と `main` の配列の `sizeof a` の違いを区別できているか。
 - `set_one` を追加した版で合計が 20 のままなら，`set_one` を合計の後に呼んでいるか，別の配列を渡している（期待する表示の 3 行は `set_one` を呼ぶ前の値）。
@@ -843,7 +844,7 @@ void decompose(double x, long whole, double fraction)
 }
 int main(void)
 {
-    long whole = 0;            /* 比較の場合も 0 に初期化し，未初期化の値を渡さない */
+    long whole = 0;
     double fraction = 0.0;
     decompose(3.14, whole, fraction);
     printf("whole=%ld fraction=%.2f\n", whole, fraction);
@@ -932,7 +933,7 @@ int *bad_pointer(void)
 ```text
 GCC:   warning: function returns address of local variable [-Wreturn-local-addr]
 Clang: warning: address of stack memory associated with local variable 'local' returned [-Wreturn-stack-address]
-MSVC:  warning C4172: ローカル変数またはテンポラリのアドレスを返します: local（英語版: returning address of local variable or temporary: local）
+MSVC（例）: warning C4172: ローカル変数またはテンポラリのアドレスを返します: local（英語版: returning address of local variable or temporary: local。文面はドキュメントによる例。このリポジトリでは再現していない）
 ```
 
 「値を表示したら 10 が見えた」としても，それは有効な領域である証拠になりません。
@@ -956,7 +957,7 @@ MSVC:  warning C4172: ローカル変数またはテンポラリのアドレス�
 3. **`*&a` は変数 `a`（値 10），`*&p` は変数 `p`，`&*p` は `p` と同じポインタ値（`a` の場所）です。`&*a` は正しくありません。**
    `&a` で `a` の場所を作り，`*` でその場所の対象をたどるので `*&a` は `a` そのものです。`*&p` も `p` という変数なので，`*&p = &b;` のように代入先にもできます。
    `&*p` は `p` の指す対象 `a` の場所なので値は `p` と同じですが，代入先にはできません。
-   `&*a` は `int` の `a` に間接参照 `*` を適用しようとするのでコンパイルエラーです（GCC: `invalid type argument of unary '*' (have 'int')`，Clang: `indirection requires pointer operand ('int' invalid)`，MSVC: C2100「間接指定演算子 (*) が正しくありません」）。
+   `&*a` は `int` の `a` に間接参照 `*` を適用しようとするのでコンパイルエラーです（GCC: `invalid type argument of unary '*' (have 'int')`，Clang: `indirection requires pointer operand ('int' invalid)`，MSVC（例）: error C2100「間接指定演算子 (*) が正しくありません」（文面はドキュメントによる例。このリポジトリでは再現していない））。
 4. **`(*p)++` は指す先の値を 1 増やし，`*p++` は `p` 自体を次の要素へ進めます。** `*p++` は `*(p++)` と解釈され，式の値は移動前の要素の値で，その要素は変更されません。`(*p)++` の式の値は増やす前の値で，`p` は動きません。
    [`PointerWalk/versions/post_increment.c`](PointerWalk/versions/post_increment.c)（`PointerWalk` の書き換え版 `post_increment` としてテスト）で確かめました（`(*p)++` → `*p++` の順に実行。どの式も配列 `v` の範囲内だけを読み書きする。先頭コメントは省略）:
    ```c
@@ -991,7 +992,7 @@ MSVC:  warning C4172: ローカル変数またはテンポラリのアドレス�
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
 | 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の同じ値（`y_5`，`both_8`）／課題2 の {5}（`n=1`），{3, 3, 3}，全部が負の {-8, -2, -5}／課題3 の容量ちょうど（`out[4]` と `"cat"`），1 不足（`out[3]`），空文字列（`out[1]` と `""`），不足時に変更なし（`"old"`）／課題4 の `""`，`q = a + 1`／発展の 0.0，5.0，−100，100，−0.5，同じ値の `min_pointer`。すべて本体と書き換え版のテスト（計 43 件）で自動検査 |
-| 警告を確認し，原因を説明・修正した | 全プロジェクトと書き換え版を GCC・Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で問題になる隠蔽 C4456 を避けて実験を別ソースに分けた）。警告・エラーの例: `swap_double(a[1], a[4])`（課題1），`low = a[i]`（課題2），`a++`（課題4），関数の仮引数の `sizeof`（課題4），値引数版の `-Wunused-but-set-parameter`，局所変数のアドレスを返す関数（発展） |
+| 警告を確認し，原因を説明・修正した | 全プロジェクトと書き換え版を GCC・Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0（隠蔽の警告（C4456 など。番号は例）を避けて実験を別ソースに分けた）。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクトのビルドとテストが成功している（コミット a76876f の時点）。`variants/`・`versions/` の版も含む。警告・エラーの例: `swap_double(a[1], a[4])`（課題1），`low = a[i]`（課題2），`a++`（課題4），関数の仮引数の `sizeof`（課題4），値引数版の `-Wunused-but-set-parameter`，局所変数のアドレスを返す関数（発展） |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の状態表，課題2 の追跡表，課題3 の短い表記の「代入・判定・更新」，課題4 の `ptrdiff_t`／`size_t`／`const char *` |
 | ポインタの矢印と，指す先の値を分けて追跡した | 課題1 の図・状態表（`trace`，`y_5`，`both_8`）・ポインタのコピーの表（`copy_pointer` の `p_is_a`，`p_is_b`），発展の `points_to_y` |
 | 範囲外や寿命切れのポインタを実行して確かめていない | 課題4 の `p <= a + COUNT`，課題3 の終了時のポインタ（1 つ先），発展の `local` のアドレスは図と理由だけで説明し，実行していない（局所変数の例はビルドして警告を見ただけ） |

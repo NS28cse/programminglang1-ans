@@ -21,7 +21,7 @@ int copy_text(char *dst, size_t capacity, const char *src)
 /* 1 ケースの結果を表示する．elements は配列の全要素（%s は最初の終端で止まるため別に表示） */
 void report(const char *declaration, const char *src, int result, const char *out, size_t size)
 {
-    printf("%-27s src=\"%s\": return=%d out=\"%s\" elements:", declaration, src, result, out);
+    printf("%s src=\"%s\": return=%d out=\"%s\" elements:", declaration, src, result, out);
     for (size_t i = 0; i < size; ++i) {
         if (out[i] == '\0') {
             printf(" \\0");
