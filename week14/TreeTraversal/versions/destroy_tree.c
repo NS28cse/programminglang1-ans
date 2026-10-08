@@ -59,6 +59,8 @@ int main(void)
     printf("\nfree:");
     destroy_tree(root);
     putchar('\n');
-    root = NULL;                       /* destroy_tree は呼び出し元の root を変えない */
+    /* destroy_tree は呼び出し元の root を変えない。
+     * nodes[] の各要素にも解放済みのポインタが残るので，以後は nodes[] も使わない。 */
+    root = NULL;
     return 0;
 }

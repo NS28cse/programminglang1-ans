@@ -88,7 +88,7 @@ recursive=6 loop=6 equal=1
 
 ### 実行結果を比較する
 
-`main` の `unsigned int n = 5;` を 0，1，20，21 に書き換えて実行した結果（Linux x64，GCC 13。Windows x64 (MSVC) でも同じ表示。`unsigned long long` はどちらも 64 ビット）:
+`main` の `unsigned int n = 5;` を 0，1，20，21 に書き換えて実行した結果（Linux x64，GCC 13。Windows x64 (MSVC) でも同じ表示（CI の MSVC x64 でもテストが成功）。`unsigned long long` はどちらも 64 ビット）:
 
 ```text
 n = 0（n_0）
@@ -130,7 +130,7 @@ n must be 0..20          ← 標準エラー出力。標準出力には何も出
 
 - 呼び出し回数・最大深さは 1 本道の再帰なので，どちらも `n + 1`（`factorial(n)` 〜 `factorial(0)`）。分岐しないので回数と深さが一致する（発展1 の `fib` とは違う）。
 - 表は「1 回の `factorial(n)` の計算」についての値である。解答の `main` は比較の断片でもう一度 `factorial(n)` を呼ぶので，**プログラム全体では `factorial` が 2(n+1) 回**呼ばれる（n=5 で 12 回）。最大深さは各回とも n+1 で変わらない。
-- 回数と深さは解答コードでは表示しないが，確認用の [Factorial/versions/factorial_count.c](Factorial/versions/factorial_count.c)（`factorial` に深さの引数と回数・最大深さの記録を加えたもの。ケース `count`）で確かめた:
+- 回数と深さは解答コードでは表示しないが，確認用の [Factorial/versions/factorial_count.c](Factorial/versions/factorial_count.c)（`factorial(n, depth, &stats)` の形で，深さの引数と，回数・最大深さを記録する `Stats` へのポインタを加えたもの。発展1 の `fibonacci.c` と同じ `Stats` 構造体で，測定ごとに `Stats stats = {0, 0};` から始める。ケース `count`）で確かめた:
 
 ```text
 n=0 result=1 calls=1 depth=1
@@ -168,7 +168,7 @@ n=20 result=2432902008176640000 calls=21 depth=21
 ### 採点のポイント・よくある誤り
 
 - 21 を `if (n > 20)` で**再帰の前に**拒否しているか。計算後に結果を見て判定しようとするのは誤り（あふれた値は小さい値にも見える）。
-- `printf` の変換指定: 戻り値（`unsigned long long`）は `%llu`，`unsigned int` の `n` は `%u`。`%d` や `%lu` は誤り（MSVC でも `long` は 32 ビット）。
+- `printf` の変換指定: 戻り値（`unsigned long long`）は `%llu`，`unsigned int` の `n` は `%u`。`%d` や `%lu` は型が合わない（`-Wformat` の警告）。MSVC では `long` は 32 ビットなので値も壊れる。
 - 呼び出し回数と最大深さを「`main` を含めない」「最初の `factorial` を 1 と数える」で数えているか（`n=5` で 6，6）。`n=21` の欄を「22」などと書くのは誤り（呼ばれない）。
 - 再帰版と反復版の違いを「積をいつ作るか（復帰時か，ループの各回か）」で説明しているか。「再帰は遅い」だけの説明は不十分。
 - 値を変更した後に保存・ビルドせず，古い実行ファイルの結果を書いていないか（ビルド失敗時に Ctrl+F5 で古い exe が動く）。
@@ -281,7 +281,7 @@ main
 | 基底条件から1段戻ったとき | `sum_to(0)` が 0 を返し，`sum_to(1)` の `int result = 1 + sum_to(0);` の初期化が完了した時点で `result = 1` が確定する（その次の行 `leave 1: 1` で表示される）。同様に `sum_to(2)` は 3，`sum_to(3)` は 6 と，復帰のたびに 1 段ずつ確定する |
 
 - 呼び出し履歴（コールスタック）の上から `sum_to` (n=0)，`sum_to` (n=1)，`sum_to` (n=2)，`sum_to` (n=3)，`main` の順に並ぶ。行を選ぶと，その呼び出しの `n` が「ローカル」ウィンドウに表示される（実行は巻き戻らない）。
-- 待機中の段の `result` は初期化が終わっていないので，表示される値は意味のないごみ。MSVC の Debug 構成では未初期化のスタック領域が 0xCC で埋められるため，`-858993460`（0xCCCCCCCC）と表示されることが多い。これを途中結果として記録してはいけない。
+- 待機中の段の `result` は初期化が終わっていないので，表示される値は意味のないごみ。MSVC の Debug 構成で `/RTC1`（Debug の既定）が有効な場合は，未初期化のスタック領域が 0xCC で埋められるため，`-858993460`（0xCCCCCCCC）と表示されることが多い。これを途中結果として記録してはいけない。
 
 ### 出力位置を変える
 
@@ -342,7 +342,7 @@ leave 0: 0
 sum=6
 ```
 
-`leave` が `enter` の直後に出て，復帰の順（0, 1, 2, 3）が見えなくなる。この位置は「関数から戻る直前」ではなく「子を呼ぶ直前」なので，`leave` という名前とも合わない。ここで `result` を表示しようとしても，`result` の宣言（`int result = ...;`）より前なのでコンパイルエラーになる（MSVC C2065「定義されていない識別子です」，GCC「'result' undeclared」）。宣言だけを先に `int result;` と書いて表示すると，未初期化の値を読むことになる（MSVC では C4700 の警告。SDL チェック（`/sdl`）が有効な Visual Studio の既定のプロジェクトではエラー C4700 になる。値は意味がない）。戻り値を観察する目的なら，元の位置（再帰呼び出しの後）が適切。
+`leave` が `enter` の直後に出て，復帰の順（0, 1, 2, 3）が見えなくなる。この位置は「関数から戻る直前」ではなく「子を呼ぶ直前」なので，`leave` という名前とも合わない。ここで `result` を表示しようとしても，`result` の宣言（`int result = ...;`）より前なのでコンパイルエラーになる（GCC「'result' undeclared」。MSVC では C2065 などの診断（番号は例。誤った版は CI でビルドしていないので未確認））。宣言だけを先に `int result;` と書いて表示すると，未初期化の値を読むことになり，値は意味がない（MSVC では C4700 などの診断（番号は例。誤った版は CI でビルドしていないので未確認。設定によっては警告ではなくエラーになることもある））。戻り値を観察する目的なら，元の位置（再帰呼び出しの後）が適切。
 
 ### スタックの図を描く
 
@@ -413,7 +413,7 @@ unsigned int gcd_loop(unsigned int a, unsigned int b)
 `main` の `a` と `b` の初期値を書き換えて実行した結果:
 
 ```text
-a = 48, b = 18（配布どおり。本体）
+a = 48, b = 18（演習ページの最初の組。本体）
 gcd(48, 18): loop=6 recursive=6 equal=1
 a = 18, b = 48（a18_b48）
 gcd(18, 48): loop=6 recursive=6 equal=1
@@ -552,7 +552,7 @@ n = 0（n_0）
 ok=1 result=1
 n = 1（n_1）
 ok=1 result=1
-n = 5（配布どおり。本体）
+n = 5（演習ページの最初の組。本体）
 ok=1 result=120
 n = 20（n_20）
 ok=1 result=2432902008176640000
@@ -590,7 +590,7 @@ ok=0 result=99
 
 ### 実行しないレビュー問題
 
-1. **基底条件の`if`を削除する。** → 停止条件がなくなる。`n` は 0 の次に `0 - 1` で `UINT_MAX`（4294967295）へ回り込み，0 の次は 4294967295 に回り込み，何周しても `n == 0` で止まる経路がないので止まらない（実際にはスタックの限界を超えて異常終了する）。結果の値も意味を失う。コンパイラも警告する（GCC: `infinite recursion detected`，Clang: `all paths through this function will call itself`。どちらも `-Winfinite-recursion`。MSVC は C4717 で，趣旨は「すべての制御パスで再帰しており，実行時にスタック オーバーフローが発生する」）。
+1. **基底条件の`if`を削除する。** → 停止条件がなくなる。`n` は 0 の次に `0 - 1` で `UINT_MAX`（4294967295）へ回り込むので，何周しても `n == 0` で止まる経路がなく止まらない（実際にはスタックの限界を超えて異常終了する）。結果の値も意味を失う。コンパイラも警告する（GCC: `infinite recursion detected`，Clang: `all paths through this function will call itself`。どちらも `-Winfinite-recursion`。MSVC では C4717 などの診断（番号は例。誤った版は CI でビルドしていないので未確認））。
 2. **再帰呼び出しの引数を`n`にする。** → 停止条件はあるが進行がない。`n = 0` 以外では同じ `n` で呼び続け，基底条件に近づかないので止まらない（`n = 0` のときだけ偶然 1 を返す）。`if` があるのでコンパイラの警告は出ないことが多く，見逃しやすい。
 3. **再帰呼び出しの引数を`n+1`にする。** → 基底条件から遠ざかる（進行の向きが逆）。`unsigned int` なので理論上は `UINT_MAX` から 0 へ回り込むが，それまでに約 43 億段の深さが必要で，スタックの限界を超える。途中の積もあふれて意味のない値になる。
 4. **再帰呼び出しの引数を`n--`にする。** → 後置デクリメントの値は減らす**前**の `n` なので，呼び出し先には同じ `n` が渡り，2. と同じく進行しない。さらに `return n * factorial(n--);` は同じ式の中で `n` の読み出し（左の `n`）と変更（`n--`）が順序付けられていないので**未定義動作**になる（GCC `-Wsequence-point`「operation on 'n' may be undefined」，Clang `-Wunsequenced`）。副作用を使わず `n - 1` と書く。
@@ -905,7 +905,7 @@ pre: 1 2 3 4 5 6 7 8 9 10
 free: 4 5 3 6 2 9 8 10 7 1
 ```
 
-解放の順は帰りがけ順の表示（`post: 4 5 3 6 2 9 8 10 7 1`）と同じ。根 1 は最後に解放される。構築途中で確保に失敗した場合は，まだノードをつないでいないので，作成済みのノードを 1 つずつ `free` して終了する（作成済みの部分を解放する経路）。なお，最後の `root = NULL;` は直後に `main` が終わるので必須ではないが，「解放後のポインタは自分で無効化する」ことを示すために書いた。
+解放の順は帰りがけ順の表示（`post: 4 5 3 6 2 9 8 10 7 1`）と同じ。根 1 は最後に解放される。構築途中で確保に失敗した場合は，まだノードをつないでいないので，作成済みのノードを 1 つずつ `free` して終了する（作成済みの部分を解放する経路）。なお，最後の `root = NULL;` は直後に `main` が終わるので必須ではないが，「解放後のポインタは自分で無効化する」ことを示すために書いた。ただし `nodes[]` の各要素にも解放済みのポインタ（ダングリングポインタ）が残っているので，`destroy_tree(root)` の後は `nodes[i]` も使わない。
 
 ### 読解の問い
 
@@ -939,7 +939,7 @@ free: 4 5 3 6 2 9 8 10 7 1
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
 | 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の 0・1・20・21，課題2 の 0・100・−1・101，課題3 の (7,0)・(0,7)・(0,0)，課題4 の 0・20・−1・21・`NULL`，発展1 の 0・1・20・−1・21，発展2 の `NULL`・葉・一直線の木。すべて `main` の初期値や `preorder` の呼び出しの引数を書き換えた版（`variants/tests/`）の自動テストとしてある |
-| 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC・Clang の `-Wall -Wextra -Wpedantic`（`-Werror`）で警告 0（`-Wconversion -Wsign-conversion` でも 0）。レビュー問題 1・4 でコンパイラが出す警告（`-Winfinite-recursion`/C4717，`-Wsequence-point`）と，課題2 の未初期化の `result`（C4700）を説明 |
+| 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC・Clang の `-Wall -Wextra -Wpedantic`（`-Werror`）で警告 0（`-Wconversion -Wsign-conversion` でも 0）。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants・versions を含む）のビルドとテストが成功している（コミット a76876f の時点）。レビュー問題 1・4 でコンパイラが出す警告（`-Winfinite-recursion`，`-Wsequence-point`。MSVC では C4717 などの診断（番号は例。誤った版は CI でビルドしていないので未確認））と，課題2 の未初期化の `result`（MSVC では C4700 などの診断。番号は例で，同じく未確認）を説明 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1（`unsigned long long` と `%llu`，`unsigned int` と `%u`），課題2（`int` で 5050），課題4（入口の `int` と内部の `unsigned int`），発展2（`size_t` と `%zu`） |
 | 基底条件と，呼び出すたびに小さくなる量を説明できる | 冒頭の[まとめの表](#何が小さくなるから止まるのか全課題のまとめ)，課題1 小問 2，課題4 レビュー問題 1〜4 |
 | 呼び出し時と復帰時を分け，待機中の局所変数を追跡した | 課題1 の 3! の表，課題2 の `enter`/`leave`・呼び出し履歴・スタックの図 |
@@ -958,6 +958,7 @@ cmake --build $B && ctest --test-dir $B --output-on-failure
 ```
 
 - GCC 13（AddressSanitizer/UBSan 付き）: 警告 0，テスト 63 件（本体 6 件，書き換え版・確認用 57 件）すべて成功。
+- MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants・versions を含む）のビルドとテストが成功している（コミット a76876f の時点）。
 - Clang 18（`-DCMAKE_C_COMPILER=clang`，この環境には Clang の sanitizer ランタイムがないため `SOFTPRAC_SANITIZE` なし）: 警告 0，テスト 63 件すべて成功。
-- 追加で `-Wconversion -Wsign-conversion -Wshadow` を付けても GCC・Clang とも警告 0（MSVC `/W4` の C4244・C4267・C4389 に相当する型変換の警告がないことの確認）。
-- 実行結果は Windows x64 (MSVC) と Linux x64 で同じ（`unsigned long long` はどちらも 64 ビット，`unsigned int`・`int` は 32 ビット，`size_t` の表示は `%zu`）。アドレスなど環境で変わる値は表示していない。
+- GCC/Clang の追加の確認: `-Wconversion -Wsign-conversion -Wshadow` を付けても GCC・Clang とも警告 0。
+- 実行結果は Windows x64 (MSVC) と Linux x64 で同じ（CI の MSVC x64 でもテストが成功。`unsigned long long` はどちらも 64 ビット，`unsigned int`・`int` は 32 ビット，`size_t` の表示は `%zu`）。アドレスなど環境で変わる値は表示していない。
