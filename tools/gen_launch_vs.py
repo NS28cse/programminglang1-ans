@@ -9,6 +9,7 @@
 """
 import json
 import pathlib
+import sys
 import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -25,6 +26,9 @@ def programs(project: pathlib.Path):
 
 
 def main():
+    if any(a in ("-h", "--help") for a in sys.argv[1:]):
+        print(__doc__)
+        return
     configs = []
     for week in sorted(ROOT.glob("week[0-9][0-9]")):
         for project in sorted(p for p in week.iterdir() if p.is_dir() and not p.name.startswith(("_", "."))):

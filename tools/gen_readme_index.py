@@ -4,6 +4,7 @@
     python tools/gen_readme_index.py
 """
 import pathlib
+import sys
 import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -11,6 +12,9 @@ BEGIN, END = "<!-- WEEK-TABLE:BEGIN -->", "<!-- WEEK-TABLE:END -->"
 
 
 def main():
+    if any(a in ("-h", "--help") for a in sys.argv[1:]):
+        print(__doc__)
+        return
     rows = ["| 回 | テーマ | プロジェクト | テスト数 | 演習ページ |", "| --- | --- | --- | ---: | --- |"]
     total = 0
     for week in sorted(ROOT.glob("week[0-9][0-9]")):
