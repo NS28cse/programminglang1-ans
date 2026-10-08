@@ -5,7 +5,7 @@
 int main(void)
 {
     double celsius = 25.0;
-    double fahrenheit = celsius * 9.0 / 5.0 + 32.0;    // 9.0 / 5.0 で小数の計算にする
+    double fahrenheit = celsius * 9.0 / 5.0 + 32.0;    // 9.0，5.0，32.0 と小数で書き，double で計算する
 
     printf("Celsius=%.1f Fahrenheit=%.1f\n", celsius, fahrenheit);
     return 0;

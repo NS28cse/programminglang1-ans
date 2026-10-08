@@ -37,5 +37,5 @@ softprac_add_variant(Temperature temperature.c change_after
 softprac_add_variant(Temperature temperature.c int_division
   "${temperature_desc}"
   "// 誤りの例: 9 / 5 を整数どうしで先に計算した版（1 になり 57.0 と表示される）"
-  "celsius * 9.0 / 5.0 + 32.0;    // 9.0 / 5.0 で小数の計算にする"
+  "celsius * 9.0 / 5.0 + 32.0;    // 9.0，5.0，32.0 と小数で書き，double で計算する"
   "9 / 5 * celsius + 32;          // 誤り: 9 / 5 は整数の割り算で 1")

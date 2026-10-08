@@ -24,7 +24,7 @@ softprac_add_variant(TimeParts time_parts.c int_division_61
   "/* 第3回 課題1 説明すること: seconds = 61 で右辺を seconds / 60（整数除算）にした版（1.00 になる） */"
   "seconds = 3671" "seconds = 61"
   "${div_double}"
-  "    /* 誤りの例: int 同士の除算 61 / 60 = 1 が double の 1.0 に変換されて保存される */\n    double decimal_minutes = seconds / 60;")
+  "    /* 整数除算にした版: int 同士の除算 61 / 60 = 1 が double の 1.0 に変換されて保存される */\n    double decimal_minutes = seconds / 60;")
 # 誤りの例（README の採点のポイント）: 元の 3671 のまま右辺を seconds / 60 にする → 61.00
 softprac_add_variant(TimeParts time_parts.c int_division_3671
   "${header}"

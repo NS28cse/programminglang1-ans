@@ -40,7 +40,8 @@ README に結果を載せた比較用のプログラム（`1u + 1u` と `1u | 1u
 ### 実行環境について
 
 実行結果はすべて Linux x64（GCC 13.3 と Clang 18.1，`-std=c17 -Wall -Wextra -Wpedantic -Werror`，GCC は AddressSanitizer/UBSan 付き）で実際にビルド・実行した出力。
-表示する値は `int`・`unsigned int`（Windows x64 の MSVC でも Linux x64 でも 32 ビット）の範囲の小さな整数と `%.2f` の小数だけで，環境によって変わる値はない。表示は ASCII で，処理系に依存する値もないので MSVC でも同じ表示になる。MSVC `/W4 /WX` でのビルド・テストは CI（GitHub Actions の windows-msvc-* ジョブ）で行い，コミット 3e12fbc の時点の版はすべて成功している。その後に追加した版（`division_types`・`or_vs_add`・`and_vs_logical_and`・`one_expr_2024`・`one_expr_2025`）は，MSVC ではまだ確かめていない。
+表示する値は `int`・`unsigned int`（Windows x64 の MSVC でも Linux x64 でも 32 ビット）の範囲の小さな整数と `%.2f` の小数だけで，環境によって変わる値はない。表示は ASCII で，処理系に依存する値もないので MSVC でも同じ表示になる。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクトのビルドとテストが成功している（コミット a76876f の時点）。`variants/`・`versions/` の版も含む。
+この README に書いた MSVC の診断（`C4477`・`C2106` などの番号と文面）は，この README の作成環境（Linux）では MSVC を実行していないので，**例（Microsoft のドキュメントによる）**で，文面はバージョンや言語設定で異なる。以下では「例」とだけ書く。GCC/Clang の診断は実際に出した出力。
 
 ### 記録（`memo.txt`）の書き方の例
 
@@ -122,7 +123,7 @@ decimal minutes=1.00
 - 表示が 1 文字も違わないか: `61 min 11 sec`（単語の間は空白 1 つ），`decimal minutes=61.18`（`decimal` と `minutes` の間に空白，`=` の前後に空白なし，小数点以下 2 桁）。最後の行にも改行があるか。
 - `double decimal_minutes = seconds / 60;` のまま → `61 min 11 sec` / `decimal minutes=61.00` と表示される（テスト `variant_int_division_3671` で確認）。ビルドは成功し，GCC/Clang では警告も出ないので，出力を見て指摘する。
 - `(double)(seconds / 60)` も整数除算の後に変換するので `61.00`。キャスト（`(double)seconds / 60`）は第6回で扱う内容なので，今回は `60.0` を使うのが期待する解答。
-- `printf("%d", decimal_minutes)` のように `double` を `%d` で表示 → 型が合わず未定義動作（MSVC `/W4` では C4477 の警告，GCC/Clang でも `-Wformat` の警告）。
+- `printf("%d", decimal_minutes)` のように `double` を `%d` で表示 → 型が合わず未定義動作（MSVC `/W4` では C4477 の警告（例），GCC/Clang でも `-Wformat` の警告）。
 - `%.2lf` は C99 以降の `printf` では `%.2f` と同じ意味なので誤りではない。`float` を使っている場合は指定（`double`）と違うので指摘する。
 - 変数名が指定どおりか（`seconds`・`minutes`・`rest`・`decimal_minutes`）。時間（h）まで分解するのは演習の要求と違う。
 - 境界の値の記録で，59 秒を「1 min」（四捨五入と誤解）としていないか，60 秒の行を `1 min 60 sec` としていないか。
@@ -299,7 +300,7 @@ MSVC の `/W4` では警告されないことがあるので，警告に頼ら�
 ### `&&` を `&` に置き換えると危険な理由（実行しない）
 
 `int large = d != 0 & n / d > 2;` とすると，`&` は**ビット演算子で短絡評価がない**ため，左側 `d != 0` が偽（0）でも右側 `n / d > 2` が評価される。
-`d` が 0 なので `12 / 0` の**整数の 0 による除算**が起き，これは未定義動作である（Windows では通常「Integer division by zero」の例外でプログラムが異常終了する）。
+`d` が 0 なので `12 / 0` の**整数の 0 による除算**が起き，これは未定義動作である（Windows では通常「Integer division by zero」の例外でプログラムが異常終了する（例。実行はしていない））。
 `&&` なら左側が偽の時点で結果が 0 に決まり，右側の除算は行われない。「先に安全性を確認してから使う」ために，`d != 0` を `&&` の**左側**に置く（`n / d > 2 && d != 0` の順では防げない）。
 なお GCC 13 はこの式に `warning: suggest parentheses around comparison in operand of '&' [-Wparentheses]` を出すが，Clang 18（`-Wall -Wextra -Wpedantic`）は警告を出さない（どちらもコンパイルだけで確認。実行はしていない）。警告がなくても危険な式であることに変わりはない。
 
@@ -396,7 +397,7 @@ leap=0
 - `year % 4 == 0 && year % 100 != 0 && year % 400 == 0` → 常に 0（100 で割り切れず 400 で割り切れる数はない）。2000・2024 で誤りが分かる。
 - `year % 4 == 0 || year % 400 == 0` のように 100 の例外を落とす → 1900 が 1 になる（テスト `variant_wrong_no_100_rule_1900` の出力は `leap=1`）。1900 を試していない記録は減点対象。
 - `year / 4 == 0`（商と余りの取り違え）や，`year % 100 == 0` の向きの誤り。
-- `year % 4 = 0`（`==` を `=` と書く）→ コンパイルエラー（GCC: `error: lvalue required as left operand of assignment`，Clang: `error: expression is not assignable`，MSVC: `C2106`（英語版: `'=': left operand must be l-value`））。
+- `year % 4 = 0`（`==` を `=` と書く）→ コンパイルエラー（GCC: `error: lvalue required as left operand of assignment`，Clang: `error: expression is not assignable`，MSVC（例）: `C2106`（英語版の文面: `'=': left operand must be l-value`））。
 - 括弧のない `a && b || c` は値は正しいが，警告を有効にした環境（`-Werror` など）ではビルドが止まる。可読性の点で括弧を付けるよう指導する。
 - `if` で 1/0 を代入している → 今回は使わない指定。「3 つの条件を個別に書き出す」ことをしていない（いきなり 1 つの式だけ）場合は，記録の不足として指摘する。
 
