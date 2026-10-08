@@ -1,0 +1,5 @@
+ 1  2  3
+ 2  4  6
+ 3  6  9
+outer: test=4 body=3
+inner: test=12 body=9 space=6

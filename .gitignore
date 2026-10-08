@@ -1,0 +1,30 @@
+# CMake / Visual Studio / VS Code の生成物
+/out/
+/build/
+/.vs/*
+!/.vs/launch.vs.json
+CMakeUserPresets.json
+CMakeSettings.json
+*.user
+*.suo
+x64/
+Debug/
+Release/
+.cache/
+compile_commands.json
+
+# 実行時にプログラムが作るファイル（第10回など。IDE から run.args で実行するとプロジェクトフォルダにできる）
+/week10/Binary/bytes.bin
+/week10/WriteText/scores.txt
+/week10/NumberFormats/numbers.txt
+/week10/NumberFormats/numbers.bin
+/week10/WriteSquares/squares*.txt
+*.exe
+*.obj
+*.o
+*.pdb
+*.ilk
+
+.DS_Store
+Thumbs.db
+__pycache__/

@@ -1,0 +1,138 @@
+name: build-and-test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+# 同じブランチに新しい push が来たら，古い実行は取り消す
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# 非公開リポジトリでは Actions の実行時間が課金対象になる（Windows は 2 倍，macOS は 10 倍で数える）。
+# 非公開のときの push・PR では，MSVC Debug と Linux Debug・リポジトリの検査だけを動かす。
+# すべてのジョブを動かしたいときは Actions タブから手動で実行する（workflow_dispatch）。
+
+jobs:
+  # 学生の環境 1: Visual Studio の「フォルダーを開く」/ VS Code + CMake Tools（CMakePresets の msvc-*）
+  # 開発者コマンド プロンプトと同じ環境（VS 付属の cl.exe・CMake・Ninja）で，プリセットをそのまま使う
+  windows-msvc-preset:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: ${{ fromJSON((github.event.repository.private && github.event_name != 'workflow_dispatch') && '["msvc-debug"]' || '["msvc-debug", "msvc-release"]') }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - name: Configure (/W4 /WX)
+        run: cmake --preset ${{ matrix.preset }} -DSOFTPRAC_WERROR=ON
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }} -- -k 0
+      - name: Test
+        run: ctest --preset ${{ matrix.preset }} -j 4 --timeout 60
+      - name: IDE launch configurations (.vs/launch.vs.json, .vscode/launch.json)
+        run: python tools/check_launch.py out/build/${{ matrix.preset }}
+
+  # 学生の環境 2: Visual Studio のソリューション（.sln）を生成する使い方（CMake GUI など）
+  windows-msvc-sln:
+    if: ${{ !(github.event.repository.private && github.event_name != 'workflow_dispatch') }}
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure (Visual Studio generator, /W4 /WX)
+        run: cmake -S . -B build -A x64 -DSOFTPRAC_WERROR=ON
+      - name: Build
+        # エラーと警告だけを表示する（失敗したプロジェクトを見つけやすくする）
+        run: cmake --build build --config Debug -- /m /nologo "/clp:ErrorsOnly;WarningsOnly;Summary"
+      - name: Test
+        run: ctest --test-dir build -C Debug -j 4 --timeout 60 --output-on-failure
+
+  # 学生の環境 3: Visual Studio を入れずに VS Code + MSYS2 の gcc を使う（CMakePresets の mingw-debug）
+  windows-mingw:
+    if: ${{ !(github.event.repository.private && github.event_name != 'workflow_dispatch') }}
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-ninja
+      - name: Configure (-Werror)
+        run: cmake --preset mingw-debug -DSOFTPRAC_WERROR=ON
+      - name: Build
+        run: cmake --build --preset mingw-debug
+      - name: Test
+        run: ctest --preset mingw-debug -j 4 --timeout 60
+
+  # 未定義動作・メモリ誤りの検出（AddressSanitizer/UBSan）。最適化の有無で出る警告が違うので両方試す
+  linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        cc: [gcc, clang]
+        build_type: ${{ fromJSON((github.event.repository.private && github.event_name != 'workflow_dispatch') && '["Debug"]' || '["Debug", "Release"]') }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure (warnings as errors, ASan/UBSan)
+        # Ninja はインストールせず，標準の Makefile ジェネレーターを使う
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_C_COMPILER=${{ matrix.cc }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
+      - name: Build
+        run: cmake --build build -j 4
+      - name: Test
+        run: ctest --test-dir build -j 4 --timeout 60 --output-on-failure
+
+  # 学生の環境 4: macOS（Apple Clang）で CMakePresets の gcc-debug を使う
+  macos:
+    if: ${{ !(github.event.repository.private && github.event_name != 'workflow_dispatch') }}
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure / Build / Test (preset)
+        run: |
+          cmake --preset gcc-debug -DSOFTPRAC_WERROR=ON
+          cmake --build --preset gcc-debug -j 4
+          ctest --preset gcc-debug -j 4 --timeout 60
+      - name: IDE launch configurations (.vs/launch.vs.json, .vscode/launch.json)
+        run: python3 tools/check_launch.py out/build/gcc-debug
+
+  repository-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: File names are valid on Windows
+        run: |
+          git ls-files | python3 -c "
+          import re, sys
+          bad = [l for l in sys.stdin.read().splitlines()
+                 if re.search(r'(^|/)(con|prn|aux|nul|com[0-9]|lpt[0-9])(\.[^/]*)?(/|$)', l, re.I)
+                 or re.search(r'[<>:\"|?*\\\\]', l) or re.search(r'[ .](/|$)', l)]
+          print('\n'.join(bad)); sys.exit(1 if bad else 0)"
+      - name: Sources are UTF-8 with BOM and LF
+        run: python3 tools/normalize_sources.py --check
+      - name: .vs/launch.vs.json and README index are up to date
+        run: |
+          python3 tools/gen_launch_vs.py
+          python3 tools/gen_readme_index.py
+          git diff --exit-code -- .vs/launch.vs.json README.md
