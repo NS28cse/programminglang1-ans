@@ -29,10 +29,10 @@
   各版の生成ソース（`<ビルド先>/projects/week09/<プロジェクト>/variants/<ケース名>/`）は，先頭コメントをその版の説明に置き換え，書き換えた行のコメントも書き換え後のコードに合わせています。
 - 範囲外アクセスになる書き換え（`n=4`，`rows=3`，長さを交換しない行の交換，`int **` への変換など）は演習ページの指示どおり実行せず，型と図で説明しています。
 - 実行環境: Linux x64（GCC 13，`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan）で 42 テスト成功。Clang 18（`-Werror`）でも警告 0・42 テスト成功を確認しました。
-  表示する内容に処理系依存の値を含めていないので，Windows（MSVC，x64）でも同じ表示になります。可変長配列（VLA）は使っていません（MSVC は非対応）。
-  MSVC `/W4 /WX` でも CI（GitHub Actions）でビルド・テストが成功している（3e12fbc の時点）。
+  表示する内容に処理系依存の値を含めていないので，Windows（MSVC，x64）でも同じ表示になります（下の CI のテストで確認）。可変長配列（VLA）は使っていません（MSVC は非対応）。
+  MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で，全プロジェクト（variants・versions を含む）のビルドとテストが成功している（コミット a76876f の時点）。
   MSVC の診断番号（C4047 など）は MSVC で実行して確認したものではなく，「例（未確認）」として載せています。
-- `int *rows[] = {row0, row1};`，`char *editable[] = {city0, city1};`，`char *letters[] = {&first, &second};` のように自動変数のアドレスで配列を初期化する書き方は C99 以降の標準 C で，どれも演習ページ・講義の断片どおりです。MSVC が古い既定で出す C4204/C4221（非定数の集成体初期化・自動変数のアドレスでの初期化）は `/std:c11` 以降では出ません（未確認）。
+- `int *rows[] = {row0, row1};`，`char *editable[] = {city0, city1};`，`char *letters[] = {&first, &second};` のように自動変数のアドレスで配列を初期化する書き方は C99 以降の標準 C で，どれも演習ページ・講義の断片どおりです。この書き方は MSVC `/W4 /WX`（C17）の CI でも警告なしでビルドできている（a76876f）。C17 より前の既定では，非定数の集成体初期化・自動変数のアドレスでの初期化の警告（C4204/C4221 など。番号は例）が出ることがある。
 
 ---
 
@@ -433,7 +433,7 @@ Tokyo 5
   ```
 
   `char city0[] = "Tokyo";` はリテラルの内容をコピーして作った**書き換え可能な `char` 配列**です。`editable[0]` は `city0` の先頭を指すので，`editable[0][0] = 't';` は `city0[0]` を変えます。`city0` と `editable[0]` は同じ文字列を表すので，どちらで表示しても `tokyo` です。
-  これは `editable` のポインタ値を変える操作ではなく，ポインタの先にある文字を変える操作です（`city1` は変わりません）。既存の `names` と名前が重ならないよう，断片の変数名（`city0`，`city1`，`editable`）はそのまま使えます。
+  これは `editable` のポインタ値を変える操作ではなく，ポインタの先にある文字を変える操作です（`city1` は変わりません）。断片の変数名（`city0`，`city1`，`editable`）は既存の `names`・`i` と重ならないので，そのまま `main` に追加できます。
 
 **禁止する実験について**: `names[0]` は文字列リテラルを指しており，リテラルを書き換える動作は未定義です（読み取り専用の領域に置かれて異常終了することもあれば，同じ内容の別のリテラルまで変わることもある）。
 `const` を外したりキャストしたりしても，書き込んでよい領域になるわけではありません。また `%s` は終端 `'\0'` まで読むので，文字列の長さより先を `%s` で表示させると範囲外を読みます。これらは実行せず，型と図で説明します。
@@ -542,7 +542,7 @@ row1 mean=2.33
 
   元の配列（合計 6 と 15）は 3 で割り切れるので整数除算でも 2.00，5.00 と同じ表示になり，**割り切れない `{1, 1, 2}` のケースでないと誤りに気付けません**。`4 / 3` は `int` 同士の除算で 1 になり，それを `double` に変換しても 1.0 です。
   `%.2f` を `%.6f` にしても 1.000000 で，除算で失った情報は戻りません。
-  （`printf("%.2f", total / COLS)` のように `int` を `%f` に直接渡すのは書式と型の不一致で未定義動作になり，GCC は `-Wformat` の警告，MSVC は C4477 の警告（例，未確認）を出します。解答では `double` の変数に代入しているので，`(double)` を外しても警告なしで整数除算の結果だけを比べられます。）
+  （`printf("%.2f", total / COLS)` のように `int` を `%f` に直接渡すのは書式と型の不一致で未定義動作になり，GCC は `-Wformat` の警告，MSVC でも書式と引数の型の不一致の警告（例えば C4477。番号は例）が出ることがある。解答では `double` の変数に代入しているので，`(double)` を外しても警告なしで整数除算の結果だけを比べられます。）
 
 ### 配列へのポインタで表す
 
@@ -1116,5 +1116,5 @@ MSVC（例，未確認）: warning C4047: 'initializing': 'int **' differs in le
 | 項目 | 確認できる課題と方法 |
 | --- | --- |
 | 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1: `n=0`・`n=-1`（失敗），`n=1`，同点 `{12, 12, 4}` と `>=`，失敗時に古い結果を残さない（`FindMax` の variant `n0`・`n_m1`・`n1`・`tie`・`tie_ge`・`stale`）。`ReturnMaximum`: 全要素が負，場所の版だけ `n=0`（`negative`・`pointer_n0`・`best_zero`）。課題2: `swap_names(names, 1, 1)`，2 回交換（`swap_1_1`・`swap_twice`）。課題3: `rows=1`・`rows=0`，値の両端 0 と 100，割り切れない平均，整数除算，全体平均の `rows=0`（`rows1`・`rows0`・`low_high`・`fraction`・`int_division`・`overall_rows0`）。課題4: 同じ行の交換，2 回，空文字列，終端まで・5 文字だけの誤り（`same_row`・`twice`・`empty_fukui`・`until_terminator`・`fukuiawa`）。発展1: 長さも一緒に交換（`swap_with_lengths`）。本体と合わせて 42 テストで自動確認（GCC＋ASan/UBSan・Clang とも成功）。`n=4`・`rows=3`・長さを交換しない行の交換・リテラルへの書き込みなど範囲外になるものは実行せず，型と図で説明した |
-| 警告を確認し，原因を説明・修正した | 全プロジェクトを `-Wall -Wextra -Wpedantic -Werror`（GCC/Clang）と AddressSanitizer/UBSan で警告 0・エラー 0 にした。MSVC `/W4 /WX` でも CI（GitHub Actions）でビルド・テストが成功している（3e12fbc の時点）。説明した警告: 課題3 の `int *a[COLS]`（`int **` と `int (*)[3]` の不一致，C4047/C4024（MSVC の番号は例，未確認）），関数内の `sizeof a`（`-Wsizeof-array-argument`），課題2 の `char **` → `const char **`，課題4 の行の代入（`array type ... is not assignable`，MSVC では C2106（MSVC の番号は例，未確認）），発展2 の `int **bad = a;`。いずれもキャストではなく宣言を直す |
+| 警告を確認し，原因を説明・修正した | 全プロジェクトを `-Wall -Wextra -Wpedantic -Werror`（GCC/Clang）と AddressSanitizer/UBSan で警告 0・エラー 0 にした。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で，全プロジェクト（variants・versions を含む）のビルドとテストが成功している（コミット a76876f の時点）。説明した警告: 課題3 の `int *a[COLS]`（`int **` と `int (*)[3]` の不一致，C4047/C4024（MSVC の番号は例，未確認）），関数内の `sizeof a`（`-Wsizeof-array-argument`），課題2 の `char **` → `const char **`，課題4 の行の代入（`array type ... is not assignable`，MSVC では C2106（MSVC の番号は例，未確認）），発展2 の `int **bad = a;`。いずれもキャストではなく宣言を直す |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の二重ポインタの表（`pp → p → x`），課題2・課題4 の図（ポインタの交換と内容の交換），課題3 の `int (*)[3]` と `int **`，発展1 の 3 種類の配列の図，発展2 の型の表 |

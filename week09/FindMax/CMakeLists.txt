@@ -10,7 +10,7 @@
 # 置換前の文字列は行末のコメントまで含めた行全体にする
 softprac_add_program(FindMax double_pointer.c)
 
-set(header [=[// 第9回 課題1　見つからない場合（FindMax / double_pointer.c。講義の例題そのもの）
+set(header [=[// 第9回 課題1　見つからない場合（FindMax / double_pointer.c。講義の例題にコメントだけ追加）
 // 演習ページの書き換え（n の変更・同点・失敗時・二重ポインタの断片）は CMakeLists.txt の variant でテストする。]=])
 set(call [=[    if (find_max(a, 3, &answer)) {  // *answer を使うのは成功したときだけ]=])
 set(init "    int a[] = {7, 12, 4};")

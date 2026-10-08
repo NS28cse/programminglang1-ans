@@ -1,4 +1,4 @@
-﻿// 第9回 課題1　見つからない場合（FindMax / double_pointer.c。講義の例題そのもの）
+﻿// 第9回 課題1　見つからない場合（FindMax / double_pointer.c。講義の例題にコメントだけ追加）
 // 演習ページの書き換え（n の変更・同点・失敗時・二重ポインタの断片）は CMakeLists.txt の variant でテストする。
 #include <stdio.h>
 // 最大要素の場所を *out へ書き，成功なら1，n<=0 なら0を返す。
