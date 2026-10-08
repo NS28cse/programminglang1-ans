@@ -36,4 +36,5 @@ softprac_add_variant(Lower lower.c inline_if_A_space_B
                      "${inline_if_old}" "${inline_if_new}"
                      "${inline_if_title_old}" "${inline_if_title_new}" [["Hello C17!"]] [["A B"]])
 
-softprac_add_variant(Lower lower.c no_assign [[text[i] = lower(text[i]);]] [[lower(text[i]);]])
+softprac_add_variant(Lower lower.c no_assign [[text[i] = lower(text[i]);]] [[lower(text[i]);]]
+                     "${inline_if_title_old}" [[誤りの例（lower の戻り値を代入しないので text は変わらない）]])
