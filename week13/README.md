@@ -11,7 +11,7 @@
 | 課題 | プロジェクト | ソース | テスト数 |
 | --- | --- | --- | --- |
 | 課題1・課題2 | `Dynamic` | [dynamic.c](Dynamic/dynamic.c)，[CMakeLists.txt](Dynamic/CMakeLists.txt) | 21（うち書き換え版 5） |
-| 課題2「追加：独立したコピー」 | `DynamicCopy` | [dynamic.c](DynamicCopy/dynamic.c)，[CMakeLists.txt](DynamicCopy/CMakeLists.txt) | 14（うち書き換え版 1） |
+| 課題2「追加：独立したコピー」 | `DynamicCopy` | [dynamic.c](DynamicCopy/dynamic.c)，[CMakeLists.txt](DynamicCopy/CMakeLists.txt) | 16（うち書き換え版 1） |
 | 課題3 | `NewPoint` | [new_point.c](NewPoint/new_point.c)，[versions/return_styles.c](NewPoint/versions/return_styles.c)，[CMakeLists.txt](NewPoint/CMakeLists.txt) | 5（うち書き換え版・比較用 4） |
 | 課題3「失敗を模擬する」 | `NewPointFail` | [new_point.c](NewPointFail/new_point.c)，[CMakeLists.txt](NewPointFail/CMakeLists.txt) | 2（うち書き換え版 1） |
 | 課題4 | （実行しない。この README で解答） | — | — |
@@ -24,11 +24,11 @@
 | 発展3 | `DynamicVector` | [vector.h](DynamicVector/vector.h)，[vector.c](DynamicVector/vector.c)，[vector_main.c](DynamicVector/vector_main.c)，[CMakeLists.txt](DynamicVector/CMakeLists.txt) | 2（うち書き換え版 1） |
 | 発展3「途中で失敗した場合」 | `DynamicVectorFail` | [vector.c](DynamicVectorFail/vector.c)，[CMakeLists.txt](DynamicVectorFail/CMakeLists.txt)（`vector_main.c`・`vector.h` は `DynamicVector` のもの） | 4（うち書き換え版 3） |
 
-合計 64 テスト（うち書き換え版・比較用 27）。
+合計 66 テスト（うち書き換え版・比較用 27）。
 
 ### 失敗を模擬する版・値を変えた版の置き方
 
-各フォルダのソース（本体）は，演習ページの期待する表示を出す版です。表示が変わらない断片の追加・置き換え（6 つの役割のコメント，複合リテラル，`ok=0 out=99.0` の断片など）や，累積的な指示（課題2の逆順の追加）は本体に反映しました。
+各フォルダのソース（本体）は，演習ページの期待する表示を出す版です。表示が変わらない断片（6 つの役割のコメント，複合リテラル）と，演習ページが正常版に「追加します」と指示する断片（課題2の逆順，発展3の `vector_get(result, 2, &out)`。どちらも表示が 1 行増える）は本体に反映しました。
 値を変えて試す版，確認のために `printf` を差し込む版は，本体を変えずに書き換えた版（variants）としてテストしています。
 
 演習ページは「正常版を残した別プロジェクトかコピーで行い，完了したら試験設定を戻す」と指示しています。そこで次のようにしました。
@@ -92,7 +92,7 @@ Windows（Visual Studio，x64）でも表示は同じです（`%zu` などは VS
     values = NULL;
 ```
 
-講義の例題から変えたのは，平均の計算を `(double)sum / (double)n` と両方明示的に変換した点だけです（`size_t` から `double` への暗黙の変換で MSVC が C4244 を出す可能性を避けるため）。
+講義の例題から変えたのは，平均の計算を `(double)sum / (double)n` と両方明示的に変換した点だけです（`size_t` から `double` への変換を書き手の意図として明示するため。CI の MSVC 19.51 `/W4 /WX` Debug でこの回の全プロジェクトが警告なしでビルドできることを確認しています）。
 
 ### 実行結果
 
@@ -292,7 +292,7 @@ reversed: 5 4 3 2 1
 - **全要素について交換すると元に戻る理由**: `i < n` にすると，前半で (0,4)，(1,3) を交換した後，後半で (3,1)，(4,0) をもう一度交換し，各組を 2 回入れ替えることになります（中央は自分自身と交換）。2 回の交換で元に戻るので，結果は元の順序です。
   `i < n / 2` を `i < n` に書き換えた版（`softprac_add_variant` の `swap_all`）を実行すると，確かに元の順序になりました。
   ```text
-  > Dynamic 5   （i < n に書き換えた版）
+  > Dynamic_swap_all 5   （i < n / 2 を i < n に書き換えた版）
   n=5 sum=15 mean=3.0
   reversed: 1 2 3 4 5
   ```
@@ -439,9 +439,9 @@ int main(void)
 値を変えた版（variants の `point_0_0`，`point_m2_5`）:
 
 ```text
-> NewPoint   （new_point(0.0, 0.0) に変更）
+> NewPoint_point_0_0   （new_point(0.0, 0.0) に書き換えた版）
 x=0.0 y=0.0
-> NewPoint   （new_point(-2.0, 5.0) に変更）
+> NewPoint_point_m2_5   （new_point(-2.0, 5.0) に書き換えた版）
 x=-2.0 y=5.0
 ```
 
@@ -461,7 +461,7 @@ x=-2.0 y=5.0
 > NewPointFail   （simulate_failure = 1）
 allocation failed
 （終了コード 1）
-> NewPointFail   （simulate_failure = 0 に書き換えた版。variants の simulate_failure_0）
+> NewPointFail_simulate_failure_0   （simulate_failure = 0 に戻した版）
 x=3.0 y=4.0
 （終了コード 0）
 ```
@@ -469,9 +469,8 @@ x=3.0 y=4.0
 - `simulate_failure=1` では `point_allocate` が `NULL` を返し，`new_point` は**メンバに触れずに** `NULL` を返し，`main` は `allocation failed` を出して `return 1` します。`p->x` を読む `printf` には到達しません。
 - ステップ実行での確認: `main` の `if (p == NULL)` にブレークポイントを置き，F11 で `new_point` へ入ると，`point_allocate` が `NULL` を返して `return NULL;` に進み，`*p = ...` の行が実行されないことが分かります。`main` に戻ると `p` が `0x0000000000000000` で，次に `fprintf` → `return 1` へ進み，`printf("x=...")` の行は通りません。
 - `point_allocate` は `errno` を設定しません。この試験で確かめているのは「`NULL` を見て失敗を判定し，安全に終了できること」であり，本物の `malloc` のメモリ不足や OS の診断を再現したわけではありません。
-- `const int simulate_failure = 1; if (simulate_failure)` は演習ページのコードどおりです。条件が実質的に定数なので，MSVC では次の警告が出る可能性があります。どちらも試験用の版で原因が分かっている警告です。
-  - C4127（条件式が定数です。レベル 4）: コンパイラの前段（構文解析時）の警告なので，Debug・Release の構成によらず出る可能性があります。C では `const int` の変数は定数式ではないため通常は出ませんが，出た場合は試験用の設定であることを確認して進めます。
-  - C4702（到達できないコード）: 最適化で分岐が消えるときに出る警告なので，Release 構成（最適化あり）でだけ出る可能性があります。Debug 構成（CI も Debug）では出ません。
+- `const int simulate_failure = 1; if (simulate_failure)` は演習ページのコードどおりです。CI（MSVC 19.51，`/W4 /WX`，Debug）では C4127・C4702 とも出ませんでした（C では `const int` の変数は定数式ではないため，C4127「条件式が定数」の対象になりません）。
+  Release 構成（最適化あり）では，到達しない `return malloc(...)` に C4702（到達できないコード）が出る可能性があり，`/WX` 付きならビルドが止まります。試験用の版は Debug 構成で確認します（`GrowArrayFail` の `try_resize` も同じ）。
 
 ### 戻り方を比較する
 
@@ -730,7 +729,7 @@ before: 1 2 3
 reallocation failed
 p[0]=1
 （終了コード 1）
-> GrowArrayFail_simulate_failure_0   （simulate_failure = 0 に書き換えた版）
+> GrowArrayFail_simulate_failure_0   （simulate_failure = 0 に戻した版）
 calloc: 0 0 0
 before: 1 2 3
 after: 1 2 3 4 5
@@ -793,11 +792,11 @@ static int next_count(void)
 ```
 
 ```text
-> StorageCount   （int count = 0; に変更）
+> StorageCount_auto_count   （int count = 0; に書き換えた版）
 1
 1
 1
-> StorageCount   （static int count; の後に count = 0;）
+> StorageCount_static_assign   （static int count; の後に count = 0; を書いた版）
 1
 1
 1

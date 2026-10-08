@@ -5,7 +5,7 @@
 
 この回の文字列はすべてソース内の固定値で，キーボード入力・コマンドライン引数は使いません（演習ページの指定）。
 使う文法・関数は第6回までの範囲（`char` 配列，終端文字，`strlen`・`strcmp`，キャスト，第5回までの関数・配列・`for`/`while`/`if`）だけです。
-`strcpy`・`strcat` は講義と同じく実行課題では使わず，容量を確かめたループでコピー・連結します（そのため `_CRT_SECURE_NO_WARNINGS` が必要なファイルはありません）。
+`strcpy`・`strcat` は講義と同じく実行課題では使わず，容量を確かめたループでコピー・連結します（そのため本体のソースには `_CRT_SECURE_NO_WARNINGS` が必要なものはありません。`strcat` を使う参考の版 `variant_strcat` だけ，先頭に書いています）。
 
 ## プロジェクト一覧
 
@@ -16,9 +16,9 @@
 | 課題2 ASCIIの小文字へ変換 | `Lower` | [lower.c](Lower/lower.c) | 11（1＋10） |
 | 課題2 補足：ASCIIの印字可能な範囲 | `AsciiTable` | [ascii_table.c](AsciiTable/ascii_table.c) | 1 |
 | 課題3 変換する順序 | `Average` | [average.c](Average/average.c)，[versions/average_first.c](Average/versions/average_first.c) | 7（1＋6） |
-| 課題4 比較してから連結する | `CompareJoin` | [compare_join.c](CompareJoin/compare_join.c) | 9（1＋8） |
+| 課題4 比較してから連結する | `CompareJoin` | [compare_join.c](CompareJoin/compare_join.c) | 11（1＋10） |
 | 発展 容量の境界 | `CopyCapacity` | [strings.c](CopyCapacity/strings.c) | 3（1＋2） |
-| 合計 | | | **37** |
+| 合計 | | | **39** |
 
 - `Length`・`Lower`・`Average`・`CompareJoin` は演習ページの指定どおりのプロジェクト名です。演習ページはソース名を指定していないので，
   他の回（`TimeParts` → `time_parts.c` など）にならってプロジェクト名を小文字・`_` 区切りにしました。
@@ -38,8 +38,8 @@
 ```sh
 B=/tmp/build-week06
 cmake -S . -B $B -G Ninja -DSOFTPRAC_WEEKS=week06 -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
-cmake --build $B && ctest --test-dir $B --output-on-failure   # GCC 13: 37 件すべて成功，警告 0，ASan/UBSan のエラーなし
-# Clang 18 でも -DCMAKE_C_COMPILER=clang（sanitizer なし）で 37 件成功，警告 0
+cmake --build $B && ctest --test-dir $B --output-on-failure   # GCC 13: 39 件すべて成功，警告 0，ASan/UBSan のエラーなし
+# Clang 18 でも -DCMAKE_C_COMPILER=clang（sanitizer なし）で 39 件成功，警告 0
 ```
 
 ## 準備：配列を書き出して「容量・長さ・終端の添字」を記録する
@@ -354,7 +354,11 @@ int main(void)
 }
 ```
 
-このコードは [Average/versions/average_first.c](Average/versions/average_first.c) に置いてあり，テスト `variant_first`（`total = 7`）と `variant_first_total_minus7`（`total` を −7 に変えた版）で確認しています。実行結果:
+このコードは [Average/versions/average_first.c](Average/versions/average_first.c) に置いてあり，テスト `variant_first`（`total = 7`）と `variant_first_total_minus7`（`total` を −7 に変えた版）で確認しています。
+
+予測: 1 行目は整数除算の後に変換するので 3.0，2 行目は先に `double` にするので 3.5，3 行目は 0 方向への切り捨てで −3（`total` が −7 なら −3.0 / −3.5 / −3）。実行結果も予測と一致しました。
+
+実行結果:
 
 | `total`, `count` | 1 行目 `(double)(total / count)` | 2 行目 `(double)total / count` | 3 行目 `(int)-3.9` |
 | --- | --- | --- | --- |
@@ -561,30 +565,30 @@ ASCII では最初の文字 `h`（104）が `f`（102）より後なので `afte
 
 ### 参考：`strcat` で書く場合（実行課題では使わない）
 
-講義の「`strcpy`と`strcat`の役割を読む」と同じ処理を標準関数で書くと次のようになります。`strcat` は容量を確認しないので，判定は自分で書く必要があります。
-Visual Studio では `strcat` に C4996 が出るため，使う場合はファイルの先頭（`#include` より前）に `#define _CRT_SECURE_NO_WARNINGS` を書きます。
+講義の「`strcpy`と`strcat`の役割を読む」と同じ連結を標準関数で書くと，容量を確かめた後のループを `strcat` 1 回に置き換えた形になります。
+`strcat` は容量を確認しないので，判定（`added < sizeof text - used`）は自分で書く必要があります。
+Visual Studio では `strcat` に C4996 が出るため，ファイルの先頭（`#include` より前）に `#define _CRT_SECURE_NO_WARNINGS` を書きます。
 
 ```c
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
-int main(void)
-{
-    char text[10] = "hoge";
-    char suffix[] = "fuga";
-    if (strlen(text) + strlen(suffix) + 1 <= sizeof text) {
+...
+    if (added < sizeof text - used) {
+        // strcat は容量を確かめないので，上の if で確かめてから呼ぶ
         strcat(text, suffix);
     } else {
+        // 書き込みを始める前に判定しているので，元の文字列がそのまま残る
         printf("not enough space\n");
     }
-    printf("%s\n", text);
-    return 0;
-}
 ```
+
+本体をこのように書き換えた版をテスト `variant_strcat`（容量 10）と `variant_strcat_capacity_8`（容量 8）でビルド・実行し，
+本体・`variant_capacity_8` と同じ表示（`after` / `text=hogefuga length=8 capacity=10`，および `after` / `not enough space` / `text=hoge length=4 capacity=8`）になることを確認しています。
 
 **採点のポイント・よくある誤り**
 
-- `strcmp(...) == -1`・`== 1` で判定していないか（MSVC ではたまたま動くことが多いが，配列を渡して実行時に呼んだ場合 glibc では 2 や −18 が返るので，`after` も `before` も表示されない）。
+- `strcmp(...) == -1`・`== 1` で判定していないか（MSVC ではたまたま動くことが多い）。例えば `== -1` → `before`，`== 0` → `equal`，それ以外 → `after` の形では，glibc で配列を渡した `"z"` の場合（−18）に `before` でなく `after` を表示する。`== 1` も判定する形（`== -1`・`== 0`・`== 1` の 3 つだけ）なら何も表示しない。
 - 内容の比較に `text == suffix` を使っていないか（配列の先頭アドレスの比較で常に偽）。
 - 容量の条件の差 1 の誤り: `added <= sizeof text - used` だと容量 8 で 9 バイト目（`text[8]`）に書き込む範囲外アクセスになる（AddressSanitizer で検出できる。容量 8 のケースで必ず確認させる）。
   `used + added < sizeof text` は正しい。`used + added <= sizeof text` は誤り。
@@ -673,7 +677,7 @@ mean=3.5
 
 | 項目 | どこで確認できるか |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の `""`（本体 0 回），課題2 の `""`・`"AZaz09"`・`"@AZ["`，課題4 の容量 10/9/8（と下限 5），`suffix` の `""`，発展の容量 4/3。すべて自動テストにしてある（37 件） |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の `""`（本体 0 回），課題2 の `""`・`"AZaz09"`・`"@AZ["`，課題4 の容量 10/9/8（と下限 5），`suffix` の `""`，発展の容量 4/3。すべて自動テストにしてある（39 件） |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC/Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0。課題3 の C4310（`(unsigned char)300`）と C4018/C4389（符号の異なる比較），課題1・4 の C4267/C4018（`size_t` と `int`），課題2 の C4244（`int` → `char`），C4996（`strcat`） |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の `n` の追跡表，課題3 の「右辺の計算 → 代入」の 2 段階，課題4 の `used`・`added`・残り容量の表 |
 | 終端文字を含む必要容量と，表示上の文字列長を区別できる | 準備の配列表，課題1 の最小容量の表と `length`/`capacity`，確認問題 1・2・3・5 |

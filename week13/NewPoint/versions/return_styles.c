@@ -41,6 +41,7 @@ int main(void)
     Point a = make_point(3.0, 4.0);
     Point b;
     if (!init_point(&b, 3.0, 4.0)) {
+        fprintf(stderr, "init_point failed\n");
         return 1;
     }
     Point *c = new_point(3.0, 4.0);
