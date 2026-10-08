@@ -1,4 +1,5 @@
 ﻿// 第4回 発展 switch と if を比較する（YearGroup）の if・else if・else 版（比較用）
+// switch 版と同じ区分を == と || の条件で書き，if・else if・else で 1 つだけ選ぶ．
 #include <stdio.h>
 
 int main(void)

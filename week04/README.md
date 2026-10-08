@@ -5,26 +5,27 @@
 - 今回の範囲: `if`・`else if`・`else`，`for`・`while`・`do-while`，`break`・`continue`，`switch`（`case`・`default`）。
   演算は第3回までのもの（`%`，`||`，`+=`，`*=`，`++` など）。
   **使わないもの**: 入力関数（演習ページ「入力関数は使わず，ソース内の初期値を変えて確認します」。`scanf` は第7回），`goto`（講義「この回の課題では使用せず」），待機用の関数。
+- 誤りの例の診断は，GCC/Clang は実際にコンパイルした出力，MSVC は番号の例（C4706・C2065・C4700・C2196 などの番号と文面は例で，MSVC で実際にコンパイルして確かめたものではない）。
 
 ## プロジェクト一覧
 
 | 課題 | 内容 | プロジェクト | ソース | テスト |
 | --- | --- | --- | --- | --- |
-| 1 | `if`・`else if` による料金分類 | `Fee` | [fee.c](Fee/fee.c) | 19（`age` = −1, 0, 5, 6, 17, 18 を，本体・順序を入れ替えた版・別々の `if` の版でそれぞれ 6 件，負の検査を省いた版 × −1） |
-| 2 | `for` と `while` による偶数の合計 | `EvenSum` | [even_sum.c](EvenSum/even_sum.c)（`for` 版）<br>比較用: [while 版](EvenSum/versions/even_sum_while.c)，[2 ずつ増やす版](EvenSum/versions/even_sum_step2.c) | 34（3 つの版 × `n` = 0, 1, 2, 10, 100，`for` 版は `n` = 4 も。誤りの例 2 つ × 3。回数を数える版 2 つ × `n` = 0, 1, 2, 4, 10, 100） |
-| 3 | 二重ループの掛け算表 | `Table` | [table.c](Table/table.c) | 9（3 行 3 列，3 行 4 列，改行の位置を変えた版 × 2，列の上限だけ変えた版，`(row, col)` を書き出す版，回数を数える版 × 2，確認問題6 の `break` の版） |
+| 1 | `if`・`else if` による料金分類 | `Fee` | [fee.c](Fee/fee.c) | 23（`age` = −1, 0, 5, 6, 17, 18 を，本体・順序を入れ替えた版・別々の `if` の版でそれぞれ 6 件，負の検査を省いた版 × −1，`age < 17`・`age < 5` の誤りの版 × 各 1，確認問題1・2 の版 × 各 1） |
+| 2 | `for` と `while` による偶数の合計 | `EvenSum` | [even_sum.c](EvenSum/even_sum.c)（`for` 版）<br>比較用: [while 版](EvenSum/versions/even_sum_while.c)，[2 ずつ増やす版](EvenSum/versions/even_sum_step2.c) | 40（3 つの版 × `n` = 0, 1, 2, 10, 100，`for` 版は `n` = 4 も。誤りの例 2 つ × 3，`i < n` の誤りの版 × `n` = 2, 10，`while` 版のループ後の `i` を表示する版 × `n` = 0, 10。回数を数える版 2 つ × `n` = 0, 1, 2, 4, 10, 100。確認問題3 の `for` とその回数を数える版） |
+| 3 | 二重ループの掛け算表 | `Table` | [table.c](Table/table.c) | 10（3 行 3 列，3 行 4 列，改行の位置を変えた版 × 2，列の上限だけ変えた版，`(row, col)` を書き出す版，回数を数える版 × 2，`col` を初期化し直さない誤りの版，確認問題6 の `break` の版） |
 | 4 | 2 の累乗と `do-while` | `Powers` | [powers.c](Powers/powers.c)（`for` 版）<br>[while 版](Powers/versions/powers_while.c)，比較用: [do-while 版](Powers/versions/powers_do_while.c) | 31（3 つの版 × `limit` = 1, 2, 64, 65, 100，`<=` 版 × 64，回数を数える版 3 つ × `limit` = 1, 2, 64, 65, 100） |
-| 発展 | `break`・`continue` の追跡 | なし（演習ページの断片。README で実行結果を示す） | — | — |
-| 発展 | `switch` と `if` の比較 | `YearGroup` | [year_group.c](YearGroup/year_group.c)（`switch` 版）<br>比較用: [if 版](YearGroup/versions/year_group_if.c) | 18（`switch` 版・`if` 版・最初の `break` を外した版 × `school_year` = 0〜5） |
+| 発展 | `break`・`continue` の追跡 | なし（演習ページの断片。確認用の版を `YearGroup` に置いた） | 確認用: [skip.c](YearGroup/versions/skip.c) | （`YearGroup` の 2 件: 断片そのもの，`break` を `continue` に変えた版） |
+| 発展 | `switch` と `if` の比較 | `YearGroup` | [year_group.c](YearGroup/year_group.c)（`switch` 版）<br>比較用: [if 版](YearGroup/versions/year_group_if.c) | 23（`switch` 版・`if` 版・最初の `break` を外した版 × `school_year` = 0〜5，発展「途中で飛ばす処理」の 2 件，確認問題7 の 1 件，確認問題8 の 2 件） |
 
-合計 111 テスト（GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1 ともに警告 0・全成功）。
+合計 127 テスト（GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1 ともに `-Werror` で警告 0・全成功）。
 
 ### この回の作り方についての注意（TA 向け）
 
 - **ソース名**: 第4回の演習ページにはファイル名の表がないので，第1〜3回と同じ規則（プロジェクト名を小文字・`_` 区切りにしたもの）で
   `fee.c`・`even_sum.c`・`table.c`・`powers.c`・`year_group.c` とした。学生のファイル名が違っても減点しない。
-- **「途中で飛ばす処理」**: 演習ページでプロジェクト名が付いていない断片（「`main` 内で実行する」）なので，プロジェクトは作らず，
-  断片を `main` に入れた一時的なプログラムで実行した結果を README に載せた（学生は任意のプロジェクトの `main` で試してよい）。
+- **「途中で飛ばす処理」**: 演習ページでプロジェクト名が付いていない断片（「`main` 内で実行する」）なので，新しいプロジェクトは作らず，
+  断片を `main` に入れた確認用の版を同じ発展の `YearGroup` の [versions/skip.c](YearGroup/versions/skip.c) に置いてテストした（学生は任意のプロジェクトの `main` で試してよい）。
 - **`YearGroup` の初期値**: 演習ページに指定がないので `school_year = 1` とした（0〜5 はテストで確認）。
 - **演習ページで欠けているコード**: 課題2「以下で元の `for` 全体を置き換え」の後と，発展「次の例を読み」の後にあるはずのコードが演習ページ（ex04.md）に載っていない。
   前者は本文の説明（初期化をループの前へ，更新を本体の最後へ）どおりに作り，後者は講義 5 節の `school_year` の `switch` の例を使った。
@@ -39,15 +40,22 @@
   学生が行う「値を 1 か所変えてビルド・実行する」手順をそのまま自動化したもので，学生のプロジェクトには関係しない。
   比較用の版（`versions/*.c`）も同じ関数でビルドしている（初期値が元のままのケースは置換なしでそのままビルドしている）。
   演習ページが求める書き換え（条件の順序の入れ替え，別々の `if`，改行の位置，`break` を外す など）と，「よくある誤り」に挙げた版も，
-  同じ仕組みで書き換えた版を作ってテストにしている（各プロジェクトの `CMakeLists.txt` にどこをどう変えたかを書いた）。
+  同じ仕組みで書き換えた版を作ってテストにしている（各プロジェクトの `CMakeLists.txt` にどこをどう変えたかを書いた。
+  書き換えた版の先頭コメントの 2 行目は「`age` を 0 に書き換えた版」「誤りの例: …」のようにその版の説明に置き換え，行末のコメントも行ごと置き換えて実態と合わせている）。
   本体の実行回数・条件判定の回数も，数える変数（`int test = 0;` と `++test;` など）を足して最後に回数を表示する版（`count_*`）でテストにしている。
   条件判定の回数は，継続条件の前にコンマ演算子で `++test` を入れて（`++test, i <= n`）判定のたびに数えている（確認用の版だけの書き方で，学生には求めない）。
-  検証表の値と README に書いた回数は，下に挙げるもの以外すべてこのテストで実際に実行して確かめている。
+  検証表の値と README に書いた回数は，すべてこのテストで実際に実行して確かめている。
+- **確認用の短いコードのテスト**: README に結果を書いた確認用のコードも `versions/` に置き，置換なし（または 1 か所だけ置き換えた）の版でテストしている。
+  発展「途中で飛ばす処理」の断片（`YearGroup/variant_skip_break`）と `break` を `continue` に変えた版（`YearGroup/variant_skip_continue`），
+  確認問題1 の `if (3)`（`Fee/variant_if_three`），2 の `flag = -1` の 3 つの条件（`Fee/variant_flag_minus1`），
+  3 の `for (int i = 0; i < 3; ++i)`（`EvenSum/variant_three_times`・`variant_count_three_times`），7 の `default` のない `switch`（`YearGroup/variant_no_default_year_5`），
+  8 の講義の `goto` の例と `break` に置き換えた版（`YearGroup/variant_goto_done`・`variant_goto_to_break`）。
+  「採点のポイント・よくある誤り」の結果のうち，テスト名を書いたものは実行して確かめたもの，書いていないもの（終わらなくなるループ，`%3d` の表示など）はコードから推論したもの。
 - **実行結果**: Linux x64（GCC 13.3 / Clang 18.1，`-std=c17 -Wall -Wextra -Wpedantic -Werror`）で実際にビルド・実行した出力。
-  表示は ASCII だけで，型に依存する値（`sizeof` やアドレス）も表示しないので，Windows（MSVC `/W4`）でも同じ表示になる。
-  テストにしていないのは次のものだけで，これらはソースを一時的に作ってビルド・実行した結果を載せた:
-  発展「途中で飛ばす処理」の断片（`break` 版・`continue` 版。どのプロジェクトにも属さない断片のため），
-  確認問題1・2・7・8 の確認用の短いコード（`if (3)`，`flag = -1` の 3 つの条件，`default` のない `switch`，講義の `goto` の例と `break` に置き換えた版）。
+  表示は ASCII だけで型に依存する値もないので，MSVC でも同じ表示になる。
+  MSVC `/W4 /WX` でのビルド・テストは CI（GitHub Actions の windows-msvc-* ジョブ）で行い，コミット 3e12fbc の時点の版はすべて成功している。
+  その後に追加した版（`Fee` の `lt_17_age_17`・`lt_5_age_5`・`if_three`・`flag_minus1`，`EvenSum` の `lt_n_*`・`while_i_after_n_*`・`three_times`・`count_three_times`，
+  `Table` の `col_not_reset`，`YearGroup` の `skip_break`・`skip_continue`・`no_default_year_5`・`goto_done`・`goto_to_break`）は，MSVC ではまだ確かめていない。
 
 ---
 
@@ -171,10 +179,10 @@ else if の連鎖（どれか 1 つ）            別々の if（それぞれ独
 **採点のポイント・よくある誤り**
 
 - 6 つの値すべてを試した記録があるか。特に 5 と 6，17 と 18 の両側。17 だけ試して正しいと判断していないか。
-- `age < 17` と書く誤り（17 で `1000` になる）や `age < 5`（5 で `500` になる）。`<` を使うなら `age < 6`・`age < 18` が正しい。
+- `age < 17` と書く誤り（17 で `1000` になる。テスト `Fee/variant_lt_17_age_17`）や `age < 5`（5 で `500` になる。テスト `Fee/variant_lt_5_age_5`）。`<` を使うなら `age < 6`・`age < 18` が正しい。
 - 負の検査を最後や途中に置く誤り。例えば `if (age <= 5)` を先に書くと −1 が `0` になる（上の「説明すること」）。
 - 表示は数値と改行だけ。`fee=500`・`500 yen` のような余分な文字や，改行の書き忘れは指定違反。
-- `if (age = 0)` のような代入の誤り（MSVC `/W4` は C4706「条件式の中で代入が行われました」，GCC は `-Wparentheses` で警告）。警告を読んで直したかを見る。
+- `if (age = 0)` のような代入の誤り（MSVC `/W4` は C4706「条件式の中で代入が行われました」（番号の例），GCC は `suggest parentheses around assignment used as truth value [-Wparentheses]`，Clang は `using the result of an assignment as a condition without parentheses [-Wparentheses]` の警告）。警告を読んで直したかを見る。
 - `age >= 0 && age <= 5` のように下限も書くのは誤りではない（冗長なだけ）。`else if` を別々の `if` にした提出は，−1 や 0〜5 で複数行表示されるので不可。
 
 ---
@@ -242,7 +250,8 @@ else if の連鎖（どれか 1 つ）            別々の if（それぞれ独
 ```
 
 `n` = 0, 1, 2, 10, 100 で，表示は `for` 版と同じ `0`・`0`・`2`・`30`・`2550` になった（上の表。テスト `EvenSum/variant_while_n_*`）。
-`i` の有効範囲だけが違う: `for` の初期化で宣言した `i` は `for` の外で使えないが，`while` 版の `i` はループの後でも使える（値は `n + 1`）。
+`i` の有効範囲だけが違う: `for` の初期化で宣言した `i` は `for` の外で使えないが，`while` 版の `i` はループの後でも使える（値は `n + 1`。
+ループの後に `printf("i=%d\n", i);` を足した版で，`n = 10` では `i=11`，`n = 0` では `i=1` だった。テスト `EvenSum/variant_while_i_after_n_10`・`variant_while_i_after_n_0`）。
 
 ### 説明すること
 
@@ -254,7 +263,7 @@ else if の連鎖（どれか 1 つ）            別々の if（それぞれ独
 → 本体を実行するたびに `sum` が 0 に戻り，それまでに加えた合計が消えて**累積にならない**から。最後の反復で加えた分しか残らない。
 例えば本体の先頭に `sum = 0;` を置くと，`n = 10` では `10`，`n = 4` では `4`，`n = 9` では `0` と表示された（実行して確認。テスト `EvenSum/variant_reset_in_body_n_*`）。
 また `int sum = 0;` という宣言ごと本体（ブロック）の中へ移すと，`sum` はそのブロックの中でしか使えないので，ループの後の `printf` で使えずコンパイルエラーになる
-（MSVC: C2065「定義されていない識別子です」，GCC: `'sum' undeclared`）。
+（MSVC: C2065「定義されていない識別子です」（番号の例），GCC: `'sum' undeclared (first use in this function)`，Clang: `use of undeclared identifier 'sum'`）。
 
 ### 余裕があれば: `i` を 2 から始めて 2 ずつ増やす
 
@@ -282,8 +291,8 @@ else if の連鎖（どれか 1 つ）            別々の if（それぞれ独
 **採点のポイント・よくある誤り**
 
 - 0, 1, 2, 10, 100 のすべてで確認したか（期待値 0, 0, 2, 30, 2550）。`n = 4` の追跡表が埋まっていて，実行結果 `6` と一致しているか。
-- 条件 `i < n` の誤り: `n` が偶数のとき最後の `n` を加えない（`n = 10` で `20`，`n = 2` で `0`）。
-- `sum` の初期化をループの中に置く／初期化を忘れる（初期化していない変数の値を使うのは誤り。MSVC は C4700 の警告）。
+- 条件 `i < n` の誤り: `n` が偶数のとき最後の `n` を加えない（`n = 10` で `20`，`n = 2` で `0`。テスト `EvenSum/variant_lt_n_10`・`variant_lt_n_2`）。
+- `sum` の初期化をループの中に置く／初期化を忘れる（初期化していない変数の値を使うのは誤り。MSVC は C4700 の警告（番号の例））。
 - `i % 2 == 1` を偶数の判定にしている，`i / 2 == 0` と書いている，など判定式の誤り。
 - `while` 版で更新 `++i` を忘れる（終わらない），`while (i <= n);` とセミコロンを付ける（本体が空の反復で終わらない）。
 - `while` 版で `++i` を本体の**先頭**に置く誤り: `i` = 2〜`n + 1` を調べることになり，`n = 10` では偶然 `30` と正しく見えるが，
@@ -400,7 +409,7 @@ else if の連鎖（どれか 1 つ）            別々の if（それぞれ独
 - 行末に余分な空白がないか（`printf("%2d ", ...)` と書くと各行の最後に空白が付く。見た目では分からないので，提出物の出力をテキストとして比較する）。
 - `%3d` で区切りなしにすると `  1  2  3` のように行頭の空白が 1 つ多くなる（指定は `%2d` と半角スペース 1 つ）。
 - 改行の位置（内側に入れると 9 行，外側の後だと 1 行）。
-- 内側のカウンタを外側のループの前で宣言・初期化し，内側を `while (col <= 3)` にして初期化し直さない誤り（1 行目だけが表示され，2・3 行目は空行になる）。
+- 内側のカウンタを外側のループの前で宣言・初期化し，内側を `while (col <= 3)` にして初期化し直さない誤り（1 行目だけが表示され，2・3 行目は空行になる。テスト `Table/variant_col_not_reset`）。
 - 3 行 4 列で列の上限だけを変えて列間の判定を変え忘れる（上の `3 4`・`912` の表示）。表示回数を 12 回と答えられているか。
 - 9 組の `(row, col)` を正しい順（行ごとに `col` が 1→3）で書けているか。
 
@@ -525,7 +534,7 @@ for (int i = 0; i < 6; ++i) {
 }
 ```
 
-**実行前の予想と実行結果**（断片を `main` に入れて実行した出力。予想どおり）
+**実行前の予想と実行結果**（断片を `main` に入れて実行した出力。予想どおり。[YearGroup/versions/skip.c](YearGroup/versions/skip.c)，テスト `YearGroup/variant_skip_break`）
 
 ```text
 0
@@ -541,7 +550,7 @@ for (int i = 0; i < 6; ++i) {
 | 3 | 偽 | 偽 | `3` を表示 → 更新 |
 | 4 | 偽 | **真** | `break`: `for` の外へ（5 は調べない） |
 
-**`i == 4` の `break` を `continue` に変更した結果**（実行した出力。演習ページの「0，1，3，5」と一致）
+**`i == 4` の `break` を `continue` に変更した結果**（実行した出力。演習ページの「0，1，3，5」と一致。テスト `YearGroup/variant_skip_continue`）
 
 ```text
 0
@@ -620,14 +629,14 @@ for (int i = 0; i < 6; ++i) {
 | `school_year = 1` | 同上 | `lower years`<br>`upper years` | `case 1` → `case 2` → `case 3` の後の文と続く |
 | 0, 3, 4, 5 | 元と同じ | 元と同じ | `break` を外した位置を通らない |
 
-この版は GCC（`-Wextra` に含まれる `-Wimplicit-fallthrough`）では `this statement may fall through` の警告になる。MSVC `/W4` と Clang の `-Wall -Wextra` では警告されない（実行結果で確かめる必要がある）。このリポジトリのテストでは，わざと `break` を外した版なので，この版だけ GCC の `-Wimplicit-fallthrough` を止めてビルドしている。
+この版は GCC（`-Wextra` に含まれる `-Wimplicit-fallthrough`）では `this statement may fall through` の警告になる。Clang 18.1 の `-Wall -Wextra` では警告されないことを確認した。MSVC `/W4` でも出ないはず（手元では未確認。CI の windows-msvc-* ジョブではこの版も抑止なしでビルドできている）。警告に頼らず実行結果で確かめる必要がある。このリポジトリのテストでは，わざと `break` を外した版なので，この版だけ GCC の `-Wimplicit-fallthrough` を止めてビルドしている。
 
 **`switch` と `if` の比較**: 結果はすべての値で同じ。`switch` は 1 つの整数の値が**定数のどれと等しいか**で分ける処理に向き，`case` を並べると区分が読みやすい。
 `if` は `age <= 17` のような**範囲**や，複数の変数を使う条件も書ける（課題1 の料金分類は `switch` では書きにくい）。
 
 **採点のポイント・よくある誤り**
 
-- `case 1:` と `case 2:` の間に `break;` を入れて 1 で何も表示されない，`case 1: case 2:` を `case 1 || 2:` と書く誤り。`1 || 2` は 1 なので `case 1:` と同じになり，2 が `invalid` になる。`case 3 || 4:` も同じ形で書くと，こちらも 1 になって `case` の値が重複し，コンパイルエラーになる（GCC: `duplicate case value`，MSVC: C2196）。
+- `case 1:` と `case 2:` の間に `break;` を入れて 1 で何も表示されない，`case 1: case 2:` を `case 1 || 2:` と書く誤り。`1 || 2` は 1 なので `case 1:` と同じになり，2 が `invalid` になる。`case 3 || 4:` も同じ形で書くと，こちらも 1 になって `case` の値が重複し，コンパイルエラーになる（GCC: `duplicate case value`，Clang: `duplicate case value '1'`，MSVC: C2196（番号の例））。
 - `if` 版を `school_year == 1 || 2` と書く誤り（`|| 2` は常に真なので，どの値も `lower years` になる）。
 - 「`case 3` に一致したから `upper years` が出た」という説明は誤り。`case` は移動先で，移動した後は条件を調べずに順に実行する。
 - 2 つの理由（`case` の共有と `break`）を別々に説明できているか。
@@ -639,18 +648,19 @@ for (int i = 0; i < 6; ++i) {
 **1. `if (3)` は真・偽のどちらの経路へ進むか。**
 
 結論: **真**の経路へ進む。
-理由: C の条件は 0 が偽，0 以外がすべて真。3 は 0 ではないので真（`if (3)` の後の本体が実行されることを実行して確認）。比較の結果の 0・1 だけが条件になるわけではない。
+理由: C の条件は 0 が偽，0 以外がすべて真。3 は 0 ではないので真（`if (3)` の真の経路で `true`，偽の経路で `false` を表示する [Fee/versions/if_three.c](Fee/versions/if_three.c) を実行すると `true` だった。テスト `Fee/variant_if_three`）。比較の結果の 0・1 だけが条件になるわけではない。
 
 **2. `flag` が −1 の場合，`if (flag)`，`if (!flag)`，`if (flag == 1)` はそれぞれ真か偽か。**
 
 結論: `if (flag)` は**真**，`if (!flag)` は**偽**，`if (flag == 1)` は**偽**。
 理由: `if (flag)` は `if (flag != 0)` と同じで，−1 は 0 ではないので真。`!flag` は `flag` が 0 のときだけ 1 になるので，−1 では 0（偽）。`flag == 1` は −1 と 1 が等しくないので 0（偽）。
-「真」と「1 と等しい」は違う（実行して確認）。
+「真」と「1 と等しい」は違う（[Fee/versions/flag_minus1.c](Fee/versions/flag_minus1.c) で 3 つの条件の真偽を表示して確認。テスト `Fee/variant_flag_minus1`）。
 
 **3. `for (int i = 0; i < 3; ++i)` の本体と条件判定はそれぞれ何回か。**
 
 結論: **本体 3 回，条件判定 4 回**。
-同じ形（カウンタが 3 つの値を通る）の `Table` の外側のループ `for (int row = 1; row <= 3; ++row)` で数えると `outer: test=4 body=3` だった（テスト `Table/variant_count_cols_3`）。
+演習ページと同じ `for (int i = 0; i < 3; ++i)`（[EvenSum/versions/three_times.c](EvenSum/versions/three_times.c)。本体で `i` を表示すると `0`・`1`・`2`）に回数を数える変数を足した版で `test=4 body=3` だった（テスト `EvenSum/variant_three_times`・`variant_count_three_times`）。
+同じ形の `Table` の外側のループ `for (int row = 1; row <= 3; ++row)` でも `outer: test=4 body=3`（テスト `Table/variant_count_cols_3`）。
 理由: `i` = 0, 1, 2 で条件が真になって本体を実行し，更新で `i` が 3 になった 4 回目の判定 `3 < 3` が偽で抜ける。初期化は 1 回，更新は 3 回。
 
 **4. `while` と `do-while` の本体の実行回数が異なるのは，どのような開始条件か。**
@@ -675,11 +685,12 @@ for (int i = 0; i < 6; ++i) {
 
 結論: `switch` の中の文を何も実行せず，**`switch` の後の文**へ進む。
 理由: `default` はどの `case` にも一致しない場合の移動先で，省略すると移動先がないため（講義 5 節）。エラーにはならず，プログラムも終了しない。
+`YearGroup` の `switch` から `default` を除き，`school_year = 5` で `switch` の後に `after switch` を表示する [YearGroup/versions/no_default.c](YearGroup/versions/no_default.c) は，`after switch` だけを表示した（テスト `YearGroup/variant_no_default_year_5`）。
 
 **8. 講義の `goto` の例で `goto done;` を `break;` に置き換えても同じ表示になるのはなぜか。**
 
 結論: ラベル `done:` が `for` の**直後**にあるので，`goto done;` の移動先と，`break;` で `for` を抜けた先が同じ文（`printf("done\n");`）になるから。
-理由: `n` が 3 のとき，`goto` は `done:` へ移動し，`break` は最も内側のループ（この `for`）の外，つまり直後の文へ進む。どちらも `0`・`1`・`2` を表示した後 `done` を表示する（両方を実行して確認）。
+理由: `n` が 3 のとき，`goto` は `done:` へ移動し，`break` は最も内側のループ（この `for`）の外，つまり直後の文へ進む。どちらも `0`・`1`・`2` を表示した後 `done` を表示する（講義の例を `main` に入れた [YearGroup/versions/goto_done.c](YearGroup/versions/goto_done.c) と，`goto done;` を `break;` に置き換えてラベルを消した版を実行して確認。テスト `YearGroup/variant_goto_done`・`variant_goto_to_break`）。
 ループが二重で `done:` が外側のループの後にある場合や，ラベルがループの直後でない場合は，`break` では同じにならない。
 
 ---
@@ -688,8 +699,8 @@ for (int i = 0; i < 6; ++i) {
 
 | 項目 | どこで確認できるか |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の表（−1, 0, 5, 6, 17, 18），課題2 の `n` = 0, 1, 2, 4, 10, 100，課題4 の `limit` の表（1, 2, 64, 65, 100），発展の `school_year` = 0〜5。発展の断片以外はテスト 111 件で実行・照合している |
-| 警告を確認し，原因を説明・修正した | 全プログラムが MSVC `/W4`・GCC/Clang `-Wall -Wextra -Wpedantic -Werror` で警告 0。警告が出る誤りの例: 課題1 の `if (age = 0)`（C4706），課題2 の初期化忘れ（C4700），発展の `break` を外した版（GCC `-Wimplicit-fallthrough`） |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の表（−1, 0, 5, 6, 17, 18），課題2 の `n` = 0, 1, 2, 4, 10, 100，課題4 の `limit` の表（1, 2, 64, 65, 100），発展の `school_year` = 0〜5。発展の断片・確認問題の確認用のコードも含めて，テスト 127 件で実行・照合している |
+| 警告を確認し，原因を説明・修正した | GCC 13.3／Clang 18.1（`-Wall -Wextra -Wpedantic -Werror`）で警告 0 を確認。MSVC `/W4 /WX` でのビルド・テストは CI（GitHub Actions の windows-msvc-* ジョブ）で行う（3e12fbc 時点の版は成功，今回追加した版は未確認）。警告が出る誤りの例: 課題1 の `if (age = 0)`（GCC/Clang `-Wparentheses`，MSVC は C4706 が例），課題2 の初期化忘れ（MSVC は C4700 が例），発展の `break` を外した版（GCC `-Wimplicit-fallthrough`） |
 | 自分の言葉で，処理の流れと使った型を説明できる | 各課題の「説明すること」（課題1 の `else` に来る値，課題2 の `n = 0` の判定回数，課題4 の 128 での判定と `int` の範囲） |
 | 0回・1回・複数回の反復を区別して説明できる | 課題2 の回数の表（`n` = 0, 1 で本体 0 回 など），課題4 の `limit` = 1（0 回），2（1 回），64 以上（6〜7 回）と `do-while` の `limit = 1`（1 回），確認問題3・4・6 |
 | `break` と `continue`，`switch` の `case` と `if` の条件を混同していない | 発展の追跡表（`continue` は更新へ，`break` はループの外へ），`YearGroup` の `break` を外した版（`case` は移動先で条件の再判定ではない），確認問題5・7・8 |

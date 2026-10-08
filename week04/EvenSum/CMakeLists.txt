@@ -1,56 +1,108 @@
 # 第4回 課題2 EvenSum
 # 本体（for 版，n = 10）に加えて，n を変えた版と，比較用の while 版・2 ずつ増やす版（versions/）を
-# 演習ページの n（0, 1, 2, 10, 100）でビルドしてテストする。n = 4 は「値を追跡する」の表の確認
+# 演習ページの n（0, 1, 2, 10, 100）でビルドしてテストする。n = 4 は「値を追跡する」の表の確認。
+# 各版は先頭コメントの 2 行目を版の説明に置き換える。確認問題3 の for（versions/three_times.c）もここでテストする
 softprac_add_program(EvenSum even_sum.c)
 
+set(for_head "// 1 から n までの偶数の合計を for 文で求める．n は 0〜100 の固定値．")
+set(while_head "// for の初期化をループの前へ，更新を本体の最後へ移した．")
+set(step2_head "// i は偶数だけを通るので，偶奇判定の if は不要．本体の回数は約半分になる．")
+
 foreach(n 0 1 2 4 100)
-  softprac_add_variant(EvenSum even_sum.c for_n_${n} "n = 10" "n = ${n}")
+  softprac_add_variant(EvenSum even_sum.c for_n_${n}
+    "n = 10" "n = ${n}"
+    "${for_head}" "// n を ${n} に書き換えた版．1 から n までの偶数の合計を for 文で求める．")
 endforeach()
 softprac_add_variant(EvenSum versions/even_sum_while.c while_n_10)
 softprac_add_variant(EvenSum versions/even_sum_step2.c step2_n_10)
 foreach(n 0 1 2 100)
-  softprac_add_variant(EvenSum versions/even_sum_while.c while_n_${n} "n = 10" "n = ${n}")
-  softprac_add_variant(EvenSum versions/even_sum_step2.c step2_n_${n} "n = 10" "n = ${n}")
+  softprac_add_variant(EvenSum versions/even_sum_while.c while_n_${n}
+    "n = 10" "n = ${n}"
+    "${while_head}" "// n を ${n} に書き換えた版．for の初期化をループの前へ，更新を本体の最後へ移した．")
+  softprac_add_variant(EvenSum versions/even_sum_step2.c step2_n_${n}
+    "n = 10" "n = ${n}"
+    "${step2_head}" "// n を ${n} に書き換えた版．i は偶数だけを通るので，偶奇判定の if は不要．")
 endforeach()
 
-# 誤りの例: sum = 0 を本体の中へ移した版（最後の反復で加えた分しか残らない）
+# 誤りの例: 本体の先頭で毎回 sum = 0 に戻す版（最後の反復で加えた分しか残らない）
 foreach(n 4 9 10)
   softprac_add_variant(EvenSum even_sum.c reset_in_body_n_${n}
+    "n = 10" "n = ${n}"
+    "${for_head}" "// 誤りの例: 本体の先頭で毎回 sum = 0 に戻す版（累積にならず，最後の反復で加えた分しか残らない）．n = ${n}．"
+    "    int sum = 0;    // それまでの合計．ループの前で 1 回だけ 0 にする"
+    "    int sum = 0;    // それまでの合計（ループの前でも 0 にするが，本体でも毎回 0 に戻してしまう）"
     [=[        if (i % 2 == 0) {               // 偶数のときだけ加算する]=]
-    [=[        sum = 0;
-        if (i % 2 == 0) {]=]
-    "n = 10" "n = ${n}")
+    [=[        sum = 0;                        // 誤り: 毎回 0 に戻すので累積にならない
+        if (i % 2 == 0) {               // 偶数のときだけ加算する]=])
+endforeach()
+
+# 誤りの例: 継続条件を i < n にした版（n が偶数のとき最後の n を加えない）
+foreach(n 2 10)
+  softprac_add_variant(EvenSum even_sum.c lt_n_${n}
+    "n = 10" "n = ${n}"
+    "${for_head}" "// 誤りの例: 継続条件を i < n にした版（n が偶数のとき最後の n を加えない）．n = ${n}．"
+    "    for (int i = 1; i <= n; ++i) {      // i は今調べている数"
+    "    for (int i = 1; i < n; ++i) {       // 誤り: n そのものを調べない")
 endforeach()
 
 # 誤りの例: while 版で更新 ++i を本体の先頭に置いた版（i = 2〜n + 1 を調べてしまう）
 foreach(n 1 9 10)
   softprac_add_variant(EvenSum versions/even_sum_while.c early_increment_n_${n}
+    "n = 10" "n = ${n}"
+    "${while_head}" "// 誤りの例: while 版の更新 ++i を本体の先頭に置いた版（i = 2〜n + 1 を調べてしまう）．n = ${n}．"
     [=[        if (i % 2 == 0) {
             sum += i;
         }
         ++i;                    // for の更新（本体の最後）
 ]=]
-    [=[        ++i;
+    [=[        ++i;                    // 誤り: 更新を本体の先頭に置いた（1 を調べず n + 1 まで調べる）
         if (i % 2 == 0) {
             sum += i;
         }
-]=]
-    "n = 10" "n = ${n}")
+]=])
+endforeach()
+
+# while 版のループの後で i も表示する版（for と違い i はループの後でも使え，値は n + 1）
+foreach(n 0 10)
+  softprac_add_variant(EvenSum versions/even_sum_while.c while_i_after_n_${n}
+    "n = 10" "n = ${n}"
+    "${while_head}" "// while 版のループの後で i の値も表示する版（確認用．i はループの後でも使え，値は n + 1）．n = ${n}．"
+    [=[    printf("%d\n", sum);]=]
+    [=[    printf("%d\n", sum);
+    printf("i=%d\n", i);        // ループを抜けたときの i（条件 i <= n が偽になった値）]=])
 endforeach()
 
 # 回数の確認: 条件判定（test）・本体（body）・加算（add）の回数を数えて合計の後に表示する版
 # （確認用。判定のたびに数えるため，継続条件の前にコンマ演算子で ++test を入れている）
+set(count_decl [=[    int test = 0;   // 条件判定の回数
+    int body = 0;   // 本体の回数
+    int add = 0;    // 加算の回数
+]=])
 set(count_print [=[    printf("%d\n", sum);
     printf("test=%d body=%d add=%d\n", test, body, add);]=])
 foreach(n 0 1 2 4 10 100)
   softprac_add_variant(EvenSum even_sum.c count_n_${n}
-    "int n = 10;" "int n = ${n};\n    int test = 0;\n    int body = 0;\n    int add = 0;"
-    "for (int i = 1; i <= n; ++i) {" "for (int i = 1; ++test, i <= n; ++i) {\n        ++body;"
-    "            sum += i;" "            sum += i;\n            ++add;"
+    "n = 10" "n = ${n}"
+    "${for_head}" "// 条件判定（test）・本体（body）・加算（add）の回数を数えて合計の後に表示する版（確認用）．n = ${n}．"
+    "    for (int i = 1; i <= n; ++i) {      // i は今調べている数\n"
+    "${count_decl}    for (int i = 1; ++test, i <= n; ++i) {      // i は今調べている数\n        ++body;\n"
+    "            sum += i;\n" "            sum += i;\n            ++add;\n"
     [=[    printf("%d\n", sum);]=] "${count_print}")
   softprac_add_variant(EvenSum versions/even_sum_step2.c count_step2_n_${n}
-    "int n = 10;" "int n = ${n};\n    int test = 0;\n    int body = 0;\n    int add = 0;"
-    "for (int i = 2; i <= n; i += 2) {" "for (int i = 2; ++test, i <= n; i += 2) {\n        ++body;"
-    "        sum += i;" "        sum += i;\n        ++add;"
+    "n = 10" "n = ${n}"
+    "${step2_head}" "// 2 ずつ増やす版に，条件判定（test）・本体（body）・加算（add）の回数を数えて合計の後に表示する処理を足した版（確認用）．n = ${n}．"
+    "    for (int i = 2; i <= n; i += 2) {\n"
+    "${count_decl}    for (int i = 2; ++test, i <= n; i += 2) {\n        ++body;\n"
+    "        sum += i;\n" "        sum += i;\n        ++add;\n"
     [=[    printf("%d\n", sum);]=] "${count_print}")
 endforeach()
+
+# 確認問題3: 演習ページの for (int i = 0; i < 3; ++i) そのもの（本体で i を表示する）と，
+# 条件判定（test）と本体（body）の回数を数えて最後に表示する版（test=4 body=3）
+softprac_add_variant(EvenSum versions/three_times.c three_times)
+softprac_add_variant(EvenSum versions/three_times.c count_three_times
+  "// 演習ページの for をそのまま実行し，本体で i を表示する．"
+  "// 条件判定（test）と本体（body）の回数を数えて最後に表示する版（確認用）．"
+  "    for (int i = 0; i < 3; ++i) {\n"
+  "    int test = 0;   // 条件判定の回数\n    int body = 0;   // 本体の回数\n    for (int i = 0; ++test, i < 3; ++i) {\n        ++body;\n"
+  "    return 0;" "    printf(\"test=%d body=%d\\n\", test, body);\n    return 0;")
