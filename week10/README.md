@@ -21,7 +21,7 @@
 | 発展2 | 二乗の一覧を書く | `WriteSquares` | [write_squares.c](WriteSquares/write_squares.c) | `4 squares.txt` | なし（`squares.txt` は実行時に作る） | 14 |
 | 発展2 | 一覧を検査して値を探す | `CheckValue` | [check_value.c](CheckValue/check_value.c) | `squares.txt 9` | [squares.txt](CheckValue/squares.txt)（`WriteSquares 4` の出力のコピー） | 37 |
 
-テストは合計 132 件（本体 109 件，variant 23 件）。すべて成功（GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1，どちらも `-Wall -Wextra -Wpedantic -Werror` で警告 0）。
+テストは合計 132 件（本体 109 件，variant 23 件）。すべて成功（GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1，どちらも `-Wall -Wextra -Wpedantic -Werror` で警告 0）。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants を含む）のビルドとテストが成功している（コミット a76876f の時点）。
 
 ### この回の約束（TA 向け）
 
@@ -747,7 +747,7 @@ BOM 付き UTF-8 で保存した `squares.txt` は，先頭の `EF BB BF` が数
 検索値 9802・-1・`12x`，存在しないファイル，空白を含むファイル名，引数の個数の誤り，空のファイル名。
 
 ```text
-$ CheckValue long.txt 9      ← 5 行目が空白 30 個 + "9"（31 バイト）
+$ CheckValue bad.txt 9       ← 5 行目が空白 30 個 + "9"（31 バイト。テスト bad_line_31_bytes）
 line 5: line too long
 (終了コード 1)
 ```
@@ -798,7 +798,7 @@ Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 �
 | 項目 | 確認できる課題と内容 |
 | --- | --- |
 | 正常な値だけでなく，課題に示された境界の値でも確認した | `ParseNumber`: 0・100（受け付ける），101・-1（拒否），`+42`・`" 42"`・`"42 "`・`12x`・`abc`・非常に長い整数・引数の過不足。合計版の 10 個・11 個。<br>`LineLengths`: 31 文字（改行あり・なし）と 32 文字，空行，空ファイル。<br>`ReadText`: 空ファイル，最後の改行なし，`missing.txt`，引数なし，`""`，空白を含む名前。<br>`WriteText`: `w`・`a`・`wx` を既存ファイルあり・なしで比較。<br>`WriteSquares`: `N` = 0・100・101，既存ファイル。<br>`CheckValue`: 表の 7 種類の異常，0 と 9801，30・31 バイトの行。すべて自動テストにしている |
-| 警告を確認し，原因を説明・修正した | すべてのプロジェクトが GCC/Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で問題になる C4996 は `fopen` を使うファイルの先頭の `#define _CRT_SECURE_NO_WARNINGS` で抑止。`%zu` は MSVC 2015 以降で使え，現在の UCRT の `fopen` はモードの `x` に対応している）。MSVC `/W4 /WX` でも CI（GitHub Actions）でビルド・テストが成功している（3e12fbc の時点）。<br>学生の提出物で MSVC `/W4` で出る警告の例（番号は Microsoft のドキュメントによる。このリポジトリでは再現していない）: C4996（`fopen`，`_CRT_SECURE_NO_WARNINGS` がない／`#include` の後に書いた），C4244（`char ch = fgetc(fp);` の `int` → `char`。`/W4` で出る。`long` → `int` は MSVC では同じ 4 バイトなので通常は C4244 の対象にならないとされるが，Linux では値が変わり得る），C4018/C4389（`size_t` と `int` の比較），C4100（使わない `argc`） |
+| 警告を確認し，原因を説明・修正した | すべてのプロジェクトが GCC/Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で問題になる C4996 は `fopen` を使うファイルの先頭の `#define _CRT_SECURE_NO_WARNINGS` で抑止。`%zu` は MSVC 2015 以降で使え，現在の UCRT の `fopen` はモードの `x` に対応している）。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants を含む）のビルドとテストが成功している（コミット a76876f の時点）。CI でも標準エラー出力（`.err`）を比べているので，`perror` の文面，`wx` の失敗，`text=0.120` なども MSVC の実行で確かめられている。<br>学生の提出物で MSVC `/W4` で出る警告の例（番号は Microsoft のドキュメントによる。このリポジトリでは再現していない）: C4996（`fopen`，`_CRT_SECURE_NO_WARNINGS` がない／`#include` の後に書いた），C4244（`char ch = fgetc(fp);` の `int` → `char`。ドキュメントによれば `/W4` で出る。`long` → `int` は MSVC では同じ 4 バイトなので通常は C4244 の対象にならないとされるが，Linux では値が変わり得る），C4018/C4389（`size_t` と `int` の比較），C4100（使わない `argc`） |
 | 自分の言葉で，処理の流れと使った型を説明できる | `FILE *`（ストリームでありファイルの中身ではない），`fgetc` の戻り値が `int` である理由（課題1），`char *argv[]` と `argc`（課題2），`size_t` と `fread` の戻り値（課題3），`unsigned char *` でオブジェクトの表現を見る（`ByteOrder`），`long` と `strtol`・`errno`（課題2・発展2），`double` のテキスト/バイナリ表現（発展1） |
 
 注: 空文字列の引数は `.args` の空行で表す（空行 1 行だけなら空文字列の引数 1 つ）。`ReadText ""`（`empty_arg`），`ParseNumber ""`（本体 `empty_arg`・合計版 `sum--empty_arg`），`Arguments ""`（`empty_arg`），`WriteSquares 4 ""`，`CheckValue "" 9` を自動テストにしている。
