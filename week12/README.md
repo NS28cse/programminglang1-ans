@@ -18,7 +18,7 @@
 | 発展3 | `LibraryCheck` | [library_check.c](LibraryCheck/library_check.c)，[CMakeLists.txt](LibraryCheck/CMakeLists.txt) | 2（[basic](LibraryCheck/tests/basic.out)，[NDEBUG 版](LibraryCheck/variants/tests/ndebug.out)：偽の `assert` に変えても終了コード 0） |
 | 課題3・4 のエラー版 | `_BuildErrors`（ビルドしない） | [split/](_BuildErrors/split/)（課題1 の講義どおりの 3 ファイルと，エラーの 3 版），[noguard/](_BuildErrors/noguard/)（ガードを外した `vector.h` と組み合わせる一式），[noinclude/](_BuildErrors/noinclude/)（`#include "vector.h"` を外した `matrix.h` と，それだけを読む `vector_main.c`） | ― |
 
-合計 34 テスト（GCC＋ASan/UBSan，Clang ともに警告 0・全成功）。
+合計 34 テスト（GCC＋ASan/UBSan，Clang ともに警告 0・全成功）。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants を含む）のビルドとテストが成功している（コミット a76876f の時点）。
 
 - フォルダ名＝Visual Studio のプロジェクト名＝実行ファイル名。フォルダ内の `.c` はすべて 1 つの実行ファイルにリンクされる（Visual Studio で「ソース ファイル」に登録したのと同じ）。
   `main` を持つのは `SplitCalc/main.c`・`VectorCalc/vector_main.c`・`CalcApp/main.c`・`SortModule/sort_main.c`・`LibraryCheck/library_check.c` の各 1 つだけ。
@@ -56,7 +56,7 @@ double multiply(double a, double b);     return a + b;                   {
 `main.c` だけを見ると，`add` は `double` 2 つを受け取り `double` を返す（`calc.h` の宣言から分かる）。名前から 1.5＋2.0＝3.5，1.5×2.0＝3.0 と予測し，`%.1f` なので小数 1 桁で表示される。
 実装を見なくても型は分かるが，**値が正しいかは実装次第**であり，「名前どおりの計算をしている」というのは予測であることに注意させる。
 
-実行結果（講義の 3 ファイル。予測どおり。`SplitCalc` の本体から課題2 で加えた行を除いた版 `lecture` としてテストしている）:
+実行結果（`main.c` を講義どおりにした版（`calc.h`・`calc.c` は課題2 の版）。予測どおり。`SplitCalc` の本体の `main.c` から課題2 で加えた行を除いた版 `lecture` としてテストしている）:
 
 ```text
 add=3.5
@@ -76,7 +76,7 @@ multiply=3.0
 
 ### 手順3　ビルドの警告とエラー
 
-このリポジトリの GCC/Clang（`-Wall -Wextra -Wpedantic -Werror`）で**警告 0・エラー 0** を確かめた。Visual Studio（C17・`/W4`・`/TC`）で警告になる書き方（C4996 になる関数，可変長配列など）も使っていない（MSVC での実行はこの環境では確かめていない）。
+このリポジトリの GCC/Clang（`-Wall -Wextra -Wpedantic -Werror`）で**警告 0・エラー 0** を確かめた。Visual Studio（C17・`/W4`・`/TC`）で警告になる書き方（C4996 になる関数，可変長配列など）も使っていない。
 警告が出た場合は，拡張子が `.cpp` になっていないか（C++ としてコンパイルされる），`calc.h` の保存場所が `main.c` と同じ実フォルダか，を確認させる。
 
 ### 手順5　出力ウィンドウの比較（`calc.c` だけ保存し直した場合と，何も変えない場合）
@@ -101,7 +101,7 @@ Visual Studio 2022（日本語）での表示の例（版・言語設定・タ�
 ========== すべてリビルド: 1 正常終了、0 失敗、0 スキップ ==========
 ```
 
-このリポジトリの CMake（Ninja）で同じ操作をした実際の記録（各コマンドの最初に出る `[0/2] Re-checking globbed directories...` の行は省略）:
+このリポジトリの CMake（Ninja）で同じ操作をした実際の記録（各コマンドの最初に出る `[0/2] Re-checking globbed directories...` の行は省略。`--clean-first` では消去の後にもう一度出るが，それも省略）:
 
 ```text
 $ touch week12/SplitCalc/calc.c && cmake --build $B --target SplitCalc     ← calc.c だけ更新
@@ -128,6 +128,8 @@ Visual Studio の「リビルド」（プロジェクトを右クリックした
 何も変えなければビルドは「更新不要」で何もしない。リビルドはすべての `.c` をコンパイルし直してリンクする。`calc.h` を変えると，それを読む `main.c` と `calc.c` の両方が再コンパイルされる（講義 1.2）。
 
 ### 考察
+
+考察と次の「採点のポイント」に出てくる MSVC のエラー（`LNK2019`・`LNK1120`・`LNK2005`）は，**番号・文面はドキュメントによる例。このリポジトリでは再現していない**（GCC/Clang での実際の診断は課題3 に載せた）。
 
 - **なぜ `main.c` に `add` の本体がなくてもコンパイルできるか**: コンパイルに必要なのは `add` の**宣言**（名前・引数の型・戻り値の型）だけだから。`calc.h` の宣言で，`main.c` のコンパイラは `double` 2 つを渡して `double` を受け取るコードを作れる。
   `main.obj` には「`add` を呼びたい」という未解決の参照が残り，本体（定義）との結び付けは**リンク**で `calc.obj` を使って行われる。
@@ -245,7 +247,7 @@ calc_divide(6.0, 2.0): ok=1 q=3.0
 **要点**: ビルドの失敗を**前処理・コンパイル・リンク**のどの段階かに分け，最初の原因に近い診断を読む。ヘッダの検索先を直す場面（`C1083`）と，リンクする実装を確かめる場面（`LNK2019`・`LNK2005`）を区別する。
 
 エラーになる版は [_BuildErrors/split/](_BuildErrors/split/) に置いた（`_` で始まるフォルダはビルドしない）。
-**MSVC の診断は文面の例**（版・言語設定で変わる。GCC/Clang の診断は実際に実行して得た。`$` の行がコマンド）。
+**MSVC の診断は，番号・文面はドキュメントによる例。このリポジトリでは再現していない**（版・言語設定で変わる。GCC/Clang の診断は実際に実行して得た。`$` の行がコマンド）。
 
 ### `calc.c` を「ビルドから除外」した場合
 
@@ -295,6 +297,39 @@ collect2: error: ld returned 1 exit status
 | 2 | [calc_int_add.c](_BuildErrors/split/calc_int_add.c) 3 行目 `int add(double a, double b)` | コンパイル | コンパイル（`calc.c`） | MSVC `error C2371: 'add': redefinition; different basic types`（再定義されています。異なる基本型です）＋ `/W4` で `warning C4244: 'return': conversion from 'double' to 'int'` ／ GCC `error: conflicting types for 'add'; have 'int(double,  double)'` と `note: previous declaration of 'add' with type 'double(double,  double)'`（calc.h:4） | `double` に戻して成功，元の 2 行 |
 | 3 | `calc.c` を「ビルドから除外」 | リンク | リンク | MSVC `LNK2019: unresolved external symbol add referenced in function main` と `LNK1120` ／ GCC(ld) `undefined reference to 'add'` | 「いいえ」に戻してリビルド成功，元の 2 行 |
 | 4 | [main_dup_add.c](_BuildErrors/split/main_dup_add.c) に `add` の本体をコピー | リンク | リンク | MSVC `calc.obj : error LNK2005: add already defined in main.obj`（既に main.obj で定義されています）と `fatal error LNK1169: one or more multiply defined symbols found` ／ GCC(ld) `multiple definition of 'add'; ...main_dup_add.c: first defined here` | コピーした本体を削除して成功，元の 2 行 |
+
+エラーになる版の変えた部分（他の行は課題1 の `main.c`・`calc.c` と同じ。記録 3 はコードを変えず，プロジェクトの設定だけを変える）:
+
+```c
+/* 記録 1: main_missing_header.c の 2〜3 行目（3 行目だけを "calc.h" から変えた） */
+#include <stdio.h>
+#include "calc_missing.h"
+```
+
+```c
+/* 記録 2: calc_int_add.c の 2〜6 行目（3 行目の戻り値型だけを double から int に変えた） */
+#include "calc.h"
+int add(double a, double b)
+{
+    return a + b;
+}
+```
+
+```c
+/* 記録 4: main_dup_add.c の 2〜13 行目（4〜7 行目が calc.c からコピーした add の本体） */
+#include <stdio.h>
+#include "calc.h"
+double add(double a, double b)
+{
+    return a + b;
+}
+int main(void)
+{
+    printf("add=%.1f\n", add(1.5, 2.0));
+    printf("multiply=%.1f\n", multiply(1.5, 2.0));
+    return 0;
+}
+```
 
 GCC で実際に出た診断（[_BuildErrors/split/](_BuildErrors/split/) で実行）:
 
@@ -417,6 +452,21 @@ GCC で試すと `add=3.5` と表示されたが，これは呼び出し側が `
 [_BuildErrors/noguard/vector.h](_BuildErrors/noguard/vector.h) は `#ifndef PL1_VECTOR_H`・`#define PL1_VECTOR_H`・`#endif` だけを外した版。`vector_main.c` は `matrix.h` 経由と直接の 2 回 `vector.h` を読むので，
 **同じ翻訳単位に `typedef struct { double v[2]; } Vector;` が 2 回現れ，コンパイルエラー**になる（`vector.c`・`matrix.c` は 1 回しか読まないので単独ではエラーにならない）。
 
+ガードを外した `vector.h` の全体（`matrix.h`・`vector_main.c` は講義 7 のまま）:
+
+```c
+/* 第12回 課題4 ガードの 3 行（#ifndef・#define・#endif）だけを外した vector.h（ビルドしない） */
+
+typedef struct {
+    double v[2];
+} Vector;
+
+Vector axpy(double alpha, Vector a, Vector b);
+void print_vector(Vector a);
+```
+
+GCC の診断（行番号は上のガードなしの版の行）:
+
 ```text
 $ gcc -std=c17 -Wall -Wextra -Wpedantic -c noguard/vector_main.c
 In file included from noguard/vector_main.c:3:
@@ -484,10 +534,15 @@ int main(void)
 ```text
 $ gcc -std=c17 -Wall -Wextra -Wpedantic -c noinclude/vector_main.c
 In file included from noinclude/vector_main.c:2:
-noinclude/matrix.h:10:1: error: unknown type name 'Vector'
-   10 | Vector gemv(double alpha, Matrix a, Vector x, double beta, Vector y);
+noinclude/matrix.h:9:1: error: unknown type name 'Vector'
+    9 | Vector gemv(double alpha, Matrix a, Vector x, double beta, Vector y);
       | ^~~~~~
-noinclude/matrix.h:10:37: error: unknown type name 'Vector'
+noinclude/matrix.h:9:37: error: unknown type name 'Vector'
+    9 | Vector gemv(double alpha, Matrix a, Vector x, double beta, Vector y);
+      |                                     ^~~~~~
+noinclude/matrix.h:9:60: error: unknown type name 'Vector'
+    9 | Vector gemv(double alpha, Matrix a, Vector x, double beta, Vector y);
+      |                                                            ^~~~~~
 （以下，vector_main.c の Vector x などにも同じ error と，print_vector の暗黙の宣言の警告が続く）
 ```
 
@@ -517,6 +572,8 @@ MSVC では `error C2061: syntax error: identifier 'Vector'`（構文エラー: 
 
 **要点**: `calc.c` を**静的ライブラリ**（`.lib`）としてビルドし，別のプロジェクト `CalcApp`（`main.c` だけ）から参照してリンクする。
 「宣言を読む（インクルード ディレクトリ）」と「実装をリンクする（参照・`.lib`）」が別の設定であることを確かめる。
+
+この節に出てくる MSVC の警告・エラー番号（`C4013`・`LNK2019`・`LNK1104`・`LNK4272`・`LNK4098`・`LNK2005`・`LNK2038`・`C1083`）と，Visual Studio のメッセージ（「スタティック ライブラリは起動できません」など）は，**番号・文面はドキュメントによる例。このリポジトリでは再現していない**（このリポジトリで実際に確かめたのは，CMake での更新の伝わり方の記録と実行結果）。
 
 - [CalcLib/calc.h](CalcLib/calc.h)・[CalcLib/calc.c](CalcLib/calc.c): `add`・`multiply` に課題2の `subtract` を追加した版（`main` はない）。
 - [CalcApp/main.c](CalcApp/main.c): `add`・`multiply`・`subtract` を呼ぶ。
@@ -564,7 +621,7 @@ subtract=3.0
 | 4. `CalcApp` を更新後の `.lib` とリンクする | `main.obj` と新しい `CalcLib.lib` の `subtract` を結び付けて `CalcApp.exe` を作る | 古い `.lib` とリンクすると `LNK2019`。静的ライブラリの更新は再リンクして初めて `.exe` に入る |
 
 プロジェクト参照が正しければ，`CalcApp` のビルドで 2 → 3 → 4 の順に必要な作業が行われる。このリポジトリで実際に確かめた記録
-（各コマンドの最初の `[0/2] Re-checking globbed directories...` と，`main.c` を更新したときに出る `[1/2] Re-running CMake...` から `-- Build files have been written to: ...` までの 3 行は省略。
+（各コマンドの最初の `[0/2] Re-checking globbed directories...` と，`main.c` を更新したときに出る `[1/2] Re-running CMake...` から `-- Build files have been written to: ...` までの 4 行，その後にもう一度出る `[0/2] Re-checking globbed directories...` の行は省略。
 `main.c` は書き換えた版 `CalcApp_lecture` の元のソースなので，更新すると CMake が構成し直す）:
 
 ```text
@@ -618,7 +675,7 @@ $ touch week12/CalcLib/calc.h && cmake --build $B --target CalcApp      ← （�
 
 - [intlib.h](SortModule/intlib.h): `INTLIB_CAPACITY`（8），`int parse_count(const char *text, int *out);`，`void sort_ints(int a[], size_t n);`。`size_t` のために `stddef.h` をヘッダ自身で読む。
 - [intlib.c](SortModule/intlib.c): `static int compare_int(...)`（大小比較で −1・0・1），`parse_count`（`strtol` で 0〜8 だけ成功，失敗時は `*out` を変えない），`sort_ints`（`qsort(a, n, sizeof a[0], compare_int)`）。
-- [sort_main.c](SortModule/sort_main.c): 引数の個数の検査，`parse_count` の呼び出し，エラー表示（`stderr`・`EXIT_FAILURE`），`sort_ints` の呼び出しと表示。
+- [sort_main.c](SortModule/sort_main.c): 引数の個数の検査，`parse_count` の呼び出し，エラー表示（`stderr`・終了コード 1），`sort_ints` の呼び出しと表示。
   配列は `int data[INTLIB_CAPACITY] = {7, -2, 7, 0, 3, 9, -8, 1};` の固定長で，有効な個数 `n` を別に持つ（可変長配列は使わない）。
 
 `intlib.c` の中心部分:
@@ -729,7 +786,7 @@ badcmp.c:6:28: runtime error: signed integer overflow: 2147483647 - -2147483648 
 - **`sort_main.c` が `qsort` の使い方を知らなくてもよいのはなぜか**: `sort_ints(int a[], size_t n)` という「配列と個数を渡せば昇順になる」契約だけを公開し，`qsort` の引数（要素サイズ・比較関数）や `stdlib.h` の扱いを `intlib.c` に閉じ込めたから。
   並べ替えの方法を自作の挿入ソートなどに変えても `sort_main.c` は修正不要。
 - **型の宣言・数値の検査・エラー表示はどこにあるか**: 公開する型・定数・関数の宣言（`INTLIB_CAPACITY`，`size_t` のための `stddef.h`，`parse_count`・`sort_ints` のプロトタイプ）は `intlib.h`。
-  数値の検査（`strtol`・`end`・`errno`・0〜8 の範囲）は `intlib.c` の `parse_count`。引数の個数の検査と，エラーの表示（`stderr` への `fprintf`，`EXIT_FAILURE`）は `sort_main.c`。
+  数値の検査（`strtol`・`end`・`errno`・0〜8 の範囲）は `intlib.c` の `parse_count`。引数の個数の検査と，エラーの表示（`stderr` への `fprintf`，終了コード 1）は `sort_main.c`。
   `parse_count` は表示をせず成功・失敗だけを返すので，表示の方法（言語・出力先）を決めるのは呼び出し側になる。
 - **固定配列の容量と有効な個数 `N` は同じものか**: 違う。容量 `INTLIB_CAPACITY`（8）は配列の要素数でコンパイル時に決まり，`N` は実行時に引数で決まる「使う要素の個数」（0〜8）。
   `N ≤ 容量` を `parse_count` で保証してから `sort_ints(data, n)` に `n` を渡すので，範囲外にはアクセスしない。`sizeof` で求まるのは容量であって `N` ではない。
@@ -822,12 +879,12 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 
        if (argc != 2) {
            fprintf(stderr, "usage: SortModule N (N is an integer from 0 to %d)\n", INTLIB_CAPACITY);
-           return EXIT_FAILURE;
+           return 1;
        }
        if (!parse_count(argv[1], &n)) {
            fprintf(stderr, "invalid N: \"%s\" (expected an integer from 0 to %d)\n",
                    argv[1], INTLIB_CAPACITY);
-           return EXIT_FAILURE;
+           return 1;
        }
 
        srand(123U);  /* 種はループの前に 1 回だけ．同じ種なら同じ処理系では同じ系列 */
@@ -902,7 +959,7 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
 | 正常な値だけでなく，課題に示された境界の値でも確認した | 課題2 の検証表（`subtract` の 0−0・2−5，`calc_divide` の 0÷2・6÷0）と課題4 の単位行列・`alpha`=0 は書き換えた版（`SplitCalc`・`VectorCalc` の variants），発展2 の `N` = 0・1・8，−1・9・巨大な数・`""`・`3x`・`3 4` は `SortModule/tests/` の引数のケース，`INT_MAX`/`INT_MIN` は `SortModule` の variant で，それぞれ自動テストにしている |
-| 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC/Clang `-Wall -Wextra -Wpedantic -Werror` で警告 0。MSVC `/W4` で警告になる書き方も避けている。課題3 の記録 2 で `C4244`（`double` → `int`），課題2 の `C4013`（暗黙の宣言）の原因を説明 |
+| 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC/Clang `-Wall -Wextra -Wpedantic -Werror` で警告 0。MSVC `/W4` で警告になる書き方も避けている。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants を含む）のビルドとテストが成功している（コミット a76876f の時点）。課題3 の記録 2 で `C4244`（`double` → `int`），課題2 の `C4013`（暗黙の宣言）の原因を説明 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の考察（宣言 → コンパイル → リンク），課題4 の `Vector`・`Matrix` と値渡し，発展2 の `size_t`・`const void *`・`long` から `int` への変換 |
 | 1 つの実行アプリに `main` が 1 つだけあり，必要な `.c` がすべてビルド対象になっている | `SplitCalc`（`main.c`＋`calc.c`），`VectorCalc`（3 つの `.c`），`SortModule`（2 つの `.c`），`CalcApp`（`main.c`＋`CalcLib` の参照）。課題3 の除外・重複の実験 |
 | 意図的に作ったエラーと前処理用の設定を元に戻し，最後のビルドが成功した | 課題3 のビルド記録の「復旧後の成功」列，課題4 のガード・`/P` の後のリビルド。リポジトリではエラー版を `_BuildErrors/` に分け，提出用のフォルダは正常版だけ |
@@ -919,7 +976,7 @@ cmake -S . -B $B -G Ninja -DSOFTPRAC_WEEKS=week12 -DSOFTPRAC_WERROR=ON -DSOFTPRA
 cmake --build $B && ctest --test-dir $B --output-on-failure
 ```
 
-- 結果: 34 テストすべて成功（GCC 13＋ASan/UBSan，Clang 18 とも警告 0）。
+- 結果: 34 テストすべて成功（GCC 13＋ASan/UBSan，Clang 18 とも警告 0）。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants を含む）のビルドとテストが成功している（コミット a76876f の時点）。
 - `SortModule` を別の引数で試すときは，Visual Studio（フォルダーを開く）では [run.args](SortModule/run.args) を書き換えて `python tools/gen_launch_vs.py` を実行するか，
   VS Code では「開いている課題を引数つきで実行」の `args` を書き換える。空文字列の引数は Visual Studio のコマンド引数では `""` と入力する。
 - `_BuildErrors/` のエラー版を GCC で再現するには，`_BuildErrors/split/` で課題3 の「GCC で実際に出た診断」のコマンドを，`_BuildErrors/` で `gcc -std=c17 -c noguard/vector_main.c` と `gcc -std=c17 -c noinclude/vector_main.c` を実行する。

@@ -4,7 +4,7 @@ softprac_add_program(SplitCalc main.c calc.c calc.h)
 # 各版の先頭コメント（本体の説明）を，その版の説明に置き換えるための文字列
 set(sc_comment "計算関数を呼び出す側．main はこのファイルだけに置く")
 
-# 課題1: 講義の 3 ファイルの版（課題2 で加えた subtract・calc_divide の呼び出しを除く）。add=3.5，multiply=3.0
+# 課題1: main.c を講義どおりにした版（calc.h・calc.c は課題2 の版．subtract・calc_divide の呼び出しを除く）。add=3.5，multiply=3.0
 softprac_add_variant(SplitCalc main.c lecture
   [=[    printf("subtract=%.1f\n", subtract(5.0, 2.0));
     double q = 99.0;  /* 失敗したときに保存先が変わらないことを確かめるための初期値 */

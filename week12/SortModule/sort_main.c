@@ -1,6 +1,5 @@
 ﻿/* 第12回 発展2 SortModule: 引数 N を検査し，固定データの先頭 N 個を昇順に並べて表示する */
 #include <stdio.h>
-#include <stdlib.h>
 #include "intlib.h"
 int main(int argc, char *argv[])
 {
@@ -9,12 +8,12 @@ int main(int argc, char *argv[])
 
     if (argc != 2) {
         fprintf(stderr, "usage: SortModule N (N is an integer from 0 to %d)\n", INTLIB_CAPACITY);
-        return EXIT_FAILURE;
+        return 1;
     }
     if (!parse_count(argv[1], &n)) {
         fprintf(stderr, "invalid N: \"%s\" (expected an integer from 0 to %d)\n",
                 argv[1], INTLIB_CAPACITY);
-        return EXIT_FAILURE;
+        return 1;
     }
 
     sort_ints(data, (size_t)n);  /* 容量は 8，並べ替えるのは有効な先頭 n 個だけ */

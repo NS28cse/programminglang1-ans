@@ -1,4 +1,4 @@
-﻿/* 第12回 課題4 VectorCalc: 2 行 2 列の行列．Vector を使うので，このヘッダ自身が vector.h を読む（講義 7 の matrix.h） */
+﻿/* 第12回 課題4 ガードなしの vector.h と組み合わせる正常な matrix.h（講義 7 の matrix.h のまま．ビルドしない） */
 #ifndef PL1_MATRIX_H
 #define PL1_MATRIX_H
 
