@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define MAX_COUNT 1000
+enum { MAX_COUNT = 1000 };
 
 // p[0]〜p[n-1] を「label: 値 値 ...」の形で 1 行に表示する（配列は借りるだけ）
 static void print_array(const char *label, const int *p, size_t n)

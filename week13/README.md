@@ -92,7 +92,7 @@ Windows（Visual Studio，x64）でも表示は同じです（`%zu` などは VS
     values = NULL;
 ```
 
-講義の例題から変えたのは，平均の計算を `(double)sum / (double)n` と両方明示的に変換した点だけです（`size_t` から `double` への変換を書き手の意図として明示するため。CI の MSVC 19.51 `/W4 /WX` Debug でこの回の全プロジェクトが警告なしでビルドできることを確認しています）。
+講義の例題から変えたのは，平均の計算を `(double)sum / (double)n` と両方明示的に変換した点だけです（`size_t` から `double` への変換を書き手の意図として明示するため）。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants を含む）のビルドとテストが成功（コミット a76876f の時点）。
 
 ### 実行結果
 
@@ -449,7 +449,7 @@ x=-2.0 y=5.0
 
 左辺を `p` にした誤り（`p = (Point){.x = x, .y = y};`）はコンパイルエラーになります。
 
-- MSVC: `error C2440: '=': 'Point' から 'Point *' に変換できません`（英語版: `cannot convert from 'Point' to 'Point *'`）
+- MSVC の診断の例（番号・文面は Microsoft のドキュメントによる。このリポジトリでは再現していない）: `error C2440: '=': 'Point' から 'Point *' に変換できません`（英語版: `cannot convert from 'Point' to 'Point *'`）
 - GCC: `error: incompatible types when assigning to type 'Point *' from type 'Point'`
 - Clang: `error: assigning to 'Point *' from incompatible type 'Point'; take the address with &`
 
@@ -467,10 +467,9 @@ x=3.0 y=4.0
 ```
 
 - `simulate_failure=1` では `point_allocate` が `NULL` を返し，`new_point` は**メンバに触れずに** `NULL` を返し，`main` は `allocation failed` を出して `return 1` します。`p->x` を読む `printf` には到達しません。
-- ステップ実行での確認: `main` の `if (p == NULL)` にブレークポイントを置き，F11 で `new_point` へ入ると，`point_allocate` が `NULL` を返して `return NULL;` に進み，`*p = ...` の行が実行されないことが分かります。`main` に戻ると `p` が `0x0000000000000000` で，次に `fprintf` → `return 1` へ進み，`printf("x=...")` の行は通りません。
+- ステップ実行での確認: `Point *p = new_point(3.0, 4.0);` の行にブレークポイントを置き，F11 で `new_point` へ入ると，`point_allocate` が `NULL` を返して `return NULL;` に進み，`*p = ...` の行が実行されないことが分かります。戻った後の `if (p == NULL)` で `p` が `0x0000000000000000` で，次に `fprintf` → `return 1` へ進み，`printf("x=...")` の行は通りません。
 - `point_allocate` は `errno` を設定しません。この試験で確かめているのは「`NULL` を見て失敗を判定し，安全に終了できること」であり，本物の `malloc` のメモリ不足や OS の診断を再現したわけではありません。
-- `const int simulate_failure = 1; if (simulate_failure)` は演習ページのコードどおりです。CI（MSVC 19.51，`/W4 /WX`，Debug）では C4127・C4702 とも出ませんでした（C では `const int` の変数は定数式ではないため，C4127「条件式が定数」の対象になりません）。
-  Release 構成（最適化あり）では，到達しない `return malloc(...)` に C4702（到達できないコード）が出る可能性があり，`/WX` 付きならビルドが止まります。試験用の版は Debug 構成で確認します（`GrowArrayFail` の `try_resize` も同じ）。
+- `const int simulate_failure = 1; if (simulate_failure)` は演習ページのコードどおりです。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants を含む）のビルドとテストが成功（コミット a76876f の時点）。`point_allocate`・`try_resize` でも，`/W4 /WX` の Release を含めて C4127・C4702 でビルドは止まっていない（C の `const int` の変数は定数式ではないので C4127 の対象にならない，というのは推測で，確かめていない）。
 
 ### 戻り方を比較する
 
@@ -628,7 +627,7 @@ main:       free(p); p = NULL;  ──→ 寿命が終わる
 4. `int *next = realloc(p, new_n * sizeof *p);` → `NULL` なら `p` を解放して終了。成功なら `p = next;`。
 5. 増えた部分 `p[old_n]`〜`p[new_n-1]` だけに `old_n+1`〜`new_n` を代入（縮小・同じ個数ならループは 0 回）。表示して `free`。
 
-上限 1000 は `#define MAX_COUNT 1000` の 1 か所で決め，検査とメッセージ（`"old_n must be 1..%d\n", MAX_COUNT`）の両方に使っているので，上限を変えても表示がずれません。個数は `size_t` なので負にはならず，「1 未満」は `old_n == 0` で調べます。値は今は定数ですが，書き換えて試す前提なので検査を省略しません（境界の表の (3, 0)，(0, 5)，(3, 1001) の行はこの検査の確認です）。
+上限 1000 は `enum { MAX_COUNT = 1000 };` の 1 か所で決め，検査とメッセージ（`"old_n must be 1..%d\n", MAX_COUNT`）の両方に使っているので，上限を変えても表示がずれません。個数は `size_t` なので負にはならず，「1 未満」は `old_n == 0` で調べます。値は今は定数ですが，書き換えて試す前提なので検査を省略しません（境界の表の (3, 0)，(0, 5)，(3, 1001) の行はこの検査の確認です）。
 
 ```c
     // 結果は別の変数で受け取り，成功するまで p を上書きしない
@@ -836,7 +835,7 @@ total=2
 
 各 `.c` は `extern` 宣言があるので**コンパイルは成功**しますが，`total` の実体がどの翻訳単位にもないため**リンクで失敗**します。
 
-- MSVC: `error LNK2019: 未解決の外部シンボル total が関数 add_count で参照されました`（環境によって `LNK2001: 未解決の外部シンボル total`）と `fatal error LNK1120: 1 件の未解決の外部参照`
+- MSVC の診断の例（番号・文面は Microsoft のドキュメントによる。このリポジトリでは再現していない）: `error LNK2019: 未解決の外部シンボル total が関数 add_count で参照されました`（環境によって `LNK2001: 未解決の外部シンボル total`）と `fatal error LNK1120: 1 件の未解決の外部参照`
 - GCC（実際の出力の抜粋）:
   ```text
   /usr/bin/ld: ... in function `add_count':
@@ -850,7 +849,7 @@ total=2
 
 外部リンケージを持つ `total` の定義が 2 つの翻訳単位にあるので，**リンクで多重定義**になります（コンパイルは各ファイルとも成功）。
 
-- MSVC: `error LNK2005: total は既に counter.obj で定義されています`（どちらの `.obj` 名になるかはリンク順による） と `fatal error LNK1169: 1 つ以上の複数回定義されているシンボルが見つかりました`
+- MSVC の診断の例（番号・文面は Microsoft のドキュメントによる。このリポジトリでは再現していない）: `error LNK2005: total は既に counter.obj で定義されています`（どちらの `.obj` 名になるかはリンク順による） と `fatal error LNK1169: 1 つ以上の複数回定義されているシンボルが見つかりました`
 - GCC（実際の出力の抜粋）:
   ```text
   /usr/bin/ld: ...:(.bss+0x0): multiple definition of `total'; ...:(.bss+0x0): first defined here
@@ -918,7 +917,7 @@ ok=0 out=99.0
 4. **`&x` を渡す理由**: `vector_destroy(Vector **p)` は呼び出し元の**ポインタ変数 `x` 自身のアドレス**を受け取り，`free(*p)` の後 `*p = NULL;` で `x` を `NULL` に書き換えます。
    `void vector_destroy(Vector *p)` のように `x` の値を渡すと，関数の中の `p` は `x` のコピーなので，`p = NULL;` としても呼び出し元の `x` は古いアドレスのまま残ります。
 5. **解放後に `NULL` になること**: Visual Studio では `return status;` にブレークポイントを置き，ウォッチで `x`，`y`，`result` がすべて `0x0000000000000000` になっていることを確認します（`x->v` などメンバの参照はしない）。
-   リポジトリでは，`return status;` の前に `vector_destroy(&x);` をもう一度呼ぶ文と，3 つのポインタが `NULL` かを表示する `printf` を差し込んだ版（variants の `destroy_again`）でテストしています。
+   リポジトリでは，`return status;` の前に `vector_destroy(&x);` をもう一度呼ぶ文と，3 つのポインタがすべて `NULL` なら `x=NULL y=NULL result=NULL` を表示する `if` 文を差し込んだ版（variants の `destroy_again`）でテストしています。
    ```text
    > DynamicVector_destroy_again
    result=5.0 8.0
@@ -1031,7 +1030,7 @@ void vector_destroy(Vector **p)
 
 ### 採点のポイント・よくある誤り
 
-- `vector_destroy(x)` と書いている（`Vector *` を `Vector **` に渡す型の誤り。MSVC は C4047，GCC・Clang は incompatible pointer types の警告を出す。警告を無視しない。`&x` の意味を説明できているか）。
+- `vector_destroy(x)` と書いている（`Vector *` を `Vector **` に渡す型の誤り。MSVC の診断の例は C4047（番号・文面は Microsoft のドキュメントによる。このリポジトリでは再現していない）。GCC 13・Clang 18 は incompatible pointer types の警告を出し（このリポジトリで確認），GCC 14 以降は既定でエラーになる。警告を無視しない。`&x` の意味を説明できているか）。
 - 失敗時に `return 1;` で直接抜けて，先に作った `x` などを解放していない（`fail_on_call=2,3` でリーク）。
 - 所有ポインタを `NULL` で初期化せずに `cleanup` で `vector_destroy` している（未初期化ポインタの `free`）。
 - `vector_axpy` の中で `a` や `b` を解放している（借用の誤解）。
