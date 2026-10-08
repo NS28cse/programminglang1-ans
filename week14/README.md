@@ -7,7 +7,7 @@
 
 | 課題 | プロジェクト | ソース | テスト数（本体 + 書き換え版） |
 | --- | --- | --- | --- |
-| 課題1 階乗の境界 | `Factorial` | [recursion.c](Factorial/recursion.c) | 1 + 10 |
+| 課題1 階乗の境界 | `Factorial` | [recursion.c](Factorial/recursion.c) | 1 + 14 |
 | 課題2 再帰の復帰順 | `Trace` | [trace.c](Trace/trace.c) | 1 + 9 |
 | 課題3 互除法を反復へ書き換える | `GcdLoop` | [gcd_loop.c](GcdLoop/gcd_loop.c) | 1 + 11 |
 | 課題4 再帰の入口を安全にする | `CheckedFactorial` | [checked_factorial.c](CheckedFactorial/checked_factorial.c) | 1 + 6 |
@@ -27,7 +27,7 @@ Visual Studio では書き換えて保存し，Ctrl+Shift+B でビルドして�
 検証表の他の値・小問の書き換えは，各プロジェクトの `CMakeLists.txt` の `softprac_add_variant` で**学生と同じ書き換え**をした版をビルドしてテストする
 （期待する出力は `variants/tests/<ケース>.out`，エラー終了の版は `.err`・`.code` も）。以下の実行結果の見出しにある `n_21` などがそのケース名である。
 確認用の計測プログラム（呼び出し回数・深さを数えるものなど）や発展3 の参考コードは `versions/` に別ソースとして置き，置換なしの `softprac_add_variant` でテストする（README には実行結果とケース名を載せる）。
-テストは本体 6 件，書き換え版・確認用 53 件の合計 59 件。
+テストは本体 6 件，書き換え版・確認用 57 件の合計 63 件。
 
 ### 何が小さくなるから止まるのか（全課題のまとめ）
 
@@ -159,8 +159,9 @@ n=20 result=2432902008176640000 calls=21 depth=21
    gcd=6
    recursive=0 loop=120 equal=0
    ```
-   反復版（`result = 1` から始まる）とは一致しなくなる。同じ書き換えに加えて `n` を 0（`base_0_n0`），20（`base_0_n20`）にしても
-   `0! = 0`（`recursive=0 loop=1 equal=0`），`20! = 0`（`recursive=0 loop=2432902008176640000 equal=0`）。n を 0〜5 に変えたコピーでも `0! = 0`，`1! = 0`，…，`5! = 0` とすべて 0 だった。
+   反復版（`result = 1` から始まる）とは一致しなくなる。同じ書き換えに加えて `n` を 0〜4 と 20 に変えた版（`base_0_n0`〜`base_0_n4`，`base_0_n20`）でも，
+   `0! = 0`，`1! = 0`，`2! = 0`，`3! = 0`，`4! = 0`，`20! = 0` とすべて 0 になった（反復版はそれぞれ `loop=1`，`1`，`2`，`6`，`24`，`2432902008176640000`）。
+   理由: どの `n` でも再帰は `factorial(0)` まで進み，最後に `factorial(0)` の 0 を掛けて戻るので，復帰の途中で何を掛けても 0 のままになる。
 2. **`n`を減らさず`factorial(n)`を呼ぶと，なぜ止まらないか。** → 呼び出し先の `n` が自分と同じなので，`n == 0` 以外から始めると基底条件に一歩も近づかない。同じ状態の呼び出しが無限に続き，実際にはスタックの限界を超えて異常終了する（実行はしない）。基底条件を書くだけでなく「呼ぶたびに小さくなる量」が必要。
 3. **`unsigned long long`なら，どんな`n`の階乗でも求められるか。** → 求められない。64 ビットでは 20! までしか収まらず，21! 以上は回り込んで誤った値になる（エラーにならないので気付きにくい）。また再帰の深さも `n + 1` になるので，大きな `n` ではスタックの問題もある。範囲 0〜20 を契約として決め，計算前に検査する。
 
@@ -270,7 +271,7 @@ main
 
 ### 呼び出し履歴を見る（Visual Studio，`n=3` から `n=0` まで進んだとき）
 
-ブレークポイントは `sum_to` 内の `if (n == 0)` の行。F5 で開始し，F5（続行）または F11 で次の呼び出しに入るたびに履歴に `sum_to` が 1 行ずつ増える。
+ブレークポイントは `sum_to` 内の `if (n == 0)` の行。F5 で開始すると `sum_to(3)` で止まる。ブレークポイントがあるので F5（続行）を押すたびに次の段（`sum_to(2)`，`sum_to(1)`，`sum_to(0)`）で止まり，履歴に `sum_to` が 1 行ずつ増える（F11 で 1 行ずつ進めても同じ）。
 
 | 観察対象 | 記録する内容 |
 | --- | --- |
@@ -293,9 +294,9 @@ int sum_to(int n)
         printf("leave 0: 0\n");
         return 0;
     }
-    printf("enter %d\n", n);
-    int result = n + sum_to(n - 1);
-    printf("leave %d: %d\n", n, result);
+    printf("enter %d\n", n);           /* 書き換え版: enter を n==0 の判定の後へ移した（sum_to(0) では出ない） */
+    int result = n + sum_to(n - 1);    /* 子が戻るまで result の初期化は終わらない */
+    printf("leave %d: %d\n", n, result); /* 復帰時: 0,1,2,3 の順 */
     return result;
 }
 ```
@@ -318,13 +319,13 @@ sum=6
 ```c
 int sum_to(int n)
 {
-    printf("enter %d\n", n);
+    printf("enter %d\n", n);           /* 呼び出し時: 再帰より前なので 3,2,1,0 の順 */
     if (n == 0) {
         printf("leave 0: 0\n");
         return 0;
     }
-    printf("leave %d\n", n);      /* 再帰より前なので n だけ表示する */
-    int result = n + sum_to(n - 1);
+    printf("leave %d\n", n);           /* 書き換え版: 再帰より前へ移したので n だけ表示する */
+    int result = n + sum_to(n - 1);    /* 子が戻るまで result の初期化は終わらない */
     return result;
 }
 ```
@@ -341,7 +342,7 @@ leave 0: 0
 sum=6
 ```
 
-`leave` が `enter` の直後に出て，復帰の順（0, 1, 2, 3）が見えなくなる。この位置は「関数から戻る直前」ではなく「子を呼ぶ直前」なので，`leave` という名前とも合わない。ここで `result` を表示しようとしても，`result` の宣言（`int result = ...;`）より前なのでコンパイルエラーになる（MSVC C2065「定義されていない識別子です」，GCC「'result' undeclared」）。宣言だけを先に `int result;` と書いて表示すると，未初期化の値を読むことになる（MSVC では C4700 の警告。値は意味がない）。戻り値を観察する目的なら，元の位置（再帰呼び出しの後）が適切。
+`leave` が `enter` の直後に出て，復帰の順（0, 1, 2, 3）が見えなくなる。この位置は「関数から戻る直前」ではなく「子を呼ぶ直前」なので，`leave` という名前とも合わない。ここで `result` を表示しようとしても，`result` の宣言（`int result = ...;`）より前なのでコンパイルエラーになる（MSVC C2065「定義されていない識別子です」，GCC「'result' undeclared」）。宣言だけを先に `int result;` と書いて表示すると，未初期化の値を読むことになる（MSVC では C4700 の警告。SDL チェック（`/sdl`）が有効な Visual Studio の既定のプロジェクトではエラー C4700 になる。値は意味がない）。戻り値を観察する目的なら，元の位置（再帰呼び出しの後）が適切。
 
 ### スタックの図を描く
 
@@ -589,7 +590,7 @@ ok=0 result=99
 
 ### 実行しないレビュー問題
 
-1. **基底条件の`if`を削除する。** → 停止条件がなくなる。`n` は 0 の次に `0 - 1` で `UINT_MAX`（4294967295）へ回り込み，以後も減り続けて止まらない（数学的には約 43 億回で一周するが，実際にはその前にスタックの限界を超えて異常終了する）。結果の値も意味を失う。コンパイラも警告する（GCC: `infinite recursion detected`，Clang: `all paths through this function will call itself`。どちらも `-Winfinite-recursion`。MSVC は C4717 で，趣旨は「すべての制御パスで再帰しており，実行時にスタック オーバーフローが発生する」）。
+1. **基底条件の`if`を削除する。** → 停止条件がなくなる。`n` は 0 の次に `0 - 1` で `UINT_MAX`（4294967295）へ回り込み，0 の次は 4294967295 に回り込み，何周しても `n == 0` で止まる経路がないので止まらない（実際にはスタックの限界を超えて異常終了する）。結果の値も意味を失う。コンパイラも警告する（GCC: `infinite recursion detected`，Clang: `all paths through this function will call itself`。どちらも `-Winfinite-recursion`。MSVC は C4717 で，趣旨は「すべての制御パスで再帰しており，実行時にスタック オーバーフローが発生する」）。
 2. **再帰呼び出しの引数を`n`にする。** → 停止条件はあるが進行がない。`n = 0` 以外では同じ `n` で呼び続け，基底条件に近づかないので止まらない（`n = 0` のときだけ偶然 1 を返す）。`if` があるのでコンパイラの警告は出ないことが多く，見逃しやすい。
 3. **再帰呼び出しの引数を`n+1`にする。** → 基底条件から遠ざかる（進行の向きが逆）。`unsigned int` なので理論上は `UINT_MAX` から 0 へ回り込むが，それまでに約 43 億段の深さが必要で，スタックの限界を超える。途中の積もあふれて意味のない値になる。
 4. **再帰呼び出しの引数を`n--`にする。** → 後置デクリメントの値は減らす**前**の `n` なので，呼び出し先には同じ `n` が渡り，2. と同じく進行しない。さらに `return n * factorial(n--);` は同じ式の中で `n` の読み出し（左の `n`）と変更（`n--`）が順序付けられていないので**未定義動作**になる（GCC `-Wsequence-point`「operation on 'n' may be undefined」，Clang `-Wunsequenced`）。副作用を使わず `n - 1` と書く。
@@ -819,9 +820,10 @@ size_t tree_height(const Node *p)
 演習の手順どおり，ノードをつなぐ代入文（5 行）をすべて外し，次のループだけを置いた版（`line`）で確かめた。最後のノード（`nodes[9]`）の `right` は `NULL` のままで，循環は作らない。フォルダのソースは元の接続のまま（「確認後は元の接続に戻します」）。
 
 ```c
-for (int i = 0; i < 9; ++i) {
-    nodes[i].right = &nodes[i + 1];
-}
+    /* 書き換え版: 右へ一直線の 10 ノードの木（nodes[9].right は NULL のまま） */
+    for (int i = 0; i < 9; ++i) {
+        nodes[i].right = &nodes[i + 1];
+    }
 ```
 
 予測:
@@ -955,7 +957,7 @@ cmake -S . -B $B -G Ninja -DSOFTPRAC_WEEKS=week14 -DSOFTPRAC_WERROR=ON -DSOFTPRA
 cmake --build $B && ctest --test-dir $B --output-on-failure
 ```
 
-- GCC 13（AddressSanitizer/UBSan 付き）: 警告 0，テスト 59 件（本体 6 件，書き換え版・確認用 53 件）すべて成功。
-- Clang 18（`-DCMAKE_C_COMPILER=clang`，この環境には Clang の sanitizer ランタイムがないため `SOFTPRAC_SANITIZE` なし）: 警告 0，テスト 59 件すべて成功。
+- GCC 13（AddressSanitizer/UBSan 付き）: 警告 0，テスト 63 件（本体 6 件，書き換え版・確認用 57 件）すべて成功。
+- Clang 18（`-DCMAKE_C_COMPILER=clang`，この環境には Clang の sanitizer ランタイムがないため `SOFTPRAC_SANITIZE` なし）: 警告 0，テスト 63 件すべて成功。
 - 追加で `-Wconversion -Wsign-conversion -Wshadow` を付けても GCC・Clang とも警告 0（MSVC `/W4` の C4244・C4267・C4389 に相当する型変換の警告がないことの確認）。
 - 実行結果は Windows x64 (MSVC) と Linux x64 で同じ（`unsigned long long` はどちらも 64 ビット，`unsigned int`・`int` は 32 ビット，`size_t` の表示は `%zu`）。アドレスなど環境で変わる値は表示していない。
