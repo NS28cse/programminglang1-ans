@@ -28,7 +28,7 @@
   診断の行番号を演習ページのコード（1〜7 行目）と一致させるため，説明のコメントはファイルの末尾に置いている。
 - 修正後の `Broken/broken.c` も同じ理由でコメントを末尾に置き，行番号を演習ページと一致させている（5 行目が `;` を追加した行）。
 - 実行結果は Linux x64（GCC 13.3 / Clang 18.1，`-std=c17 -Wall -Wextra -Wpedantic -Werror`）で実際にビルド・実行した出力。表示は ASCII だけなので MSVC でも同じ表示になる。
-  MSVC `/W4 /WX` でのビルド・テストは CI（GitHub Actions の `windows-msvc-*` ジョブ）で行っており，本体と `Welcome/one_printf` など既存の版はそこで成功している（`Welcome/missing_newline` と `Message/blank_line_in_first` は追加後の CI で確認する）。
+  MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants・versions を含む）のビルドとテストが成功している（コミット a76876f の時点）。
 - MSVC の診断（エラー・警告の番号，文面，行番号）は，この README の作成環境（Linux）では実際に出していない。Microsoft のドキュメントなどに基づく**例**で，文面・行番号はバージョンや言語設定で異なる。GCC/Clang の診断は実際の出力。
 
 ### 実行ファイルの場所（このリポジトリと授業の違い）
@@ -121,7 +121,7 @@ Backslash: \
 Progress: 100%
 ```
 
-出力をバイト単位で見ると（Linux の `od -c`），空行は `\n` が 2 つ続いたもの，`\\` は `\` 1 文字，`%%` は `%` 1 文字になっている。合計 67 バイト。
+出力をバイト単位で見ると（Linux の `od -An -c`。`-An` はオフセットを表示しない指定），空行は `\n` が 2 つ続いたもの，`\\` は `\` 1 文字，`%%` は `%` 1 文字になっている。合計 67 バイト。
 
 ```text
    M   y       f   i   r   s   t       C       p   r   o   g   r
@@ -434,9 +434,9 @@ Visual Studio が「最後に成功したビルドを実行しますか?」と�
 | --- | --- |
 | Visual Studio でプロジェクトを作成し，C のソースファイルを追加できる | 課題1〜5 の各プロジェクト（空のプロジェクト，拡張子 `.c`，`/TC`・C17・`/W4`）。確認問題1 |
 | 課題ごとのプロジェクトと，`welcome.c`，`message.c`，修正済みの `broken.c`，`version.c` を保存した | プロジェクト一覧の表（`Welcome`・`Message`・`Broken`・`Version`。`House` は発展）。`broken.c` は修正後（5 行目に `;`），`version.c` は `Version B` の最終版 |
-| 警告やエラーを確認したうえで，それぞれのプログラムをビルド・実行できる | 全プログラムが GCC/Clang（`-Wall -Wextra -Wpedantic -Werror`）で警告 0 でビルドでき，テスト 11 件が成功。MSVC `/W4 /WX` でのビルド・テストは CI（GitHub Actions の `windows-msvc-*` ジョブ）で行う。課題3でエラーを確認 |
-| 課題2 の空行・引用符・バックスラッシュ・パーセントを正しく表示できる | 課題2 の実行結果と `od -c` の出力（`\n\n`，`\"`，`\\`，`%%`），テスト `Message/basic` |
-| 課題3 の診断と修正箇所，課題4 の結果の違いを説明できる | 課題3「記録すること」の表（C2143，6 行目，5 行目末尾に `;`），課題4 の表（保存だけでは `Version A` のまま，再ビルドで `Version B`） |
+| 警告やエラーを確認したうえで，それぞれのプログラムをビルド・実行できる | 全プログラムが GCC/Clang（`-Wall -Wextra -Wpedantic -Werror`）で警告 0 でビルドでき，テスト 11 件が成功。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）でも全プロジェクトのビルドとテストが成功している（コミット a76876f の時点）。課題3でエラーを確認 |
+| 課題2 の空行・引用符・バックスラッシュ・パーセントを正しく表示できる | 課題2 の実行結果と `od -An -c` の出力（`\n\n`，`\"`，`\\`，`%%`），テスト `Message/basic` |
+| 課題3 の診断と修正箇所，課題4 の結果の違いを説明できる | 課題3「記録すること」の表（MSVC の例では C2143・6 行目，修正は 5 行目末尾に `;`），課題4 の表（保存だけでは `Version A` のまま，再ビルドで `Version B`） |
 
 ---
 

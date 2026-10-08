@@ -7,10 +7,24 @@ softprac_add_program(Fee fee.c)
 
 set(fee_head "// 年齢 age から料金を表示する．負の年齢を最初に invalid として除き，残りを小さい区分から調べる．")
 
+# age_value(<変数> <age の値>): "age = 17;" を置き換える文字列。同じ長さになるように ; の後に空白を補い，
+# 行末のコメントの桁を本体とそろえる
+function(age_value out value)
+  set(text "age = ${value};")
+  string(LENGTH "${text}" len)
+  math(EXPR npad "9 - ${len}")
+  set(pad "")
+  if(npad GREATER 0)
+    string(REPEAT " " ${npad} pad)
+  endif()
+  set(${out} "${text}${pad}" PARENT_SCOPE)
+endfunction()
+
 foreach(age m1 0 5 6 18)
   string(REPLACE "m" "-" value "${age}")
+  age_value(age_new "${value}")
   softprac_add_variant(Fee fee.c age_${age}
-    "age = 17" "age = ${value}"
+    "age = 17;" "${age_new}"
     "${fee_head}" "// age を ${value} に書き換えた版（演習ページの表の値）．負の年齢を最初に invalid として除き，残りを小さい区分から調べる．")
 endforeach()
 
@@ -18,8 +32,9 @@ endforeach()
 # 書き換えた版を 1 つの age でビルドする（age = 17 のときは置換前と置換後が同じで，値は変わらない）
 function(fee_variant case age head old new)
   string(REPLACE "m" "-" value "${age}")
+  age_value(age_new "${value}")
   softprac_add_variant(Fee fee.c ${case}
-    "age = 17" "age = ${value}"
+    "age = 17;" "${age_new}"
     "${fee_head}" "// ${head}age = ${value} で実行する．"
     "${old}" "${new}")
 endfunction()
@@ -96,7 +111,8 @@ fee_variant(lt_5_age_5 5
 
 # 確認問題1: if (3) は真の経路へ進む（0 以外はすべて真）
 softprac_add_variant(Fee versions/if_three.c if_three)
-# 定数の条件式なので MSVC /W4 は C4127 を出し，else 側に到達しないので C4702 を出すこともある（確認用の版なのでこの版だけ抑止する）
+# MSVC /W4 では定数の条件式の警告（C4127 など。番号は例）や到達しないコードの警告（C4702 など）が出る可能性があるため，
+# 確認用のこの版だけ抑止する（抑止を含めて CI で成功。警告番号は例）
 target_compile_options(Fee_if_three PRIVATE $<$<C_COMPILER_ID:MSVC>:/wd4127> $<$<C_COMPILER_ID:MSVC>:/wd4702>)
 # 確認問題2: flag = -1 のとき if (flag) は真，if (!flag) と if (flag == 1) は偽
 softprac_add_variant(Fee versions/flag_minus1.c flag_minus1)

@@ -9,6 +9,7 @@ set(table_head "// 外側の for を行 row，内側の for を列 col として
 set(row_line "    for (int row = 1; row <= 3; ++row) {\n")
 set(col_line "        for (int col = 1; col <= 3; ++col) {   // 行が変わるたびに col は 1 から始まる\n")
 set(space_line "            if (col < 3) {                      // 列の間だけ区切りを入れ，行末には付けない\n")
+set(newline_line "        printf(\"\\n\");                           // 内側のループが終わった後に 1 回だけ改行する\n")
 
 # （見出しの説明に col <= 3 などを含むので，見出しは最後に置き換える）
 softprac_add_variant(Table table.c cols_4
@@ -41,7 +42,8 @@ softprac_add_variant(Table table.c newline_after
 ]=])
 
 # 回数の確認: 外側・内側の条件判定（test）と本体（body），区切りの空白（space）の回数を数えて最後に表示する版
-# （確認用。判定のたびに数えるため，継続条件の前にコンマ演算子で ++outer_test などを入れている）
+# （確認用。外側・内側とも，ループの前で最初の条件判定の 1 回分を，本体の最後で次の判定の分を ++outer_test・++inner_test で数える。
+#   本体に continue がないので，判定の回数と一致する）
 set(count_decl [=[    int outer_test = 0;     // 外側の条件判定の回数
     int outer_body = 0;     // 外側の本体の回数
     int inner_test = 0;     // 内側の条件判定の回数
@@ -55,11 +57,19 @@ foreach(cols 3 4)
   softprac_add_variant(Table table.c count_cols_${cols}
     "${table_head}" "// 外側・内側の条件判定（test）と本体（body），区切りの空白（space）の回数を数えて最後に表示する版（確認用．3 行 ${cols} 列）．"
     "${row_line}"
-    "${count_decl}    for (int row = 1; ++outer_test, row <= 3; ++row) {\n        ++outer_body;\n"
+    "${count_decl}    ++outer_test;                               // 外側の最初の条件判定の分\n${row_line}        ++outer_body;\n"
     "${col_line}"
-    "        for (int col = 1; ++inner_test, col <= ${cols}; ++col) {   // 行が変わるたびに col は 1 から始まる\n            ++inner_body;\n"
+    "        ++inner_test;                           // 内側の最初の条件判定の分（行ごとに col = 1 から判定し直す）\n        for (int col = 1; col <= ${cols}; ++col) {   // 行が変わるたびに col は 1 から始まる\n            ++inner_body;\n"
     "${space_line}"
     "            if (col < ${cols}) {                      // 列の間だけ区切りを入れ，行末には付けない\n                ++space;\n"
+    [=[                printf(" ");
+            }
+]=]
+    [=[                printf(" ");
+            }
+            ++inner_test;                       // 内側の本体の後（更新の後）の条件判定の分
+]=]
+    "${newline_line}" "${newline_line}        ++outer_test;                           // 外側の本体の後（更新の後）の条件判定の分\n"
     "    return 0;" "${count_print}")
 endforeach()
 
@@ -100,6 +110,7 @@ softprac_add_variant(Table table.c break_first_cols_4
   "    int outer_body = 0;     // 外側の本体の回数\n    int inner_body = 0;     // 内側の本体の回数\n${row_line}        ++outer_body;\n"
   "${col_line}"
   "        for (int col = 1; col <= 4; ++col) {   // 行が変わるたびに col は 1 から始まる\n            ++inner_body;\n            if (col == 1) {                     // 毎回 1 回目に内側のループだけを抜ける\n                break;\n            }\n"
-  "if (col < 3) {" "if (col < 4) {"
+  "            printf(\"%2d\", row * col);\n${space_line}"
+  "            printf(\"%2d\", row * col);           // この版では break の後なので実行されない\n            if (col < 4) {                      // この版では break の後なので実行されない\n"
   "    return 0;"
   "    printf(\"outer body=%d inner body=%d\\n\", outer_body, inner_body);\n    return 0;")
