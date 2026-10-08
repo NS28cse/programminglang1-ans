@@ -10,6 +10,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# 非公開リポジトリでは Actions の実行時間が課金対象になる（Windows は 2 倍，macOS は 10 倍で数える）。
+# 非公開のときの push・PR では，MSVC Debug と Linux Debug・リポジトリの検査だけを動かす。
+# すべてのジョブを動かしたいときは Actions タブから手動で実行する（workflow_dispatch）。
+
 jobs:
   # 学生の環境 1: Visual Studio の「フォルダーを開く」/ VS Code + CMake Tools（CMakePresets の msvc-*）
   # 開発者コマンド プロンプトと同じ環境（VS 付属の cl.exe・CMake・Ninja）で，プリセットをそのまま使う
@@ -19,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        preset: [msvc-debug, msvc-release]
+        preset: ${{ fromJSON((github.event.repository.private && github.event_name != 'workflow_dispatch') && '["msvc-debug"]' || '["msvc-debug", "msvc-release"]') }}
     steps:
       - uses: actions/checkout@v5
       - uses: ilammy/msvc-dev-cmd@v1
@@ -31,9 +35,12 @@ jobs:
         run: cmake --build --preset ${{ matrix.preset }} -- -k 0
       - name: Test
         run: ctest --preset ${{ matrix.preset }} -j 4 --timeout 60
+      - name: IDE launch configurations (.vs/launch.vs.json, .vscode/launch.json)
+        run: python tools/check_launch.py out/build/${{ matrix.preset }}
 
   # 学生の環境 2: Visual Studio のソリューション（.sln）を生成する使い方（CMake GUI など）
   windows-msvc-sln:
+    if: ${{ !(github.event.repository.private && github.event_name != 'workflow_dispatch') }}
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
@@ -48,6 +55,7 @@ jobs:
 
   # 学生の環境 3: Visual Studio を入れずに VS Code + MSYS2 の gcc を使う（CMakePresets の mingw-debug）
   windows-mingw:
+    if: ${{ !(github.event.repository.private && github.event_name != 'workflow_dispatch') }}
     runs-on: windows-latest
     timeout-minutes: 30
     defaults:
@@ -78,7 +86,7 @@ jobs:
       fail-fast: false
       matrix:
         cc: [gcc, clang]
-        build_type: [Debug, Release]
+        build_type: ${{ fromJSON((github.event.repository.private && github.event_name != 'workflow_dispatch') && '["Debug"]' || '["Debug", "Release"]') }}
     steps:
       - uses: actions/checkout@v5
       - name: Configure (warnings as errors, ASan/UBSan)
@@ -95,6 +103,7 @@ jobs:
 
   # 学生の環境 4: macOS（Apple Clang）で CMakePresets の gcc-debug を使う
   macos:
+    if: ${{ !(github.event.repository.private && github.event_name != 'workflow_dispatch') }}
     runs-on: macos-latest
     timeout-minutes: 20
     steps:
@@ -104,6 +113,8 @@ jobs:
           cmake --preset gcc-debug -DSOFTPRAC_WERROR=ON
           cmake --build --preset gcc-debug -j 4
           ctest --preset gcc-debug -j 4 --timeout 60
+      - name: IDE launch configurations (.vs/launch.vs.json, .vscode/launch.json)
+        run: python3 tools/check_launch.py out/build/gcc-debug
 
   repository-checks:
     runs-on: ubuntu-latest

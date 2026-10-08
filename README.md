@@ -125,7 +125,11 @@ ctest --preset gcc-debug          # すべての自動テスト
 - 各回の `weekNN/README.md` に，課題ごとの解答・実行結果・説明・表の記入例・確認問題の解答と，**採点のポイント・よくある誤り**をまとめています。
 - `tests/` の期待値は演習ページの表示例・検証表から作っています。学生のプログラムの出力を比べるときにも使えます。
 - 解答の追加・修正の規約は [CONTRIBUTING.md](CONTRIBUTING.md)，採点エージェント（Claude Code のサブエージェント）は [.claude/agents/softprac-grader.md](.claude/agents/softprac-grader.md) にあります。
-- GitHub Actions で，Windows（MSVC `/W4 /WX`），Linux（GCC・Clang，`-Werror` と AddressSanitizer/UBSan），macOS でビルドとテストを行います。
+- GitHub Actions（`.github/workflows/ci.yml`）で，次の組み合わせのビルドとテストを行います。
+  - Windows: MSVC `/W4 /WX` の CMakePresets（Debug・Release。Visual Studio の「フォルダーを開く」と同じ），.sln（Visual Studio ジェネレーター），MSYS2 の gcc（VS Code + MinGW）
+  - Linux: GCC・Clang（`-Werror`，AddressSanitizer/UBSan，Debug・Release），macOS: Apple Clang
+  - Visual Studio・VS Code の起動構成で全プロジェクトを実際に起動できること（`tools/check_launch.py`），ソースの文字コード，生成ファイルが最新であること
+- リポジトリが非公開のときは Actions の実行時間が課金対象になるので，push・PR では MSVC Debug と Linux Debug・リポジトリの検査だけを動かします。すべての組み合わせは Actions タブから手動で実行（Run workflow）すると動きます。
 
 ### プロジェクトを追加・変更したとき
 

@@ -107,3 +107,6 @@ python3 tools/normalize_sources.py   # BOM・改行をそろえる
 python3 tools/gen_launch_vs.py       # Visual Studio の起動構成（.vs/launch.vs.json）を作り直す
 python3 tools/gen_readme_index.py    # ルート README の目次（各回の表とテスト数）を作り直す
 ```
+
+- この 3 つは**コミットのたびに**実行し，生成されたファイルも同じコミットに含める（テスト数が変わったのに目次を作り直さないと，CI の repository-checks が失敗する）。
+- push したら CI（GitHub Actions）の全ジョブが成功したことを確かめる。IDE の起動構成は `python3 tools/check_launch.py <ビルド先>` で手元でも確かめられる。
