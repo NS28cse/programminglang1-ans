@@ -3,51 +3,113 @@ name: build-and-test
 on:
   push:
   pull_request:
+  workflow_dispatch:
+
+# 同じブランチに新しい push が来たら，古い実行は取り消す
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  windows-msvc:
+  # 学生の環境 1: Visual Studio の「フォルダーを開く」/ VS Code + CMake Tools（CMakePresets の msvc-*）
+  # 開発者コマンド プロンプトと同じ環境（VS 付属の cl.exe・CMake・Ninja）で，プリセットをそのまま使う
+  windows-msvc-preset:
     runs-on: windows-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [msvc-debug, msvc-release]
     steps:
-      - uses: actions/checkout@v4
-      - name: Configure (MSVC, /W4 /WX)
+      - uses: actions/checkout@v5
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - name: Configure (/W4 /WX)
+        run: cmake --preset ${{ matrix.preset }} -DSOFTPRAC_WERROR=ON
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+      - name: Test
+        run: ctest --preset ${{ matrix.preset }} -j 4 --timeout 60
+
+  # 学生の環境 2: Visual Studio のソリューション（.sln）を生成する使い方（CMake GUI など）
+  windows-msvc-sln:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure (Visual Studio generator, /W4 /WX)
         run: cmake -S . -B build -A x64 -DSOFTPRAC_WERROR=ON
       - name: Build
         # エラーと警告だけを表示する（失敗したプロジェクトを見つけやすくする）
         run: cmake --build build --config Debug -- /m /nologo "/clp:ErrorsOnly;WarningsOnly;Summary"
       - name: Test
-        run: ctest --test-dir build -C Debug --output-on-failure
+        run: ctest --test-dir build -C Debug -j 4 --timeout 60 --output-on-failure
 
+  # 学生の環境 3: Visual Studio を入れずに VS Code + MSYS2 の gcc を使う（CMakePresets の mingw-debug）
+  windows-mingw:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-ninja
+      - name: Configure (-Werror)
+        run: cmake --preset mingw-debug -DSOFTPRAC_WERROR=ON
+      - name: Build
+        run: cmake --build --preset mingw-debug
+      - name: Test
+        run: ctest --preset mingw-debug -j 4 --timeout 60
+
+  # 未定義動作・メモリ誤りの検出（AddressSanitizer/UBSan）。最適化の有無で出る警告が違うので両方試す
   linux:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
         cc: [gcc, clang]
+        build_type: [Debug, Release]
     steps:
-      - uses: actions/checkout@v4
-      - name: Install Ninja
-        run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - uses: actions/checkout@v5
       - name: Configure (warnings as errors, ASan/UBSan)
-        run: cmake -S . -B build -G Ninja -DCMAKE_C_COMPILER=${{ matrix.cc }} -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
+        # Ninja はインストールせず，標準の Makefile ジェネレーターを使う
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_C_COMPILER=${{ matrix.cc }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
       - name: Build
-        run: cmake --build build
+        run: cmake --build build -j 4
       - name: Test
-        run: ctest --test-dir build --output-on-failure
+        run: ctest --test-dir build -j 4 --timeout 60 --output-on-failure
 
+  # 学生の環境 4: macOS（Apple Clang）で CMakePresets の gcc-debug を使う
   macos:
     runs-on: macos-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Configure / Build / Test (preset)
         run: |
           cmake --preset gcc-debug -DSOFTPRAC_WERROR=ON
-          cmake --build --preset gcc-debug
-          ctest --preset gcc-debug
+          cmake --build --preset gcc-debug -j 4
+          ctest --preset gcc-debug -j 4 --timeout 60
 
   repository-checks:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: File names are valid on Windows
         run: |
           git ls-files | python3 -c "
