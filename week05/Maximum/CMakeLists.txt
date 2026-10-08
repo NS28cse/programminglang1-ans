@@ -36,4 +36,5 @@ softprac_add_variant(Maximum maximum.c return_in_loop
   [=[        }
         return best;  // 誤り: 最初の比較の後で返してしまう
     }]=])
-target_compile_options(Maximum_return_in_loop PRIVATE $<IF:$<C_COMPILER_ID:MSVC>,/wd4715,-Wno-return-type>)
+# MSVC は C4715（値を返さない経路）に加えて C4702（ループの ++i に到達しない）も出すので両方抑止する
+target_compile_options(Maximum_return_in_loop PRIVATE $<IF:$<C_COMPILER_ID:MSVC>,/wd4715,-Wno-return-type> $<$<C_COMPILER_ID:MSVC>:/wd4702>)

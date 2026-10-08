@@ -156,7 +156,7 @@ max=93
 - **戻り値を返す位置**: `for` の後（全要素を調べ終えた後）。ループの中で `return` すると最初の比較で関数が終わり，残りの要素を調べない。
   例えば `if` の後ろ（ループ内）へ `return best;` を移すと，初期値の配列で `max=85` になる（`i = 1` だけ調べて返す。テスト `variant_return_in_loop`）。さらに，値を返さずに関数の終わりに達する経路ができ（コンパイラが警告。GCC: `warning: control reaches end of non-void function [-Wreturn-type]`，MSVC: `C4715: 'max_score': not all control paths return a value`），
   `n = 1` では実際にその経路を通る（ループに 1 回も入らない。その戻り値を使うと未定義動作）。
-  テストの版は誤りを示すためのものなので，この版だけ `-Wno-return-type`（MSVC は `/wd4715`）で警告を抑止している（`-Werror`・`/WX` でビルドが止まらないように）。
+  テストの版は誤りを示すためのものなので，この版だけ `-Wno-return-type`（MSVC は `/wd4715 /wd4702`）で警告を抑止している（MSVC 19.51 は CI で `warning C4702: unreachable code` も出した。最初の繰り返しで必ず返るので，ループの `++i` には到達しないため）（`-Werror`・`/WX` でビルドが止まらないように）。
   入力は `n = 5` で，`i = 1` の繰り返しの中で必ず `return` するため，関数の終わりに達する経路は通らず未定義動作にはならない。
 - **`const` を付ける意図**: `max_score` は配列を読むだけで書き換えないことを宣言として示す。配列の引数は要素がコピーされず元の要素を指すので，書き換えると呼び出し元の配列が変わる。
   `const` があれば，誤って `a[i] = 0;` のように書いたときにコンパイルエラーになり（GCC: `assignment of read-only location`，MSVC: `C2166: l-value specifies const object`），呼び出し側も「渡しても壊されない」と分かる。
