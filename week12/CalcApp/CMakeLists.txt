@@ -11,6 +11,8 @@ target_link_libraries(CalcApp PRIVATE CalcLib)
 # 「まず講義の加算・乗算だけの 3 ファイルで確認」: subtract の呼び出しを除いた版（variants/tests/lecture.out）
 softprac_add_variant(CalcApp main.c lecture
   [=[    printf("subtract=%.1f\n", subtract(5.0, 2.0));
-]=] "")
+]=] ""
+  "静的ライブラリ CalcLib の関数を呼び出すアプリ．このプロジェクトには main.c だけを入れる"
+  "講義の加算・乗算だけを呼ぶ版（subtract の呼び出しを除いた版）")
 target_include_directories(CalcApp_lecture PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../CalcLib")
 target_link_libraries(CalcApp_lecture PRIVATE CalcLib)

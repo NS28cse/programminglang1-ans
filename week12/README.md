@@ -16,7 +16,7 @@
 | 発展1（アプリ側） | `CalcApp` | [main.c](CalcApp/main.c)，[CMakeLists.txt](CalcApp/CMakeLists.txt) | 2（[basic](CalcApp/tests/basic.out)，講義の 2 関数だけの版 [lecture](CalcApp/variants/tests/lecture.out)） |
 | 発展2 | `SortModule` | [sort_main.c](SortModule/sort_main.c)，[intlib.c](SortModule/intlib.c)，[intlib.h](SortModule/intlib.h)，[CMakeLists.txt](SortModule/CMakeLists.txt)，[run.args](SortModule/run.args)（`5`） | 18（[tests/](SortModule/tests/) の 17 ＋ [INT_MAX/INT_MIN 版](SortModule/variants/tests/) 1） |
 | 発展3 | `LibraryCheck` | [library_check.c](LibraryCheck/library_check.c)，[CMakeLists.txt](LibraryCheck/CMakeLists.txt) | 2（[basic](LibraryCheck/tests/basic.out)，[NDEBUG 版](LibraryCheck/variants/tests/ndebug.out)：偽の `assert` に変えても終了コード 0） |
-| 課題3・4 のエラー版 | `_BuildErrors`（ビルドしない） | [split/](_BuildErrors/split/)（課題1 の講義どおりの 3 ファイルと，エラーの 3 版），[noguard/](_BuildErrors/noguard/)（ガードを外した `vector.h` と組み合わせる一式） | ― |
+| 課題3・4 のエラー版 | `_BuildErrors`（ビルドしない） | [split/](_BuildErrors/split/)（課題1 の講義どおりの 3 ファイルと，エラーの 3 版），[noguard/](_BuildErrors/noguard/)（ガードを外した `vector.h` と組み合わせる一式），[noinclude/](_BuildErrors/noinclude/)（`#include "vector.h"` を外した `matrix.h` と，それだけを読む `vector_main.c`） | ― |
 
 合計 34 テスト（GCC＋ASan/UBSan，Clang ともに警告 0・全成功）。
 
@@ -25,8 +25,9 @@
 - `SplitCalc` の本体（フォルダのソース）は，演習ページの期待する表示（課題2 の「5.0 から 2.0 を引いた 3.0 を表示」と `calc_divide` の成功例）を出す**課題2 の関数を追加した版**。
   課題1 の講義どおりの版（加算・乗算だけ）と課題2 の検証表の残りの行は，[CMakeLists.txt](SplitCalc/CMakeLists.txt) の `softprac_add_variant` で書き換えた版としてテストする（講義どおりの 3 ファイルは [_BuildErrors/split/](_BuildErrors/split/) にもある）。
 - `CalcLib` と `CalcApp` は同じ名前の `calc.h`・`calc.c`・`main.c` を `SplitCalc` とは別のフォルダに持つ（演習の「元の `SplitCalc` は残し，別のソリューションで試す」に合わせた）。
-- `SplitCalc`・`VectorCalc`・`CalcApp`・`SortModule`・`LibraryCheck` の `CMakeLists.txt` は，ソースの登録は自動の規則と同じで，演習ページの「書き換えて確かめる」版（`softprac_add_variant`）を登録するためだけに置いている。
-  フォルダのソースは講義・演習ページどおりの版のままで，書き換えは CMake がビルド時に行う（学生と同じ書き換えをした別の実行ファイルとしてテストする）。
+- `SplitCalc`・`VectorCalc`・`SortModule`・`LibraryCheck` の `CMakeLists.txt` は，ソースの登録は自動の規則と同じで，演習ページの「書き換えて確かめる」版（`softprac_add_variant`）を登録するためだけに置いている。
+  `CalcApp` の `CMakeLists.txt` は，それに加えて `CalcLib` の参照（`target_link_libraries`）と追加のインクルード ディレクトリ（`target_include_directories`）のために必要（発展1）。
+  フォルダのソース（本体）は演習ページの期待する表示を出す版で，書き換えは CMake がビルド時に行う（学生と同じ書き換えをした別の実行ファイルとしてテストする。生成したソースの先頭コメントもその版の説明に置き換える）。
 
 ---
 
@@ -75,7 +76,7 @@ multiply=3.0
 
 ### 手順3　ビルドの警告とエラー
 
-Visual Studio（C17・`/W4`・`/TC`）でも，このリポジトリの GCC/Clang（`-Wall -Wextra -Wpedantic -Werror`）でも**警告 0・エラー 0**。
+このリポジトリの GCC/Clang（`-Wall -Wextra -Wpedantic -Werror`）で**警告 0・エラー 0** を確かめた。Visual Studio（C17・`/W4`・`/TC`）で警告になる書き方（C4996 になる関数，可変長配列など）も使っていない（MSVC での実行はこの環境では確かめていない）。
 警告が出た場合は，拡張子が `.cpp` になっていないか（C++ としてコンパイルされる），`calc.h` の保存場所が `main.c` と同じ実フォルダか，を確認させる。
 
 ### 手順5　出力ウィンドウの比較（`calc.c` だけ保存し直した場合と，何も変えない場合）
@@ -100,23 +101,28 @@ Visual Studio 2022（日本語）での表示の例（版・言語設定・タ�
 ========== すべてリビルド: 1 正常終了、0 失敗、0 スキップ ==========
 ```
 
-このリポジトリの CMake（Ninja）で同じ操作をした実際の記録:
+このリポジトリの CMake（Ninja）で同じ操作をした実際の記録（各コマンドの最初に出る `[0/2] Re-checking globbed directories...` の行は省略）:
 
 ```text
 $ touch week12/SplitCalc/calc.c && cmake --build $B --target SplitCalc     ← calc.c だけ更新
-[1/2] Building C object CMakeFiles/SplitCalc.dir/week12/SplitCalc/calc.c.o
+[1/2] Building C object projects/week12/SplitCalc/CMakeFiles/SplitCalc.dir/calc.c.o
 [2/2] Linking C executable bin/week12/SplitCalc
 $ cmake --build $B --target SplitCalc                                      ← 何も変えずにビルド
 ninja: no work to do.
 $ cmake --build $B --target SplitCalc --clean-first                        ← リビルド
-[1/3] Building C object CMakeFiles/SplitCalc.dir/week12/SplitCalc/calc.c.o
-[2/3] Building C object CMakeFiles/SplitCalc.dir/week12/SplitCalc/main.c.o
+[1/1] Cleaning all built files...
+Cleaning... 57 files.
+[1/3] Building C object projects/week12/SplitCalc/CMakeFiles/SplitCalc.dir/calc.c.o
+[2/3] Building C object projects/week12/SplitCalc/CMakeFiles/SplitCalc.dir/main.c.o
 [3/3] Linking C executable bin/week12/SplitCalc
 $ touch week12/SplitCalc/calc.h && cmake --build $B --target SplitCalc     ← （参考）ヘッダを更新
-[1/3] Building C object CMakeFiles/SplitCalc.dir/week12/SplitCalc/calc.c.o
-[2/3] Building C object CMakeFiles/SplitCalc.dir/week12/SplitCalc/main.c.o
+[1/3] Building C object projects/week12/SplitCalc/CMakeFiles/SplitCalc.dir/calc.c.o
+[2/3] Building C object projects/week12/SplitCalc/CMakeFiles/SplitCalc.dir/main.c.o
 [3/3] Linking C executable bin/week12/SplitCalc
 ```
+
+`--clean-first` は，CMake（Ninja）では指定したターゲットだけでなく**ビルドフォルダのすべての生成物を消してから**作り直す（上の `Cleaning... 57 files.` は week12 の全プロジェクトの分）。
+Visual Studio の「リビルド」（プロジェクトを右クリックした場合はそのプロジェクトだけ）より範囲が広いが，`SplitCalc` についての動き（全 `.c` を再コンパイルしてリンク）は同じ。
 
 観察の要点: `calc.c` だけが新しくなると**`calc.c` の再コンパイルとリンク**だけが行われ，`main.c` はコンパイルされない（`main.obj` は前のものを使う）。
 何も変えなければビルドは「更新不要」で何もしない。リビルドはすべての `.c` をコンパイルし直してリンクする。`calc.h` を変えると，それを読む `main.c` と `calc.c` の両方が再コンパイルされる（講義 1.2）。
@@ -129,7 +135,7 @@ $ touch week12/SplitCalc/calc.h && cmake --build $B --target SplitCalc     ← �
   `calc.c` をプロジェクトの「ソース ファイル」に追加しないと，課題3のようにリンクエラー（`LNK2019`）になる。
 - **`.obj` と `.exe` は同じものか**: 違う。`.obj`（オブジェクト）は 1 つの翻訳単位をコンパイルした機械語と名前・未解決の参照の情報で，単独では実行できない。
   `.exe` はリンカが `main.obj`・`calc.obj` と標準ライブラリを結び付けて参照をすべて解決した実行ファイル。Visual Studio の既定では `.obj` は `<プロジェクトフォルダ>\x64\Debug\`（例 `SplitCalc\x64\Debug\main.obj`），`.exe` は `<ソリューションフォルダ>\x64\Debug\`（例 `SplitCalc.exe`）にできる
-  （このリポジトリの CMake では `CMakeFiles/SplitCalc.dir/week12/SplitCalc/calc.c.o`・`main.c.o` と `bin/week12/SplitCalc`）。
+  （このリポジトリの CMake では `projects/week12/SplitCalc/CMakeFiles/SplitCalc.dir/calc.c.o`・`main.c.o` と `bin/week12/SplitCalc`）。
 - **`main.c` と `calc.c` を別々の実行アプリ用プロジェクトにしてよいか**: いけない。プロジェクト＝1 つの実行ファイルなので，`calc.c` だけのプロジェクトは `main` がなくリンクに失敗し（`LNK2019: 未解決の外部シンボル main`／`LNK1120`），
   `main.c` だけのプロジェクトは `add` の定義がなく `LNK2019` になる。同じプロジェクトに入れるか，発展1のように `calc.c` を**静的ライブラリ**のプロジェクトにして参照する。
 
@@ -218,7 +224,7 @@ calc_divide(6.0, 2.0): ok=1 q=3.0
 | `calc_divide` | 6，0 | 0（失敗）を返し，`*out` は変更しない（呼び出し前の 99.0 のまま） |
 
 - 宣言だけを追加すると，`main.c` はコンパイルできるが**リンクで `subtract` が未解決**（`LNK2019`）。本体だけを追加すると，`main.c` からは宣言が見えず，未宣言の関数の呼び出しになる
-  （MSVC は `warning C4013: 'subtract' undefined; assuming extern returning int`，GCC 13 は `warning: implicit declaration of function 'subtract' [-Wimplicit-function-declaration]`。
+  （MSVC は `warning C4013: 'subtract' undefined; assuming extern returning int`（文面は例），GCC 13 は `warning: implicit declaration of function 'subtract' [-Wimplicit-function-declaration]`。
   C99 以降の規格では誤りで，GCC 14 以降は既定でエラー，このリポジトリの `-Werror` でもエラー）。
   警告を無視してビルドすると `int` を返す関数と見なされ，`double` の戻り値を正しく受け取れない（未定義動作）。
 - 0.0 での割り算の判定は**割る前**に行う。`b == 0.0` は −0.0 にも真になる。この課題では小さな有限値だけを扱うので，オーバーフローなどは対象外（仕様どおり）。
@@ -238,13 +244,14 @@ calc_divide(6.0, 2.0): ok=1 q=3.0
 
 **要点**: ビルドの失敗を**前処理・コンパイル・リンク**のどの段階かに分け，最初の原因に近い診断を読む。ヘッダの検索先を直す場面（`C1083`）と，リンクする実装を確かめる場面（`LNK2019`・`LNK2005`）を区別する。
 
-エラーになる版は [_BuildErrors/split/](_BuildErrors/split/) に置いた（`_` で始まるフォルダはビルドしない）。GCC の診断は次のように実際に実行して得た（`$` の行がコマンド）。
+エラーになる版は [_BuildErrors/split/](_BuildErrors/split/) に置いた（`_` で始まるフォルダはビルドしない）。
+**MSVC の診断は文面の例**（版・言語設定で変わる。GCC/Clang の診断は実際に実行して得た。`$` の行がコマンド）。
 
 ### `calc.c` を「ビルドから除外」した場合
 
 `calc.c` のプロパティ → 構成プロパティ → 全般 →「ビルドから除外」を「はい」にしてリビルドすると，`main.c` のコンパイルは成功し，**リンク**で失敗する。
 
-MSVC（x64）の診断（日本語版の文面は「未解決の外部シンボル add が関数 main で参照されました」）:
+MSVC（x64）の診断の例（日本語版の文面は「未解決の外部シンボル add が関数 main で参照されました」）:
 
 ```text
 1>main.obj : error LNK2019: unresolved external symbol add referenced in function main
@@ -282,7 +289,7 @@ collect2: error: ld returned 1 exit status
 
 ### ビルド記録（解答例）
 
-| # | 変更箇所 | 予想 | 実際の段階 | 診断の要点（MSVC / GCC） | 復旧後の成功 |
+| # | 変更箇所 | 予想 | 実際の段階 | 診断の要点（MSVC は文面の例 / GCC は実際の出力） | 復旧後の成功 |
 | --- | --- | --- | --- | --- | --- |
 | 1 | [main_missing_header.c](_BuildErrors/split/main_missing_header.c) 3 行目 `#include "calc_missing.h"` | 前処理 | 前処理（`main.c` のコンパイルの最初で停止） | MSVC `fatal error C1083: Cannot open include file: 'calc_missing.h': No such file or directory`（インクルード ファイルを開けません）／ GCC `fatal error: calc_missing.h: No such file or directory` | `calc.h` に戻してビルド成功，`add=3.5`・`multiply=3.0` |
 | 2 | [calc_int_add.c](_BuildErrors/split/calc_int_add.c) 3 行目 `int add(double a, double b)` | コンパイル | コンパイル（`calc.c`） | MSVC `error C2371: 'add': redefinition; different basic types`（再定義されています。異なる基本型です）＋ `/W4` で `warning C4244: 'return': conversion from 'double' to 'int'` ／ GCC `error: conflicting types for 'add'; have 'int(double,  double)'` と `note: previous declaration of 'add' with type 'double(double,  double)'`（calc.h:4） | `double` に戻して成功，元の 2 行 |
@@ -331,7 +338,7 @@ Clang 18 も同じ段階で失敗する（前処理 `fatal error: 'calc_missing.
 
 ### 補足：`calc.c` が `calc.h` を読まないと，型の不一致を見逃す
 
-講義 3.1 のとおり，実装側も自分のヘッダを読むのは型の不一致をコンパイルで見つけるため。記録 2 の `calc_int_add.c` から `#include "calc.h"` を消すと，**リンクエラーは出ずにビルドが通る**（リンカは C の関数の型を照合しない）。GCC/Clang は警告もなし，MSVC `/W4` では型の不一致ではなく `C4244`（`return` での `double` → `int` の変換）だけが出る。
+講義 3.1 のとおり，実装側も自分のヘッダを読むのは型の不一致をコンパイルで見つけるため。記録 2 の `calc_int_add.c` から `#include "calc.h"` を消すと，**リンクエラーは出ずにビルドが通る**（リンカは C の関数の型を照合しない）。GCC/Clang は警告もなし，MSVC `/W4` では型の不一致ではなく `C4244`（`return` での `double` → `int` の変換）だけが出る（例）。
 GCC で試すと `add=3.5` と表示されたが，これは呼び出し側が `double` を受け取る場所にたまたま計算途中の値が残っていただけで，**未定義動作**である（最適化や環境で結果が変わる）。「動いたから正しい」と判断させないこと。
 
 ### 採点のポイント・よくある誤り
@@ -425,25 +432,66 @@ noguard/vector.h:7:8: error: conflicting types for 'axpy'; have 'Vector(double, 
 （以下，print_vector の宣言と gemv の引数の型の不一致が続く）
 ```
 
-MSVC では `error C2371: 'Vector': redefinition; different basic types`（再定義されています。異なる基本型です）などのコンパイルエラーになる。
+MSVC では `error C2371: 'Vector': redefinition; different basic types`（再定義されています。異なる基本型です）などのコンパイルエラーになる（文面は例）。
 タグのない構造体は書くたびに**別の型**になるので，2 回目の `typedef` は「別の型に同じ名前を付ける」ことになる。関数のプロトタイプだけなら同じ宣言の繰り返しは許されるが，構造体の定義が重なるとエラーになる（講義 3.2）。
 確認後はガードの 3 行を戻し，ビルドが成功して元の出力に戻ることを確認する。
 
 前処理後の内容（講義 4.2 の `/P`。GCC では `gcc -E`）で `} Vector;` を数えると，ガードありは 1 回，ガードなしは 2 回だった。
-ガードありの `vector_main.c` も前処理後は 45 行（元は 15 行）に増える（ヘッダの展開と，元の行位置を表す行のため。標準ヘッダを読むファイルではさらに大きく増える）。`/P` の設定は必ず戻してリビルドさせる（`/P` のままでは `.obj` が作られない）。
+ガードありの `vector_main.c` も前処理後は GCC の `-E` で 45 行（元は 15 行）に増える（ヘッダの展開と，元の行位置を表す行のため。標準ヘッダを読むファイルではさらに大きく増える）。`/P` の設定は必ず戻してリビルドさせる（`/P` のままでは `.obj` が作られない）。
 
 ### ヘッダの独立性を確認する（直接の `#include "vector.h"` を外す）
 
 予測と結果: **ビルドは成功し，出力も変わらない**（[CMakeLists.txt](VectorCalc/CMakeLists.txt) の `softprac_add_variant` で `#include "vector.h"` の行を外した版 `no_direct_include` をビルド・テストした。講義の 4 行がそのまま出る）。
 `matrix.h` が自分で `#include "vector.h"` しているので，`matrix.h` を読めば `Vector`・`axpy`・`print_vector` の宣言もそろう。
 
-逆に `matrix.h` の `#include "vector.h"` を外し，`vector_main.c` も `matrix.h` だけを読むと，`matrix.h` の時点で `Vector` が未定義になる（実際の GCC の診断）:
+逆に `matrix.h` の `#include "vector.h"` を外し，`vector_main.c` も `matrix.h` だけを読むと，`matrix.h` の時点で `Vector` が未定義になる。
+このエラー版を [_BuildErrors/noinclude/](_BuildErrors/noinclude/) に置いた（ビルドしない）。
+
+```c
+/* noinclude/matrix.h（#include "vector.h" を外した） */
+#ifndef PL1_MATRIX_H
+#define PL1_MATRIX_H
+
+typedef struct {
+    double v[4];
+} Matrix;
+
+Vector gemv(double alpha, Matrix a, Vector x, double beta, Vector y);
+void print_matrix(Matrix a);
+
+#endif
+```
+
+```c
+/* noinclude/vector_main.c（matrix.h だけを読む） */
+#include "matrix.h"
+
+int main(void)
+{
+    Vector x = {{1.0, 2.0}};
+    Vector y = {{3.0, 4.0}};
+    Matrix a = {{1.0, -1.0, -1.0, 1.0}};
+
+    print_matrix(a);
+    print_vector(axpy(2.0, x, y));
+    print_vector(gemv(2.0, a, x, 1.0, y));
+    return 0;
+}
+```
+
+実際の GCC の診断（`_BuildErrors/` で実行。最初の部分）:
 
 ```text
-In file included from m/vector_main.c:2:
-m/matrix.h:10:1: error: unknown type name 'Vector'
+$ gcc -std=c17 -Wall -Wextra -Wpedantic -c noinclude/vector_main.c
+In file included from noinclude/vector_main.c:2:
+noinclude/matrix.h:10:1: error: unknown type name 'Vector'
    10 | Vector gemv(double alpha, Matrix a, Vector x, double beta, Vector y);
+      | ^~~~~~
+noinclude/matrix.h:10:37: error: unknown type name 'Vector'
+（以下，vector_main.c の Vector x などにも同じ error と，print_vector の暗黙の宣言の警告が続く）
 ```
+
+MSVC では `error C2061: syntax error: identifier 'Vector'`（構文エラー: 識別子 'Vector'）などのコンパイルエラーになる（文面は例）。最初のエラーが `matrix.h` の中で出ることから，ヘッダ自身が必要な型を用意していないと分かる。
 
 2 つの工夫の区別:
 
@@ -515,7 +563,9 @@ subtract=3.0
 | 3. `CalcApp` の呼び出しをコンパイルする | `main.c` を 1. の宣言でコンパイルし，`subtract` への未解決の参照を持つ `main.obj` を作る | 宣言と呼び出しの型が合わないとここでエラー |
 | 4. `CalcApp` を更新後の `.lib` とリンクする | `main.obj` と新しい `CalcLib.lib` の `subtract` を結び付けて `CalcApp.exe` を作る | 古い `.lib` とリンクすると `LNK2019`。静的ライブラリの更新は再リンクして初めて `.exe` に入る |
 
-プロジェクト参照が正しければ，`CalcApp` のビルドで 2 → 3 → 4 の順に必要な作業が行われる。このリポジトリで実際に確かめた記録:
+プロジェクト参照が正しければ，`CalcApp` のビルドで 2 → 3 → 4 の順に必要な作業が行われる。このリポジトリで実際に確かめた記録
+（各コマンドの最初の `[0/2] Re-checking globbed directories...` と，`main.c` を更新したときに出る `[1/2] Re-running CMake...` から `-- Build files have been written to: ...` までの 3 行は省略。
+`main.c` は書き換えた版 `CalcApp_lecture` の元のソースなので，更新すると CMake が構成し直す）:
 
 ```text
 $ touch week12/CalcLib/calc.c && cmake --build $B --target CalcApp      ← 実装だけを変更
@@ -525,9 +575,14 @@ $ touch week12/CalcLib/calc.c && cmake --build $B --target CalcApp      ← 実�
 $ touch week12/CalcApp/main.c && cmake --build $B --target CalcApp      ← 利用側だけを変更
 [1/2] Building C object projects/week12/CalcApp/CMakeFiles/CalcApp.dir/main.c.o
 [2/2] Linking C executable bin/week12/CalcApp
+$ touch week12/CalcLib/calc.h && cmake --build $B --target CalcApp      ← （参考）公開する宣言を変更
+[1/4] Building C object projects/week12/CalcLib/CMakeFiles/CalcLib.dir/calc.c.o
+[2/4] Building C object projects/week12/CalcApp/CMakeFiles/CalcApp.dir/main.c.o
+[3/4] Linking C static library lib/week12/libCalcLib.a
+[4/4] Linking C executable bin/week12/CalcApp
 ```
 
-実装だけの変更では `main.c` は再コンパイルされないが，`.lib` が新しくなったので `CalcApp` は**再リンク**される。
+実装だけの変更では `main.c` は再コンパイルされないが，`.lib` が新しくなったので `CalcApp` は**再リンク**される。`calc.h` を変えると，それを読む `calc.c`（ライブラリ側）と `main.c`（利用側）の両方が再コンパイルされる。
 一方，すでに別の場所へコピー・配布した `CalcApp.exe` には古い `add` などのコードが組み込まれているので，`.lib` を作り直しても**その `.exe` の内容は変わらない**（配り直しが必要）。
 
 ### 配布済み `.lib` を使う場合との違い（講義 9 の表）
@@ -542,7 +597,7 @@ $ touch week12/CalcApp/main.c && cmake --build $B --target CalcApp      ← 利�
 
 - 検索先（ディレクトリ）とファイル名は別の設定。ライブラリ ディレクトリだけを設定すると `LNK2019`，依存ファイルだけで検索先がないと `LNK1104: ファイル 'CalcLib.lib' を開くことができません`，インクルード ディレクトリがないと `C1083`。
 - `%(...)`／「親またはプロジェクトの既定値から継承」を消すと標準ライブラリなどの既定の設定も失われるので，**既存の継承設定を残して追加**する。
-- 今回の `CalcLib` は静的ライブラリなので，実装は `CalcApp.exe` に組み込まれ，**`CalcLib.dll` は存在せず探す必要もない**。ただし `CalcApp.exe` は Visual C++ ランタイム（既定の `/MD`・`/MDd` なら `vcruntime140.dll`・`ucrtbase.dll` など）には依存する。
+- 今回の `CalcLib` は静的ライブラリなので，実装は `CalcApp.exe` に組み込まれ，**`CalcLib.dll` は存在せず探す必要もない**。ただし `CalcApp.exe` は Visual C++ ランタイムには依存する（Release の `/MD` なら `vcruntime140.dll`・`ucrtbase.dll`，Debug の `/MDd` なら `vcruntime140d.dll`・`ucrtbased.dll` など）。
 - プラットフォームが違う（x86 の `.lib` を x64 のアプリに）と `LNK4272`（マシンの種類の競合），実行時ライブラリの設定が違う（`/MT` と `/MD`，Debug と Release）と，C のライブラリでは主に `LNK4098`（既定のライブラリ `LIBCMT` などが他のライブラリと競合する）の警告と，場合により `LNK2005` が出る（C++ では標準ライブラリのヘッダの仕組みで `LNK2038`（`RuntimeLibrary` の不一致）になる）ので，構成・プラットフォーム・実行時ライブラリをそろえる。
 
 ### 採点のポイント・よくある誤り
@@ -847,7 +902,7 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
 | 正常な値だけでなく，課題に示された境界の値でも確認した | 課題2 の検証表（`subtract` の 0−0・2−5，`calc_divide` の 0÷2・6÷0）と課題4 の単位行列・`alpha`=0 は書き換えた版（`SplitCalc`・`VectorCalc` の variants），発展2 の `N` = 0・1・8，−1・9・巨大な数・`""`・`3x`・`3 4` は `SortModule/tests/` の引数のケース，`INT_MAX`/`INT_MIN` は `SortModule` の variant で，それぞれ自動テストにしている |
-| 警告を確認し，原因を説明・修正した | 全プロジェクトが MSVC `/W4`・GCC/Clang `-Wall -Wextra -Wpedantic` で警告 0（`-Werror` でビルド）。課題3 の記録 2 で `C4244`（`double` → `int`），課題2 の `C4013`（暗黙の宣言）の原因を説明 |
+| 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC/Clang `-Wall -Wextra -Wpedantic -Werror` で警告 0。MSVC `/W4` で警告になる書き方も避けている。課題3 の記録 2 で `C4244`（`double` → `int`），課題2 の `C4013`（暗黙の宣言）の原因を説明 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の考察（宣言 → コンパイル → リンク），課題4 の `Vector`・`Matrix` と値渡し，発展2 の `size_t`・`const void *`・`long` から `int` への変換 |
 | 1 つの実行アプリに `main` が 1 つだけあり，必要な `.c` がすべてビルド対象になっている | `SplitCalc`（`main.c`＋`calc.c`），`VectorCalc`（3 つの `.c`），`SortModule`（2 つの `.c`），`CalcApp`（`main.c`＋`CalcLib` の参照）。課題3 の除外・重複の実験 |
 | 意図的に作ったエラーと前処理用の設定を元に戻し，最後のビルドが成功した | 課題3 のビルド記録の「復旧後の成功」列，課題4 のガード・`/P` の後のリビルド。リポジトリではエラー版を `_BuildErrors/` に分け，提出用のフォルダは正常版だけ |
@@ -867,4 +922,4 @@ cmake --build $B && ctest --test-dir $B --output-on-failure
 - 結果: 34 テストすべて成功（GCC 13＋ASan/UBSan，Clang 18 とも警告 0）。
 - `SortModule` を別の引数で試すときは，Visual Studio（フォルダーを開く）では [run.args](SortModule/run.args) を書き換えて `python tools/gen_launch_vs.py` を実行するか，
   VS Code では「開いている課題を引数つきで実行」の `args` を書き換える。空文字列の引数は Visual Studio のコマンド引数では `""` と入力する。
-- `_BuildErrors/` のエラー版を GCC で再現するには，`_BuildErrors/split/` で課題3 の「GCC で実際に出た診断」のコマンドを，`_BuildErrors/` で `gcc -std=c17 -c noguard/vector_main.c` を実行する。
+- `_BuildErrors/` のエラー版を GCC で再現するには，`_BuildErrors/split/` で課題3 の「GCC で実際に出た診断」のコマンドを，`_BuildErrors/` で `gcc -std=c17 -c noguard/vector_main.c` と `gcc -std=c17 -c noinclude/vector_main.c` を実行する。
