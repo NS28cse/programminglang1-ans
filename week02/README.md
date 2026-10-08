@@ -10,12 +10,12 @@
 | 課題 | 内容 | プロジェクト | ソース | テスト数 |
 | --- | --- | --- | --- | ---: |
 | 1 | 長方形の面積と再計算 | `Rectangle` | [rectangle.c](Rectangle/rectangle.c) | 3（本体 1 + 書き換え版 2） |
-| 2 | 型と表示の対応 | `Profile` | [profile.c](Profile/profile.c) | 4（本体 1 + 書き換え版 3） |
-| 3 | 値のコピーと交換 | `Exchange` | [exchange.c](Exchange/exchange.c) | 6（本体 1 + 書き換え版 5：別の値 2，2 文だけの版 3） |
+| 2 | 型と表示の対応 | `Profile` | [profile.c](Profile/profile.c) | 5（本体 1 + 書き換え版 4：書式・値 3，`total` を `int` にした誤り 1） |
+| 3 | 値のコピーと交換 | `Exchange` | [exchange.c](Exchange/exchange.c) | 7（本体 1 + 書き換え版 6：別の値 2，2 文だけの版 3，代入の順序の誤り 1） |
 | 4 | 値・サイズ・場所の観察 | `Observe` | [observe.c](Observe/observe.c) | 0（型のサイズは環境ごと（`sizeof(long)` が Windows で 4，Linux で 8），アドレスは実行ごとに変わるため。実行例を下に掲載） |
-| 5 | 発展：小数を使った計算 | `Temperature` | [temperature.c](Temperature/temperature.c) | 5（本体 1 + 書き換え版 4：別の値 3，計算後の変更 1） |
+| 5 | 発展：小数を使った計算 | `Temperature` | [temperature.c](Temperature/temperature.c) | 6（本体 1 + 書き換え版 5：別の値 3，計算後の変更 1，整数の割り算の誤り 1） |
 
-合計 18 テスト。GCC 13（`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan）と Clang 18 で警告 0・全テスト成功を確認済み。
+合計 21 テスト。GCC 13（`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan）と Clang 18（`-Wall -Wextra -Wpedantic -Werror`）で警告 0・全テスト成功を確認済み。MSVC `/W4 /WX` でも CI（GitHub Actions の windows-msvc-* ジョブ）でビルド・テストが成功している（コミット 3e12fbc の時点）。ただし，その後に追加した書き換え版 `variant_wrong_order`・`variant_int_total`・`variant_int_division` は，まだ MSVC で確かめていない。
 
 ### テストの構成（書き換え版）
 
@@ -23,6 +23,7 @@
 - `<プロジェクト>/variants/tests/<ケース>.out` … 「値を変えて確かめる」の書き換え版や比較用の途中版の期待する出力。
   各プロジェクトの `CMakeLists.txt` で `softprac_add_variant(...)`（[cmake/SoftpracVariant.cmake](../cmake/SoftpracVariant.cmake)）を呼び，
   ソースの一部（置換前の文字列がちょうど 1 回現れる箇所。例: `width = 6`）を置き換えた版をビルドしてテストします。置換前・置換後の組は複数指定でき，`;` や改行を含む文はブラケット引数 `[[ ]]` で書きます。置き換え前の文字列がソースにちょうど 1 回現れないと構成の段階でエラーになるので，ソースを直したときに気付けます。
+  各版は先頭コメントの 2 行目（版の説明）も「〜に書き換えた版」「誤りの例: …」の説明に置き換えるので，生成ソース（ビルドフォルダの `projects/week02/<プロジェクト>/variants/<ケース>/`）を開けばどの版か分かります。
   書き換え版の実行ファイルは `bin/` ではなくビルドフォルダの `variants/week02/` にでき，Visual Studio の起動構成（`.vs/launch.vs.json`）には現れません。
 
 ### 準備：講義の `variables.c`
@@ -191,7 +192,7 @@ total=0.00
 ### 採点のポイント・よくある誤り
 
 - **`grade` を `"B"` で初期化**: `"B"` は文字列（第6回）で `char` 1 文字ではない。MSVC は `warning C4047: 'initializing': 'char' differs in levels of indirection from 'char [2]'`，GCC 13 は `warning: initialization of 'char' from 'char *' makes integer from pointer without a cast [-Wint-conversion]`，Clang 18 はエラー。`'B'` が正しい。
-- **`total` を `int` にする**: `int total = count * price;` は 376 に切り捨てられ（MSVC `/W4` では `warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data`），`%d` で `total=376` と表示される。GCC の `-Wall -Wextra` では警告が出ないので，GCC で確認した学生は気付きにくい。
+- **`total` を `int` にする**: `int total = count * price;` は 376 に切り捨てられ（MSVC `/W4` では `warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data`），`%d` で `total=376` と表示される（テスト `variant_int_total`。`double total` を `int total` に，`total` の書式を `%d` に書き換えた版）。GCC/Clang の `-Wall -Wextra -Wpedantic` では警告が出ないので，GCC で確認した学生は気付きにくい。この版は誤りを示すためにわざと書いたものなので，CI の MSVC `/W4 /WX` で C4244 によりビルドが止まらないよう，`Profile/CMakeLists.txt` でこの版だけ `/wd4244` で C4244 を抑止している（MSVC ではまだ確かめていない。C4244 はこの環境の GCC/Clang では出ないので，警告番号は MSVC の仕様による）。
 - **計算済みの文字列を書く**: `printf("total=376.50\n");` は不可（課題文で禁止）。
 - `price` に `%f` のまま提出（`price=125.500000`），`%c` ではなく `%s` や `%d` で `grade` を表示，などの書式の誤り。
 - 手順 4（元に戻す）を忘れて `%f` や `count = 0` のまま提出していないか。
@@ -241,7 +242,7 @@ after: a=20 b=10
 | `a = b;` | 20 | 20 | 10 |
 | `b = temp;` | 20 | 10 | 10 |
 
-2 文だけの版（比較用。本体の `temp` を使う 3 行をこの 4 行に置き換え，最後の `after:` の行を消した版として，テスト `variant_two_statements` でビルド・テストしている）:
+2 文だけの版（比較用。本体の `temp` を使う 3 行をこの 4 行に置き換え，その後の空行と最後の `after:` の行を消した版として，テスト `variant_two_statements` でビルド・テストしている）:
 
 ```c
     int a = 10;
@@ -309,7 +310,7 @@ after b = a;  a=5 b=5
 
 - **表示だけ入れ替える**: 交換せずに `printf("after: a=%d b=%d\n", b, a);` と引数を逆にした提出は，どの初期値でも表示が一致してしまう。出力ではなくコードで交換しているかを確認する。
 - **`printf("after: a=20 b=10\n");` と直接書く**: 初期値を −3, 8 に変えると誤りが分かる。
-- **代入の順序の誤り**: `temp = a; b = a; a = temp;` は交換にならない。2 文目の `b = a;` で `b` の元の値 20 を失い（`temp` に保存したのは `a` の 10），最後は a=10, b=10 になる。保存した値を戻す先（`b = temp;`）と，先に上書きする変数（`a = b;`）の順を確認する。
+- **代入の順序の誤り**: `temp = a; b = a; a = temp;` は交換にならない。2 文目の `b = a;` で `b` の元の値 20 を失い（`temp` に保存したのは `a` の 10），最後は a=10, b=10 になる（テスト `variant_wrong_order` で `before: a=10 b=20` / `after: a=10 b=10` を確認）。保存した値を戻す先（`b = temp;`）と，先に上書きする変数（`a = b;`）の順を確認する。
 - **足し算・引き算による交換**（`a = a + b; b = a - b; a = a - b;`）は今回の意図（値の上書きと一時変数）から外れ，`int` の範囲を超えると未定義動作になり得るので勧めない。
 - 「記録すること」で，2 文の版の結果（20/20）を実際に書けているか，等しい値（5, 5）では違いが分からないことに気付いているかを見る。
 
@@ -403,7 +404,7 @@ Linux x64 の列はこの環境で実行した値。Windows の列は MSVC の�
 
 ### 説明すること
 
-**1000 を保存すると `sizeof value` も変わるか** → **変わりません。** `sizeof value` は `value` の**型**（`int`）のサイズで，保存している値の大きさや十進の桁数とは無関係です。`int` の範囲（MSVC・GCC とも −2147483648〜2147483647）に入る値なら，10 でも 1000 でも同じ 4 バイトの領域に保存されます。`value = 99;` を `value = 1000;` に変えた実行結果（Linux x64）:
+**1000 を保存すると `sizeof value` も変わるか** → **変わりません。** `sizeof value` は `value` の**型**（`int`）のサイズで，保存している値の大きさや十進の桁数とは無関係です。`int` の範囲（MSVC・GCC とも −2147483648〜2147483647）に入る値なら，10 でも 1000 でも同じ 4 バイトの領域に保存されます。`value = 99;` を `value = 1000;` に変えた実行結果（Linux x64。アドレスが実行ごとに変わるので，この版はテストにせず実行例だけを載せる）:
 
 ```text
 before: value=10 sizeof value=4 &value=0x7ffeef0497c4
@@ -416,7 +417,7 @@ after:  value=1000 sizeof value=4 &value=0x7ffeef0497c4
 ### 採点のポイント・よくある誤り
 
 - **`sizeof` を `%d` で表示**: `sizeof` の結果は `size_t` なので `%zu`。MSVC は `C4477`，GCC は `warning: format '%d' expects argument of type 'int', but argument 3 has type 'long unsigned int' [-Wformat=]`。
-- **`(void *)` を付けずに `%p` に `&value` を渡す**: GCC（`-Wpedantic`）は `format '%p' expects argument of type 'void *', but argument 2 has type 'int *'`，Clang は `-Wformat-pedantic` の警告。MSVC では警告が出ないことがあるので，コードを見て確認する。アドレスを `%d`・`%x` で表示するのも誤り。
+- **`(void *)` を付けずに `%p` に `&value` を渡す**: GCC は `-Wpedantic` を付けたときに `warning: format '%p' expects argument of type 'void *', but argument 2 has type 'int *' [-Wformat=]`（表示上の分類は `-Wformat=` だが，GCC 13.3 では `-Wall -Wextra` だけでは出ないことを確認した），Clang は `-Wformat-pedantic`（`-Wpedantic` で有効）の警告。MSVC では警告が出ないことがあるので，コードを見て確認する。アドレスを `%d`・`%x` で表示するのも誤り。
 - **表の「変化したか」の誤り**: アドレスやサイズが「変わった」としている，または起動し直した別の実行の値と比べて「アドレスが変わった」と書いている（比べるのは同じ実行の中の変更前・変更後）。
 - **`sizeof(long)` を 8 と決めつける**: Windows（MSVC）で実行していれば 4 が正しい。他の学生（Mac・Linux）と数字が違っても誤りではない。
 - アドレスの値そのものが学生間で違うのは正常。見本と同じ数値をソースや記録に書き写していないかを見る。
@@ -457,7 +458,7 @@ Celsius=25.0 Fahrenheit=77.0
 
 ### 計算後に `celsius` を変更した場合
 
-`fahrenheit` は計算した時点の値を保存しているだけなので，`celsius` を変えただけでは更新されません。確認用のコード（本体の表示の行の後に 5 行を追加した版として，テスト `variant_change_after` でビルド・テストしている）:
+`fahrenheit` は計算した時点の値を保存しているだけなので，`celsius` を変えただけでは更新されません。確認用のコード（本体の表示の行の後にコメントを含む 5 行を追加した版として，テスト `variant_change_after` でビルド・テストしている）:
 
 ```c
     double celsius = 25.0;
@@ -465,6 +466,7 @@ Celsius=25.0 Fahrenheit=77.0
 
     printf("Celsius=%.1f Fahrenheit=%.1f\n", celsius, fahrenheit);
     celsius = 100.0;
+    // 再計算する前なので fahrenheit は 77.0 のまま
     printf("Celsius=%.1f Fahrenheit=%.1f\n", celsius, fahrenheit);
     fahrenheit = celsius * 9.0 / 5.0 + 32.0;
     printf("Celsius=%.1f Fahrenheit=%.1f\n", celsius, fahrenheit);
@@ -481,7 +483,7 @@ Celsius=100.0 Fahrenheit=212.0
 ### 採点のポイント・よくある誤り
 
 - **`fahrenheit = 77.0;` と直接書く**: 初期値を 0.0 に変えても 77.0 のままになる。式で計算しているかを見る。
-- **整数の割り算**: `9 / 5 * celsius + 32` と書くと，先に `9 / 5` が整数どうしの割り算で 1 になり，25.0 で `57.0` と表示される（実際に確認済み）。課題の式の順（`celsius * 9.0 / 5.0`）なら先に `double` の掛け算になる。整数の割り算の規則は第3回，型変換は第6回で扱う。
+- **整数の割り算**: `9 / 5 * celsius + 32` と書くと，先に `9 / 5` が整数どうしの割り算で 1 になり，25.0 で `Celsius=25.0 Fahrenheit=57.0` と表示される（テスト `variant_int_division`。本体の式を `9 / 5 * celsius + 32` に書き換えた版）。課題の式の順（`celsius * 9.0 / 5.0`）なら先に `double` の掛け算になる。整数の割り算の規則は第3回，型変換は第6回で扱う。
 - **書式**: `%f` のままだと `Celsius=25.000000 Fahrenheit=77.000000` になる。`%.1f` を使う。`%d` で `double` を渡すのは未定義動作（MSVC `C4477`，GCC `-Wformat`）。
 - **型**: `int celsius` にすると小数を扱えない。両方 `double` で保存するよう指定されている。
 - 表示の大文字小文字（`Celsius`，`Fahrenheit`）と空白 1 つを確認する。
@@ -504,7 +506,7 @@ Celsius=100.0 Fahrenheit=212.0
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
 | 課題1〜4のプロジェクトとソースを保存した | 表の 4 プロジェクト（`Rectangle/rectangle.c`，`Profile/profile.c`，`Exchange/exchange.c`，`Observe/observe.c`）が 1 課題 1 プロジェクトで，それぞれ `main` を 1 つ持つ。発展の `Temperature/temperature.c` も同様 |
-| 警告・エラーを確認し，型と`printf`の書式を合わせた | 全プロジェクトが MSVC `/W4`・GCC/Clang `-Wall -Wextra -Wpedantic` で警告 0。`int`→`%d`，`double`→`%f`/`%.2f`/`%.1f`，`char`→`%c`，`sizeof`→`%zu`，アドレス→`(void *)` と `%p`（課題2・4・5） |
+| 警告・エラーを確認し，型と`printf`の書式を合わせた | GCC 13・Clang 18（`-Wall -Wextra -Wpedantic -Werror`）で警告 0 を確認。MSVC `/W4 /WX` でのビルド・テストは CI（GitHub Actions の windows-msvc-* ジョブ）で行う（3e12fbc の時点で成功。追加した 3 版は MSVC で未確認）。`int`→`%d`，`double`→`%f`/`%.2f`/`%.1f`，`char`→`%c`，`sizeof`→`%zu`，アドレス→`(void *)` と `%p`（課題2・4・5） |
 | 課題1の再計算前と再計算後の違いを説明できる | 課題1の値の表と「説明すること」（`area` は計算時点の値なので 28 → 再計算で 42） |
 | 課題2の書式を変えた結果と，変数の値そのものを区別できる | 課題2の「表示方法を変えてみる」（`%f` で 125.500000 になっても `total` は 376.50 のまま）と「説明すること」 |
 | 課題3で，なぜ元の値を一時変数へ保存するのか説明できる | 課題3の 2 つの値の表と「記録すること」（`a = b;` で元の `a` が失われる） |
