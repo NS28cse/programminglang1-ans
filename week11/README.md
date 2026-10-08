@@ -1,6 +1,6 @@
 # 第11回 演習 解答・解説（構造体）
 
-演習ページ: <https://t-yokoga.github.io/softprac1/ex11/>（講義: <https://t-yokoga.github.io/softprac1/lec11/>）
+演習ページ: <https://t-yokoga.github.io/softprac1/ex11.html>（講義: <https://t-yokoga.github.io/softprac1/lec11.html>）
 
 ## プロジェクト一覧
 

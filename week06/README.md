@@ -1,7 +1,7 @@
 # 第6回 演習 解答・解説（文字列）
 
-- 演習ページ: <https://t-yokoga.github.io/softprac1/ex06/>（[`docs/ex06.md`](https://github.com/t-yokoga/softprac1/blob/main/docs/ex06.md)）
-- 講義ページ: <https://t-yokoga.github.io/softprac1/lec06/>（例題 [`sample/06/strings.c`](https://github.com/t-yokoga/softprac1/blob/main/docs/sample/06/strings.c)）
+- 演習ページ: <https://t-yokoga.github.io/softprac1/ex06.html>（[`docs/ex06.md`](https://github.com/t-yokoga/softprac1/blob/main/docs/ex06.md)）
+- 講義ページ: <https://t-yokoga.github.io/softprac1/lec06.html>（例題 [`sample/06/strings.c`](https://github.com/t-yokoga/softprac1/blob/main/docs/sample/06/strings.c)）
 
 この回の文字列はすべてソース内の固定値で，キーボード入力・コマンドライン引数は使いません（演習ページの指定）。
 使う文法・関数は第6回までの範囲（`char` 配列，終端文字，`strlen`・`strcmp`，キャスト，第5回までの関数・配列・`for`/`while`/`if`）だけです。

@@ -1,7 +1,7 @@
 # 第7回 演習 解答・解説（入出力）
 
-- 演習ページ: <https://t-yokoga.github.io/softprac1/ex07/>（原稿: [`docs/ex07.md`](https://github.com/t-yokoga/softprac1/blob/main/docs/ex07.md)）
-- 講義ページ: <https://t-yokoga.github.io/softprac1/lec07/>（例題: [`docs/sample/07/`](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/07)）
+- 演習ページ: <https://t-yokoga.github.io/softprac1/ex07.html>（原稿: [`docs/ex07.md`](https://github.com/t-yokoga/softprac1/blob/main/docs/ex07.md)）
+- 講義ページ: <https://t-yokoga.github.io/softprac1/lec07.html>（例題: [`docs/sample/07/`](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/07)）
 
 この回で使う文法・関数は第6回までの範囲（`if`・`while`・配列・関数・`const`・`size_t`・`strlen`）と，
 第7回の `getchar`・`putchar`・`fgets`・`fflush`・`ferror`・`fprintf(stderr, ...)`・`printf` の書式に限っています。

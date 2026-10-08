@@ -1,7 +1,7 @@
 # 第13回 演習 解答・解説（メモリ管理）
 
-- 演習ページ: <https://t-yokoga.github.io/softprac1/ex13/>（資料リポジトリの `docs/ex13.md`）
-- 講義ページ: <https://t-yokoga.github.io/softprac1/lec13/>（`docs/lec13.md`，例題は `docs/sample/13/`）
+- 演習ページ: <https://t-yokoga.github.io/softprac1/ex13.html>（資料リポジトリの `docs/ex13.md`）
+- 講義ページ: <https://t-yokoga.github.io/softprac1/lec13.html>（`docs/lec13.md`，例題は `docs/sample/13/`）
 
 この回は「確保できたら使う」だけでなく，**誰が初期化し，誰が解放し，失敗したら何を残すか**を追跡する回です。
 すべてのプログラムは AddressSanitizer・UBSan（Linux では LeakSanitizer も有効）付きでテストし，リーク・二重解放・解放後の使用が出ないことを確認しています。

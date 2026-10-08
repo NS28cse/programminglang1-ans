@@ -1,7 +1,7 @@
 # 第9回 演習 解答・解説（ポインタ2）
 
-- 演習ページ: <https://t-yokoga.github.io/softprac1/ex09/>（原文: [docs/ex09.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex09.md)）
-- 講義ページ: <https://t-yokoga.github.io/softprac1/lec09/>（例題: `docs/sample/09/double_pointer.c`，`matrix.c`）
+- 演習ページ: <https://t-yokoga.github.io/softprac1/ex09.html>（原文: [docs/ex09.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex09.md)）
+- 講義ページ: <https://t-yokoga.github.io/softprac1/lec09.html>（例題: `docs/sample/09/double_pointer.c`，`matrix.c`）
 
 ## プロジェクト一覧
 
