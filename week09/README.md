@@ -26,9 +26,11 @@
 - 演習ページの「`n` を 0 にする」「配列を変える」「断片を追加する」などの**書き換え**は，学生と同じ書き換えを CMake が行う `softprac_add_variant`（各フォルダの `CMakeLists.txt`）で別の実行ファイルとしてビルドし，`variants/tests/<ケース名>.out` と比べてテストしています。
   関数へ分ける前の途中版や，演習ページの別の小さな例（`dog`/`cat` など）は `versions/` に置き，置き換えなしでビルド・テストしています。
   README の「variant `n0`」などはこのケース名です。各節の実行結果は，本体・各 variant を実際に実行した出力（＝テストの期待値）です。
+  各版の生成ソース（`<ビルド先>/projects/week09/<プロジェクト>/variants/<ケース名>/`）は，先頭コメントをその版の説明に置き換え，書き換えた行のコメントも書き換え後のコードに合わせています。
 - 範囲外アクセスになる書き換え（`n=4`，`rows=3`，長さを交換しない行の交換，`int **` への変換など）は演習ページの指示どおり実行せず，型と図で説明しています。
 - 実行環境: Linux x64（GCC 13，`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan）で 42 テスト成功。Clang 18（`-Werror`）でも警告 0・42 テスト成功を確認しました。
   表示する内容に処理系依存の値を含めていないので，Windows（MSVC，x64）でも同じ表示になります。可変長配列（VLA）は使っていません（MSVC は非対応）。
+  MSVC `/W4 /WX` でも CI（GitHub Actions）でビルド・テストが成功している（3e12fbc の時点）。
   MSVC の診断番号（C4047 など）は MSVC で実行して確認したものではなく，「例（未確認）」として載せています。
 - `int *rows[] = {row0, row1};`，`char *editable[] = {city0, city1};`，`char *letters[] = {&first, &second};` のように自動変数のアドレスで配列を初期化する書き方は C99 以降の標準 C で，どれも演習ページ・講義の断片どおりです。MSVC が古い既定で出す C4204/C4221（非定数の集成体初期化・自動変数のアドレスでの初期化）は `/std:c11` 以降では出ません（未確認）。
 
@@ -302,7 +304,7 @@ pp → p → y        *pp = &y;  は1段たどった p の中身（アドレス�
 
 ### 解答コード
 
-[Names/names.c](Names/names.c)。交換を `swap_names` へ移した最終版で，`main` から `swap_names(names, 0, 2);` と呼び，`main` には元の交換処理を残していません。
+[Names/names.c](Names/names.c)。交換を `swap_names` へ移した本体（演習ページの指示をすべて反映した版）で，`main` から `swap_names(names, 0, 2);` と呼び，`main` には元の交換処理を残していません。
 
 ```c
 void swap_names(const char *names[], int i, int j)
@@ -457,7 +459,7 @@ Tokyo 5
 
 ### 解答コード
 
-[MatrixMean/matrix.c](MatrixMean/matrix.c)（例題 `matrix.c` の `enum { COLS = 3 };` と二重ループの形をもとにした最終版）
+[MatrixMean/matrix.c](MatrixMean/matrix.c)（本体。例題 `matrix.c` の `enum { COLS = 3 };` と二重ループの形をもとに，演習ページの指示をすべて反映した版）
 
 ```c
 enum { ROWS = 2, COLS = 3 };
@@ -581,7 +583,25 @@ sizeof a[0] / sizeof a[0][0] = 3
 
 バイト数（24，12）は `sizeof(int)` が 4 の処理系での値です。
 
-関数内の仮引数 `a` はポインタ（`int (*)[3]`）なので，`sizeof a / sizeof a[0]` で行数は求まりません。仮引数を `int a[][COLS]` と書いた関数で同じ式を表示した実験（Linux x64）:
+関数内の仮引数 `a` はポインタ（`int (*)[3]`）なので，`sizeof a / sizeof a[0]` で行数は求まりません。仮引数を `int a[][COLS]` と書いた関数で同じ式を表示した実験（Linux x64）。バイト数は処理系依存で，GCC が警告を出すコードなので，テストにはしていません。
+
+```c
+#include <stdio.h>
+enum { ROWS = 2, COLS = 3 };
+void show(int a[][COLS])
+{
+    printf("in function: sizeof a=%zu sizeof a[0]=%zu sizeof a / sizeof a[0]=%zu\n",
+           sizeof a, sizeof a[0], sizeof a / sizeof a[0]);
+}
+int main(void)
+{
+    int a[ROWS][COLS] = {{1, 2, 3}, {4, 5, 6}};
+    printf("in main: sizeof a=%zu sizeof a[0]=%zu sizeof a / sizeof a[0]=%zu\n",
+           sizeof a, sizeof a[0], sizeof a / sizeof a[0]);
+    show(a);
+    return 0;
+}
+```
 
 ```text
 in main: sizeof a=24 sizeof a[0]=12 sizeof a / sizeof a[0]=2
@@ -1009,18 +1029,38 @@ a[1][2]=6 rows[1][2]=6 pp[1][2]=6
 - `(row_ptr + 1) - row_ptr = 1` と `(int_ptr + 1) - int_ptr = 1`: ポインタの差はバイト数ではなく，指す型の要素数です。`row_ptr + 1` は 12 バイト先，`int_ptr + 1` は 4 バイト先ですが，どちらも差は 1 です。
 - `&q is not &a: ... is 0`: `&q` は `q` という**別の変数の場所**で，配列の場所 `&a` とは違います。`*qq` は `q` で，`*qq == a` は 1（`q` が `a` の先頭行を指している）です。
 
-アドレスを `%p` で表示した参考例（Linux x64 の 1 回の実行。値は実行ごとに変わり，テストにはしていません）:
+アドレスを `%p` で表示した参考例（Linux x64 の 1 回の実行。値は実行ごとに変わり，テストにはしていません）。表示に使ったコード:
+
+```c
+#include <stdio.h>
+int main(void)
+{
+    int a[2][3] = {{1, 2, 3}, {4, 5, 6}};
+    int (*q)[3] = a;
+    printf("&a       = %p\n", (void *)&a);
+    printf("a + 0    = %p\n", (void *)(a + 0));
+    printf("&a[0]    = %p\n", (void *)&a[0]);
+    printf("a[0] + 0 = %p\n", (void *)(a[0] + 0));
+    printf("&a[0][0] = %p\n", (void *)&a[0][0]);
+    printf("&q       = %p\n", (void *)&q);
+    printf("a + 1    = %p\n", (void *)(a + 1));
+    printf("a[0] + 1 = %p\n", (void *)(a[0] + 1));
+    printf("&a + 1   = %p\n", (void *)(&a + 1));
+    printf("sizeof a=%zu sizeof a[0]=%zu sizeof(int *)=%zu\n", sizeof a, sizeof a[0], sizeof(int *));
+    return 0;
+}
+```
 
 ```text
-&a       = 0x7ffdc0673b90
-a + 0    = 0x7ffdc0673b90
-&a[0]    = 0x7ffdc0673b90
-a[0] + 0 = 0x7ffdc0673b90
-&a[0][0] = 0x7ffdc0673b90
-&q       = 0x7ffdc0673b88
-a + 1    = 0x7ffdc0673b9c
-a[0] + 1 = 0x7ffdc0673b94
-&a + 1   = 0x7ffdc0673ba8
+&a       = 0x7fff7cb73e10
+a + 0    = 0x7fff7cb73e10
+&a[0]    = 0x7fff7cb73e10
+a[0] + 0 = 0x7fff7cb73e10
+&a[0][0] = 0x7fff7cb73e10
+&q       = 0x7fff7cb73e08
+a + 1    = 0x7fff7cb73e1c
+a[0] + 1 = 0x7fff7cb73e14
+&a + 1   = 0x7fff7cb73e28
 sizeof a=24 sizeof a[0]=12 sizeof(int *)=8
 ```
 
@@ -1032,6 +1072,7 @@ sizeof a=24 sizeof a[0]=12 sizeof(int *)=8
 gcc:   warning: initialization of 'int **' from incompatible pointer type 'int (*)[3]' [-Wincompatible-pointer-types]
 gcc:   warning: initialization of 'int **' from incompatible pointer type 'int (*)[2][3]' [-Wincompatible-pointer-types]
 clang: warning: incompatible pointer types initializing 'int **' with an expression of type 'int[2][3]' [-Wincompatible-pointer-types]
+clang: warning: incompatible pointer types initializing 'int **' with an expression of type 'int (*)[2][3]' [-Wincompatible-pointer-types]
 MSVC（例，未確認）: warning C4047: 'initializing': 'int **' differs in levels of indirection from 'int (*)[3]'
 ```
 
@@ -1063,7 +1104,7 @@ MSVC（例，未確認）: warning C4047: 'initializing': 'int **' differs in le
 3. **最初の要素（添字の小さい方）を選ぶ。** 条件が `a[i] > *best` なので，同じ値では候補を更新しないからです。`{12, 12, 4}` で `first=1`（`a[0]`）を確認しました。`>=` にすると最後の要素（`a[1]`，`first=0`）になります。
 4. **移動しない。** ポインタ配列の交換は要素（ポインタ値＝アドレス）を入れ替えるだけで，文字列本体は元の場所にそのまま残ります。だから長さが違っても固定サイズのポインタ代入 3 回で交換でき，`strlen` やコピーも不要です（課題2）。
 5. **`char *names[]` は文字列の先頭アドレス（ポインタ）を，`char names[][9]` は文字そのもの（1 行 9 個の `char`，終端と余りの 0 を含む）を保存する。**
-   前者の文字列本体は別の場所にあり（`sizeof` は ポインタの個数 × `sizeof(char *)`），行の交換はポインタの交換で済みます。後者は 3 行なら 27 個の `char` が連続し（`sizeof` は 27），行の交換は 9 個の `char` の交換が必要です（課題2と課題4）。
+   前者の文字列本体は別の場所にあり（`sizeof` はポインタの個数 × `sizeof(char *)`），行の交換はポインタの交換で済みます。後者は 3 行なら 27 個の `char` が連続し（`sizeof` は 27），行の交換は 9 個の `char` の交換が必要です（課題2と課題4）。
 6. **`a[r][c]` の場所を計算するには 1 行の大きさ（列数）が必要だから。** 二次元配列の仮引数は先頭行へのポインタ `int (*a)[COLS]` に調整され，`a[r]` は先頭から `r` 行分（`r * COLS` 個の `int`）先です。
    列数が分からないと次の行の位置を決められません。一方，行数（第 1 の添字）は型に残らないので `rows` として別に渡します（課題3）。
 7. **長さはポインタに含まれず別の配列で管理しているので，ポインタだけを交換すると「行」と「長さ」の対応が崩れるから。** 発展1では，2 要素の `row1` を長さ 3 として読み，`row1[2]`（範囲外）にアクセスしてしまいます。ポインタと長さを一組として同時に交換します。
@@ -1075,5 +1116,5 @@ MSVC（例，未確認）: warning C4047: 'initializing': 'int **' differs in le
 | 項目 | 確認できる課題と方法 |
 | --- | --- |
 | 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1: `n=0`・`n=-1`（失敗），`n=1`，同点 `{12, 12, 4}` と `>=`，失敗時に古い結果を残さない（`FindMax` の variant `n0`・`n_m1`・`n1`・`tie`・`tie_ge`・`stale`）。`ReturnMaximum`: 全要素が負，場所の版だけ `n=0`（`negative`・`pointer_n0`・`best_zero`）。課題2: `swap_names(names, 1, 1)`，2 回交換（`swap_1_1`・`swap_twice`）。課題3: `rows=1`・`rows=0`，値の両端 0 と 100，割り切れない平均，整数除算，全体平均の `rows=0`（`rows1`・`rows0`・`low_high`・`fraction`・`int_division`・`overall_rows0`）。課題4: 同じ行の交換，2 回，空文字列，終端まで・5 文字だけの誤り（`same_row`・`twice`・`empty_fukui`・`until_terminator`・`fukuiawa`）。発展1: 長さも一緒に交換（`swap_with_lengths`）。本体と合わせて 42 テストで自動確認（GCC＋ASan/UBSan・Clang とも成功）。`n=4`・`rows=3`・長さを交換しない行の交換・リテラルへの書き込みなど範囲外になるものは実行せず，型と図で説明した |
-| 警告を確認し，原因を説明・修正した | 全プロジェクトを `-Wall -Wextra -Wpedantic -Werror`（GCC/Clang）と AddressSanitizer/UBSan で警告 0・エラー 0 にした。説明した警告: 課題3 の `int *a[COLS]`（`int **` と `int (*)[3]` の不一致，C4047/C4024），関数内の `sizeof a`（`-Wsizeof-array-argument`），課題2 の `char **` → `const char **`，課題4 の行の代入（`array type ... is not assignable`，MSVC では C2106），発展2 の `int **bad = a;`。いずれもキャストではなく宣言を直す |
+| 警告を確認し，原因を説明・修正した | 全プロジェクトを `-Wall -Wextra -Wpedantic -Werror`（GCC/Clang）と AddressSanitizer/UBSan で警告 0・エラー 0 にした。MSVC `/W4 /WX` でも CI（GitHub Actions）でビルド・テストが成功している（3e12fbc の時点）。説明した警告: 課題3 の `int *a[COLS]`（`int **` と `int (*)[3]` の不一致，C4047/C4024（MSVC の番号は例，未確認）），関数内の `sizeof a`（`-Wsizeof-array-argument`），課題2 の `char **` → `const char **`，課題4 の行の代入（`array type ... is not assignable`，MSVC では C2106（MSVC の番号は例，未確認）），発展2 の `int **bad = a;`。いずれもキャストではなく宣言を直す |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の二重ポインタの表（`pp → p → x`），課題2・課題4 の図（ポインタの交換と内容の交換），課題3 の `int (*)[3]` と `int **`，発展1 の 3 種類の配列の図，発展2 の型の表 |
