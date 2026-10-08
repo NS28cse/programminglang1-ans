@@ -1,6 +1,6 @@
 # 第5回 発展 SumMean
 # 本体に加えて，演習ページの {0}・n=1 と {100, 100, 100}・n=3，範囲の最大（100 が 5 個），
-# 合計関数単独で n = 0 を渡した確認用の版をビルドしてテストする。
+# 合計関数単独で n = 0 を渡した確認用の版，初期化子だけを変えて n を直し忘れた誤りの版をビルドしてテストする。
 # 各版は先頭コメントの 2〜3 行目も版の説明に置き換え，行末コメントの桁もそろえる
 softprac_add_program(SumMean summean.c)
 
@@ -38,3 +38,11 @@ softprac_add_variant(SumMean summean.c sum_only_n_0
     int n = 0;                                 // sum_array 単独なら 0 も受け付ける]=]
   [=[    printf("total=%d mean=%.1f\n", total, (double)total / n);  // 整数除算を避ける]=]
   [=[    printf("total=%d\n", total);  // n が 0 なので平均は表示しない]=])
+
+# 誤りの例: README の「採点のポイント」の，初期化子だけを変えて n を直し忘れた版。
+# 残りの 2 要素の 0 も数えて 5 で割るので mean=60.0 になる（範囲外は読まない）
+softprac_add_variant(SumMean summean.c hundred_n_5_wrong
+  "// 合計を返す sum_array と，平均を計算して表示する main に役割を分ける。\n// 配列は最大 COUNT 要素を用意し，実際に使う要素数 n（1〜COUNT）を別に持つ。"
+  "// 誤りの例: 初期化子だけを {100, 100, 100} に変え，n を COUNT（5）のままにした版（mean=60.0）。\n// 残りの 2 要素は 0 なので，その 0 も数えて 5 で割ってしまう。"
+  [=[    int scores[COUNT] = {72, 85, 60, 93, 80};  // 値は 0〜100]=]
+  [=[    int scores[COUNT] = {100, 100, 100};       // 値は 0〜100]=])

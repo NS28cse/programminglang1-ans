@@ -15,9 +15,11 @@ softprac_add_variant(ColumnSum arrays.c zero
 softprac_add_variant(ColumnSum arrays.c sum_outside
   "// 講義の arrays.c を変更し，二次元配列の行ごとの合計の代わりに列ごとの合計を表示する。"
   "// 誤りの例: sum の初期化を二重ループ全体の前へ移した版（5，12，21 の累積になる）。"
-  [=[    for (int col = 0; col < 3; ++col) {
+  [=[    // 外側を列（0〜2），内側を行（0〜1）にする。添字は常に table[行][列] の順
+    for (int col = 0; col < 3; ++col) {
         int sum = 0;  // 列が変わるたびに 0 から数え直す
 ]=]
   [=[    int sum = 0;  // 誤り: 二重ループ全体の前で 1 回だけ初期化
+    // 外側を列（0〜2），内側を行（0〜1）にする。添字は常に table[行][列] の順
     for (int col = 0; col < 3; ++col) {
 ]=])

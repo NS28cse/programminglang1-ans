@@ -68,6 +68,7 @@ ${body}"
 # 確認問題5: plus_one の戻り値を使わない・別の変数に保存する・代入する
 softprac_add_variant(ValueCopy versions/plus_one.c plus_one)
 # 確認問題6: グローバル変数 count を同名の局所変数で隠す。隠蔽を示すための版なので，
-# MSVC /W4 /WX でエラーになる C4459（グローバル宣言を隠す）をこの版だけ抑止する（GCC/Clang の -Wall -Wextra は -Wshadow を含まない）
+# MSVC /W4 /WX でエラーになる「グローバル宣言を隠す」警告（番号は Microsoft Learn の説明に基づく例: C4459）を
+# この版だけ抑止する（GCC/Clang の -Wall -Wextra は -Wshadow を含まない）
 softprac_add_variant(ValueCopy versions/shadow_count.c shadow_count)
 target_compile_options(ValueCopy_shadow_count PRIVATE $<$<C_COMPILER_ID:MSVC>:/wd4459>)

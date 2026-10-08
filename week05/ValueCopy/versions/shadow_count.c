@@ -1,6 +1,6 @@
 ﻿// 第5回 確認問題6 の確認用（ValueCopy の versions/shadow_count.c。本体とは別にテストする）
 // 講義の tick に同名の局所変数 count を宣言し，++count が局所変数だけを変えること（隠蔽）を確かめる。
-// MSVC /W4 では「グローバル宣言を隠す」警告 C4459 が出る（この版だけ CMakeLists.txt で抑止している）。
+// MSVC /W4 では「グローバル宣言を隠す」警告（番号は例: C4459）が出る（この版だけ CMakeLists.txt で抑止している）。
 #include <stdio.h>
 
 int count = 0;
