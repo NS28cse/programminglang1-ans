@@ -12,14 +12,15 @@
 
 | 課題 | 内容 | プロジェクト | ソース | テスト |
 | --- | --- | --- | --- | --- |
-| 1 | 秒を分と秒へ分解する | `TimeParts` | [time_parts.c](TimeParts/time_parts.c) | 8（[basic](TimeParts/tests/basic.out) と値を変えた版 6・誤りの例 1） |
+| 1 | 秒を分と秒へ分解する | `TimeParts` | [time_parts.c](TimeParts/time_parts.c) | 9（[basic](TimeParts/tests/basic.out) と値を変えた版 6・誤りの例 1・比較用 1） |
 | 2 | 前置・後置と複合代入 | `Update` | [update.c](Update/update.c) | 6（[basic](Update/tests/basic.out) と書き換えた版 4・誤りの例 1） |
 | 3 | 範囲の判定と短絡評価 | `Conditions` | [conditions.c](Conditions/conditions.c) | 7（[basic](Conditions/tests/basic.out) と値を変えた版 6） |
-| 4 | うるう年の条件式 | `Leap` | [leap.c](Leap/leap.c) | 7（[basic](Leap/tests/basic.out) と値を変えた版 3・1 つの式で書いた版 2・誤りの例 1） |
-| 5 | 発展：権限フラグ | `Flags` | [flags.c](Flags/flags.c) | 7（[basic](Flags/tests/basic.out) と値・書き方を変えた版 4・誤りの例 2） |
+| 4 | うるう年の条件式 | `Leap` | [leap.c](Leap/leap.c) | 9（[basic](Leap/tests/basic.out) と値を変えた版 3・1 つの式で書いた版 4・誤りの例 1） |
+| 5 | 発展：権限フラグ | `Flags` | [flags.c](Flags/flags.c) | 9（[basic](Flags/tests/basic.out) と値・書き方を変えた版 4・誤りの例 2・比較用 2） |
 
-合計 35 テスト。フォルダのソース（本体）は**演習ページの期待する表示を出す版**（配布どおりの最初の値。値を変えた版・誤りの例は `softprac_add_variant` でテスト）で，`tests/basic.out` がその出力。
+合計 40 テスト。フォルダのソース（本体）は**演習ページの期待する表示を出す版**（配布どおりの最初の値。値を変えた版・誤りの例は `softprac_add_variant` でテスト）で，`tests/basic.out` がその出力。
 「採点のポイント・よくある誤り」に挙げた誤りの例のうち，ビルドできるもの（警告も出ないもの）は `wrong_*` の版として実際の出力をテストしている。`0 <= score <= 100` と `flags & exec_mask != 0` は警告が出て `-Werror` のビルドが止まるので，テストにせず README に実行例だけを載せた。
+README に結果を載せた比較用のプログラム（`1u + 1u` と `1u | 1u`，`7 / 2` と `7 / 2.0`，`4u & 2u` と `4u && 2u`）は，各プロジェクトの `versions/` に置いてテストしている（比較用）。
 
 ### 「値を変えて試す」小問のテスト（`variants/tests/`）
 
@@ -33,11 +34,13 @@
 - 置き換え前の文字列がソースにちょうど 1 回現れないときは CMake の構成エラーになる（ソースを直した後に，元の版を誤ってテストしないため）。
 - 生成した版は Visual Studio の起動構成（`.vs/launch.vs.json`）には載らない。学生と同じように確かめるときは，フォルダのソースの初期値を手で書き換えてビルド・実行すればよい。
 - 本体のプロジェクトは自動の規則と同じく `softprac_add_program(<名前> <ソース>)` で作っている。
+- 生成した版の先頭コメントは，本体の「第3回 課題N …」から「境界の値を試す: seconds を 0 に書き換えた版」「誤りの例: …」のような版の説明に置き換えている。書き換えた行に付いているコメントも，書き換え後のコードに合わせて置き換えている（生成ソースは `<ビルド先>/projects/week03/<プロジェクト>/variants/<ケース>/` で確認できる）。
+- 置換なしの `softprac_add_variant(Flags versions/or_vs_add.c or_vs_add)` などは，`versions/` の比較用ソースをそのままビルドしてテストする。
 
 ### 実行環境について
 
 実行結果はすべて Linux x64（GCC 13.3 と Clang 18.1，`-std=c17 -Wall -Wextra -Wpedantic -Werror`，GCC は AddressSanitizer/UBSan 付き）で実際にビルド・実行した出力。
-表示する値は `int`・`unsigned int`（Windows x64 の MSVC でも Linux x64 でも 32 ビット）の範囲の小さな整数と `%.2f` の小数だけで，環境によって変わる値はない。表示する値が型の大きさや処理系に依存しないため，Windows（MSVC，C17，`/W4`）でも同じ表示になる。
+表示する値は `int`・`unsigned int`（Windows x64 の MSVC でも Linux x64 でも 32 ビット）の範囲の小さな整数と `%.2f` の小数だけで，環境によって変わる値はない。表示は ASCII で，処理系に依存する値もないので MSVC でも同じ表示になる。MSVC `/W4 /WX` でのビルド・テストは CI（GitHub Actions の windows-msvc-* ジョブ）で行い，コミット 3e12fbc の時点の版はすべて成功している。その後に追加した版（`division_types`・`or_vs_add`・`and_vs_logical_and`・`one_expr_2024`・`one_expr_2025`）は，MSVC ではまだ確かめていない。
 
 ### 記録（`memo.txt`）の書き方の例
 
@@ -117,7 +120,7 @@ decimal minutes=1.00
 ### 採点のポイント・よくある誤り
 
 - 表示が 1 文字も違わないか: `61 min 11 sec`（単語の間は空白 1 つ），`decimal minutes=61.18`（`decimal` と `minutes` の間に空白，`=` の前後に空白なし，小数点以下 2 桁）。最後の行にも改行があるか。
-- `double decimal_minutes = seconds / 60;` のまま → `61 min 11 sec` / `decimal minutes=61.00` と表示される（テスト `variant_int_division_3671` で確認）。ビルドは成功し警告も出ないので，出力を見て指摘する。
+- `double decimal_minutes = seconds / 60;` のまま → `61 min 11 sec` / `decimal minutes=61.00` と表示される（テスト `variant_int_division_3671` で確認）。ビルドは成功し，GCC/Clang では警告も出ないので，出力を見て指摘する。
 - `(double)(seconds / 60)` も整数除算の後に変換するので `61.00`。キャスト（`(double)seconds / 60`）は第6回で扱う内容なので，今回は `60.0` を使うのが期待する解答。
 - `printf("%d", decimal_minutes)` のように `double` を `%d` で表示 → 型が合わず未定義動作（MSVC `/W4` では C4477 の警告，GCC/Clang でも `-Wformat` の警告）。
 - `%.2lf` は C99 以降の `printf` では `%.2f` と同じ意味なので誤りではない。`float` を使っている場合は指定（`double`）と違うので指摘する。
@@ -344,7 +347,7 @@ MSVC の `/W4` では警告されないことがあるので，警告に頼ら�
 ```
 
 書き出した 3 つの条件を変数 `div4`・`not_div100`・`div400` に保存し，`leap` はそれらを `&&` と `||` で組み合わせた 1 つの条件式で求めている（「かつ」「または」との対応がそのまま読める）。
-3 つの変数を使わずに講義の例題と同じ `int leap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;` と書いても同じ結果になる（4 年すべてで確認済み。例外の 1900 年と 2000 年はテスト `variant_one_expr_1900`・`variant_one_expr_2000` で `leap=0`・`leap=1`）。
+leap の式だけを講義の例題の 1 つの式 `int leap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;` に置き換えても同じ結果になる（3 つの変数は表示のために残る。4 年すべてをテスト `variant_one_expr_1900`・`variant_one_expr_2000`・`variant_one_expr_2024`・`variant_one_expr_2025` で確認し，`leap` は順に 0，1，1，0）。
 3 つの条件の表示は確認用で，`leap` だけを表示する解答でも演習の要求は満たす。
 
 **実行結果**
@@ -468,7 +471,7 @@ exec=1
 
 ### 説明すること（同じ権限を 2 回セットするとき，`OR` と加算の違い）
 
-`1u | 1u` は **1**，`1u + 1u` は **2** になる（実際に `printf("%u %u\n", 1u + 1u, 1u | 1u);` を実行した出力は `2 1`）。
+`1u | 1u` は **1**，`1u + 1u` は **2** になる（実際に `printf("%u %u\n", 1u + 1u, 1u | 1u);` を実行した出力は `2 1`。[Flags/versions/or_vs_add.c](Flags/versions/or_vs_add.c)，テスト `variant_or_vs_add`）。
 
 ```text
   001        001
@@ -537,11 +540,11 @@ exec=0
 **2. `7 / 2` と `7 / 2.0` の結果は，なぜ異なるか。**
 
 **オペランドの型が違い，行われる除算の種類が違うから。** `7 / 2` は `int` 同士なので整数除算になり，小数部分が 0 の方向へ切り捨てられて `3`。
-`7 / 2.0` は一方が `double` なので，7 も `double` に変換されて浮動小数点の除算になり `3.5`（実際に `printf("%d %.1f\n", 7 / 2, 7 / 2.0);` の出力は `3 3.5`）。課題1 の `seconds / 60` と `seconds / 60.0` も同じ。
+`7 / 2.0` は一方が `double` なので，7 も `double` に変換されて浮動小数点の除算になり `3.5`（実際に `printf("%d %.1f\n", 7 / 2, 7 / 2.0);` の出力は `3 3.5`。[TimeParts/versions/division_types.c](TimeParts/versions/division_types.c)，テスト `variant_division_types` の 1 行目）。課題1 の `seconds / 60` と `seconds / 60.0` も同じ。
 
 **3. `double x = 7 / 2;` で，失われた小数部分は代入時に戻るか。**
 
-**戻らない。** 右辺 `7 / 2` が先に `int` 同士で計算されて 3 になり，その 3 が `double` に変換されて 3.0 が保存される（実際の表示は `%.1f` で `3.0`）。
+**戻らない。** 右辺 `7 / 2` が先に `int` 同士で計算されて 3 になり，その 3 が `double` に変換されて 3.0 が保存される（実際の表示は `%.1f` で `3.0`。テスト `variant_division_types` の 2 行目）。
 0.5 は代入の前に失われている。課題1 で `seconds = 61`，`seconds / 60` にすると `decimal minutes=1.00` になったのと同じ理由。
 
 **4. `x++` と `++x` は，式の値として何を使うか。**
@@ -562,7 +565,7 @@ exec=0
 **7. `4u & 2u` と `4u && 2u` の結果は同じか。**
 
 **同じではない。** `4u & 2u` はビットごとの AND で，0100 と 0010 に共通の 1 のビットがないので **0**。
-`4u && 2u` は論理 AND で，どちらも 0 でない（真）ので **1**（実際に `printf("%u %d\n", 4u & 2u, 4u && 2u);` の出力は `0 1`）。
+`4u && 2u` は論理 AND で，どちらも 0 でない（真）ので **1**（実際に `unsigned int a = 4u;`，`unsigned int b = 2u;` として `printf("%u %d\n", a & b, a && b);` を実行した出力は `0 1`。[Flags/versions/and_vs_logical_and.c](Flags/versions/and_vs_logical_and.c)，テスト `variant_and_vs_logical_and`）。定数のまま `4u && 2u` と書くと，Clang 18 は `warning: use of logical '&&' with constant operand [-Wconstant-logical-operand]` を出す（GCC 13 は警告しない）ので，テストでは変数に入れた。
 `&` は各ビットを計算し，`&&` は値全体を真か偽として扱う。
 
 **8. `flags` の対象ビットを 0 にするとき，なぜ反転したマスクを使うか。**
@@ -579,8 +582,8 @@ AND では「1 との AND は元の値のまま」「0 との AND は 0」にな
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
 | 課題1〜4のソースと実行結果を保存した | 各課題の「解答」と「実行結果」。ソースはこのフォルダ，出力は各プロジェクトの `tests/basic.out`（値を変えた版は `variants/tests/`）。学生は `memo.txt` の記録（上の「記録の書き方の例」）と併せて確認する |
-| 整数除算と小数の除算を，計算時の型から説明できる | 課題1 の「説明すること」（`seconds / 60` → 1.00），確認問題 2・3 |
+| 整数除算と小数の除算を，計算時の型から説明できる | 課題1 の「説明すること」（`seconds / 60` → 1.00），確認問題 2・3（比較用 `division_types` で `3 3.5` と `3.0`） |
 | 前置・後置の式の値と，変数の更新後の値を区別できる | 課題2 の実行前の表（`before=5`・`after=7`・`x=7`）と初期値 0，-2 の表，確認問題 4 |
-| 範囲の境界と，うるう年の例外にあたる値を試した | 課題3 の境界の表（-1，0，100，101 と `d` の 3，6），課題4 の 1900・2000・2024・2025 の表（課題1 の 0，59，60，61 も境界） |
+| 範囲の境界と，うるう年の例外にあたる値を試した | 課題3 の境界の表（-1，0，100，101 と `d` の 3，6），課題4 の 1900・2000・2024・2025 の表（1 つの式で書いた版も 4 年すべて。課題1 の 0，59，60，61 も境界） |
 | 短絡評価が0による除算を防ぐ理由を説明できる | 課題3 の `large`（`d = 0` で `large=0`）と「`&&` を `&` に置き換えると危険な理由」，確認問題 6 |
-| ビット演算では`unsigned int`を使い，0と1の列で結果を確認できる | 課題5 のビット列の表（001 → 011 → 010 → 110，0u・7u の場合），OR と加算の比較，確認問題 7・8 |
+| ビット演算では`unsigned int`を使い，0と1の列で結果を確認できる | 課題5 のビット列の表（001 → 011 → 010 → 110，0u・7u の場合），OR と加算の比較（比較用 `or_vs_add` で `2 1`），確認問題 7（比較用 `and_vs_logical_and` で `0 1`）・8 |
