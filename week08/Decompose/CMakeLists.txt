@@ -25,7 +25,7 @@ endforeach()
 # 値引数の版．代入した値を関数内で表示する（表示しないと -Wunused-but-set-parameter の警告になる）
 softprac_add_variant(Decompose decompose.c value_args
   "整数部（long）と小数部（double）の 2 つの出力先へ書き込む"
-  "（書き換え版 value_args）値引数にした誤りの例．呼び出し元へは書き込めない"
+  "仮引数を値引数にした誤りの例（呼び出し元へは書き込めない）"
   "${head}" [=[ * 書き換え版 value_args: decompose の仮引数を値引数 long whole, double fraction にした版．
  * 関数内のコピーだけが変わり，main の whole と fraction は 0 のまま．]=]
   "/* x は −100〜100 の有限な値．whole と fraction は有効な long と double を指す */"

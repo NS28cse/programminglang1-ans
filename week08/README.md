@@ -10,9 +10,9 @@
 | 1 | ポインタと`swap` | `Swap` | [`pointers.c`](Swap/pointers.c) | 9（本体 1 + 書き換え版 8） |
 | 2 | 最小値・最大値の出力 | `MinMax` | [`min_max.c`](MinMax/min_max.c) | 8（本体 1 + 書き換え版 7） |
 | 3 | 文字列のコピー | `CopyText` | [`copy_text.c`](CopyText/copy_text.c) | 3（本体 1 + 書き換え版 2） |
-| 4 | 配列・文字列の走査 | `PointerWalk` | [`pointer_walk.c`](PointerWalk/pointer_walk.c) | 10（本体 1 + 書き換え版 9） |
+| 4 | 配列・文字列の走査 | `PointerWalk` | [`pointer_walk.c`](PointerWalk/pointer_walk.c) | 11（本体 1 + 書き換え版 10） |
 | 発展 | 数の分解とポインタの戻り値 | `Decompose` | [`decompose.c`](Decompose/decompose.c) | 12（本体 1 + 書き換え版 11） |
-| | | | 合計 | 42 |
+| | | | 合計 | 43 |
 
 共通の方針:
 
@@ -22,13 +22,13 @@
   期待する表示がない課題（`MinMax`・`CopyText`）は指示を反映した版です。表示が変わる変更・途中版・誤りの例は書き換え版（variant）でテストします。
 - 検証表の値・境界の値・途中の版・誤りの例（`a = b` の swap，値引数の版など）は，学生と同じ書き換えをした版を `softprac_add_variant`（各プロジェクトの `CMakeLists.txt`）で
   ビルドし，`variants/tests/<ケース>.out` と比較します（テスト名 `week08/<プロジェクト>/variant_<ケース>`）。本体と書き換え版で同じ確認を重複させていません。
-  README の「書き換え版 `xxx`」はこのケース名です。
+  README の「書き換え版 `xxx`」はこのケース名です。生成される書き換え版のソースは，先頭コメントもその版の説明に置き換えています（ビルド先の `projects/week08/<プロジェクト>/variants/<ケース>/`）。
 - アドレスは実行ごとに変わるので，プログラムでは表示せず，`p == &x` のような比較（1 か 0）で「どの変数を指すか」を表示します。
   アドレスを表示する版は README に載せ，実行例は「実行ごとに変わる」と明記しました。
 - ソース名は，演習ページが指定する `pointers.c`（課題1「講義の`pointers.c`を実行し」）以外は指定がないため，これまでの回の慣例どおりプロジェクト名を小文字・`_` 区切りにしました。
 - 発展の後半「小さい値の場所を返す」はプロジェクト名の指定がないため，同じ発展課題の `Decompose` プロジェクトに入れました（`main` は 1 つ）。
 - 実行結果は Linux x64（GCC 13.3，`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan 付き）で実際に実行した出力です（本体・書き換え版とも）。
-  Clang 18（`-Werror`，サニタイザなし）でも警告 0 でビルドでき，42 件のテストがすべて成功しました。
+  Clang 18（`-Werror`，サニタイザなし）でも警告 0 でビルドでき，43 件のテストがすべて成功しました。
 - コンパイルエラー・警告の例のうち GCC・Clang のものは実際にビルドして得た表示です。MSVC のものはエラー番号と代表的な文面で，バージョンや言語設定によって表記が異なります。
 
 ---
@@ -58,7 +58,7 @@
 | `swap_double_value` | `versions/swap_double.c` の `swap_double` を値引数にし，呼び出しを `swap_double(a[1], a[4]);` に | コピーだけが交換される |
 
 ポインタのコピーの実験と `swap_double` を `pointers.c` の `main` に入れず別ソースにしたのは，本体を配布コードのまま保つためと，
-`main` の `p` と同名の変数を内側のブロックで宣言すると MSVC `/W4` の C4456（名前の隠蔽）が出るためです。`swap_double` は指示どおり `main` の前に定義しています。
+`main` の `p` と同名の変数を内側のブロックで宣言すると MSVC `/W4` の C4456（名前の隠蔽）が出るためです。`swap_double` は別ソース [`versions/swap_double.c`](Swap/versions/swap_double.c) の `main` の前に，`int` 版の `swap` とは別に定義しています（本体 `pointers.c` は配布コードのまま）。
 
 ### 実行結果
 
@@ -443,7 +443,7 @@ overlap: min=0 max=9 data={7, 0, 9, 0}
 - 終端も入れるには `strlen(src) + 1` 要素が必要。`strlen(src) >= capacity` なら**書き込む前に** `return 0;`。
 - 添字版 → ポインタを進める版 → 短い表記 と書き換え，同じ結果になることを確かめる。
 
-### 解答（最終版：添字なしのポインタ版）
+### 解答（本体：添字なしのポインタ版）
 
 [`CopyText/copy_text.c`](CopyText/copy_text.c)
 
@@ -524,7 +524,7 @@ int copy_text(char *dst, size_t capacity, const char *src)
 
 ### 添字なしのポインタ版と空文字列での動作
 
-ポインタ版（最終版）では `dst` と `src` 自身を 1 要素ずつ進めます。`dst`，`src` は呼び出し元のポインタ値のコピーなので，関数内で進めても呼び出し元の `out` は先頭を指したままです。
+本体（添字なしのポインタ版）では `dst` と `src` 自身を 1 要素ずつ進めます。`dst`，`src` は呼び出し元のポインタ値のコピーなので，関数内で進めても呼び出し元の `out` は先頭を指したままです。
 
 空文字列 `""` の場合（`char out[1]`，容量 1）:
 
@@ -631,6 +631,7 @@ length=3
 | `length_empty` / `length_A` / `length_Hello` | `pointer_length("cat")` の入力を `""`，`"A"`，`"Hello"` | `length=0` / `length=1` / `length=5` |
 | `set_one_first` | 配列の宣言の直後（合計する前）に `set_one(a, COUNT);` を挿入 | `sum=5 5` |
 | `inline` | [`versions/pointer_walk_inline.c`](PointerWalk/versions/pointer_walk_inline.c)（下の，講義と同じ書き方の版。`set_one` を合計の前に呼び，仮引数は `int a[]`。置換なし） | `sum=5 5` |
+| `post_increment` | [`versions/post_increment.c`](PointerWalk/versions/post_increment.c)（確認問題4 の確かめ。置換なし） | 確認問題4 を参照 |
 
 ### 講義と同じ書き方の版（`main` の中でループを書く。書き換え版 `inline`）
 
@@ -957,7 +958,7 @@ MSVC:  warning C4172: ローカル変数またはテンポラリのアドレス�
    `&*p` は `p` の指す対象 `a` の場所なので値は `p` と同じですが，代入先にはできません。
    `&*a` は `int` の `a` に間接参照 `*` を適用しようとするのでコンパイルエラーです（GCC: `invalid type argument of unary '*' (have 'int')`，Clang: `indirection requires pointer operand ('int' invalid)`，MSVC: C2100「間接指定演算子 (*) が正しくありません」）。
 4. **`(*p)++` は指す先の値を 1 増やし，`*p++` は `p` 自体を次の要素へ進めます。** `*p++` は `*(p++)` と解釈され，式の値は移動前の要素の値で，その要素は変更されません。`(*p)++` の式の値は増やす前の値で，`p` は動きません。
-   次のプログラムで確かめました（`(*p)++` → `*p++` の順に実行。どの式も配列 `v` の範囲内だけを読み書きする）:
+   [`PointerWalk/versions/post_increment.c`](PointerWalk/versions/post_increment.c)（`PointerWalk` の書き換え版 `post_increment` としてテスト）で確かめました（`(*p)++` → `*p++` の順に実行。どの式も配列 `v` の範囲内だけを読み書きする。先頭コメントは省略）:
    ```c
    #include <stdio.h>
    int main(void)
@@ -989,7 +990,7 @@ MSVC:  warning C4172: ローカル変数またはテンポラリのアドレス�
 
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の同じ値（`y_5`，`both_8`）／課題2 の {5}（`n=1`），{3, 3, 3}，全部が負の {-8, -2, -5}／課題3 の容量ちょうど（`out[4]` と `"cat"`），1 不足（`out[3]`），空文字列（`out[1]` と `""`），不足時に変更なし（`"old"`）／課題4 の `""`，`q = a + 1`／発展の 0.0，5.0，−100，100，−0.5，同じ値の `min_pointer`。すべて本体と書き換え版のテスト（計 42 件）で自動検査 |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の同じ値（`y_5`，`both_8`）／課題2 の {5}（`n=1`），{3, 3, 3}，全部が負の {-8, -2, -5}／課題3 の容量ちょうど（`out[4]` と `"cat"`），1 不足（`out[3]`），空文字列（`out[1]` と `""`），不足時に変更なし（`"old"`）／課題4 の `""`，`q = a + 1`／発展の 0.0，5.0，−100，100，−0.5，同じ値の `min_pointer`。すべて本体と書き換え版のテスト（計 43 件）で自動検査 |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトと書き換え版を GCC・Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で問題になる隠蔽 C4456 を避けて実験を別ソースに分けた）。警告・エラーの例: `swap_double(a[1], a[4])`（課題1），`low = a[i]`（課題2），`a++`（課題4），関数の仮引数の `sizeof`（課題4），値引数版の `-Wunused-but-set-parameter`，局所変数のアドレスを返す関数（発展） |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の状態表，課題2 の追跡表，課題3 の短い表記の「代入・判定・更新」，課題4 の `ptrdiff_t`／`size_t`／`const char *` |
 | ポインタの矢印と，指す先の値を分けて追跡した | 課題1 の図・状態表（`trace`，`y_5`，`both_8`）・ポインタのコピーの表（`copy_pointer` の `p_is_a`，`p_is_b`），発展の `points_to_y` |
