@@ -15,13 +15,13 @@
 | 2 | 数値引数の検査（講義の `parse_number.c`） | `ParseNumber` | [parse_number.c](ParseNumber/parse_number.c) | `42` | なし | 16 + 合計版 `sum` 13 |
 | 2 | 引数を表示して文字列を探す | `Arguments` | [arguments.c](Arguments/arguments.c) | `nagano ishikawa` | なし | 12 |
 | 3 | バイト列を保存（講義の `binary.c`） | `Binary` | [binary.c](Binary/binary.c) | なし | なし（`bytes.bin` は実行時に作る） | 2 + `utf8_a` 1 + `show_n` 1 |
-| 3 | バイト順を調べる（「別の `main`」） | `ByteOrder` | [byte_order.c](ByteOrder/byte_order.c) | なし | なし | 1 + `value_0x1234` 1 |
+| 3 | バイト順を調べる（「別の `main`」） | `ByteOrder` | [byte_order.c](ByteOrder/byte_order.c) | なし | なし | 1 + `value_0x1234` 1 + `bits_of_byte` 1 |
 | 4 | テキストを書く（モード `w`） | `WriteText` | [write_text.c](WriteText/write_text.c) | なし | なし（`scores.txt` は実行時に作る） | 3 + `mode_a` 3 + `mode_wx` 2 |
 | 発展1 | 数値をテキスト・バイナリで往復 | `NumberFormats` | [number_formats.c](NumberFormats/number_formats.c) | なし | なし（`numbers.txt`・`numbers.bin` は実行時に作る） | 2 + `precision_0125` 1 |
 | 発展2 | 二乗の一覧を書く | `WriteSquares` | [write_squares.c](WriteSquares/write_squares.c) | `4 squares.txt` | なし（`squares.txt` は実行時に作る） | 14 |
 | 発展2 | 一覧を検査して値を探す | `CheckValue` | [check_value.c](CheckValue/check_value.c) | `squares.txt 9` | [squares.txt](CheckValue/squares.txt)（`WriteSquares 4` の出力のコピー） | 37 |
 
-テストは合計 131 件（本体 109 件，variant 22 件）。すべて成功（GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1，どちらも `-Wall -Wextra -Wpedantic -Werror` で警告 0）。
+テストは合計 132 件（本体 109 件，variant 23 件）。すべて成功（GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1，どちらも `-Wall -Wextra -Wpedantic -Werror` で警告 0）。
 
 ### この回の約束（TA 向け）
 
@@ -38,6 +38,7 @@
   | `Binary` | `utf8_a` | UTF-8 をバイトとして観察する（`data` を `E3 81 82 0A` へ） |
   | `Binary` | `show_n` | `n` の値が 4 であることを `printf` で追加表示する |
   | `ByteOrder` | `value_0x1234` | 値を `0x1234` へ変更する |
+  | `ByteOrder` | `bits_of_byte` | 1 バイトを 2 進数表示する断片（`00000001`） |
   | `WriteText` | `mode_a`，`mode_wx` | モードだけを `a` へ変える，表の `wx` |
   | `NumberFormats` | `precision_0125` | `data[0]` を 0.125，最後の 2 行の表示を `%.3f` にする |
 
@@ -48,7 +49,7 @@
 - 実行結果は Linux x64（GCC 13.3）で実際にビルド・実行した出力。表示は ASCII だけで，Windows x64（MSVC）でも同じになる。
   環境で変わる点（改行コード，`long` のサイズなど）はそれぞれの節に「Windows x64 (MSVC) では…，Linux x64 では…」として書いた。
 - 実行例の `$ ReadText input.txt` は「コマンド引数に `input.txt` を設定して実行した」という意味。`(終了コード 1)` はプログラムが返した値で，画面には出ない
-  （Visual Studio の Ctrl+F5 のコンソールでは「…はコード 1 で終了しました」と表示される）。標準エラー出力も同じ画面に出る。
+  （Visual Studio の Ctrl+F5 のコンソールでは，プログラムの終了後に（プロセス番号）と終了コード 1 が表示される）。標準エラー出力も同じ画面に出る。
 
 ## 実行のしかた（コマンド引数と作業ディレクトリ）
 
@@ -218,7 +219,7 @@ $ LineLengths empty.txt    ← 空ファイル: 何も表示しない（終了�
 - 31 文字で改行あり: `fgets` は `A`×31 と終端で配列が一杯になり，改行は配列に入らない → 次の `fgetc` が `'\n'` なので 31 文字の行（改行はここで読み捨てられる）。
 - 31 文字で改行なし: 次の `fgetc` が `EOF` → 31 文字の行。
 - 32 文字: 次の `fgetc` が 32 文字目の `A` → 長すぎるので，残りを 2 行目として数えずに閉じて終了する（テスト `too_long_after_line`: `ABC` の後に 32 文字の行があると `3` だけ表示して終了し，3 行目は処理しない）。
-- 環境差: Windows のテキストモードは CRLF を LF に変換するので，メモ帳で作った CRLF のファイルでも結果は同じ。Linux/macOS で CRLF のファイルを読むと `\r` が残り，`ABC` が 4 になる。
+- 環境差: Windows のテキストモードは CRLF を LF に変換するので，メモ帳で作った CRLF のファイルでも結果は同じ。Linux/macOS で CRLF のファイルを読むと `\r` が残り，`ABC` が 4 になる。Windows と Linux で結果が違う（どちらも処理系の仕様どおり）ので，CRLF のファイルは共通のテストにしていない。
 
 **説明すること**: `strlen(line)` から常に 1 を引くと，最後の行に改行がない `ABC` は `strlen` が 3 なので 2 になってしまう（最後の `C` を改行と誤って除く）。
 `fgets` が改行を配列に入れるのは「改行まで読めたとき」だけで，ファイルの最後の行や容量で切れた行には改行がない。
@@ -453,7 +454,7 @@ E3 81 82 0A
 ### バイト順を調べる（`ByteOrder`）
 
 解答: [ByteOrder/byte_order.c](ByteOrder/byte_order.c)。講義の観察用断片を別の `main` にし，`sizeof value` を `%zu` で表示してから 1 バイトずつ 16 進数で表示する。
-最後に演習ページの 2 進数表示の断片を加えた。
+本体は演習ページの期待する表示（サイズ 2，`01 00`）だけを出す。
 
 本体（`unsigned short value = 1;`）:
 
@@ -461,7 +462,6 @@ E3 81 82 0A
 $ ByteOrder
 sizeof value = 2
 01 00
-00000001
 ```
 
 値を `0x1234` へ変更した版（variant `value_0x1234`，`unsigned short value = 0x1234;`）:
@@ -470,13 +470,31 @@ sizeof value = 2
 $ ByteOrder_value_0x1234
 sizeof value = 2
 34 12
+```
+
+演習ページの「1 バイトを 2 進数表示する」断片を `return 0;` の前に足した版（variant `bits_of_byte`）:
+
+```c
+    /* 1 バイトの中は上位ビット（bit 7）から表示する */
+    unsigned char byte = 1;
+    for (int bit = 7; bit >= 0; --bit) {
+        putchar((byte & (1u << bit)) != 0 ? '1' : '0');
+    }
+    putchar('\n');
+    return 0;
+```
+
+```text
+$ ByteOrder_bits_of_byte
+sizeof value = 2
+01 00
 00000001
 ```
 
 - Windows x64（MSVC）・Linux x64・macOS（Apple Silicon）はいずれもリトルエンディアンで，`unsigned short` は 2 バイト。どれも同じ表示になる。
   ビッグエンディアンの処理系なら `00 01`・`12 34` になる（テストはリトルエンディアンを前提にしている）。
 - 先に `0x34` があっても，数値が `0x3412` に変わったわけではない。値は `0x1234` のままで，**メモリに置く複数バイトの順序**が下位バイトからなだけ。
-- 1 バイトの中のビットは反転しない。2 進数表示は上位ビット（bit 7）から並べるので，`1` は `00000001`。
+- 1 バイトの中のビットは反転しない。2 進数表示は上位ビット（bit 7）から並べるので，`1` は `00000001`（variant `bits_of_byte`）。
 
 ### 採点のポイント・よくある誤り
 
@@ -632,7 +650,7 @@ glibc（Linux）と現在の Windows の UCRT はどちらも偶数側へ丸め�
 
 ### 採点のポイント・よくある誤り
 
-- バイナリを `"w"`/`"r"`（`b` なし）で開く（Windows で `0A` を含むバイト列が変換され，値が壊れる・サイズが 25 にならない）。
+- バイナリを `"w"`/`"r"`（`b` なし）で開く。この例の値には 0A・1A がないので偶然 25 バイトで読み戻せるが，個数 10（ヘッダ 0A）や 0A・1A を含む double では，書くと 0D が増え，読むと 1A で止まって壊れる。偶然動くだけなので b を付ける。
 - `fwrite(data, sizeof data, ...)` と `fwrite(data, sizeof(double), 3, ...)` の要素数・サイズの取り違え，戻り値をバイト数と比べる。
 - 読んだヘッダの個数をそのまま配列の長さとして使う（3 を超える値で配列の外へ読む）。
 - テキストの丸めを「`double` が不正確だから」と説明する（原因は保存書式 `%.2f` で桁を落としたこと）。
@@ -704,6 +722,7 @@ expected a value from 0 to 9801
 
 **前提として検査しないこと**: 形式の約束（ASCII・`NUL` なし）は前提とし，`NUL` や非 ASCII のバイトは検査しない。
 例えば `9`，`NUL`，`x` の行は `fgets` の後の文字列が `"9"` で終わるので 9 として読む（テスト `nul_not_checked` → `found`）。
+符号や先頭の空白は `strtol` の仕様どおり受け付ける（値の行の `+9`，検索値の `" 9"` や `+9` も 9 として扱う）。
 BOM 付き UTF-8 で保存した `squares.txt` は，先頭の `EF BB BF` が数字ではないので `line 1: expected a count from 0 to 100` で拒否される（テスト `bad_bom`）。
 
 ### 表「異常なデータも別ファイルで確認する」（記入済み・実際の結果）
@@ -734,7 +753,7 @@ line 5: line too long
 ```
 
 環境差: Windows のテキストモードは CRLF を LF に変換するので，CRLF のファイルでも「30 バイト + 改行」の行は受け付ける。
-Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 バイトの値の行は CR 込みで 31 バイトとなり `line too long` で拒否される（29 バイト以下の行は CR を末尾の空白として除くので受け付ける）。
+Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 バイトの値の行は CR 込みで 31 バイトとなり `line too long` で拒否される（29 バイト以下の行は CR を末尾の空白として除くので受け付ける）。Windows と結果が違うので，CRLF の 30 バイトの行は共通のテストにしていない（CRLF のテストは 29 バイト以下の行だけ）。
 
 `read_value` が失敗したときは，その呼び出しで得られなかった値を読まない（`*value` は書き換えず，呼び出し側もすぐ失敗として終わる）。
 検索だけなら 1 個ずつ比較すれば足りるので，値全体を配列に保存していない。
@@ -754,7 +773,7 @@ Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 �
 ## 確認問題
 
 1. **よくない。** `fopen` が `NULL` を返したときはストリームが開いていないので，閉じるものがない。`fclose` には `fopen` が成功して返したポインタだけを渡す。
-   `fclose(NULL)` は標準 C では未定義の動作で，MSVC では無効なパラメーターとして実行時エラー（デバッグ版ではアサーションのダイアログ）になる。開くのに失敗したら `perror` で診断して終了すればよい。
+   `fclose(NULL)` は標準 C では未定義の動作。Microsoft のドキュメントでは，`fclose(NULL)` は無効なパラメーター ハンドラーを呼ぶ（既定ではプログラムが終了する）とされる。開くのに失敗したら `perror` で診断して終了すればよい。
 2. **よくない。** 改行がない最後の行では最後の文字を削ってしまう（`ABC` が 2）。容量で切れた行にも改行はない。`line[length - 1] == '\n'` を確かめ，実際に改行を読んだときだけ除く（`LineLengths`）。
 3. `argc` は**個数**しか表さないから。内容は空文字列（`""`），数字でない文字列（`abc`），途中までしか数値でない文字列（`12x`），範囲外（`101`，非常に長い整数），存在しないファイル名などがあり得る。
    個数を確かめた後に，`strtol` の `end`・`errno`・範囲や，`argv[1][0] != '\0'`，`fopen` の結果で内容を検査する（`ParseNumber`・`ReadText`・`WriteSquares`・`CheckValue`）。
@@ -779,7 +798,7 @@ Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 �
 | 項目 | 確認できる課題と内容 |
 | --- | --- |
 | 正常な値だけでなく，課題に示された境界の値でも確認した | `ParseNumber`: 0・100（受け付ける），101・-1（拒否），`+42`・`" 42"`・`"42 "`・`12x`・`abc`・非常に長い整数・引数の過不足。合計版の 10 個・11 個。<br>`LineLengths`: 31 文字（改行あり・なし）と 32 文字，空行，空ファイル。<br>`ReadText`: 空ファイル，最後の改行なし，`missing.txt`，引数なし，`""`，空白を含む名前。<br>`WriteText`: `w`・`a`・`wx` を既存ファイルあり・なしで比較。<br>`WriteSquares`: `N` = 0・100・101，既存ファイル。<br>`CheckValue`: 表の 7 種類の異常，0 と 9801，30・31 バイトの行。すべて自動テストにしている |
-| 警告を確認し，原因を説明・修正した | すべてのプロジェクトが GCC/Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で問題になる C4996 は `fopen` を使うファイルの先頭の `#define _CRT_SECURE_NO_WARNINGS` で抑止。`%zu` は MSVC 2015 以降で使え，現在の UCRT の `fopen` はモードの `x` に対応している）。<br>学生の提出物でよく出る警告: C4996（`fopen`，`_CRT_SECURE_NO_WARNINGS` がない／`#include` の後に書いた），C4244（`char ch = fgetc(fp);` の `int` → `char`。`/W4` で出る。`long` → `int` は MSVC では同じ 4 バイトなので警告にならないが，Linux では値が変わり得る），C4018/C4389（`size_t` と `int` の比較），C4100（使わない `argc`） |
+| 警告を確認し，原因を説明・修正した | すべてのプロジェクトが GCC/Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で問題になる C4996 は `fopen` を使うファイルの先頭の `#define _CRT_SECURE_NO_WARNINGS` で抑止。`%zu` は MSVC 2015 以降で使え，現在の UCRT の `fopen` はモードの `x` に対応している）。MSVC `/W4 /WX` でも CI（GitHub Actions）でビルド・テストが成功している（3e12fbc の時点）。<br>学生の提出物で MSVC `/W4` で出る警告の例（番号は Microsoft のドキュメントによる。このリポジトリでは再現していない）: C4996（`fopen`，`_CRT_SECURE_NO_WARNINGS` がない／`#include` の後に書いた），C4244（`char ch = fgetc(fp);` の `int` → `char`。`/W4` で出る。`long` → `int` は MSVC では同じ 4 バイトなので通常は C4244 の対象にならないとされるが，Linux では値が変わり得る），C4018/C4389（`size_t` と `int` の比較），C4100（使わない `argc`） |
 | 自分の言葉で，処理の流れと使った型を説明できる | `FILE *`（ストリームでありファイルの中身ではない），`fgetc` の戻り値が `int` である理由（課題1），`char *argv[]` と `argc`（課題2），`size_t` と `fread` の戻り値（課題3），`unsigned char *` でオブジェクトの表現を見る（`ByteOrder`），`long` と `strtol`・`errno`（課題2・発展2），`double` のテキスト/バイナリ表現（発展1） |
 
 注: 空文字列の引数は `.args` の空行で表す（空行 1 行だけなら空文字列の引数 1 つ）。`ReadText ""`（`empty_arg`），`ParseNumber ""`（本体 `empty_arg`・合計版 `sum--empty_arg`），`Arguments ""`（`empty_arg`），`WriteSquares 4 ""`，`CheckValue "" 9` を自動テストにしている。

@@ -1,5 +1,5 @@
-﻿/* 第10回 課題3「バイト順を調べる」ByteOrder: unsigned short のメモリ上のバイト順と，1 バイトの 2 進数表示を観察する
-   講義の観察用断片（unsigned short value = 1）と，演習の 2 進数表示の断片を 1 つの main にまとめた */
+﻿/* 第10回 課題3「バイト順を調べる」ByteOrder: unsigned short のメモリ上のバイト順を観察する
+   講義の観察用断片（unsigned short value = 1）を別の main にした（演習ページの 2 進数表示の断片は variant bits_of_byte） */
 #include <stdio.h>
 int main(void)
 {
@@ -11,11 +11,5 @@ int main(void)
         printf("%02X%s", (unsigned int)bytes[i],
                i + 1 == sizeof value ? "\n" : " ");
     }
-    /* 1 バイトの中は上位ビット（bit 7）から表示する */
-    unsigned char byte = 1;
-    for (int bit = 7; bit >= 0; --bit) {
-        putchar((byte & (1u << bit)) != 0 ? '1' : '0');
-    }
-    putchar('\n');
     return 0;
 }
