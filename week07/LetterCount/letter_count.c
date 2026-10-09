@@ -1,4 +1,5 @@
-﻿// 第7回 課題2: 1 行（改行または EOF まで）に含まれる ASCII 英字の個数を数える
+﻿// 第7回 課題2　英字の数を数える（LetterCount / letter_count.c）
+// 1 行（改行または EOF まで）に含まれる ASCII 英字の個数を表示する。
 #include <stdio.h>
 int main(void)
 {

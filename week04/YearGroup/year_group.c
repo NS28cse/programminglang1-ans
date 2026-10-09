@@ -1,4 +1,4 @@
-﻿// 第4回 発展 switch と if を比較する（YearGroup）の switch 版
+﻿// 第4回 発展 switch と if を比較する：switch 版（YearGroup / year_group.c）
 // school_year が 1 か 2 なら lower years，3 か 4 なら upper years，それ以外なら invalid を表示する．
 #include <stdio.h>
 

@@ -1,4 +1,4 @@
-﻿/* 第12回 課題4 ガードの 3 行（#ifndef・#define・#endif）だけを外した vector.h（ビルドしない） */
+﻿/* 第12回 課題4　インクルードガードを調べる（_BuildErrors / noguard/vector.h）: ガードの 3 行（#ifndef・#define・#endif）だけを外した vector.h */
 
 typedef struct {
     double v[2];

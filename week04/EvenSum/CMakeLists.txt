@@ -1,11 +1,9 @@
-# 第4回 課題2 EvenSum
-# 本体（for 版，n = 10）に加えて，n を変えた版と，比較用の while 版・2 ずつ増やす版（versions/）を
-# 演習ページの n（0, 1, 2, 10, 100）でビルドしてテストする。n = 4 は「値を追跡する」の表の確認。
-# 各版は先頭コメントの 2 行目を版の説明に置き換える。確認問題3 の for（versions/three_times.c）もここでテストする
+# 第4回 課題2 EvenSum: 本体（for 版，n = 10）と比較用の while 版・2 ずつ増やす版（versions/）を，演習ページの n（0, 1, 2, 10, 100）と
+# 「値を追跡する」の n = 4 で。誤りの例，回数を数える版，確認問題3 の for（versions/three_times.c）も。各版は先頭コメントの 2 行目を版の説明にする
 softprac_add_program(EvenSum even_sum.c)
 
 set(for_head "// 1 から n までの偶数の合計を for 文で求める．n は 0〜100 の固定値．")
-set(while_head "// for の初期化をループの前へ，更新を本体の最後へ移した．")
+set(while_head "// for の初期化をループの前に，更新を本体の最後に置く．")
 set(step2_head "// i は偶数だけを通るので，偶奇判定の if は不要．本体の回数は約半分になる．")
 
 # n_value(<変数> <n>): 本体（even_sum.c）の "n = 10; "（; の後の空白 1 つまで）を置き換える文字列。
@@ -33,7 +31,7 @@ softprac_add_variant(EvenSum versions/even_sum_step2.c step2_n_10)
 foreach(n 0 1 2 100)
   softprac_add_variant(EvenSum versions/even_sum_while.c while_n_${n}
     "n = 10" "n = ${n}"
-    "${while_head}" "// n を ${n} に書き換えた版．for の初期化をループの前へ，更新を本体の最後へ移した．")
+    "${while_head}" "// n を ${n} に書き換えた版．for の初期化をループの前に，更新を本体の最後に置く．")
   softprac_add_variant(EvenSum versions/even_sum_step2.c step2_n_${n}
     "n = 10" "n = ${n}"
     "${step2_head}" "// n を ${n} に書き換えた版．i は偶数だけを通るので，偶奇判定の if は不要．")

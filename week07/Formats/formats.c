@@ -1,4 +1,5 @@
-﻿// 第7回 課題4: printf の幅・精度・基数・長さ修飾子を確かめる（入力は待たない）
+﻿// 第7回 課題4　printf の幅と書式を確かめる（Formats / formats.c）
+// 演習ページのコード。printf の幅・精度・基数・長さ修飾子による表示を確かめる（入力は待たない）。
 #include <stdio.h>
 int main(void)
 {

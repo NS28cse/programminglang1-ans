@@ -1,4 +1,4 @@
-﻿// 第4回 課題4 100 未満の 2 の累乗（Powers）の do-while 版（while との違いを確かめる比較用）
+﻿// 第4回 課題4 100 未満の 2 の累乗：do-while 版（Powers / versions/powers_do_while.c）
 // 条件を本体の後で調べるため，limit が 1 でも本体を 1 回実行する．
 #include <stdio.h>
 

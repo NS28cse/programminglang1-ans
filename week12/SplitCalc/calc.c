@@ -1,4 +1,5 @@
-﻿/* 第12回 課題1・2 SplitCalc: 計算関数の定義．自分のヘッダも読み，宣言との型の不一致を検出する */
+﻿/* 第12回 課題1・2　分割ビルドと関数の追加（SplitCalc / calc.c）
+   計算関数の定義．自分のヘッダも読み，宣言との型の不一致を検出する */
 #include "calc.h"
 double add(double a, double b)
 {

@@ -1,4 +1,5 @@
-﻿/* 第12回 課題1・2 SplitCalc: 計算関数を呼び出す側．main はこのファイルだけに置く */
+﻿/* 第12回 課題1・2　分割ビルドと関数の追加（SplitCalc / main.c）
+   計算関数を呼び出す側．main はこのファイルだけに置く */
 #include <stdio.h>
 #include "calc.h"
 int main(void)

@@ -1,4 +1,6 @@
-﻿// 第7回 課題3: 1 行を配列へ読み込み，本文の長さを表示する（講義の line.c）
+﻿// 第7回 課題3　行の容量（LineInput / line.c）
+// 講義の line.c。1 行を char line[32] へ読み込み，本文の長さと内容を表示する。
+// 本文が 31 バイトを超えた行と，1 行も読めなかった場合は stderr へ診断を出して終了コード 1 で終わる。
 #include <stdio.h>
 #include <string.h>
 int main(void)

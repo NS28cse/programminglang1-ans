@@ -1,5 +1,5 @@
-﻿// 第4回 課題2 偶数の合計（EvenSum）の while 版（比較用）
-// for の初期化をループの前へ，更新を本体の最後へ移した．
+﻿// 第4回 課題2 偶数の合計：while 版（EvenSum / versions/even_sum_while.c）
+// for の初期化をループの前に，更新を本体の最後に置く．
 #include <stdio.h>
 
 int main(void)

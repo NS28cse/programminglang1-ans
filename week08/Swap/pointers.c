@@ -1,7 +1,7 @@
 ﻿/*
- * 第8回 課題1 Swap: 講義の配布コード pointers.c（docs/sample/08/pointers.c）そのもの
- * 演習の実験（状態の記録・初期値の変更・a = b の swap・ポインタのコピー・swap_double）は
- * CMakeLists.txt の書き換え版と versions/ の版でテストする．
+ * 第8回 課題1　swap を追う（Swap / pointers.c）
+ * 講義の配布コード pointers.c（docs/sample/08/pointers.c）そのもの．
+ * swap(&x, &y) でポインタを通して呼び出し元の x と y を交換し，配列の合計と文字列も表示する．
  */
 #include <stdio.h>
 void swap(int *a, int *b)

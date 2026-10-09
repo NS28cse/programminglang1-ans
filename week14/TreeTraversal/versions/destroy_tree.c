@@ -1,6 +1,6 @@
-﻿/* 第14回 発展3 帰りがけ順と解放の順序（参考。演習は構築プログラムを要求していない）
- * 講義の木と同じ形を個別の malloc で作り，destroy_tree で帰りがけ順に解放する。
- * 解放する順を見るために destroy_tree に表示を 1 行加えている。
+﻿/* 第14回 発展3　帰りがけ順と解放の順序（TreeTraversal / versions/destroy_tree.c）
+ * 参考コード（演習は構築プログラムを要求していない）。講義の木と同じ形を個別の malloc で作り，
+ * destroy_tree で帰りがけ順に解放する。解放する順を見るために destroy_tree に表示を 1 行加えている。
  */
 #include <stdio.h>
 #include <stdlib.h>

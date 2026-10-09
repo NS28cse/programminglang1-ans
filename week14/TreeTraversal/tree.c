@@ -1,4 +1,4 @@
-﻿/* 第14回 発展2 二分木の3つの走査（TreeTraversal）
+﻿/* 第14回 発展2　二分木の3つの走査（TreeTraversal / tree.c）
  * 講義の tree.c に，ノード数を返す node_count と高さを返す tree_height を追加した版。
  * ノードはすべて main の局所配列の要素なので free しない。
  */

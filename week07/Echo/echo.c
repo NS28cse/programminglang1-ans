@@ -1,4 +1,5 @@
-﻿// 第7回 課題1: 入力をそのまま出力する（講義の echo.c）
+﻿// 第7回 課題1　入力をそのまま出力する（Echo / echo.c）
+// 講義の echo.c。getchar で読んだ 1 バイトを，EOF になるまで putchar でそのまま書き出す。
 #include <stdio.h>
 int main(void)
 {

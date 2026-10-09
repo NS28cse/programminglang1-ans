@@ -16,9 +16,9 @@ softprac_add_variant(Fibonacci fibonacci.c n_21 "int input = 4;" "int input = 21
 # 同じ stats のまま fib(n) をもう一度呼ぶ（calls は 2 倍に積み上がり，max_depth は変わらない）
 softprac_add_variant(Fibonacci fibonacci.c no_reset
   [=[ * input は main の初期値を書き換えて変える（0〜5，10，20，-1，21）。]=]
-  [=[ * 書き換え版: stats を初期化し直さずに fib をもう一度呼ぶ版（「計測結果の読み方」2）。]=]
+  [=[ * stats を初期化し直さずに fib をもう一度呼ぶ版（「計測結果の読み方」2）。]=]
   [=[    Stats stats = {0, 0};              /* 測定ごとに {0, 0} から始める */]=]
-  [=[    Stats stats = {0, 0};              /* 最初の 1 回だけ {0, 0} から始める（書き換え版） */]=]
+  [=[    Stats stats = {0, 0};              /* 最初の 1 回だけ {0, 0} から始める */]=]
   [=[    unsigned long long result = fib(n, 1, &stats);]=]
   [=[    unsigned long long result = fib(n, 1, &stats);
-    result = fib(n, 1, &stats);        /* 書き換え版: stats を初期化し直さずに再び呼ぶ */]=])
+    result = fib(n, 1, &stats);        /* stats を初期化し直さずに再び呼ぶ */]=])

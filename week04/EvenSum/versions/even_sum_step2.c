@@ -1,4 +1,4 @@
-﻿// 第4回 課題2 偶数の合計（EvenSum）の 2 ずつ増やす版（比較用）
+﻿// 第4回 課題2 偶数の合計：2 ずつ増やす版（EvenSum / versions/even_sum_step2.c）
 // i は偶数だけを通るので，偶奇判定の if は不要．本体の回数は約半分になる．
 #include <stdio.h>
 

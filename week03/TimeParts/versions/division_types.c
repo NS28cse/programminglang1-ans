@@ -1,4 +1,6 @@
-﻿/* 第3回 確認問題2・3 整数除算と浮動小数点の除算の比較（TimeParts の比較用） */
+﻿/* 第3回 確認問題2・3 整数除算と浮動小数点の除算（TimeParts / versions/division_types.c）
+ * 7 / 2 と 7 / 2.0 の値，double x = 7 / 2; で保存される値を表示する。
+ */
 #include <stdio.h>
 
 int main(void)

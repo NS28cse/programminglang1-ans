@@ -1,8 +1,6 @@
-# 第4回 課題1 Fee
-# 本体（age = 17）に加えて，演習ページの表の age（-1, 0, 5, 6, 18）に変えた版と，
-# 「条件の順序を確かめる」「別々の if にする」「負の年齢の検査を省く」の書き換え版を，表の 6 つの age でビルドしてテストする
-# （ケース名の m1 は age = -1）。各版は先頭コメントの 2 行目（fee_head）を版の説明に置き換える。
-# 確認問題1（if (3)）と 2（flag = -1）の確認用のコードは versions/ に置き，置換なしでビルドしてテストする
+# 第4回 課題1 Fee: 本体（age = 17）と，演習ページの表の age（-1, 0, 5, 6, 18）に変えた版，
+# 条件の順序を入れ替えた版・別々の if にした版（表の 6 つの age），誤りの例，確認問題1・2 の確認用のコード（versions/）。
+# ケース名の m1 は age = -1。各版は先頭コメントの 2 行目（fee_head）を版の説明にする
 softprac_add_program(Fee fee.c)
 
 set(fee_head "// 年齢 age から料金を表示する．負の年齢を最初に invalid として除き，残りを小さい区分から調べる．")
@@ -111,8 +109,7 @@ fee_variant(lt_5_age_5 5
 
 # 確認問題1: if (3) は真の経路へ進む（0 以外はすべて真）
 softprac_add_variant(Fee versions/if_three.c if_three)
-# MSVC /W4 では定数の条件式の警告（C4127 など。番号は例）や到達しないコードの警告（C4702 など）が出る可能性があるため，
-# 確認用のこの版だけ抑止する（抑止を含めて CI で成功。警告番号は例）
+# if (3) は条件が定数なので，MSVC /W4 の C4127（条件式が定数）と C4702（到達できないコード）をこの版だけ抑止する
 target_compile_options(Fee_if_three PRIVATE $<$<C_COMPILER_ID:MSVC>:/wd4127> $<$<C_COMPILER_ID:MSVC>:/wd4702>)
 # 確認問題2: flag = -1 のとき if (flag) は真，if (!flag) と if (flag == 1) は偽
 softprac_add_variant(Fee versions/flag_minus1.c flag_minus1)

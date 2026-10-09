@@ -1,4 +1,6 @@
-﻿/* 第3回 課題1 秒を分と秒へ分解する（TimeParts） */
+﻿/* 第3回 課題1 秒を分と秒へ分解する（TimeParts / time_parts.c）
+ * seconds を整数の除算と余りで分と秒に分け，60.0 で割った小数の分も表示する。
+ */
 #include <stdio.h>
 
 int main(void)

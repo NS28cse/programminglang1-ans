@@ -1,8 +1,6 @@
-# 第4回 発展 YearGroup
-# 本体（switch 版，school_year = 1）に加えて，school_year を 0〜5 に変えた版を，
-# switch 版と if・else if・else 版（versions/）でビルドしてテストする。各版は先頭コメントの 2 行目を版の説明に置き換える。
-# 発展「途中で飛ばす処理」の断片（versions/skip.c），確認問題7（default のない switch）と
-# 確認問題8（講義の goto の例と break に置き換えた版）の確認用のコードも versions/ に置いてここでテストする
+# 第4回 発展 YearGroup: 本体（switch 版，school_year = 1）と if・else if・else 版（versions/）を school_year = 0〜5 で。
+# 最初の break を外した版，発展「途中で飛ばす処理」の断片（versions/skip.c），確認問題7・8 の確認用のコード（versions/）も。
+# 各版は先頭コメントの 2 行目を版の説明にする
 softprac_add_program(YearGroup year_group.c)
 
 set(switch_head "// school_year が 1 か 2 なら lower years，3 か 4 なら upper years，それ以外なら invalid を表示する．")
@@ -32,8 +30,7 @@ foreach(year 0 1 2 3 4 5)
     "school_year = 1" "school_year = ${year}"
     "${switch_head}" "// 最初の break を外した版（誤りの例。1・2 では lower years の後に upper years も表示する）．school_year = ${year}．"
     "${break_old}" "${break_new}")
-  # わざと break を外した版なので，GCC の警告（-Wextra に含まれる -Wimplicit-fallthrough）だけを止める
-  # （Clang 18 は -Wall -Wextra ではこの警告を出さない）
+  # わざと break を外した版なので，GCC の -Wimplicit-fallthrough（-Wextra に含まれる）だけを止める
   target_compile_options(YearGroup_no_first_break_year_${year} PRIVATE $<$<C_COMPILER_ID:GNU>:-Wno-implicit-fallthrough>)
 endforeach()
 
@@ -51,9 +48,7 @@ softprac_add_variant(YearGroup versions/no_default.c no_default_year_5)
 # 確認問題8: 講義の goto の例と，goto done; を break; に置き換えた版（どちらも 0，1，2，done）
 softprac_add_variant(YearGroup versions/goto_done.c goto_done)
 softprac_add_variant(YearGroup versions/goto_done.c goto_to_break
-  "// 第4回 確認問題8 講義の goto の例（確認用．この回の課題では goto を使わない）"
-  "// 第4回 確認問題8 講義の goto の例を break に書き換えた版（確認用）"
-  "// n が 3 になったら，for の直後にあるラベル done へ移動する．"
+  "// n が 3 になったら，for の直後にあるラベル done へ移動する（この回の課題では goto を使わない）．"
   "// goto done; を break; に置き換え，使わなくなったラベル done: を消した版（break で for の直後の文へ進む）．"
   "            goto done;" "            break;          // goto done; の代わりに for を抜ける"
   "done:\n" "")

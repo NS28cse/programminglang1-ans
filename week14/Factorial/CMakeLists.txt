@@ -14,42 +14,42 @@ softprac_add_variant(Factorial recursion.c n_21 "unsigned int n = 5;" "unsigned 
 # 小問1: 基底条件で 0 を返す（すべての n で階乗が 0 になり，反復版とは一致しなくなる）
 softprac_add_variant(Factorial recursion.c base_0
   [=[ * n は main の初期値を書き換えて変える（0，1，5，20，21 など）。]=]
-  [=[ * 書き換え版（小問1）: 基底条件で 0 を返す誤りの版。最後に factorial(0) の 0 を掛けるので，どの n でも 0 になる。]=]
+  [=[ * 基底条件で 0 を返す誤りの版（小問1）。最後に factorial(0) の 0 を掛けるので，どの n でも 0 になる。]=]
   "if (n == 0) { return 1; }          /* 基底条件: 0! = 1 */"
   "if (n == 0) { return 0; }          /* 小問1: 基底値を 0 にした誤りの版 */")
 softprac_add_variant(Factorial recursion.c base_0_n0
   [=[ * n は main の初期値を書き換えて変える（0，1，5，20，21 など）。]=]
-  [=[ * 書き換え版（小問1）: 基底条件で 0 を返す誤りの版。最後に factorial(0) の 0 を掛けるので，どの n でも 0 になる。]=]
+  [=[ * 基底条件で 0 を返す誤りの版（小問1）。最後に factorial(0) の 0 を掛けるので，どの n でも 0 になる。]=]
   "if (n == 0) { return 1; }          /* 基底条件: 0! = 1 */"
   "if (n == 0) { return 0; }          /* 小問1: 基底値を 0 にした誤りの版 */"
   "unsigned int n = 5;" "unsigned int n = 0;")
 softprac_add_variant(Factorial recursion.c base_0_n1
   [=[ * n は main の初期値を書き換えて変える（0，1，5，20，21 など）。]=]
-  [=[ * 書き換え版（小問1）: 基底条件で 0 を返す誤りの版。最後に factorial(0) の 0 を掛けるので，どの n でも 0 になる。]=]
+  [=[ * 基底条件で 0 を返す誤りの版（小問1）。最後に factorial(0) の 0 を掛けるので，どの n でも 0 になる。]=]
   "if (n == 0) { return 1; }          /* 基底条件: 0! = 1 */"
   "if (n == 0) { return 0; }          /* 小問1: 基底値を 0 にした誤りの版 */"
   "unsigned int n = 5;" "unsigned int n = 1;")
 softprac_add_variant(Factorial recursion.c base_0_n2
   [=[ * n は main の初期値を書き換えて変える（0，1，5，20，21 など）。]=]
-  [=[ * 書き換え版（小問1）: 基底条件で 0 を返す誤りの版。最後に factorial(0) の 0 を掛けるので，どの n でも 0 になる。]=]
+  [=[ * 基底条件で 0 を返す誤りの版（小問1）。最後に factorial(0) の 0 を掛けるので，どの n でも 0 になる。]=]
   "if (n == 0) { return 1; }          /* 基底条件: 0! = 1 */"
   "if (n == 0) { return 0; }          /* 小問1: 基底値を 0 にした誤りの版 */"
   "unsigned int n = 5;" "unsigned int n = 2;")
 softprac_add_variant(Factorial recursion.c base_0_n3
   [=[ * n は main の初期値を書き換えて変える（0，1，5，20，21 など）。]=]
-  [=[ * 書き換え版（小問1）: 基底条件で 0 を返す誤りの版。最後に factorial(0) の 0 を掛けるので，どの n でも 0 になる。]=]
+  [=[ * 基底条件で 0 を返す誤りの版（小問1）。最後に factorial(0) の 0 を掛けるので，どの n でも 0 になる。]=]
   "if (n == 0) { return 1; }          /* 基底条件: 0! = 1 */"
   "if (n == 0) { return 0; }          /* 小問1: 基底値を 0 にした誤りの版 */"
   "unsigned int n = 5;" "unsigned int n = 3;")
 softprac_add_variant(Factorial recursion.c base_0_n4
   [=[ * n は main の初期値を書き換えて変える（0，1，5，20，21 など）。]=]
-  [=[ * 書き換え版（小問1）: 基底条件で 0 を返す誤りの版。最後に factorial(0) の 0 を掛けるので，どの n でも 0 になる。]=]
+  [=[ * 基底条件で 0 を返す誤りの版（小問1）。最後に factorial(0) の 0 を掛けるので，どの n でも 0 になる。]=]
   "if (n == 0) { return 1; }          /* 基底条件: 0! = 1 */"
   "if (n == 0) { return 0; }          /* 小問1: 基底値を 0 にした誤りの版 */"
   "unsigned int n = 5;" "unsigned int n = 4;")
 softprac_add_variant(Factorial recursion.c base_0_n20
   [=[ * n は main の初期値を書き換えて変える（0，1，5，20，21 など）。]=]
-  [=[ * 書き換え版（小問1）: 基底条件で 0 を返す誤りの版。最後に factorial(0) の 0 を掛けるので，どの n でも 0 になる。]=]
+  [=[ * 基底条件で 0 を返す誤りの版（小問1）。最後に factorial(0) の 0 を掛けるので，どの n でも 0 になる。]=]
   "if (n == 0) { return 1; }          /* 基底条件: 0! = 1 */"
   "if (n == 0) { return 0; }          /* 小問1: 基底値を 0 にした誤りの版 */"
   "unsigned int n = 5;" "unsigned int n = 20;")

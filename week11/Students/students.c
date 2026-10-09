@@ -1,4 +1,5 @@
-﻿// 第11回 課題2: Student 配列の平均と，構造体全体の代入による 1 人分の交換
+﻿// 第11回 課題2　点数の平均（Students / students.c）
+// Student 配列の平均と，構造体全体の代入による 1 人分の交換。
 #include <stdio.h>
 enum { COUNT = 3 };
 typedef struct {

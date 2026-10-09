@@ -25,7 +25,7 @@ weekNN/
   プロジェクト名は全回で重複できない（実行ファイル名になるため）。重複したら CMake が止まるので，`Hello2` のように名前を変えて README に理由を書く。
 - フォルダ内の `*.c` はすべて 1 つの実行ファイルにリンクされる。`main` を持つ `.c` は 1 フォルダに 1 つだけにする。
 - フォルダのソース（本体）は，**演習ページの「期待する表示」を出す版**にする。
-  - 期待する表示がすべての指示を反映した後の形なら（「関数を追加して表示する」など），その最終版を本体にする。
+  - 期待する表示がすべての指示を反映した後の形なら（「関数を追加して表示する」など），その形を本体にする。
   - 期待する表示が配布コード・最初の版のもので，その後の変更が「値を変えて確かめる」「〜に変えて比べる」実験なら，本体は配布コード・最初の版のままにし，変更した版は `softprac_add_variant` でテストする。
   - 迷ったら「TA が IDE で本体を実行すると，演習ページの期待する表示がそのまま出る」ことを優先する。途中版のコードは README にも載せる。
   - 演習ページがプロジェクト名を付けている派生版は，別フォルダにする。
@@ -100,6 +100,15 @@ TA が授業で解説・採点に使う資料です。演習ページの**すべ
 - 意図的なエラー（第1回の `broken.c`，第12回のリンクエラーなど）は，エラーになる版を README にコードブロックで示し，MSVC での診断（エラー番号 `C2143`，`LNK2019` など）と GCC での診断の例を書く。
 - 用語は講義ページに合わせる。
 
+### 読者に向けた書き方
+
+README とソースのコメントは，TA と学生が読む完成した資料として書く。
+
+- 書くのは「何をするか」「なぜそうなるか」「どこを見るか」。作業の経緯（「〜を直した」「〜に変更した」「採点の指摘」「最終版」など）やコミット・CI の実行番号は書かない。
+- テストのしくみ・実行環境・MSVC の診断番号の扱いはルートの README.md にまとめてあるので，各回の README で繰り返さない。書き換えた版を示すときは，テスト名（`variant_<名前>`）を添えるだけでよい。
+- MSVC の番号は「MSVC では C4244（`int` から `char` への変換）」のように番号と意味を書く。文面を「」で引用しない。
+- 学生が読むソース（`weekNN/<プロジェクト>/*.c`・`*.h`・`versions/*.c`）のコメントには，テストやビルドのしくみ（variant・CMakeLists.txt など）を書かない。
+
 ## 5. 仕上げ
 
 ```sh
@@ -109,4 +118,20 @@ python3 tools/gen_readme_index.py    # ルート README の目次（各回の表
 ```
 
 - この 3 つは**コミットのたびに**実行し，生成されたファイルも同じコミットに含める（テスト数が変わったのに目次を作り直さないと，CI の repository-checks が失敗する）。
-- push したら CI（GitHub Actions）の全ジョブが成功したことを確かめる。IDE の起動構成は `python3 tools/check_launch.py <ビルド先>` で手元でも確かめられる。
+- push したら CI の全ジョブが成功したことを確かめる。IDE の起動構成は `python3 tools/check_launch.py <ビルド先>` で手元でも確かめられる。
+
+## 6. CI（GitHub Actions）
+
+`.github/workflows/ci.yml` で次を確かめる。
+
+| ジョブ | 内容 |
+| --- | --- |
+| `windows-msvc-preset` | MSVC `/W4 /WX`。CMakePresets の `msvc-debug`・`msvc-release`（Visual Studio の「フォルダーを開く」と同じ構成）。IDE の起動構成で全プロジェクトを起動する |
+| `windows-msvc-sln` | Visual Studio ジェネレーター（.sln）での MSBuild |
+| `windows-mingw` | MSYS2 UCRT64 の gcc（VS Code + MinGW）。プリセット `mingw-debug` |
+| `linux` | GCC・Clang × Debug・Release。`-Werror`，AddressSanitizer/UBSan |
+| `macos` | Apple Clang。プリセット `gcc-debug`。IDE の起動構成で全プロジェクトを起動する |
+| `repository-checks` | Windows で使えないファイル名，ソースの BOM・改行，生成ファイル（`.vs/launch.vs.json`・README の目次）が最新か |
+
+- 全ジョブに時間制限があり，同じブランチに新しい push が来ると古い実行は取り消される。
+- 非公開リポジトリでは Actions の実行時間が課金対象になる（Windows は 2 倍，macOS は 10 倍で数える）。そのため非公開のときの push・PR では，MSVC Debug・Linux Debug・repository-checks だけを動かす。すべてのジョブは Actions タブから手動で実行すると動く。

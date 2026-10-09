@@ -1,11 +1,9 @@
-# 第4回 課題4 Powers
-# 本体（for 版，limit = 100）に加えて，演習ページの表の limit（1, 2, 64, 65, 100）に変えた版を，
-# for 版・while 版・do-while 版（versions/）でビルドしてテストする。le_limit_64 は < を <= にした版。
-# 各版は先頭コメントの 2 行目を版の説明に置き換える
+# 第4回 課題4 Powers: 本体（for 版，limit = 100）と while 版・do-while 版（versions/）を，演習ページの表の limit（1, 2, 64, 65, 100）で。
+# le_limit_64 は < を <= にした版。回数を数える版も。各版は先頭コメントの 2 行目を版の説明にする
 softprac_add_program(Powers powers.c)
 
 set(for_head "// 回数ではなく値で継続を決める．power は 1 から始めて 2 倍ずつ更新し，limit 未満の間だけ表示する．")
-set(while_head "// for の初期化をループの前へ，更新を本体の最後へ移した．")
+set(while_head "// for の初期化をループの前に，更新を本体の最後に置く．")
 set(do_while_head "// 条件を本体の後で調べるため，limit が 1 でも本体を 1 回実行する．")
 
 # limit_value(<変数> <limit>): 本体（powers.c）の "limit = 100;" を置き換える文字列。同じ長さになるように ; の後に空白を補い，
@@ -32,7 +30,7 @@ softprac_add_variant(Powers versions/powers_do_while.c do_while_limit_100)
 foreach(limit 1 2 64 65)
   softprac_add_variant(Powers versions/powers_while.c while_limit_${limit}
     "limit = 100" "limit = ${limit}"
-    "${while_head}" "// limit を ${limit} に書き換えた版．for の初期化をループの前へ，更新を本体の最後へ移した．")
+    "${while_head}" "// limit を ${limit} に書き換えた版．for の初期化をループの前に，更新を本体の最後に置く．")
   softprac_add_variant(Powers versions/powers_do_while.c do_while_limit_${limit}
     "limit = 100" "limit = ${limit}"
     "${do_while_head}" "// limit を ${limit} に書き換えた版．条件を本体の後で調べるため，limit が 1 でも本体を 1 回実行する．")

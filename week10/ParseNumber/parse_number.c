@@ -1,4 +1,5 @@
-﻿/* 第10回 課題2 ParseNumber: 引数の整数 1 個（0〜100）を strtol で検査して表示する（講義の parse_number.c） */
+﻿/* 第10回 課題2　数値引数の検査（ParseNumber / parse_number.c）
+   講義の parse_number.c。引数の整数 1 個（0〜100）を strtol で検査して表示する */
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>

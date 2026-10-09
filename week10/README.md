@@ -8,31 +8,28 @@
 
 ## プロジェクト一覧
 
-| 課題 | 内容 | プロジェクト | ソース | 既定の引数（`run.args`） | データファイル | テスト |
+| 課題 | 内容 | プロジェクト | ソース | 既定の引数（`run.args`） | データファイル | テスト数 |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | 1 文字ずつ読んで表示 | `ReadText` | [read_text.c](ReadText/read_text.c) | `input.txt` | [input.txt](ReadText/input.txt) | 9 |
 | 1 | 行の長さ | `LineLengths` | [line_lengths.c](LineLengths/line_lengths.c) | `input.txt` | [input.txt](LineLengths/input.txt) | 13 |
-| 2 | 数値引数の検査（講義の `parse_number.c`） | `ParseNumber` | [parse_number.c](ParseNumber/parse_number.c) | `42` | なし | 16 + 合計版 `sum` 13 |
+| 2 | 数値引数の検査（講義の `parse_number.c`） | `ParseNumber` | [parse_number.c](ParseNumber/parse_number.c) | `42` | なし | 29 |
 | 2 | 引数を表示して文字列を探す | `Arguments` | [arguments.c](Arguments/arguments.c) | `nagano ishikawa` | なし | 12 |
-| 3 | バイト列を保存（講義の `binary.c`） | `Binary` | [binary.c](Binary/binary.c) | なし | なし（`bytes.bin` は実行時に作る） | 2 + `utf8_a` 1 + `show_n` 1 |
-| 3 | バイト順を調べる（「別の `main`」） | `ByteOrder` | [byte_order.c](ByteOrder/byte_order.c) | なし | なし | 1 + `value_0x1234` 1 + `bits_of_byte` 1 |
-| 4 | テキストを書く（モード `w`） | `WriteText` | [write_text.c](WriteText/write_text.c) | なし | なし（`scores.txt` は実行時に作る） | 3 + `mode_a` 3 + `mode_wx` 2 |
-| 発展1 | 数値をテキスト・バイナリで往復 | `NumberFormats` | [number_formats.c](NumberFormats/number_formats.c) | なし | なし（`numbers.txt`・`numbers.bin` は実行時に作る） | 2 + `precision_0125` 1 |
+| 3 | バイト列を保存（講義の `binary.c`） | `Binary` | [binary.c](Binary/binary.c) | なし | なし（`bytes.bin` は実行時に作る） | 4 |
+| 3 | バイト順を調べる（「別の `main`」） | `ByteOrder` | [byte_order.c](ByteOrder/byte_order.c) | なし | なし | 3 |
+| 4 | テキストを書く（モード `w`） | `WriteText` | [write_text.c](WriteText/write_text.c) | なし | なし（`scores.txt` は実行時に作る） | 8 |
+| 発展1 | 数値をテキスト・バイナリで往復 | `NumberFormats` | [number_formats.c](NumberFormats/number_formats.c) | なし | なし（`numbers.txt`・`numbers.bin` は実行時に作る） | 3 |
 | 発展2 | 二乗の一覧を書く | `WriteSquares` | [write_squares.c](WriteSquares/write_squares.c) | `4 squares.txt` | なし（`squares.txt` は実行時に作る） | 14 |
 | 発展2 | 一覧を検査して値を探す | `CheckValue` | [check_value.c](CheckValue/check_value.c) | `squares.txt 9` | [squares.txt](CheckValue/squares.txt)（`WriteSquares 4` の出力のコピー） | 37 |
 
-テストは合計 132 件（本体 109 件，variant 23 件）。すべて成功（GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1，どちらも `-Wall -Wextra -Wpedantic -Werror` で警告 0）。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants を含む）のビルドとテストが成功している（コミット a76876f の時点）。
+書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
 
 ### この回の約束（TA 向け）
 
-- **本体（フォルダのソース）は演習ページの期待する表示を出す版**（CONTRIBUTING.md §1）。この回は期待する表示がどれも配布コード・最初の版のものなので，本体はその版にし，その後の小問は variant にした。TA が IDE で本体を実行すると，演習ページ・講義の期待する表示がそのまま出る
-  （`ParseNumber` は `42`，`Binary` は `41 00 42 0A`，`ByteOrder` は `01 00`，`WriteText` は何回実行しても 3 行，`NumberFormats` は `text=0.50 1.25 -2.00`）。
-- 演習ページの「〜へ置き換えます」「値を変更すると」「モードだけを `a` へ変えます」などの小問は **variant** にした。
-  各プロジェクトの `CMakeLists.txt` が全回共通の `softprac_add_variant`（[cmake/SoftpracVariant.cmake](../cmake/SoftpracVariant.cmake)）で本体の一部を置き換えた版を生成し，
-  別の実行ファイル `<プロジェクト>_<版>` としてビルド・テストする（期待値は `<プロジェクト>/variants/tests/<版>.out` または `<版>--<ケース>.out`，
-  テスト名は `week10/<プロジェクト>/variant_<版>[--<ケース>]`）。この README の variant のコードと実行結果は，その生成物を実際に実行したもの。
+- 各フォルダのソースは，演習ページ・講義の期待する表示をそのまま出す（`ParseNumber` は `42`，`Binary` は `41 00 42 0A`，`ByteOrder` は `01 00`，`WriteText` は何回実行しても 3 行，`NumberFormats` は `text=0.50 1.25 -2.00`）。
+- 演習ページの「〜へ置き換えます」「値を変更すると」「モードだけを `a` へ変えます」などの小問は，本体の一部を書き換えた版で示す。
+  実行例では `<プロジェクト>_<版>`（例: `WriteText_mode_a`）という実行ファイル名で示し，テスト名は `variant_<版>[--<ケース>]`。
 
-  | プロジェクト | variant | 演習ページの小問 |
+  | プロジェクト | 版 | 演習ページの小問 |
   | --- | --- | --- |
   | `ParseNumber` | `sum` | 複数の数値を合計するなら（検査・変換部分を断片へ置き換え） |
   | `Binary` | `utf8_a` | UTF-8 をバイトとして観察する（`data` を `E3 81 82 0A` へ） |
@@ -44,10 +41,8 @@
 
 - `ByteOrder` は演習ページの「講義の `unsigned short` の観察用断片を別の `main` で実行します」に対応する。演習ページにプロジェクト名がないので，
   解答で名前を付けた（全回で重複しない名前）。学生のプロジェクト名は自由でよい。
-- プログラムが書き出すファイル（`bytes.bin`・`scores.txt`・`numbers.txt`・`numbers.bin`・`squares.txt`）はリポジトリに置いていない。
-  テストでは一時フォルダで実行し，書かれたファイルを `tests/<ケース>.files/` の期待値と比較している（`.bin` はバイト単位）。
-- 実行結果は Linux x64（GCC 13.3）で実際にビルド・実行した出力。表示は ASCII だけで，Windows x64（MSVC）でも同じになる。
-  環境で変わる点（改行コード，`long` のサイズなど）はそれぞれの節に「Windows x64 (MSVC) では…，Linux x64 では…」として書いた。
+- プログラムが書き出すファイル（`bytes.bin`・`scores.txt`・`numbers.txt`・`numbers.bin`・`squares.txt`）はリポジトリに置いていない（書かれるべき内容は `tests/<ケース>.files/` にある）。
+- 表示は ASCII だけで，Windows x64（MSVC）でも同じになる。環境で変わる点（改行コード，`long` のサイズなど）はそれぞれの節に「Windows x64 (MSVC) では…，Linux x64 では…」として書いた。
 - 実行例の `$ ReadText input.txt` は「コマンド引数に `input.txt` を設定して実行した」という意味。`(終了コード 1)` はプログラムが返した値で，画面には出ない
   （Visual Studio の Ctrl+F5 のコンソールでは，プログラムの終了後に（プロセス番号）と終了コード 1 が表示される）。標準エラー出力も同じ画面に出る。
 
@@ -84,7 +79,7 @@
 ### ターミナルから実行する
 
 作業ディレクトリをプロジェクトフォルダにしてから，ビルドした実行ファイルを相対パスで起動する（ビルド先は `out/build/<プリセット>/bin/week10/`。
-variant は `out/build/<プリセット>/variants/week10/<プロジェクト>_<版>`，例: `WriteText_mode_a.exe`）。
+書き換えた版は `out/build/<プリセット>/variants/week10/<プロジェクト>_<版>`，例: `WriteText_mode_a.exe`）。
 
 ```bat
 rem Windows の cmd（プリセット msvc-debug）
@@ -99,7 +94,7 @@ cd week10\ReadText
 cd week10/ReadText
 ../../out/build/gcc-debug/bin/week10/ReadText input.txt
 ../../out/build/gcc-debug/bin/week10/ReadText "my input.txt"
-# variant の例（追記モードの WriteText）
+# 書き換えた版の例（追記モードの WriteText）
 cd ../WriteText
 ../../out/build/gcc-debug/variants/week10/WriteText_mode_a
 ```
@@ -128,7 +123,7 @@ File
 
 ### 表「試す条件」（記入済み）
 
-| 試す条件 | 期待する結果（実際の結果） | 理由 |
+| 試す条件 | 期待する結果 | 理由 |
 | --- | --- | --- |
 | `Hello`と`File`の2行 | `Hello`，`File` の 2 行をそのまま表示し，正常終了（終了コード 0） | 1文字ずつ最後まで読む |
 | 空ファイル | 何も表示せず正常終了（終了コード 0）。エラーメッセージは出ない | `EOF`は必ずしもエラーではない（最初の `fgetc` が `EOF`，`ferror` は 0） |
@@ -137,7 +132,7 @@ File
 | 引数欄を空にする | 標準エラーに `usage: ReadText filename`，終了コード 1 | ファイル名を受け取れない（`argc` が 1） |
 | 引数欄を`""`にする | 標準エラーに `usage: ReadText filename`，終了コード 1 | 空のファイル名を拒否する（`argc` は 2 だが `argv[1][0] == '\0'`） |
 
-実際の出力（`(終了コード n)` は追記）:
+実行結果（`(終了コード n)` は説明のために書き足したもの）:
 
 ```text
 $ ReadText empty.txt              ← 0 バイトのファイル
@@ -201,7 +196,7 @@ $ LineLengths input.txt
 | `A`を31個 | あり・なし | どちらも 31 |
 | `A`を32個 | あり・なし | どちらも長さは表示しない（`line too long`・`read or output error` を標準エラーに出し，終了コード 1） |
 
-実際の出力（各ファイル 1 行だけ）:
+実行結果（各ファイル 1 行だけ）:
 
 ```text
 $ LineLengths abc.txt      ← "ABC\n"         → 3
@@ -241,7 +236,7 @@ $ LineLengths empty.txt    ← 空ファイル: 何も表示しない（終了�
 ### 本体（講義の `parse_number.c`）と検証表
 
 解答: [ParseNumber/parse_number.c](ParseNumber/parse_number.c)（講義の `parse_number.c` に先頭のコメントだけを加えたもの）。既定の引数（`run.args`）は `42`。
-次の実行例と表の値はすべて本体のテスト（[ParseNumber/tests](ParseNumber/tests)）にしている。
+次の実行例と表の値の期待値は [ParseNumber/tests](ParseNumber/tests) にある。
 
 ```c
 #include <stdio.h>
@@ -291,7 +286,7 @@ expected an integer from 0 to 100
 
 ### 表「境界と文字列の形を確かめる」（記入済み）
 
-| 引数欄 | 期待する結果（実際の結果） | 注目点 |
+| 引数欄 | 期待する結果 | 注目点 |
 | --- | --- | --- |
 | 0 | `0` を表示，終了コード 0 | 下限を含む |
 | 100 | `100` を表示，終了コード 0 | 上限を含む |
@@ -309,10 +304,9 @@ expected an integer from 0 to 100
 例えば `3000000000` は Windows では `ERANGE`，Linux では `long` に収まって `value > 100` で拒否される（どちらも `expected an integer from 0 to 100`，テスト `ten_digits`）。理由は違っても両方で拒否されるのは，
 「桁数」ではなく `errno` と範囲で判断しているから。「10 桁なら必ず範囲外」とは決められない。
 
-### 複数の数値を合計するなら（variant `sum`）
+### 複数の数値を合計するなら（テスト `variant_sum`）
 
-本体の `main` の検査・変換部分（`if (argc != 2)` から `printf("%ld\n", value);` まで）を演習ページの断片へ置き換え，最後は元の `return 0;` で終わる版。
-`ParseNumber/CMakeLists.txt` が `ParseNumber_sum` として生成してテストしている（[variants/tests/sum--*](ParseNumber/variants/tests)）。
+本体の `main` の検査・変換部分（`if (argc != 2)` から `printf("%ld\n", value);` まで）を演習ページの断片へ置き換え，最後は元の `return 0;` で終わる版（テスト `variant_sum--*`）。
 
 ```c
 int main(int argc, char *argv[])
@@ -352,10 +346,10 @@ invalid integer
 $ ParseNumber_sum
 expected 1 to 10 integers
 (終了コード 1)
-$ ParseNumber_sum 1 2 3 4 5 6 7 8 9 10 11      ← 11 個（テスト sum--eleven_values）
+$ ParseNumber_sum 1 2 3 4 5 6 7 8 9 10 11      ← 11 個（テスト variant_sum--eleven_values）
 expected 1 to 10 integers
 (終了コード 1)
-$ ParseNumber_sum 42 50                          ← テスト sum--two_values
+$ ParseNumber_sum 42 50                          ← テスト variant_sum--two_values
 92
 ```
 
@@ -417,7 +411,7 @@ $ Binary
 `bytes.bin` は 4 バイト（`41 00 42 0A`）。途中の `00` も普通のデータとして読める（文字列ではないので `%s` で表示しない）。
 繰り返し実行すると同じ名前のファイルを上書きし，常に 4 バイトになる（テスト `overwrite`: 20 バイトの古い `bytes.bin` があっても 4 バイトになる）。
 
-**読み取った個数だけを使う**（variant `show_n`）: `buffer` は 16 要素だが，`fread` が返す `n` は 4。表示するのは `buffer[0]`〜`buffer[3]` だけで，残り 12 個は値が決まっていない（読んではいけない）。
+**読み取った個数だけを使う**（テスト `variant_show_n`）: `buffer` は 16 要素だが，`fread` が返す `n` は 4。表示するのは `buffer[0]`〜`buffer[3]` だけで，残り 12 個は値が決まっていない（読んではいけない）。
 `n` を確かめるために，表示のループの直前へ 1 行足した版:
 
 ```c
@@ -433,7 +427,7 @@ n=4
 
 `size = 1` なので `n` はバイト数と一致する。ファイルが 16 バイトより大きいと 1 回の `fread` では全部読めない。「`fread` を呼んだ = ファイル全体を読んだ」ではない。
 
-### UTF-8 をバイトとして観察する（variant `utf8_a`）
+### UTF-8 をバイトとして観察する（テスト `variant_utf8_a`）
 
 `data` を次の 4 バイトに置き換えた版（`Binary_utf8_a`）:
 
@@ -464,7 +458,7 @@ sizeof value = 2
 01 00
 ```
 
-値を `0x1234` へ変更した版（variant `value_0x1234`，`unsigned short value = 0x1234;`）:
+値を `0x1234` へ変更した版（テスト `variant_value_0x1234`，`unsigned short value = 0x1234;`）:
 
 ```text
 $ ByteOrder_value_0x1234
@@ -472,7 +466,7 @@ sizeof value = 2
 34 12
 ```
 
-演習ページの「1 バイトを 2 進数表示する」断片を `return 0;` の前に足した版（variant `bits_of_byte`）:
+演習ページの「1 バイトを 2 進数表示する」断片を `return 0;` の前に足した版（テスト `variant_bits_of_byte`）:
 
 ```c
     /* 1 バイトの中は上位ビット（bit 7）から表示する */
@@ -494,7 +488,7 @@ sizeof value = 2
 - Windows x64（MSVC）・Linux x64・macOS（Apple Silicon）はいずれもリトルエンディアンで，`unsigned short` は 2 バイト。どれも同じ表示になる。
   ビッグエンディアンの処理系なら `00 01`・`12 34` になる（テストはリトルエンディアンを前提にしている）。
 - 先に `0x34` があっても，数値が `0x3412` に変わったわけではない。値は `0x1234` のままで，**メモリに置く複数バイトの順序**が下位バイトからなだけ。
-- 1 バイトの中のビットは反転しない。2 進数表示は上位ビット（bit 7）から並べるので，`1` は `00000001`（variant `bits_of_byte`）。
+- 1 バイトの中のビットは反転しない。2 進数表示は上位ビット（bit 7）から並べるので，`1` は `00000001`（テスト `variant_bits_of_byte`）。
 
 ### 採点のポイント・よくある誤り
 
@@ -527,7 +521,7 @@ $ WriteText            ← 2 回目（同じ条件）: 再び 3 行。6 行に�
 `scores.txt` のバイト数: Windows（テキストモードで `\n` が CRLF になる）では 3 行 ×（2 文字 + CR LF）= **12 バイト**，Linux/macOS では **9 バイト**。
 `"wb"` で書けば Windows でも 9 バイトになる（「バイナリで保存した場合とバイト数が異なることがある」の答え）。`ReadText` で読み返した表示はどちらも同じ。
 
-### モードを `a` に変えた版（variant `mode_a`）
+### モードを `a` に変えた版（テスト `variant_mode_a`）
 
 ```c
     /* a: ファイルがなければ作り，あれば以前の内容を残して末尾へ追記する */
@@ -542,17 +536,17 @@ $ WriteText_mode_a     → 9 行
 $ WriteText_mode_a     → 3 行（a はファイルがなければ新しく作る）
 ```
 
-（行数は実行後に `scores.txt` を数えたもの。テスト `mode_a--new_file`・`mode_a--append_to_3_lines`・`mode_a--append_to_6_lines` で内容まで比較している。）
+（行数は実行後に `scores.txt` を数えたもの。内容はテスト `variant_mode_a--new_file`・`variant_mode_a--append_to_3_lines`・`variant_mode_a--append_to_6_lines` の期待値にある。）
 
-### 表「上書きと追記を比較する」（実際の結果）
+### 表「上書きと追記を比較する」
 
 | モード | 実行前に3行ある場合 | 注意 | 確かめたこと（テスト） |
 | --- | --- | --- | --- |
 | `w` | 今回の3行だけになる | 以前の内容を消す | 3 行 → 3 行，`old data` などの別の内容 → 3 行（本体の `overwrite_*`） |
-| `a` | 以前の3行と今回の3行で6行 | 繰り返すたびに増える | 3 → 6 → 9 行，なければ 3 行で作成（`mode_a--*`） |
-| `wx` | 開くのに失敗 | 既存ファイルを保護する | `fopen: File exists`，終了コード 1，元の内容のまま（`mode_wx--existing_file`）。なければ 3 行で作成 |
+| `a` | 以前の3行と今回の3行で6行 | 繰り返すたびに増える | 3 → 6 → 9 行，なければ 3 行で作成（`variant_mode_a--*`） |
+| `wx` | 開くのに失敗 | 既存ファイルを保護する | `fopen: File exists`，終了コード 1，元の内容のまま（`variant_mode_wx--existing_file`）。なければ 3 行で作成 |
 
-`wx` の版（variant `mode_wx`，`fopen("scores.txt", "wx")`）の実行結果:
+`wx` の版（テスト `variant_mode_wx`，`fopen("scores.txt", "wx")`）の実行結果:
 
 ```text
 （scores.txt がある状態で）
@@ -620,7 +614,7 @@ numbers.bin（25 バイト = 1 + 3 * sizeof(double)。16 進数）
   この小さな例ではテキストの方が小さい。テキスト・バイナリのどちらが常に小さい・速いということはない。
 - `numbers.bin` は「同じ処理系で読み戻す専用」。`double` のサイズ・表現・バイト順が違う処理系とは交換できない。
 
-### `data[0]` を 0.125，表示を `%.3f` にした版（variant `precision_0125`）
+### `data[0]` を 0.125，表示を `%.3f` にした版（テスト `variant_precision_0125`）
 
 保存の書式は `%.2f` のまま，`data[0]` を 0.125 にし，最後の 2 行の表示書式だけ `%.3f` に変えた版:
 
@@ -725,11 +719,11 @@ expected a value from 0 to 9801
 符号や先頭の空白は `strtol` の仕様どおり受け付ける（値の行の `+9`，検索値の `" 9"` や `+9` も 9 として扱う）。
 BOM 付き UTF-8 で保存した `squares.txt` は，先頭の `EF BB BF` が数字ではないので `line 1: expected a count from 0 to 100` で拒否される（テスト `bad_bom`）。
 
-### 表「異常なデータも別ファイルで確認する」（記入済み・実際の結果）
+### 表「異常なデータも別ファイルで確認する」（記入済み）
 
 正常な `squares.txt`（`4`・`0`・`1`・`4`・`9`）のコピーを `bad.txt` として変更し，`CheckValue bad.txt 9` で実行した。
 
-| 変更 | 期待する結果（実際の結果） |
+| 変更 | 期待する結果 |
 | --- | --- |
 | ヘッダを4のまま最後の9を削除 | `line 5: missing value`，終了コード 1（個数不足） |
 | 値の1行を`abc`へ変更 | `line 3: expected a value from 0 to 9801`，終了コード 1（3 行目の値 `1` を `abc` にした場合） |
@@ -780,7 +774,7 @@ Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 �
 4. **そうとは限らない。** `fread` の戻り値は完全に読めた**要素の個数**。`size` が 1 のときだけバイト数と一致する。`fread(buf, 4, 4, fp)` が 3 を返したら 4 バイトの要素が 3 個（12 バイト分）で，
    一部だけ読めた 4 個目は数えられない。また要求より少ないこともあるので，`ferror` と終端を確かめる（`Binary`・`NumberFormats`）。
 5. **変換されない。** 拡張子はファイル名の一部で，名前を変えても中のバイトは同じ。テキストとして扱うかバイナリとして扱うかは，`fopen` のモード（`b` の有無）と，読み書きするプログラムが決めた保存形式で決まる。
-6. **同じではない。** 「あ」は見た目 1 文字（コードポイント U+3042 の 1 個）だが，UTF-8 では `E3 81 82` の 3 バイト（`Binary` の variant `utf8_a` で確認）。`strlen` はバイト数を数えるので 3 になる。
+6. **同じではない。** 「あ」は見た目 1 文字（コードポイント U+3042 の 1 個）だが，UTF-8 では `E3 81 82` の 3 バイト（`Binary` の `utf8_a` の版で確認）。`strlen` はバイト数を数えるので 3 になる。
    見た目の 1 文字が複数のコードポイントからできている場合もあり，バイト数・コードポイント数・見た目の文字数はそれぞれ別。
 7. **よくない。** ファイルの個数（ヘッダ）は壊れていたり，わざと大きくされていたりするかもしれない。配列の容量以内か（`NumberFormats` は 3 と一致するか，`CheckValue` は 0〜100 か）を確かめ，
    さらにその個数のデータが本当にあるか（`fread` の戻り値，`CheckValue` の `missing value`）を確かめてから使う。
@@ -798,7 +792,7 @@ Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 �
 | 項目 | 確認できる課題と内容 |
 | --- | --- |
 | 正常な値だけでなく，課題に示された境界の値でも確認した | `ParseNumber`: 0・100（受け付ける），101・-1（拒否），`+42`・`" 42"`・`"42 "`・`12x`・`abc`・非常に長い整数・引数の過不足。合計版の 10 個・11 個。<br>`LineLengths`: 31 文字（改行あり・なし）と 32 文字，空行，空ファイル。<br>`ReadText`: 空ファイル，最後の改行なし，`missing.txt`，引数なし，`""`，空白を含む名前。<br>`WriteText`: `w`・`a`・`wx` を既存ファイルあり・なしで比較。<br>`WriteSquares`: `N` = 0・100・101，既存ファイル。<br>`CheckValue`: 表の 7 種類の異常，0 と 9801，30・31 バイトの行。すべて自動テストにしている |
-| 警告を確認し，原因を説明・修正した | すべてのプロジェクトが GCC/Clang の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で問題になる C4996 は `fopen` を使うファイルの先頭の `#define _CRT_SECURE_NO_WARNINGS` で抑止。`%zu` は MSVC 2015 以降で使え，現在の UCRT の `fopen` はモードの `x` に対応している）。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants を含む）のビルドとテストが成功している（コミット a76876f の時点）。CI でも標準エラー出力（`.err`）を比べているので，`perror` の文面，`wx` の失敗，`text=0.120` なども MSVC の実行で確かめられている。<br>学生の提出物で MSVC `/W4` で出る警告の例（番号は Microsoft のドキュメントによる。このリポジトリでは再現していない）: C4996（`fopen`，`_CRT_SECURE_NO_WARNINGS` がない／`#include` の後に書いた），C4244（`char ch = fgetc(fp);` の `int` → `char`。ドキュメントによれば `/W4` で出る。`long` → `int` は MSVC では同じ 4 バイトなので通常は C4244 の対象にならないとされるが，Linux では値が変わり得る），C4018/C4389（`size_t` と `int` の比較），C4100（使わない `argc`） |
+| 警告を確認し，原因を説明・修正した | すべてのプロジェクトが警告なしでビルドできる（MSVC `/W4` の C4996（`fopen` などが安全でない関数とされる）は，`fopen` を使うファイルの先頭の `#define _CRT_SECURE_NO_WARNINGS` で抑止。`%zu` は MSVC 2015 以降で使え，現在の UCRT の `fopen` はモードの `x` に対応している）。`perror` の文面，`wx` の失敗，`text=0.120` も Windows（MSVC）で同じになる。<br>学生の提出物で MSVC `/W4` で出る警告の例: C4996（`fopen` などが安全でない関数とされる。`_CRT_SECURE_NO_WARNINGS` がない，または `#include` の後に書いた），C4244（`int` から `char` への変換でデータが失われる可能性。`char ch = fgetc(fp);`。`long` → `int` は MSVC では同じ 4 バイトなので通常は対象にならないが，Linux では値が変わり得る），C4018/C4389（符号付きと符号なしの比較。`size_t` と `int`），C4100（使っていない仮引数。`argc`） |
 | 自分の言葉で，処理の流れと使った型を説明できる | `FILE *`（ストリームでありファイルの中身ではない），`fgetc` の戻り値が `int` である理由（課題1），`char *argv[]` と `argc`（課題2），`size_t` と `fread` の戻り値（課題3），`unsigned char *` でオブジェクトの表現を見る（`ByteOrder`），`long` と `strtol`・`errno`（課題2・発展2），`double` のテキスト/バイナリ表現（発展1） |
 
-注: 空文字列の引数は `.args` の空行で表す（空行 1 行だけなら空文字列の引数 1 つ）。`ReadText ""`（`empty_arg`），`ParseNumber ""`（本体 `empty_arg`・合計版 `sum--empty_arg`），`Arguments ""`（`empty_arg`），`WriteSquares 4 ""`，`CheckValue "" 9` を自動テストにしている。
+注: 空文字列の引数は `ReadText ""`（テスト `empty_arg`），`ParseNumber ""`（本体 `empty_arg`・合計版 `variant_sum--empty_arg`），`Arguments ""`（`empty_arg`），`WriteSquares 4 ""`，`CheckValue "" 9` でも確かめている。

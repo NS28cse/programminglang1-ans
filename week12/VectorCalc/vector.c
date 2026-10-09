@@ -1,4 +1,5 @@
-﻿/* 第12回 課題4 VectorCalc: ベクトルの計算．入力は値渡しなので呼び出し側の a，b は変わらない（講義 7 の vector.c） */
+﻿/* 第12回 課題4　ベクトルと行列を分割する（VectorCalc / vector.c）
+   講義 7 の vector.c．ベクトルの計算．入力は値渡しなので呼び出し側の a，b は変わらない */
 #include "vector.h"
 #include <stdio.h>
 

@@ -1,4 +1,4 @@
-﻿/* 第12回 課題3 エラー比較(1): main.c の include を存在しない calc_missing.h にした版（前処理で失敗する．ビルドしない） */
+﻿/* 第12回 課題3　リンクエラーを調べる（_BuildErrors / split/main_missing_header.c）: エラー比較(1)．main.c の include を存在しない calc_missing.h にした版で，前処理で失敗する */
 #include <stdio.h>
 #include "calc_missing.h"
 int main(void)

@@ -25,9 +25,7 @@ softprac_add_variant(Profile profile.c count_0
   "count = 3" "count = 0")
 
 # 採点のポイントの「total を int にする」: 376.5 が 376 に切り捨てられ，%d で total=376 と表示される。
-# 誤りを示すための版なので，MSVC /W4 /WX でエラーになる C4244（double から int への変換で情報が失われる。
-# 番号は Microsoft のドキュメントによる）をこの版だけ抑止する（GCC/Clang の -Wall -Wextra -Wpedantic は
-# -Wconversion を含まないので警告しない）。警告の抑止を含めて CI で成功。警告の文面はドキュメントによる例
+# 誤りを示す版なので，MSVC /W4 /WX でエラーになる C4244（double から int への変換）をこの版だけ抑止する
 softprac_add_variant(Profile profile.c int_total
   "${profile_desc}"
   "// 誤りの例: total を int にした版（376.5 が 376 に切り捨てられ，%d で total=376 と表示される）"

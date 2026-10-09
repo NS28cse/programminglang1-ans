@@ -1,5 +1,5 @@
-﻿/* 第10回 発展2 WriteSquares: 個数 N（0〜100）と新しいファイル名を受け取り，
-   1 行目に N，続く N 行に 0〜N-1 の二乗を書く（既存のファイルは上書きしない） */
+﻿/* 第10回 発展2　二乗の一覧を書き出して検索する（WriteSquares / write_squares.c）
+   個数 N（0〜100）と新しいファイル名を受け取り，1 行目に N，続く N 行に 0〜N-1 の二乗を書く（既存のファイルは上書きしない） */
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>

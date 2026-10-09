@@ -1,4 +1,6 @@
-﻿/* 第3回 課題3 範囲の判定と短絡評価（Conditions） */
+﻿/* 第3回 課題3 範囲の判定と短絡評価（Conditions / conditions.c）
+ * score が 0〜100 の範囲内かを && と || で判定し，&& の短絡評価で 0 による除算を防ぐ。
+ */
 #include <stdio.h>
 
 int main(void)

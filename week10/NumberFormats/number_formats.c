@@ -1,4 +1,5 @@
-﻿/* 第10回 発展1 NumberFormats: 3 つの double をテキスト（numbers.txt）とバイナリ（numbers.bin）で保存して読み戻す */
+﻿/* 第10回 発展1　数値をテキスト・バイナリで往復する（NumberFormats / number_formats.c）
+   3 つの double をテキスト（numbers.txt）とバイナリ（numbers.bin）で保存して読み戻す */
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 enum { COUNT = 3 };

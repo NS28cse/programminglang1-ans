@@ -1,10 +1,14 @@
 ﻿/*
- * 第8回 課題3 CopyText: 容量を確かめてから文字列をコピーする（添字なしのポインタ版）
- * 契約: src は終端のある文字列，dst は capacity 要素の書き込み可能な配列，両者は重ならない．
- * 戻り値: 成功なら 1，容量不足なら 0（このとき dst は 1 要素も変更しない）．
+ * 第8回 課題3　安全な文字列コピー（CopyText / copy_text.c）
+ * 容量を確かめてから文字列をコピーする関数 copy_text（添字なしのポインタ版）を作り，
+ * 演習ページの表の 4 ケースと，"aaaaaaaaaa" へ "hoge" をコピーする例の結果を表示する．
  */
 #include <stdio.h>
 #include <string.h>
+/*
+ * 契約: src は終端のある文字列，dst は capacity 要素の書き込み可能な配列，両者は重ならない．
+ * 戻り値: 成功なら 1，容量不足なら 0（このとき dst は 1 要素も変更しない）．
+ */
 int copy_text(char *dst, size_t capacity, const char *src)
 {
     /* 終端まで入れるには strlen(src) + 1 要素が必要．書き込みを始める前に判定する */

@@ -1,5 +1,5 @@
-﻿/* 第10回 課題3「バイト順を調べる」ByteOrder: unsigned short のメモリ上のバイト順を観察する
-   講義の観察用断片（unsigned short value = 1）を別の main にした（演習ページの 2 進数表示の断片は variant bits_of_byte） */
+﻿/* 第10回 課題3　バイト順を調べる（ByteOrder / byte_order.c）
+   講義の観察用断片（unsigned short value = 1）を別の main にし，unsigned short のメモリ上のバイト順を観察する */
 #include <stdio.h>
 int main(void)
 {

@@ -39,7 +39,7 @@ softprac_add_variant(SumMean summean.c sum_only_n_0
   [=[    printf("total=%d mean=%.1f\n", total, (double)total / n);  // 整数除算を避ける]=]
   [=[    printf("total=%d\n", total);  // n が 0 なので平均は表示しない]=])
 
-# 誤りの例: README の「採点のポイント」の，初期化子だけを変えて n を直し忘れた版。
+# 誤りの例: 初期化子だけを変えて n を直し忘れた版。
 # 残りの 2 要素の 0 も数えて 5 で割るので mean=60.0 になる（範囲外は読まない）
 softprac_add_variant(SumMean summean.c hundred_n_5_wrong
   "// 合計を返す sum_array と，平均を計算して表示する main に役割を分ける。\n// 配列は最大 COUNT 要素を用意し，実際に使う要素数 n（1〜COUNT）を別に持つ。"

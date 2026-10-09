@@ -1,4 +1,5 @@
-﻿/* 第12回 発展3 LibraryCheck: 標準ライブラリの契約（ヘッダ・入力条件・戻り値）を確かめる．演習ページのコードのまま */
+﻿/* 第12回 発展3　標準ライブラリの契約を確かめる（LibraryCheck / library_check.c）
+   標準ライブラリの契約（ヘッダ・入力条件・戻り値）を確かめる．演習ページのコードのまま */
 #define _CRT_SECURE_NO_WARNINGS
 #include <assert.h>
 #include <ctype.h>

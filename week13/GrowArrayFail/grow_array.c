@@ -1,7 +1,6 @@
 ﻿// 第13回 発展1「realloc の失敗を模擬する」（GrowArrayFail / grow_array.c）
-// GrowArray のコピー。realloc の呼び出しだけを試験用の try_resize に置き換え（simulate_failure = 1），
+// GrowArray のコピーで，realloc の呼び出しを試験用の try_resize（simulate_failure = 1）に置き換えたもの。
 // 再確保に失敗しても元の領域が残っていること（p[0] が 1 のまま）を確かめてから解放して終了する。
-// 正常版は GrowArray フォルダに残してある。
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>

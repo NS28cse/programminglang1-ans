@@ -1,4 +1,6 @@
-﻿/* 第3回 課題5（発展） 権限フラグ（Flags） */
+﻿/* 第3回 課題5（発展） 権限フラグ（Flags / flags.c）
+ * unsigned int の各ビットを権限として使い，マスクでセット・クリア・反転して，権限の有無を調べる。
+ */
 #include <stdio.h>
 
 int main(void)

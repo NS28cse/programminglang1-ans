@@ -120,24 +120,28 @@ cmake --build --preset gcc-debug
 ctest --preset gcc-debug          # すべての自動テスト
 ```
 
-## TA 向け
+## 解答の読み方
 
-- 各回の `weekNN/README.md` に，課題ごとの解答・実行結果・説明・表の記入例・確認問題の解答と，**採点のポイント・よくある誤り**をまとめています。
-- `tests/` の期待値は演習ページの表示例・検証表から作っています。学生のプログラムの出力を比べるときにも使えます。
-- 解答の追加・修正の規約は [CONTRIBUTING.md](CONTRIBUTING.md)，採点エージェント（Claude Code のサブエージェント）は [.claude/agents/softprac-grader.md](.claude/agents/softprac-grader.md) にあります。
-- GitHub Actions（`.github/workflows/ci.yml`）で，次の組み合わせのビルドとテストを行います。
-  - Windows: MSVC `/W4 /WX` の CMakePresets（Debug・Release。Visual Studio の「フォルダーを開く」と同じ），.sln（Visual Studio ジェネレーター），MSYS2 の gcc（VS Code + MinGW）
-  - Linux: GCC・Clang（`-Werror`，AddressSanitizer/UBSan，Debug・Release），macOS: Apple Clang
-  - Visual Studio・VS Code の起動構成で全プロジェクトを実際に起動できること（`tools/check_launch.py`），ソースの文字コード，生成ファイルが最新であること
-- リポジトリが非公開のときは Actions の実行時間が課金対象になるので，push・PR では MSVC Debug と Linux Debug・リポジトリの検査だけを動かします。すべての組み合わせは Actions タブから手動で実行（Run workflow）すると動きます。
+- 各回の `weekNN/README.md` に，課題ごとの解答コード・実行結果・説明・表の記入例・確認問題の解答と，TA 向けの**採点のポイント・よくある誤り**をまとめています。
+- 各プロジェクトフォルダのソースは，演習ページの「期待する表示」をそのまま出す版です。演習ページの「値を変えて試す」「〜に書き換えて比べる」小問は，
+  ソースの一部を書き換えた版を自動でビルドしてテストしています（README では `variant_<名前>` というテスト名で示します）。
+  書き換えの内容は各フォルダの `CMakeLists.txt` に，確認用の短いプログラムは `versions/` に置いています。
+- 実行結果は，実際にビルド・実行した出力をそのまま載せています。アドレスや `sizeof long` のように環境で変わる値は，その都度環境を書いています。
+- コンパイラの診断（エラー・警告の文面）は GCC・Clang で実際に出したものです。MSVC のエラー・警告番号（`C2143` など）は Microsoft のドキュメントに基づく例で，文面は Visual Studio の版や言語設定によって変わります。
 
-### プロジェクトを追加・変更したとき
+### 自動テスト
 
-```sh
-python3 tools/normalize_sources.py   # .c/.h を BOM 付き UTF-8・LF にそろえる
-python3 tools/gen_launch_vs.py       # .vs/launch.vs.json（Visual Studio の起動設定）を作り直す
-python3 tools/gen_readme_index.py    # この README の目次（各回の表とテスト数）を作り直す
-```
+`tests/` には演習ページの表示例・検証表から作った期待値が入っています。学生のプログラムの出力を比べるときにも使えます。
+
+| ファイル | 内容 |
+| --- | --- |
+| `<プロジェクト>/tests/<ケース>.out` | 期待する標準出力 |
+| `<ケース>.in` / `<ケース>.args` | 標準入力 / コマンドライン引数（1 行 1 引数） |
+| `<ケース>.err` / `<ケース>.code` | 期待する標準エラー出力 / 終了コード（省略時 0） |
+| `<ケース>.setup/` / `<ケース>.files/` | 実行前に置くファイル / 実行後にあるべきファイル |
+| `<プロジェクト>/variants/tests/` | 書き換えた版の期待値 |
+
+すべてのプロジェクトは，MSVC（`/W4 /WX`，Debug・Release），MinGW gcc，Apple Clang，GCC・Clang（`-Werror`，AddressSanitizer/UBSan）で警告なしにビルドでき，すべてのテストに成功します（GitHub Actions で確認）。
 
 ## よくあるトラブル
 
@@ -148,3 +152,7 @@ python3 tools/gen_readme_index.py    # この README の目次（各回の表と
 | `input.txt` が開けない | 作業ディレクトリがプロジェクトフォルダか確認（Visual Studio は `weekNN 名前` の項目を，VS Code は `.c` を開いた状態で起動） |
 | 日本語が文字化けする | プログラムの表示は ASCII にしています。ソースのコメントが化ける場合はファイルを BOM 付き UTF-8 で保存し直す |
 | 入力の終わり（EOF）の入れ方 | Windows は行頭で **Ctrl+Z → Enter**，macOS / Linux は **Ctrl+D** |
+
+## 解答を追加・修正するとき
+
+規約とツールは [CONTRIBUTING.md](CONTRIBUTING.md) にまとめています。

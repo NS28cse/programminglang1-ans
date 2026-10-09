@@ -1,5 +1,5 @@
-﻿// 第9回 課題3　行ごとの平均（MatrixMean / matrix.c）。本体: 例題 matrix.c をもとに演習ページの指示をすべて反映した版
-// 2行3列，値は0〜100，列数は COLS=3 に固定。表の入力・sizeof の確認・全体平均は CMakeLists.txt の variant でテストする。
+﻿// 第9回 課題3　行ごとの平均（MatrixMean / matrix.c）
+// 2行3列の二次元配列（値は0〜100，列数は COLS=3 に固定）を関数へ渡し，行ごとの平均を表示する。
 #include <stdio.h>
 enum { ROWS = 2, COLS = 3 };
 // 先頭 rows 行の行平均を表示する。rows は 0〜実際の行数（rows=0 なら何も表示しない）。

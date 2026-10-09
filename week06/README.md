@@ -9,41 +9,24 @@
 
 ## プロジェクト一覧
 
-| 課題 | プロジェクト | ソース | テスト数（本体＋値を変えた版） |
+| 課題 | プロジェクト | ソース | テスト |
 | --- | --- | --- | ---: |
-| ウォームアップ：文字と数値 | `CharCode` | [char_code.c](CharCode/char_code.c) | 4（1＋3） |
-| 課題1 長さを数える | `Length` | [length.c](Length/length.c) | 2（1＋1） |
-| 課題2 ASCIIの小文字へ変換 | `Lower` | [lower.c](Lower/lower.c) | 11（1＋10） |
+| ウォームアップ：文字と数値 | `CharCode` | [char_code.c](CharCode/char_code.c) | 4 |
+| 課題1 長さを数える | `Length` | [length.c](Length/length.c) | 2 |
+| 課題2 ASCIIの小文字へ変換 | `Lower` | [lower.c](Lower/lower.c) | 11 |
 | 課題2 補足：ASCIIの印字可能な範囲 | `AsciiTable` | [ascii_table.c](AsciiTable/ascii_table.c) | 1 |
-| 課題3 変換する順序 | `Average` | [average.c](Average/average.c)，[versions/average_first.c](Average/versions/average_first.c)，[versions/sign_compare.c](Average/versions/sign_compare.c) | 8（1＋7） |
-| 課題4 比較してから連結する | `CompareJoin` | [compare_join.c](CompareJoin/compare_join.c) | 11（1＋10） |
-| 発展 容量の境界 | `CopyCapacity` | [strings.c](CopyCapacity/strings.c) | 3（1＋2） |
+| 課題3 変換する順序 | `Average` | [average.c](Average/average.c)，[versions/average_first.c](Average/versions/average_first.c)，[versions/sign_compare.c](Average/versions/sign_compare.c) | 8 |
+| 課題4 比較してから連結する | `CompareJoin` | [compare_join.c](CompareJoin/compare_join.c) | 11 |
+| 発展 容量の境界 | `CopyCapacity` | [strings.c](CopyCapacity/strings.c) | 3 |
 | 合計 | | | **40** |
 
 - `Length`・`Lower`・`Average`・`CompareJoin` は演習ページの指定どおりのプロジェクト名です。演習ページはソース名を指定していないので，
   他の回（`TimeParts` → `time_parts.c` など）にならってプロジェクト名を小文字・`_` 区切りにしました。
 - ウォームアップ・補足・発展はプロジェクト名の指定がないため，`CharCode`・`AsciiTable`・`CopyCapacity` と名付けました（全回で重複しない名前）。
   発展は講義の `strings.c` を書き換える課題なので，ソース名は `strings.c` のままです。
-- フォルダのソース（本体）は演習ページの期待する表示を出す版です（`Lower` は関数 `lower` を使う版（表示は最初の版と同じ），`Average` は期待する表示が付いた「完全なプログラム」，`CopyCapacity` は講義の `strings.c` そのもの）。
-  途中の版・値を変えた版は `softprac_add_variant` でテストし，各課題の節にコードを載せています。
-  ソース全体が違う `Average` の最初の版と符号の異なる比較の確認用は，別ソース [Average/versions/average_first.c](Average/versions/average_first.c)・[Average/versions/sign_compare.c](Average/versions/sign_compare.c) に置いてテストしています。
-
-### 「値を変えた版」のテストについて（TA 向け）
-
-この回は入力がないので，「容量を 10 から 9，8 へ変える」「初期値を `""` に変える」といった小問は，ソースを書き換えて作り直すしか確かめる方法がありません。
-そこで共通の補助関数 `softprac_add_variant`（[`cmake/SoftpracVariant.cmake`](../cmake/SoftpracVariant.cmake)）で，学生と同じ書き換え（例: `char text[10]` → `char text[9]`）を CMake が行った版をビルドフォルダに生成し，
-`<プロジェクト>/variants/tests/<ケース名>.out` を期待する出力としてテストします（形式は `tests/` と同じ。テスト名は `week06/<プロジェクト>/variant_<ケース名>`）。置き換え前の文字列がソースにちょうど 1 回現れなければ構成エラーになります。
-どの版を作っているかは各プロジェクトの `CMakeLists.txt` に書いてあります。生成した版はテスト専用で，Visual Studio の起動構成には載りません。
-
-```sh
-B=/tmp/build-week06
-cmake -S . -B $B -G Ninja -DSOFTPRAC_WEEKS=week06 -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
-cmake --build $B && ctest --test-dir $B --output-on-failure   # GCC 13: 40 件すべて成功，警告 0，ASan/UBSan のエラーなし
-# Clang 18 でも -DCMAKE_C_COMPILER=clang（sanitizer なし）で 40 件成功，警告 0
-# CI（a76876f）: MSVC /W4 /WX（Debug・Release・sln）・MinGW・macOS でも全プロジェクトのビルドとテストが成功
-```
-
-この README の MSVC の警告番号と文面は，課題3 の C4310（CI のログで確認）を除き，確かめていない例です（「番号は例」と読んでください）。
+- フォルダのソース（本体）は演習ページの期待する表示を出す版です。`Lower` は関数 `lower` を使う版で，表示は最初の版と同じです。`Average` は期待する表示が付いた「完全なプログラム」，`CopyCapacity` は講義の `strings.c` そのものです。
+  途中の版・値を変えた版のコードは各課題の節に載せています。`Average` の最初の版と符号の異なる比較の確認用は，別ソース [Average/versions/average_first.c](Average/versions/average_first.c)・[Average/versions/sign_compare.c](Average/versions/sign_compare.c) です。
+- 書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
 
 ## 準備：配列を書き出して「容量・長さ・終端の添字」を記録する
 
@@ -140,7 +123,7 @@ text=a length=1 capacity=10
 spaces=2 3 0
 ```
 
-（1〜4 行目の表示形式は演習ページで指定されていないので，どの文字列の結果か分かる形にしました。）
+（1〜4 行目の表示形式は演習ページで指定されていないので，どの文字列の結果か分かる形にしています。）
 
 ### 終端へ到達するまでを追う（`"Hello"`）
 
@@ -232,8 +215,7 @@ char lower(char c)
     printf("%s\n", text);
 ```
 
-最初の版（ループの中に `if` を書く版）。演習ページの指示で，この `if` 全体を `text[i] = lower(text[i]);` に置き換えたのが本体です（テスト `variant_inline_if` は本体の `text[i] = lower(text[i]);` を逆にこの `if` へ置き換えた版）。
-テストの `variant_inline_if*` は本体のループだけを置き換えて作るので，下のコードと違い，使わない関数 `lower` の定義と本体のコメントが残っています（ループの形と表示は同じ）。
+最初の版（ループの中に `if` を書く版。テスト `variant_inline_if`）。演習ページの指示で，この `if` 全体を `text[i] = lower(text[i]);` に置き換えたのが本体です。
 
 ```c
 #include <stddef.h>
@@ -261,7 +243,7 @@ hello c17!
 
 ### 変更する文字・しない文字を区別する（表の記入）
 
-最初の版と本体（関数 `lower` を使う版）の両方で，初期値を変えて実行した結果です（本体はテスト `basic`・`variant_empty` など，最初の版はテスト `variant_inline_if`・`variant_inline_if_empty` などで，5 つの入力すべてを自動テストしている）。
+最初の版と本体（関数 `lower` を使う版）の両方で，初期値を変えて実行した結果です（本体はテスト `basic`・`variant_empty` など，最初の版はテスト `variant_inline_if`・`variant_inline_if_empty` など）。
 
 | 初期値 | 期待する表示 | 注目点 |
 | --- | --- | --- |
@@ -277,7 +259,7 @@ ASCII では `'@'` は 64（`'A'` の直前），`'['` は 91（`'Z'` の直後�
 
 ### 1文字の変換を関数へ分ける
 
-置き換えた後も，上の表のすべての入力で同じ結果になりました（本体 5 件・最初の版 5 件のテスト）。
+置き換えた後も，上の表のすべての入力で同じ結果になります。
 
 **値渡しとの関係**: 第5回で学んだとおり，C の関数呼び出しは**値渡し**です。`lower(text[i])` を呼ぶと，`text[i]` の値が仮引数 `c` に**コピー**されます。
 関数の中で `c` を使って計算しても，変わるのは（変わるとしても）コピーの `c` だけで，呼び出し元の `text[i]` には影響しません。
@@ -286,7 +268,7 @@ ASCII では `'@'` は 64（`'A'` の直前），`'['` は 91（`'Z'` の直後�
 
 ### 補足：ASCIIの印字可能な範囲（`AsciiTable`）
 
-解答: [AsciiTable/ascii_table.c](AsciiTable/ascii_table.c)（演習ページのループを `main` に置いたもの。全 95 行をテストで確認）
+解答: [AsciiTable/ascii_table.c](AsciiTable/ascii_table.c)（演習ページのループを `main` に置いたもの。32〜126 の 95 行を表示）
 
 実行結果（抜粋。`…` は省略）:
 
@@ -333,7 +315,7 @@ ASCII では `'@'` は 64（`'A'` の直前），`'['` は 91（`'Z'` の直後�
 - 大文字→小文字の向きを逆にしていないか（`- ('a' - 'A')` は小文字→大文字）。
 - `lower(text[i]);` だけで代入していない（表示が変わらない）。関数の中で `c` を書き換えれば `text` も変わると説明していないか。
 - `ctype.h` の `tolower` は講義で扱っていないので使わない（使う場合も引数は `unsigned char` の値に直す必要がある）。
-- `text[i] = text[i] + 32;` は `int` → `char` の代入で MSVC /W4 の C4244 になる。`(char)` で明示する（範囲内であることは `if` で確認済み）。
+- `text[i] = text[i] + 32;` は `int` → `char` の代入で MSVC /W4 の C4244 になる。`(char)` で明示する（範囲内であることは `if` で確かめている）。
 - `""` の結果を「何も表示されない」と書いた場合は，改行 1 つは表示されることを確認させる。
 
 ---
@@ -358,9 +340,9 @@ int main(void)
 }
 ```
 
-このコードは [Average/versions/average_first.c](Average/versions/average_first.c) に置いてあり，テスト `variant_first`（`total = 7`）と `variant_first_total_minus7`（`total` を −7 に変えた版）で確認しています。
+このコードは [Average/versions/average_first.c](Average/versions/average_first.c) です（テスト `variant_first`。`total` を −7 に変えた版は `variant_first_total_minus7`）。
 
-予測: 1 行目は整数除算の後に変換するので 3.0，2 行目は先に `double` にするので 3.5，3 行目は 0 方向への切り捨てで −3（`total` が −7 なら −3.0 / −3.5 / −3）。実行結果も予測と一致しました。
+予測: 1 行目は整数除算の後に変換するので 3.0，2 行目は先に `double` にするので 3.5，3 行目は 0 方向への切り捨てで −3（`total` が −7 なら −3.0 / −3.5 / −3）。実行結果も予測どおりです。
 
 実行結果:
 
@@ -414,15 +396,14 @@ unsigned=44
 - `unsigned=44`: 300 は 8 ビットの `unsigned char`（0〜255）に入らないので，256 を法として 300 − 256 = 44 になります。`%u` に合わせるため `unsigned int` にキャストしています。
 
 **ソースについての注意（MSVC の C4310）**: 演習ページのコードは `unsigned char small = (unsigned char)300;` ですが，定数を切り詰めるキャストは MSVC `/W4` で
-**C4310**（cast truncates constant value）の警告になります（GCC/Clang の `-Wall -Wextra -Wpedantic` では出ません）。この解答は警告 0 を条件にしているので，
+**C4310** の警告になり，`/WX` ではエラー（C2220）になります（GCC/Clang の `-Wall -Wextra -Wpedantic` では出ません）。この解答は警告 0 を条件にしているので，
 
 ```c
 int large = 300;
 unsigned char small = (unsigned char)large;
 ```
 
-と，300 をいったん `int` の変数に入れてから変換しています。値の変換規則も結果（44）も同じです。演習ページのとおりに `(unsigned char)300` と書いた版もテスト `variant_page_literal` でビルドし，同じ 4 行を表示することを確認しています（GCC/Clang の `-Werror` では警告なし。MSVC では C4310 が実際に出ることを CI の実行 37673022240（コミット 762b3fb，GitHub Actions の windows-msvc ジョブ，MSVC 19.51，`/W4 /WX`）のログで確認しました。
-ログの行は `variants\page_literal\average.c(19,42): warning C4310: cast truncates constant value` で，`/WX` によって C2220 のエラーになりました。そこで，この版だけ `/wd4310` で C4310 を止めています）。
+と，300 をいったん `int` の変数に入れてから変換しています。値の変換規則も結果（44）も同じです。演習ページのとおりに `(unsigned char)300` と書いた版（テスト `variant_page_literal`）も同じ 4 行を表示します。
 学生が演習ページのとおりに書いて C4310 が出た場合は減点せず，「意図した切り詰めなので警告の意味を説明できればよい」とします（チェックリストの「警告を確認し，原因を説明」）。
 
 **`saved` は元に戻るが `small` は戻らない理由**: `int` は `char` のすべての値を表せるので，`char` → `int` の変換では情報が失われず，`char` へ戻すと同じ `'A'`（65）になります。
@@ -440,7 +421,7 @@ unsigned char small = (unsigned char)large;
 | `long long square = i * i;` | 右辺が `int` 同士の掛け算のまま。MSVC の 32 ビット `int` では 2500000000 が範囲を超え，**符号付き整数のオーバーフロー＝未定義動作**。代入先が `long long` でも右辺の計算は先に `int` で終わっている |
 | `long long square = (long long)(i * i);` | 括弧の中の `i * i` を `int` で計算した後に変換するので，同じく未定義動作。キャストの位置が遅すぎて解決しない |
 
-`i` を 100 に変えると，どの形でも 10000 は `int` の範囲内なので正しい結果になります。本体を `int i = 100` に変えた 3 つの版をテストで確認しています（どれも `square=10000`）。
+`i` を 100 に変えると，どの形でも 10000 は `int` の範囲内なので正しい結果になります。本体を `int i = 100` に変えた 3 つの版の結果です（どれも `square=10000`）。
 
 | テスト | 積の書き方（`i = 100`） | `square` |
 | --- | --- | ---: |
@@ -458,12 +439,12 @@ unsigned char small = (unsigned char)large;
 2. 符号なし整数への変換は「最大値＋1 を法とする値」なので，32 ビット `unsigned int` では −10 が 2^32 − 10 = **4294967286** になります。
 3. 比較は `4294967286u < 10u` となり偽（0）です。
 
-この比較を確かめるプログラムを [Average/versions/sign_compare.c](Average/versions/sign_compare.c) に置き，テスト `variant_sign_compare` で結果が `0` になることを確認しています。
+この比較を確かめるプログラム [Average/versions/sign_compare.c](Average/versions/sign_compare.c)（テスト `variant_sign_compare`）:
 
 ```c
-// 第6回 課題3 符号の異なる比較の確認用（Average の versions/sign_compare.c。本体とは別にテストする）
+// 第6回 課題3 符号の異なる比較（Average / versions/sign_compare.c）
 // int の -10 と unsigned int の 10u を < で比べる。i が unsigned int（4294967286）に変換されるので結果は 0。
-// 警告が出る書き方をわざと示す版なので，その警告だけ CMakeLists.txt で抑止している（README 参照）。
+// 符号の異なる比較の警告（GCC/Clang の -Wsign-compare，MSVC の C4018）が出る書き方をわざと示している。
 #include <stdio.h>
 
 int main(void)
@@ -489,9 +470,7 @@ sign_compare.c:11:22: warning: comparison of integer expressions of different si
 sign_compare.c:11:22: warning: comparison of integers of different signs: 'int' and 'unsigned int' [-Wsign-compare]
 ```
 
-（1 行目が GCC，2 行目が Clang。）MSVC `/W4` では（番号は例）`<`・`>`・`<=`・`>=` の場合 **C4018**（signed/unsigned mismatch），`==`・`!=` の場合 **C4389** になります。
-この版は警告が出る書き方をわざと示すためのものなので，`-Werror`・`/WX` で止まらないよう，[Average/CMakeLists.txt](Average/CMakeLists.txt) でこの版だけ
-`-Wno-sign-compare`（GCC/Clang）と `/wd4018`（MSVC）で警告を止めています。
+（1 行目が GCC，2 行目が Clang。）MSVC `/W4` では `<`・`>`・`<=`・`>=` の場合 **C4018**（符号付きと符号なしの不一致），`==`・`!=` の場合 **C4389** になります。
 `u` が `INT_MAX`（`limits.h`）以下と確認できる場合に限り `i < (int)u` と `int` 同士で比較できます。確認せずに `(int)u` とすると，`u` が `INT_MAX` を超えたとき別の値になり，警告だけ消えて誤りが残ります。
 「警告が出たらとにかくキャストする」のではなく，値の範囲を整理してから比較する型を決めます（例えば `i < 0 || (unsigned int)i < u` なら，`i` が負の場合を先に分けるのでどんな `u` でも正しい）。
 `strlen`・`sizeof` の `size_t` も符号なしなので，`int` との比較や `strlen(s) - 1`（空文字列で巨大な値になる）にも同じ注意が必要です。
@@ -580,7 +559,7 @@ ASCII では最初の文字 `h`（104）が `f`（102）より後なので `afte
 | `"z"` | `before` | `text=hogez length=5 capacity=10` | 最初の文字 `h` < `z`。`hoge` の方が長くても前 | `variant_suffix_z` |
 | `""` | `after` | `text=hoge length=4 capacity=10` | 添字 0 で `h` と終端（0）を比べ，`h` の方が大きい。追加は終端だけ | `variant_suffix_empty` |
 
-参考: `strcmp` の戻り値そのものを次のコードで表示しました（処理系で値が変わるのでテストにはしていません）。
+参考: `strcmp` の戻り値そのものを表示するコード（値は処理系で変わります）:
 
 ```c
 #include <stdio.h>
@@ -604,8 +583,8 @@ Linux x64（GCC 13.3，glibc 2.39，`-O0`）での実行結果:
 1 -1 1 -1
 ```
 
-**配列を渡して**実行時に `strcmp` を呼ぶと，glibc では `strcmp(a, b)` が 2，`strcmp(a, z)` が −18，`strcmp(a, e)` が 104，`strcmp(abc, abcd)` が −100 を返しました。
-一方，同じ GCC でも引数が文字列リテラルだとコンパイル時に計算され，`-O0` でも 1・−1・1・−1 になりました。このように具体的な値は処理系や書き方によって違う（MSVC では −1・0・1 が返ることが多い）ので，出力の条件には符号だけを使います。
+**配列を渡して**実行時に `strcmp` を呼ぶと，glibc では `strcmp(a, b)` が 2，`strcmp(a, z)` が −18，`strcmp(a, e)` が 104，`strcmp(abc, abcd)` が −100 を返します。
+一方，同じ GCC でも引数が文字列リテラルだとコンパイル時に計算され，`-O0` でも 1・−1・1・−1 になります。このように具体的な値は処理系や書き方によって違う（MSVC では −1・0・1 が返ることが多い）ので，出力の条件には符号だけを使います。
 
 ### 説明すること
 
@@ -613,9 +592,9 @@ Linux x64（GCC 13.3，glibc 2.39，`-O0`）での実行結果:
   `"hoge"` と `"z"` は添字 0 の `h` と `z` で決まり，その後の長さは見ません。長さが関係するのは一方が先に終わる場合（`"abc"` と `"abcd"` では終端 0 と `'d'` を比べるので短い方が前）だけです。
 - **`i <= added` の等号が必要な理由**: `suffix` の添字 0〜`added − 1` が文字で，添字 `added` が終端です。`i < added` だと 4 文字だけを移して終端を書かないので，連結後の `text` は終端を持つとは限りません。
   `<=` にすることで `i == added` のときに `suffix[added]`（`'\0'`）を `text[used + added]` へ移し，新しい末尾に終端を置きます。
-  （この課題では `text[10] = "hoge"` の残りの要素が初期化で 0 になっているため，`i < added` でもたまたま正しく表示されます。
-  実際に `i <= added` を `i < added` に変えた版（テスト `variant_loop_lt`）も `after` / `text=hogefuga length=8 capacity=10` と本体と同じ表示になり，**出力のテストでは検出できない誤り**です。
-  前に長い文字列が入っていた配列では残っていた文字が表示されるので，誤りに気付きにくい点に注意。）
+  この課題では `text[10] = "hoge"` の残りの要素が初期化で 0 になっているため，`i < added` でもたまたま正しく表示されます。
+  `i <= added` を `i < added` に変えた版（テスト `variant_loop_lt`）も `after` / `text=hogefuga length=8 capacity=10` と本体と同じ表示になり，**出力のテストでは検出できない誤り**です。
+  前に長い文字列が入っていた配列では残っていた文字が表示されるので，誤りに気付きにくい点に注意します。
 - **配列容量が連結後も変わらない理由**: 配列の大きさは宣言 `char text[10]` で決まり，実行中に変わりません。連結は既にある要素（添字 4〜8）の値を書き換えるだけです。
   変わるのは最初の終端の位置（4 → 8）なので `strlen` は 4 → 8 になりますが，`sizeof text` は 10 のままです。容量が足りないときに配列が自動で大きくなることもありません。
 
@@ -639,8 +618,8 @@ Visual Studio では `strcat` に C4996 が出るため，ファイルの先頭�
     }
 ```
 
-本体をこのように書き換えた版をテスト `variant_strcat`（容量 10）と `variant_strcat_capacity_8`（容量 8）でビルド・実行し，
-本体・`variant_capacity_8` と同じ表示（`after` / `text=hogefuga length=8 capacity=10`，および `after` / `not enough space` / `text=hoge length=4 capacity=8`）になることを確認しています。
+本体をこのように書き換えた版（テスト `variant_strcat`。容量 8 では `variant_strcat_capacity_8`）も，本体・`variant_capacity_8` と同じ表示になります
+（`after` / `text=hogefuga length=8 capacity=10`，および `after` / `not enough space` / `text=hoge length=4 capacity=8`）。
 
 **採点のポイント・よくある誤り**
 
@@ -649,7 +628,7 @@ Visual Studio では `strcat` に C4996 が出るため，ファイルの先頭�
 - 容量の条件の差 1 の誤り: `added <= sizeof text - used` だと容量 8 で 9 バイト目（`text[8]`）に書き込む範囲外アクセスになる（AddressSanitizer で検出できる。容量 8 のケースで必ず確認させる）。
   `used + added < sizeof text` は正しい。`used + added <= sizeof text` は誤り。
 - 判定より前に書き込みを始めていないか（容量 8 で `hoge` が保たれない）。容量不足のときに何も表示しない・途中まで書くのは仕様違反。
-- `i < added` で終端を書いていない（テスト `variant_loop_lt` のとおり，この初期値では表示が本体と同じになりテストが通ってしまうので，コードを読んで確認する）。
+- `i < added` で終端を書いていない。この初期値では表示が本体と同じになり出力では見分けられないので，コードを読んで確認する（テスト `variant_loop_lt`）。
 - `int used = strlen(text);` は x64 の MSVC /W4 で **C4267**（`size_t` から `int`），`for (int i = 0; i <= added; ++i)` は **C4018**。型を `size_t` にそろえるのが正しい直し方で，キャストで警告を消すだけの修正は避ける。
 - `strcpy`/`strcat` を `_CRT_SECURE_NO_WARNINGS` なしで使い C4996 が出ている。あるいは容量を確認せずに `strcat` している。
 - 表の「容量 9」を「入らない」と判断していないか（`hogefuga` の 8 文字＋終端 1＝9 バイトでぴったり入る）。
@@ -721,11 +700,11 @@ mean=3.5
 2. **`char s[10] = "abc";` の `sizeof` と `strlen`**: `sizeof s` は 10（配列全体），`strlen(s)` は 3（終端の前まで）。課題1の `length=3 capacity=10` で確認。
 3. **`s[1] = '\0';` の後**: 表示は `a`，長さは 1，容量は 10 のまま。添字 1 が最初の終端になるだけで配列の大きさは変わらない（課題1の `text=a length=1 capacity=10`）。
 4. **`strcmp(a, b)` を −1 と比較してはいけない理由**: 規格が保証するのは「等しければ 0，前なら負，後なら正」という**符号だけ**で，具体的な値は処理系次第だから。
-   実際に `char a[] = "hoge", z[] = "z";` のように配列を渡して `strcmp(a, z)` を実行すると glibc では −18 を返し，`"abc"` と `"abcd"` の配列どうしでは −100 を返したので，`== -1` は偽になる（GCC は引数がリテラルだとコンパイル時に計算して −1 や 1 にすることがあるので，同じ処理系でも書き方で値が変わる）。`< 0`・`== 0`・`> 0` で判定する。
+   `char a[] = "hoge", z[] = "z";` のように配列を渡して `strcmp(a, z)` を実行すると glibc では −18，`"abc"` と `"abcd"` の配列どうしでは −100 を返すので，`== -1` は偽になる（GCC は引数がリテラルだとコンパイル時に計算して −1 や 1 にすることがあるので，同じ処理系でも書き方で値が変わる）。`< 0`・`== 0`・`> 0` で判定する。
 5. **`strcpy` で `hello` をコピーするときの最小容量**: 6。5 文字と終端 `'\0'` の 1 バイト（`strcpy` は終端も含めてコピーする）。
 6. **`strlen` と `sizeof` の結果の書式**: どちらも `size_t` 型なので `%zu`。
 7. **`float` から `int` への暗黙の変換が起こる場面**: `int` 型の変数への代入・初期化（`int n = f;`），`int` を受け取ると宣言された関数の引数に渡すとき，戻り値型が `int` の関数で `return f;` するとき。
-   いずれも小数部が 0 方向へ切り捨てられ，整数部が `int` の範囲外なら未定義動作。MSVC /W4 では C4244（possible loss of data）が出る。逆に `int` と `float` の演算では `int` の方が `float` に変換されるので，演算そのものでは起きない。ただし `int n = 1; n += 2.5f;` のような複合代入では，`n + 2.5f` を `float` で計算した 3.5f が代入で `int` に戻され，3 になる（代入の場面の一種）。
+   いずれも小数部が 0 方向へ切り捨てられ，整数部が `int` の範囲外なら未定義動作。MSVC /W4 では C4244（データが失われる可能性のある変換）が出る。逆に `int` と `float` の演算では `int` の方が `float` に変換されるので，演算そのものでは起きない。ただし `int n = 1; n += 2.5f;` のような複合代入では，`n + 2.5f` を `float` で計算した 3.5f が代入で `int` に戻され，3 になる（代入の場面の一種）。
 8. **キャストを外側に付ければ計算中のオーバーフローを防げるか**: 防げない。`(long long)(i * i)` は括弧の中を `int` で計算し終えてから変換するので，`int` の範囲を超えた時点で未定義動作。
    `(long long)i * i` のように，計算の**前に**オペランドを広い型に変換する必要がある（課題3）。
 
@@ -733,8 +712,8 @@ mean=3.5
 
 | 項目 | どこで確認できるか |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の `""`（本体 0 回），課題2 の `""`・`"AZaz09"`・`"@AZ["`，課題4 の容量 10/9/8（と下限 5），`suffix` の `""`，発展の容量 4/3。すべて自動テストにしてある（40 件） |
-| 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC/Clang の `-Wall -Wextra -Wpedantic -Werror` と MSVC `/W4 /WX`（CI）で警告 0（わざと警告を示す `page_literal`・`sign_compare` 版だけはその警告を版ごとに抑止）。課題3 の C4310（`(unsigned char)300`。CI のログで確認）と `-Wsign-compare`・C4018/C4389（符号の異なる比較。テスト `variant_sign_compare`），課題1・4 の C4267/C4018（`size_t` と `int`），課題2 の C4244（`int` → `char`），C4996（`strcat`） |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の `""`（本体 0 回），課題2 の `""`・`"AZaz09"`・`"@AZ["`，課題4 の容量 10/9/8（と下限 5），`suffix` の `""`，発展の容量 4/3 |
+| 警告を確認し，原因を説明・修正した | 全プロジェクトを GCC/Clang の `-Wall -Wextra -Wpedantic` と MSVC `/W4` で警告の出ない書き方にしている（わざと警告を示す `page_literal`・`sign_compare` 版だけはその警告を版ごとに抑止）。課題3 の C4310（`(unsigned char)300`）と `-Wsign-compare`・C4018/C4389（符号の異なる比較。テスト `variant_sign_compare`），課題1・4 の C4267/C4018（`size_t` と `int`），課題2 の C4244（`int` → `char`），C4996（`strcat`） |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の `n` の追跡表，課題3 の「右辺の計算 → 代入」の 2 段階，課題4 の `used`・`added`・残り容量の表 |
 | 終端文字を含む必要容量と，表示上の文字列長を区別できる | 準備の配列表，課題1 の最小容量の表と `length`/`capacity`，確認問題 1・2・3・5 |
 | コピー・連結は書き込む前に容量を確認している | 課題4 の `added < sizeof text - used`（容量 8 で `hoge` が保たれる），発展の `length < sizeof copy`（容量 3 でコピーしない） |

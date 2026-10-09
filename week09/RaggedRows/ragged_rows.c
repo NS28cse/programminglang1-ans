@@ -1,6 +1,5 @@
 ﻿// 第9回 発展1　長さが異なる行を扱う（RaggedRows / ragged_rows.c）
 // 配列本体（row0, row1），先頭を集めたポインタ配列（rows），長さの配列（lengths）の3種類を区別する。
-// 長さも一緒に交換する版・平均の比較・二重ポインタの別の使い方は CMakeLists.txt の variant でテストする。
 #include <stdio.h>
 
 int main(void)
