@@ -1,4 +1,4 @@
-﻿/* 第12回 課題3 エラー比較(4): add の本体を main.c にもコピーした版（リンクで失敗する．ビルドしない） */
+﻿/* 第12回 課題3　リンクエラーを調べる（_BuildErrors / split/main_dup_add.c）: エラー比較(4)．add の本体を main.c にもコピーした版で，リンクで失敗する */
 #include <stdio.h>
 #include "calc.h"
 double add(double a, double b)

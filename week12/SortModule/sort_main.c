@@ -1,4 +1,5 @@
-﻿/* 第12回 発展2 SortModule: 引数 N を検査し，固定データの先頭 N 個を昇順に並べて表示する */
+﻿/* 第12回 発展2　並べ替えをモジュールにする（SortModule / sort_main.c）
+   引数 N を検査し，固定データの先頭 N 個を昇順に並べて表示する */
 #include <stdio.h>
 #include "intlib.h"
 int main(int argc, char *argv[])

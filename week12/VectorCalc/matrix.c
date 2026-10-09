@@ -1,4 +1,5 @@
-﻿/* 第12回 課題4 VectorCalc: 行列とベクトルの計算．v[2*i+j] が第 i 行第 j 列（講義 7 の matrix.c） */
+﻿/* 第12回 課題4　ベクトルと行列を分割する（VectorCalc / matrix.c）
+   講義 7 の matrix.c．行列とベクトルの計算．v[2*i+j] が第 i 行第 j 列 */
 #include "matrix.h"
 #include <stdio.h>
 

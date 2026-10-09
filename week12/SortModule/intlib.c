@@ -1,4 +1,5 @@
-﻿/* 第12回 発展2 SortModule: 個数の変換と並べ替えの実装 */
+﻿/* 第12回 発展2　並べ替えをモジュールにする（SortModule / intlib.c）
+   個数の変換と並べ替えの実装 */
 #include "intlib.h"
 #include <errno.h>
 #include <stdlib.h>

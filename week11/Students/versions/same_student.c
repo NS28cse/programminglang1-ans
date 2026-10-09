@@ -1,4 +1,5 @@
-﻿// 第11回 課題2 名前を比較する（確認用）: 交換前の 1 人目のコピー first を，交換後の a[0]・a[2] と same_student で比べる
+﻿// 第11回 課題2　名前を比較する（Students / versions/same_student.c）
+// 交換前の 1 人目のコピー first を，交換後の a[0]・a[2] と same_student で比べる。
 #include <stdio.h>
 #include <string.h>
 enum { COUNT = 3 };

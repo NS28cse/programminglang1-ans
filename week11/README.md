@@ -6,23 +6,18 @@
 
 | 課題 | プロジェクト | ソース | テスト数 |
 | --- | --- | --- | ---: |
-| 課題1 値とポインタの違い | `PointMove` | [structs.c](PointMove/structs.c) | 8（本体 1＋書き換えた版 7） |
-| 課題2 点数の平均 | `Students` | [students.c](Students/students.c) | 10（1＋9） |
-| 課題3 長方形を表す | `Rect` | [rect.c](Rect/rect.c) | 8（1＋7） |
-| 課題4 配列メンバとポインタメンバ | `CopyMembers` | [copy_members.c](CopyMembers/copy_members.c) | 2（1＋1） |
-| 発展1 初期化と構造体を返す関数 | `PointInit` | [point_init.c](PointInit/point_init.c) | 3（1＋2） |
-| 発展2 長方形の正規化と包含判定 | `RectContains` | [rect_contains.c](RectContains/rect_contains.c) | 16（1＋15） |
-| 発展3 構造体のサイズ | `StructLayout` | [struct_layout.c](StructLayout/struct_layout.c) | 2（1＋1） |
-
-合計 49 テスト。GCC 13（ASan/UBSan 付き）と Clang 18 で警告 0・全成功を確認した。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants・versions を含む）のビルドとテストが成功している（コミット a76876f の時点）。
+| 課題1 値とポインタの違い | `PointMove` | [structs.c](PointMove/structs.c) | 8 |
+| 課題2 点数の平均 | `Students` | [students.c](Students/students.c) | 10 |
+| 課題3 長方形を表す | `Rect` | [rect.c](Rect/rect.c) | 8 |
+| 課題4 配列メンバとポインタメンバ | `CopyMembers` | [copy_members.c](CopyMembers/copy_members.c) | 2 |
+| 発展1 初期化と構造体を返す関数 | `PointInit` | [point_init.c](PointInit/point_init.c) | 3 |
+| 発展2 長方形の正規化と包含判定 | `RectContains` | [rect_contains.c](RectContains/rect_contains.c) | 16 |
+| 発展3 構造体のサイズ | `StructLayout` | [struct_layout.c](StructLayout/struct_layout.c) | 2 |
 
 - ソース名を演習ページが指定しているのは課題1の `structs.c`（講義の例）だけなので，他はプロジェクト名を小文字・下線区切りにした名前にした。
 - 課題3は演習ページにプロジェクト名の指定がないため `Rect` とした（第2回の `Rectangle` とは別名）。
-- 講義のとおり入力は使わず，すべて `int main(void)` とソース中の初期値で動く。フォルダのソース（本体）は演習ページ・講義の期待する表示を出す版である（課題1は配布コードのまま。発展1はタグ付き `typedef` に書き換えた版で，期待する表示は書き換え前の版（`PointInit/versions/point_untagged.c`）と同じ）。課題3は期待する表示の指定がないため，『名前もメンバにする』まで反映した版を本体にした。値を変える実験は variant でテストした。
-- 演習ページの「値を変えて確かめる」表の各行や，比較用の書き換え（`b.x = 100.0` の追加，3 つの呼び出し方，`score` だけの交換，整数除算，`{2.0, 10.0}`，
-  `fuga` への置き換え，`.name = "test_rect"`，2 点の一括交換など）は，**学生と同じように初期値や一部の行を書き換えた版を `softprac_add_variant` でビルドしてテストした**。
-  書き換えの内容は各プロジェクトの `CMakeLists.txt`，期待する出力は `variants/tests/<ケース>.out` にある（テスト名は `week11/<プロジェクト>/variant_<ケース>`）。
-  README に載せた確認用・比較用のプログラム（課題2の `same_student`，発展1の書き換え前のタグなし `typedef`，発展3のメンバの順序を変えた `Record`）は `<プロジェクト>/versions/` に置き，置換なしの variant でテストした。
+- 講義のとおり入力は使わず，すべて `int main(void)` とソース中の初期値で動く。各フォルダのソースは演習ページ・講義の期待する表示を出す（課題1は配布コードのまま。発展1はタグ付き `typedef` で定義した版で，表示はタグなしの版と同じ）。課題3は期待する表示の指定がないため，「名前もメンバにする」まで反映した版にした。
+- 確認用・比較用のプログラム（課題2の `same_student`，発展1のタグなし `typedef`，発展3のメンバの順序を変えた `Record`）は `<プロジェクト>/versions/` に置いている。書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
 - 座標は有限な −1000〜1000，点数は 0〜100，人数は 1〜3 の範囲でだけ書き換える（`n=4`・`n=0` などの範囲外は実験しない）。
 
 ---
@@ -176,7 +171,7 @@ double average(const Student a[], int n)
 ```
 
 `main` は平均を表示した後，演習ページの交換の断片（`temp` を使った `a[0]` と `a[2]` の交換と表示）を行い，交換後の平均を表示する（演習ページの「平均は80.0のままです」の確認）。
-名前の比較（`same_student`）は本体には入れず，確認用の [Students/versions/same_student.c](Students/versions/same_student.c) でテストした（後述）。
+名前の比較（`same_student`）は `students.c` には入れず，確認用の [Students/versions/same_student.c](Students/versions/same_student.c) に置いている（後述）。
 平均に使う人数は `int n = 3;`，点数は初期化リスト `{{"Aki", 80}, {"Ren", 70}, {"Mio", 90}}` で，表の条件はこの 2 か所を書き換えて試す。
 
 ### 実行結果（予測: 平均は (80+70+90)/3 = 80.0）
@@ -263,7 +258,7 @@ average after swap=80.0
 
 元の点数（合計 240）では割り切れるので，この誤りは他の 4 行では見つからない。`(double)sum / n` のように割る前に `double` にする。
 
-`n=4`（存在しない `a[3]` を読む）と `n=0`（0 で割る）は実行しない（テストにもしない）。`average` は `1 <= n <= 3` を呼び出し側が守る約束で，関数の中では検査していない。
+`n=4`（存在しない `a[3]` を読む）と `n=0`（0 で割る）は実行しない。`average` は `1 <= n <= 3` を呼び出し側が守る約束で，関数の中では検査していない。
 
 ### 名前と点数を一緒に交換する
 
@@ -331,7 +326,7 @@ same as first: a[0]=0 a[2]=0
 
 | コンパイラ | 診断の例 |
 | --- | --- |
-| MSVC | `error C2088: '==': illegal for struct`（未確認。Microsoft Learn の説明に基づく例） |
+| MSVC | C2088（構造体に `==` は使えない） |
 | GCC 13 | `error: invalid operands to binary == (have 'Student' and 'Student')` |
 | Clang 18 | `error: invalid operands to binary expression ('Student' and 'Student')` |
 
@@ -385,16 +380,15 @@ renamed=other
 | `q->lower.x` | `q` が指す `Rect` の `lower`（`Point` 本体）の `x` | 1.0 |
 | `(q->lower).x` | 上と同じ | 1.0 |
 
-誤った書き方とその診断 — GCC 13・Clang 18 で比較用にコンパイル（MSVC 列は Microsoft Learn に基づく例）:
+誤った書き方とその診断:
 
-| 式 | なぜ誤りか | MSVC（例） | GCC 13 | Clang 18 |
+| 式 | なぜ誤りか | MSVC | GCC 13 | Clang 18 |
 | --- | --- | --- | --- | --- |
-| `q->lower->x` | `lower` は `Point` 本体でポインタではない | `C2232: '->x': left operand has 'struct' type, use '.'` | `invalid type argument of '->' (have 'Point')` | `member reference type 'Point' is not a pointer; did you mean to use '.'?` |
-| `*q.lower.x` | `*(q.lower.x)` と解釈され，ポインタ `q` に `.` を使っている | `C2231: '.lower': left operand points to 'struct', use '->'` | `'q' is a pointer; did you mean to use '->'?` | `member reference type 'Rect *' is a pointer; did you mean to use '->'?` |
-| `r.name = "other";` | 配列メンバ単独へは代入できない | `C2106: '=': left operand must be l-value` | `assignment to expression with array type` | `array type 'char[21]' is not assignable` |
+| `q->lower->x` | `lower` は `Point` 本体でポインタではない | C2232（左辺が構造体なので `->` ではなく `.` を使う） | `invalid type argument of '->' (have 'Point')` | `member reference type 'Point' is not a pointer; did you mean to use '.'?` |
+| `*q.lower.x` | `*(q.lower.x)` と解釈され，ポインタ `q` に `.` を使っている | C2231（左辺が構造体へのポインタなので `.` ではなく `->` を使う） | `'q' is a pointer; did you mean to use '->'?` | `member reference type 'Rect *' is a pointer; did you mean to use '->'?` |
+| `r.name = "other";` | 配列メンバ単独へは代入できない | C2106（左辺が代入できる左辺値でない） | `assignment to expression with array type` | `array type 'char[21]' is not assignable` |
 
-（MSVC の列は未確認で，Microsoft Learn の C2231/C2232/C2106 の説明に基づく例。文面は版によって多少違う。
-`*q.lower.x` では，Clang は続けて `indirection requires pointer operand ('double' invalid)` も出す。）
+`*q.lower.x` では，Clang は続けて `indirection requires pointer operand ('double' invalid)` も出す。
 正しく間接参照してからドットを使うなら `(*q).lower.x` と括弧が必要。
 
 ### 面積の境界を確認する（表）
@@ -438,7 +432,7 @@ renamed=other
 `char name[21]` は ASCII で 20 文字と終端を保存できる。構造体全体の代入（`Rect s = r;`）では `name` もコピーされるが，配列メンバ単独への代入（`r.name = "other";`）はできない。
 これは「構造体型には代入の規則がある」「配列型には代入がない」という別々の規則による。更新するときは容量を確かめて 1 文字ずつ（終端まで）コピーする（第8回）。
 
-`set_name` の容量の境界もテストした: 20 文字の `"abcdefghijklmnopqrst"` は入り `renamed=abcdefghijklmnopqrst`（`variant_name_20`），
+`set_name` の容量の境界: 20 文字の `"abcdefghijklmnopqrst"` は入り `renamed=abcdefghijklmnopqrst`（`variant_name_20`），
 21 文字の `"abcdefghijklmnopqrstu"` は終端が入らないので何も変えずに `name too long` を `stderr` へ出し，終了コード 1（`variant_name_21`）。
 
 ### 採点のポイント・よくある誤り
@@ -519,8 +513,7 @@ redirect=fuga fuga same=0
 
 3 行目は `p1`（`other`）も `p2`（`buffer`）も `fuga` で内容は同じだが，指す配列が違うので `same=0` になる。`==` がアドレスの比較であることがよく分かる。
 
-アドレスも表示した版（アドレスは実行ごとに変わるのでテストにはせず，Linux x64 / GCC での実行例を載せる）。
-結果が決まる 3 行（`array=`・`pointer=`・`redirect=`）は `replace_fuga` と同じなので，その部分はテスト `variant_replace_fuga` で確かめられる。
+アドレスも表示した版（アドレスは実行ごとに変わる。Linux x64 / GCC での実行例）。結果が決まる 3 行（`array=`・`pointer=`・`redirect=`）は `variant_replace_fuga` と同じである。
 
 ```c
 #include <stdio.h>
@@ -570,8 +563,8 @@ p1.text=0x7ffee46279e3 other=0x7ffee46279e3
 アドレスは，構造体自体の `&p1` と `&p2` は別，メンバに保存された `p1.text` と `p2.text` は同じ（`buffer` と一致）で，向け直した後の `p1.text` は `other` と一致する。Windows では `000000A1B2CFF6E0` のような形式で表示されるが，数値ではなく「同じか違うか」を見る。
 任意の長さの文字列を受け付けるなら，第8回の容量検査が必要（この固定入力が収まることを一般化しない）。
 
-（補足）解答では `TextPointer p1 = {0}; p1.text = buffer;` と宣言後にアドレスを代入した。`{buffer}` でも標準 C として正しい。解答の書き方は MSVC /W4 /WX の CI で警告 0 を確認済み
-（`TextPointer p1 = {buffer};` と書いても C17 の標準 C として正しい。同種の初期化（第9回の `int *rows[] = {row0, row1};`）は MSVC `/W4 /WX`（C17）の CI でも警告なしでビルドできている。C17 より前の既定では C4221 などの警告（番号は例）が出ることがあるので，ここでは宣言とメンバへの代入を分けて書いた）。
+（補足）解答では `TextPointer p1 = {0}; p1.text = buffer;` と，宣言とメンバへの代入を分けて書いている。`TextPointer p1 = {buffer};` と書いても C17 の標準 C として正しいが，
+C17 より前の既定の MSVC では C4221（自動変数のアドレスで集成体を初期化するのは非標準の拡張）が出ることがある。
 
 ### 危険な例は実行せず説明する
 
@@ -582,7 +575,7 @@ p1.text=0x7ffee46279e3 other=0x7ffee46279e3
    関数の終了とともに寿命が終わる。返されたポインタは無効（ダングリングポインタ）で，`printf("%s")` で読むのは未定義動作（偶然表示される・別の値に上書きされる・異常終了する）。
    ポインタのコピーは寿命を延ばさない。配列を構造体の内部に持たせて（`TextArray`）値で返すか，呼び出し元が用意した配列を指すようにする。
 3. **未初期化の `TextPointer` へ，いきなり `text[0]` を書き込む**: ローカル変数 `TextPointer p;` の `p.text` は不定の値で，どこも有効に指していない。そこへの書き込みは未定義動作で，
-   無関係なメモリを壊したり異常終了したりする。GCC は `-Wall` で `'p.text' is used uninitialized` を出すことが多いが，Clang 18 は `-Wall -Wextra`（`-O0`・`-O2`）で警告を出さなかった。MSVC では C4700（初期化されていないローカル変数の使用）の例（未確認）があるが，常に検出されるとは限らない（警告が出なくても誤り）。
+   無関係なメモリを壊したり異常終了したりする。GCC は `-Wall` で `'p.text' is used uninitialized` を出すことが多いが，Clang 18 は `-Wall -Wextra`（`-O0`・`-O2`）でも警告を出さない。MSVC では C4700（初期化されていないローカル変数の使用）が出ることがあるが，常に検出されるとは限らない（警告が出なくても誤り）。
    使う前に有効な配列のアドレスを入れる（`p.text = buffer;`）。
 
 ### 採点のポイント・よくある誤り
@@ -599,7 +592,7 @@ p1.text=0x7ffee46279e3 other=0x7ffee46279e3
 
 **要点**: 指定初期化子はメンバ名で対応し，省略したメンバは 0.0 になる。宣言後の構造体全体の代入には型名付きの複合リテラルを使う。構造体は値として返せる。
 
-解答: [PointInit/point_init.c](PointInit/point_init.c)（`Point` をタグ付きの `typedef struct point {...} Point;` へ書き換え，`b` の宣言だけを `struct point` にした版。期待する表示は書き換え前と同じ）
+解答: [PointInit/point_init.c](PointInit/point_init.c)（演習ページの指示どおり `Point` をタグ付きの `typedef struct point {...} Point;` で定義し，`b` だけを `struct point` で宣言する。表示はタグなしの版と同じ）
 
 ```c
 Point a = {.y = 2.0, .x = 10.0}; // 指定した名前どおり x=10.0, y=2.0
@@ -620,16 +613,16 @@ assigned=-1.0 4.0
 
 - `add_point` の中で `a` を変更して返しても，それはコピーなので `main` の `a` は (10, 2) のまま。結果 (13, 7) は戻り値として `result` に入る。
   関数内のローカルな `Point` を値として `return` するのは問題ない（ローカル変数の**アドレス**を返すこととは違う）。
-- `struct point b` を `Point` 型の仮引数へ渡してもエラーも警告も出ない → `struct point` と `Point` は同じ型である（GCC・Clang の `-Wall -Wextra -Wpedantic` で警告 0）。
-- 書き換え前の版（タグなしの `typedef`，変数はすべて `Point`）を [PointInit/versions/point_untagged.c](PointInit/versions/point_untagged.c) に置き，同じ 3 行が表示されることをテストした（`variant_untagged`）。本体との違いは次の 2 か所だけである。
+- `struct point b` を `Point` 型の仮引数へ渡してもエラーも警告も出ない → `struct point` と `Point` は同じ型である（GCC・Clang の `-Wall -Wextra -Wpedantic` でも警告は出ない）。
+- 演習ページの最初の形（タグなしの `typedef`，変数はすべて `Point`）は [PointInit/versions/point_untagged.c](PointInit/versions/point_untagged.c) で，同じ 3 行を表示する（テスト `variant_untagged`）。`point_init.c` との違いは次の 2 か所だけである。
 
 ```c
-typedef struct {             // 本体: typedef struct point {
+typedef struct {             // point_init.c: typedef struct point {
     double x;
     double y;
 } Point;
 ...
-    Point b = {3.0, 5.0};    // 本体: struct point b = {3.0, 5.0};
+    Point b = {3.0, 5.0};    // point_init.c: struct point b = {3.0, 5.0};
 ```
 
 ### 宣言順と指定順を比較する
@@ -651,12 +644,12 @@ assigned=-1.0 4.0
 
 | コンパイラ | 診断の例 |
 | --- | --- |
-| MSVC | `error C2059: syntax error: '{'`（未確認。Microsoft Learn の説明に基づく例） |
+| MSVC | C2059（`{` の位置の構文エラー） |
 | GCC 13 | `error: expected expression before '{' token` |
 | Clang 18 | `error: expected expression` |
 
 `(Point){.x = -1.0, .y = 4.0}` は `Point` 型の名前のないオブジェクト（複合リテラル）で，構造体全体の代入に使える。1 つのメンバだけを変えるなら `a.x = -1.0;` のように個別に代入する。
-ファイルが `.cpp` だと C++ の規則になり，C++20 より前は指定初期化子自体が使えず，C++20 でも宣言順と違う `{.y = 2.0, .x = 10.0}` はエラーになる（番号は例・未確認）。演習ページのとおり `.c`・C17 でコンパイルしているか確認する。
+ファイルが `.cpp` だと C++ の規則になり，C++20 より前は指定初期化子自体が使えず，C++20 でも宣言順と違う `{.y = 2.0, .x = 10.0}` はエラーになる。演習ページのとおり `.c`・C17 でコンパイルしているか確認する。
 
 ### `typedef` の意味を説明する
 
@@ -685,7 +678,7 @@ assigned=-1.0 4.0
 
 解答: [RectContains/rect_contains.c](RectContains/rect_contains.c)（`normalized` と `contains` は講義のコードどおり）
 
-初期値は正規化の表の 3 行目の交差した組合せ (1, 4)，(3, 1) と点 (2, 2)。表の他の行は `.lower`・`.upper`・`Point p` の初期値を書き換えた版でテストした。
+初期値は正規化の表の 3 行目の交差した組合せ (1, 4)，(3, 1) と点 (2, 2)。表の他の行は `.lower`・`.upper`・`Point p` の初期値を書き換えた版で確かめる（各行のテスト名を表に示す）。
 
 ### 実行結果（演習ページの期待する表示と一致）
 
@@ -782,13 +775,13 @@ inside=0 original=1.0 1.0
 
 解答: [StructLayout/struct_layout.c](StructLayout/struct_layout.c)（演習ページの断片どおりの 1 行を表示する）
 
-### 実行結果（x64（と CI の macOS）の処理系で同じ値なのでテストにした。他の処理系では違ってよい）
+### 実行結果（処理系依存。以下の環境では同じ値で，他の処理系では違ってよい）
 
 | 環境 | 表示 |
 | --- | --- |
-| Windows x64（Visual Studio / MSVC 既定設定） | `size=12 tag=0 count=4 flag=8`（演習ページの記載どおり。CI の MSVC x64 でもテスト `basic` が成功） |
-| Linux x64（GCC 13・Clang 18，実際に実行） | 下記のとおり Windows x64 と同じ |
-| macOS arm64（CI） | 同じ |
+| Windows x64（Visual Studio / MSVC 既定設定） | `size=12 tag=0 count=4 flag=8`（演習ページの記載どおり） |
+| Linux x64（GCC 13・Clang 18） | 下記のとおり Windows x64 と同じ |
+| macOS arm64 | 同じ |
 
 ```text
 $ StructLayout
@@ -850,7 +843,7 @@ size=8 tag=0 flag=1 count=4
 ### 採点のポイント・よくある誤り
 
 - `sizeof(Record)` を 6 と予測し，12 の理由（2 か所の隙間）を図で説明できない。末尾のパディングを見落としている。
-- `%d` で `size_t` を表示している（`%zu` を使う。GCC/Clang は `-Wall` の `-Wformat` で警告する。MSVC /W4 では C4477 などの警告の例（未確認））。
+- `%d` で `size_t` を表示している（`%zu` を使う。GCC/Clang は `-Wall` の `-Wformat` で警告する。MSVC `/W4` では C4477（書式文字列と引数の型の不一致））。
 - 隙間の中身を表示したり，`memcmp` で比較したりしている。
 - 自分の環境の値を「C の決まり」と書いている（処理系依存であることを書いているか）。
 
@@ -878,6 +871,6 @@ size=8 tag=0 flag=1 count=4
 
 | 項目 | 確認できる課題・方法 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 移動量 0，0（`variant_move_0_0`）／課題2 `n=1`・全員 0・全員 100・割り切れない 80，70，91／課題3 幅 0・高さ 0・負の座標・名前 20 文字と 21 文字／発展2 下限 (1, 1)・上限 (3, 2)，(2, 4)・外側・幅 0 の長方形。すべて初期値を書き換えた版（`softprac_add_variant`）のテストとして自動で確認できる。範囲外（`n=0`・`n=4` など）は未定義動作・0 除算になるので実行しない |
-| 警告を確認し，原因を説明・修正した | 全プロジェクトを GCC/Clang の `-Wall -Wextra -Wpedantic -Werror` でビルドして警告 0。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants・versions を含む）のビルドとテストが成功している（コミット a76876f の時点）。課題3・発展1・課題2 の「書けない式」はエラーの診断を表に示した。`%zu` と `size_t`（発展3），平均の整数除算（課題2，警告が出ない誤り）も説明できるか確認する |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 移動量 0，0（`variant_move_0_0`）／課題2 `n=1`・全員 0・全員 100・割り切れない 80，70，91／課題3 幅 0・高さ 0・負の座標・名前 20 文字と 21 文字／発展2 下限 (1, 1)・上限 (3, 2)，(2, 4)・外側・幅 0 の長方形。いずれも初期値を書き換えた版のテスト（`variant_…`）がある。範囲外（`n=0`・`n=4` など）は未定義動作・0 除算になるので実行しない |
+| 警告を確認し，原因を説明・修正した | 全プロジェクトを GCC/Clang の `-Wall -Wextra -Wpedantic` と MSVC `/W4` で警告の出ない書き方にしている。課題3・発展1・課題2 の「書けない式」はエラーの診断を表に示した。`%zu` と `size_t`（発展3），平均の整数除算（課題2，警告が出ない誤り）も説明できるか確認する |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の箱と矢印の図（`p` 自体と `p` が指す `Point`），課題2 の `a[1].name[0]` の型の表，課題3 の `r.lower.x` と `r->lower.x` の違い，課題4 の配列メンバ・ポインタメンバの図，発展2 の `result` の各メンバの値の出どころ，発展3 の配置図 |

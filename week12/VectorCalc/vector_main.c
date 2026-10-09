@@ -1,4 +1,5 @@
-﻿/* 第12回 課題4 VectorCalc: 講義 7 の vector_main.c（手順3〜5 の書き換えは CMakeLists.txt の版でテストする） */
+﻿/* 第12回 課題4　ベクトルと行列を分割する（VectorCalc / vector_main.c）
+   講義 7 の vector_main.c．行列 A を表示し，2x+y と 2Ax+y を表示する */
 #include "matrix.h"
 #include "vector.h"
 

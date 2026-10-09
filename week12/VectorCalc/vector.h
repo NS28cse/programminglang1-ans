@@ -1,4 +1,5 @@
-﻿/* 第12回 課題4 VectorCalc: 2 成分ベクトルの型と操作の宣言（講義 7 の vector.h） */
+﻿/* 第12回 課題4　ベクトルと行列を分割する（VectorCalc / vector.h）
+   講義 7 の vector.h．2 成分ベクトルの型と操作の宣言 */
 #ifndef PL1_VECTOR_H
 #define PL1_VECTOR_H
 

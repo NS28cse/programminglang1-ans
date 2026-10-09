@@ -1,5 +1,6 @@
-﻿// 第11回 発展1 書き換え前の版（確認用）: タグなしの typedef で Point を定義し，変数はすべて Point で宣言する
-// 本体（タグ付きの typedef に書き換え，b だけを struct point にした版）と同じ表示になる
+﻿// 第11回 発展1　タグなしの typedef（PointInit / versions/point_untagged.c）
+// 演習ページの最初の形。タグなしの typedef で Point を定義し，変数はすべて Point で宣言する。
+// 表示は point_init.c（タグ付きの typedef，b だけを struct point で宣言）と同じになる。
 #include <stdio.h>
 // タグなしの typedef: 型には Point という名前だけがある
 typedef struct {

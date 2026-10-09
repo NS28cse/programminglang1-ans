@@ -1,4 +1,4 @@
-﻿/* 第12回 課題4 講義 7 の vector_main.c（このフォルダのガードなし vector.h と組み合わせる） */
+﻿/* 第12回 課題4　インクルードガードを調べる（_BuildErrors / noguard/vector_main.c）: 講義 7 の vector_main.c のまま．ガードなしの vector.h と組み合わせる */
 #include "matrix.h"
 #include "vector.h"
 

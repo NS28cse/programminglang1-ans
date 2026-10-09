@@ -1,4 +1,5 @@
-﻿// 第11回 発展3 比較用: Record のメンバを tag，flag，count の順に並べ替えた版（char 2 つを並べると隙間が減る）
+﻿// 第11回 発展3　メンバの順序を変える（StructLayout / versions/record_reordered.c）
+// Record のメンバを tag，flag，count の順に並べる。char 2 つが並ぶので隙間が減る。
 // 結果は処理系・配置設定に依存する。x64 の GCC・Clang・MSVC（既定）と macOS arm64 では size=8 tag=0 flag=1 count=4
 #include <stdio.h>
 #include <stddef.h>

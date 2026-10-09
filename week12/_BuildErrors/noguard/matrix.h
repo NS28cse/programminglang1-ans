@@ -1,4 +1,4 @@
-﻿/* 第12回 課題4 ガードなしの vector.h と組み合わせる正常な matrix.h（講義 7 の matrix.h のまま．ビルドしない） */
+﻿/* 第12回 課題4　インクルードガードを調べる（_BuildErrors / noguard/matrix.h）: 講義 7 の matrix.h のまま．ガードなしの vector.h と組み合わせる */
 #ifndef PL1_MATRIX_H
 #define PL1_MATRIX_H
 

@@ -1,4 +1,5 @@
-﻿// 第11回 発展1: 指定初期化子，省略したメンバ，複合リテラル，構造体を返す関数
+﻿// 第11回 発展1　初期化と構造体を返す関数（PointInit / point_init.c）
+// 指定初期化子，省略したメンバ，複合リテラル，構造体を返す関数。Point はタグ付きの typedef で定義する。
 #include <stdio.h>
 // タグ付きの typedef: struct point と Point は同じ型を表す
 typedef struct point {

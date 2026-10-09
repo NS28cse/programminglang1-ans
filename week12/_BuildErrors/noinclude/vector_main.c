@@ -1,4 +1,4 @@
-﻿/* 第12回 課題4 （比較用）matrix.h だけを読む vector_main.c．このフォルダの matrix.h と組み合わせる（ビルドしない） */
+﻿/* 第12回 課題4　ヘッダの独立性を確認する（_BuildErrors / noinclude/vector_main.c）: matrix.h だけを読む vector_main.c．このフォルダの matrix.h と組み合わせる */
 #include "matrix.h"
 
 int main(void)

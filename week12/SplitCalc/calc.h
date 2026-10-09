@@ -1,4 +1,5 @@
-﻿/* 第12回 課題1・2 SplitCalc: 公開する宣言（利用側の main.c と実装側の calc.c の両方が読む） */
+﻿/* 第12回 課題1・2　分割ビルドと関数の追加（SplitCalc / calc.h）
+   公開する宣言（利用側の main.c と実装側の calc.c の両方が読む） */
 #ifndef PL1_CALC_H
 #define PL1_CALC_H
 double add(double a, double b);

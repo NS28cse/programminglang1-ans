@@ -1,4 +1,5 @@
-﻿/* 第12回 発展2 SortModule: 整数配列モジュールの公開する宣言．比較関数は実装の都合なのでここに置かない */
+﻿/* 第12回 発展2　並べ替えをモジュールにする（SortModule / intlib.h）
+   整数配列モジュールの公開する宣言．比較関数は実装の都合なのでここに置かない */
 #ifndef PL1_INTLIB_H
 #define PL1_INTLIB_H
 #include <stddef.h>  /* size_t のため．利用側に取り込み順を要求しない */
