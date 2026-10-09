@@ -11,35 +11,19 @@
 
 | 課題 | 内容 | プロジェクト | ソース | テスト |
 | --- | --- | --- | --- | --- |
-| ウォームアップ | 初期化を読む | `Warmup05` | [warmup.c](Warmup05/warmup.c) | 1（basic） |
-| 1 | 最大の点数 | `Maximum` | [maximum.c](Maximum/maximum.c) | 6（本体 1 + 書き換え版 5：表の 4 つの配列，`return` をループ内へ移した誤り） |
-| 2 | 列ごとの合計 | `ColumnSum` | [arrays.c](ColumnSum/arrays.c) | 4（本体 1 + 書き換え版 3：`table` 2 通り，`sum` の初期化位置の誤り） |
-| 2 補足 | 三次元配列の添字 | `Array3D` | [array3d.c](Array3D/array3d.c) | 1（basic） |
-| 3 | 値渡し（本体 = 演習ページのプログラム） | `ValueCopy` | [valuecopy.c](ValueCopy/valuecopy.c) | 10（本体 1 + 書き換え版 7：初期値 0/−1，3 つの呼び出し方，2 回代入，`z` の追加，スコープ ＋ 別ソース 2：確認問題5・6 の [plus_one.c](ValueCopy/versions/plus_one.c)・[shadow_count.c](ValueCopy/versions/shadow_count.c)） |
-| 4 | 平均と累乗の関数 | `Functions` | [functions.c](Functions/functions.c) | 9（本体 1 + 書き換え版 8：表の 6 呼び出し，範囲の端，`result = 0` の誤り，変数に保存する前の版） |
-| 発展 | 合計と平均の役割分担 | `SumMean` | [summean.c](SumMean/summean.c) | 6（本体 1 + 書き換え版 5：表の 2 通り，範囲の最大，合計関数単独の `n = 0`，`n` を直し忘れた誤り） |
-
-合計 37 テスト。GCC 13.3（`-Wall -Wextra -Wpedantic -Werror`，AddressSanitizer/UBSan）と Clang 18.1（`-Werror`）で警告 0・全テスト成功を確認済み。MSVC（`/W4 /WX`）でも，CI（GitHub Actions。Debug・Release・sln）・MinGW・macOS で第5回の全プロジェクト（書き換え版と versions/ を含む）のビルドとテストに成功した（a76876f の時点）。
+| ウォームアップ | 初期化を読む | `Warmup05` | [warmup.c](Warmup05/warmup.c) | 1 |
+| 1 | 最大の点数 | `Maximum` | [maximum.c](Maximum/maximum.c) | 6 |
+| 2 | 列ごとの合計 | `ColumnSum` | [arrays.c](ColumnSum/arrays.c) | 4 |
+| 2 補足 | 三次元配列の添字 | `Array3D` | [array3d.c](Array3D/array3d.c) | 1 |
+| 3 | 値渡し（本体 = 演習ページのプログラム） | `ValueCopy` | [valuecopy.c](ValueCopy/valuecopy.c) | 10 |
+| 4 | 平均と累乗の関数 | `Functions` | [functions.c](Functions/functions.c) | 9 |
+| 発展 | 合計と平均の役割分担 | `SumMean` | [summean.c](SumMean/summean.c) | 6 |
 
 - 演習ページがプロジェクト名を指定しているのは `Maximum`・`ColumnSum`・`ValueCopy`・`Functions` だけ。ソース名の指定は課題2の `arrays.c`（講義の例題を入れる）だけなので，
   ほかはプロジェクト名を小文字にした名前（`Warmup05` だけは回の番号を除いた `warmup.c`）にした。
-- 発展は名前の指定がないので `SumMean`，ウォームアップは他の回と重ならないよう `Warmup05`，三次元配列の補足は `Array3D` とした（CMake ではプロジェクト名＝実行ファイル名が全回で一意である必要がある）。
-
-### テストの構成（書き換え版）
-
-- `<プロジェクト>/tests/basic.out` … フォルダのソース（本体。演習ページの期待する表示を出す版）の期待する出力。期待する表示が指定されていない課題では，指示をすべて反映した版。
-- `<プロジェクト>/variants/tests/<ケース>.out` … 「値を変えて確かめる」「`main` の中だけを変更する」などの書き換え版の期待する出力。
-  各プロジェクトの `CMakeLists.txt` で `softprac_add_variant(...)`（[cmake/SoftpracVariant.cmake](../cmake/SoftpracVariant.cmake)）を呼び，
-  提出用のソースの文字列（例: `{72, 85, 60, 93, 80}` → `{0}`）を置き換えた版をビルドしてテストする。学生が初期値を書き換えて再ビルドするのと同じ操作を CMake が行う。
-  置き換え前の文字列がソースにちょうど 1 回現れないと構成の段階でエラーになるので，ソースを直したときに気付ける。テスト名は `weekNN/<プロジェクト>/variant_<ケース>`。
-- 書き換え版は先頭コメントの 2 行目（〜3 行目）も「〜に書き換えた版」「誤りの例: 〜」という版の説明に置き換え，生成されたソースのコメントがコードと合うようにしている。
-- `ValueCopy/versions/` の `plus_one.c`・`shadow_count.c` は確認問題5・6 の確認用の別ソース。置換なしの `softprac_add_variant` でビルドしてテストする（本体の実行ファイルにはリンクされない）。
-- 書き換え版の実行ファイルは `bin/` ではなくビルドフォルダの `variants/week05/` にでき，Visual Studio の起動構成（`.vs/launch.vs.json`）には現れない。
-- どのプログラムも入力を取らず表示が 1 通りに決まるので，各版のテストは標準出力の完全一致と終了コード 0。
-- 実行結果は Linux x64（GCC 13.3 / Clang 18.1，`-std=c17 -Wall -Wextra -Wpedantic -Werror`，GCC では AddressSanitizer/UBSan も有効）で実際にビルド・実行した出力。
-  表示は ASCII だけで，`%p`（アドレス）と `sizeof` の一部を除き Windows（MSVC）でも同じになる。配列の長さはすべて定数（リテラルか `enum`）なので MSVC でもビルドできる（VLA なし）。
-- 誤りの例の診断は，GCC は実際にコンパイルした出力。MSVC の番号と文面は未確認で，Microsoft Learn の説明に基づく例（文面は版によって多少違う）。以下では「（例）」と書く（日本語版 Visual Studio では同じ番号の日本語訳が表示される）。
-  例外は課題1の `C4702` で，これは CI で MSVC 19.51 が実際に出した警告。
+- 発展は名前の指定がないので `SumMean`，ウォームアップは他の回と重ならないよう `Warmup05`，三次元配列の補足は `Array3D` とした（プロジェクト名は全回で重ならないようにしている）。
+- 確認問題5・6 の確認用のプログラムは [ValueCopy/versions/](ValueCopy/versions/) に置いている。書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
+- 表示は ASCII だけで，`%p`（アドレス）と `sizeof` の一部を除き Windows（MSVC）でも同じになる。配列の長さはすべて定数（リテラルか `enum`）なので，VLA を使わず MSVC でもビルドできる。
 
 ---
 
@@ -136,7 +120,7 @@ max=93
 | {100, 20, 30} | 3 | 100 | 最初が最大（初期値のまま一度も更新されない） |
 | {20, 30, 100} | 3 | 100 | 最後が最大（`i = n - 1` の最後の比較で更新される） |
 
-`maximum.c` の `COUNT` と初期化子を表に合わせて書き換えた版の実行結果（[Maximum/CMakeLists.txt](Maximum/CMakeLists.txt)。各行をテストで確認）:
+`maximum.c` の `COUNT` と初期化子を表に合わせて書き換えた版の実行結果:
 
 | 変更（`enum { COUNT = … };` と `int scores[COUNT] = …;`） | 実行結果 | テスト |
 | --- | --- | --- |
@@ -155,13 +139,12 @@ max=93
 - **`i` を 1 から始める理由**: `best` を `a[0]` で初期化した時点で添字 0 は調べ終えているから。0 から始めても結果は同じだが，`a[0]` と自分自身を比べる無駄な 1 回になる。
   候補を 0 などの固定値で初期化しないのは，「配列の中の値」から始めればどんな範囲の値でも正しく動くため（例えば全要素が負なら 0 は誤り）。そのために `n` は 1 以上という約束が必要で，`n = 0` では `a[0]` が存在せず読めない。
 - **戻り値を返す位置**: `for` の後（全要素を調べ終えた後）。ループの中で `return` すると最初の比較で関数が終わり，残りの要素を調べない。
-  例えば `if` の後ろ（ループ内）へ `return best;` を移すと，初期値の配列で `max=85` になる（`i = 1` だけ調べて返す。テスト `variant_return_in_loop`）。さらに，値を返さずに関数の終わりに達する経路ができ（コンパイラが警告。GCC: `warning: control reaches end of non-void function [-Wreturn-type]`，MSVC（例）: `C4715: 'max_score': not all control paths return a value`），
-  `n = 1` では実際にその経路を通る（ループに 1 回も入らない。その戻り値を使うと未定義動作）。
-  CI（コミット 25e4f69 の実行）で MSVC 19.51 が実際に `warning C4702: unreachable code` を出した。最初の繰り返しで必ず返るので，ループの `++i` には到達しないためである。
-  テストの版は誤りを示すためのものなので，`-Werror`・`/WX` でビルドが止まらないよう，この版だけ `-Wno-return-type`（MSVC は `/wd4715 /wd4702`）で警告を抑止している。
-  入力は `n = 5` で，`i = 1` の繰り返しの中で必ず `return` するため，関数の終わりに達する経路は通らず未定義動作にはならない。
+  例えば `if` の後ろ（ループ内）へ `return best;` を移すと，初期値の配列で `max=85` になる（`i = 1` だけ調べて返す。テスト `variant_return_in_loop`）。さらに，値を返さずに関数の終わりに達する経路ができ，
+  `n = 1` ではその経路を通る（ループに 1 回も入らない。その戻り値を使うと未定義動作）。コンパイラはこれを警告する（GCC は `warning: control reaches end of non-void function [-Wreturn-type]`，MSVC は C4715）。
+  MSVC はさらに C4702（到達しないコード）も出す。最初の繰り返しで必ず返るので，ループの `++i` には到達しないためである。
+  テストの版は `n = 5` で，`i = 1` の繰り返しの中で必ず `return` するため，関数の終わりに達する経路は通らず未定義動作にはならない（誤りを示す版なので，この 2 つの警告は抑止している）。
 - **`const` を付ける意図**: `max_score` は配列を読むだけで書き換えないことを宣言として示す。配列の引数は要素がコピーされず元の要素を指すので，書き換えると呼び出し元の配列が変わる。
-  `const` があれば，誤って `a[i] = 0;` のように書いたときにコンパイルエラーになり（GCC: `assignment of read-only location`，MSVC（例）: `C2166: l-value specifies const object`），呼び出し側も「渡しても壊されない」と分かる。
+  `const` があれば，誤って `a[i] = 0;` のように書いたときにコンパイルエラーになり（GCC は `assignment of read-only location`，MSVC は C2166。どちらも `const` のオブジェクトへの代入），呼び出し側も「渡しても壊されない」と分かる。
 
 ### 採点のポイント・よくある誤り
 
@@ -214,7 +197,7 @@ col 2: 9
 
 ### `table` を変えて確かめる
 
-`table` の初期化子だけを書き換えた版の実行結果（[ColumnSum/CMakeLists.txt](ColumnSum/CMakeLists.txt)。各行をテストで確認）:
+`table` の初期化子だけを書き換えた版の実行結果:
 
 | `table` の初期化子 | 実行結果（`total` の行は 3 通りとも `total=390 mean=78.0`） | テスト |
 | --- | --- | --- |
@@ -233,7 +216,7 @@ col 2: 0
 
 `{{0}}` は `table[0][0]` だけを 0 と書き，残りの 5 要素は省略したので 0 になる（ウォームアップと同じ規則）。点数配列 `scores` は変えていないので最初の行は変わらない。
 
-**`sum` の初期化を二重ループ全体の前へ移した誤りの版**（演習ページの「5，12，21 の累積」をテスト `variant_sum_outside` で確認）
+**`sum` の初期化を二重ループ全体の前へ移した誤りの版**（演習ページの「5，12，21 の累積」になる。テスト `variant_sum_outside`）
 
 ```c
     int sum = 0;  // 誤り: 二重ループ全体の前で 1 回だけ初期化
@@ -319,7 +302,7 @@ int main(void)
 }
 ```
 
-演習ページのその後の実験（呼び出し方の変更，初期値の変更，`z` の追加，スコープ）は，この本体の `main` の一部を書き換えた版としてビルドし，テストしている（[ValueCopy/CMakeLists.txt](ValueCopy/CMakeLists.txt)）。
+演習ページのその後の実験（呼び出し方の変更，初期値の変更，`z` の追加，スコープ）は，この `main` の一部を書き換えた版で示す。
 
 **実行結果**（予測: `10 11`，テスト `basic`）
 
@@ -339,7 +322,7 @@ int main(void)
 
 3 行目で `x` が変わるのは関数の中の処理によるものではなく，呼び出し元の代入によるもの。
 
-確認に使った書き換え版（`int x = 10;` の後の行を置き換えた。毎回 `x` は 10 から始まる）と実行結果:
+`int x = 10;` の後の行を書き換えた版の実行結果（毎回 `x` は 10 から始まる）:
 
 | `int x = 10;` の後 | 実行結果 | テスト |
 | --- | --- | --- |
@@ -375,7 +358,7 @@ int main(void)
 1 回目の呼び出しでは仮引数 `x` が 10 で作られ，11 になって返り，呼び出しが終わると消える。2 回目の呼び出しでは**新しい**仮引数 `x` が再び `main` の `x` の値 10 で作られる。
 1 回目の仮引数の変更（10 → 11）は `main` の `x` にも 2 回目の仮引数にも残らないので，`z` も 11 になる。
 
-**`x = increment(x);` を 2 回続ける場合**（予測・実行結果ともに `x = 12`。`printf("%d\n", x);` で `12` と表示されることをテスト `variant_assign_twice` で確認）
+**`x = increment(x);` を 2 回続ける場合**（予測・実行結果ともに `x = 12`。`printf("%d\n", x);` で `12` と表示される。テスト `variant_assign_twice`）
 
 ```c
     int x = 10;
@@ -407,9 +390,9 @@ int main(void)
 
 - 2 つの `a` は別々のブロックで宣言された別の局所変数。後半は前半の `a` への代入ではなく，新しい変数の宣言と初期化。
 - **この直後に `printf` で `a` を表示できるか → できない**。どちらの `a` もスコープは自分のブロックの `}` まで。ブロックの外では名前 `a` が見えず，コンパイルエラーになる
-  （GCC: `error: 'a' undeclared (first use in this function)`，MSVC（例）: `C2065: 'a': undeclared identifier`）。
+  （GCC は `error: 'a' undeclared (first use in this function)`，MSVC は C2065。宣言されていない識別子）。
 - **2 つの宣言を同じブロックへ移せるか → そのままではできない**。同じブロックで同じ名前を 2 回宣言すると重複になる
-  （GCC: `error: redefinition of 'a'`，MSVC（例）: `C2374: 'a': redefinition; multiple initialization`）。同じブロックにするなら 2 つ目を代入 `a = 345;` に変える（この場合は同じ変数を上書きする）。
+  （GCC は `error: redefinition of 'a'`，MSVC は C2374。同じ名前の再定義）。同じブロックにするなら 2 つ目を代入 `a = 345;` に変える（この場合は同じ変数を上書きする）。
 - **仮引数 `x` と `main` の `x` が共存できる理由**: 仮引数 `x` のスコープは `increment` の本体だけ，`main` の `x` のスコープは `main` のブロックだけで，2 つの範囲は重ならない。
   名前が同じでも別の変数（別の領域）であり，`increment` から `main` の `x` を名前で直接読むことはできない。必要な値は引数で渡し，結果は戻り値で受け取る。
 
@@ -489,7 +472,7 @@ power=32
 | `power(5, 1)` | 5 | 1回だけ掛ける（1 × 5） |
 | `power(5, 5)` | 3125 | 課題で許す最大の結果（1 × 5 × 5 × 5 × 5 × 5） |
 
-`main` の `average(2.0f, 4.0f)` と `power(2, 5)` の引数を書き換えた版の実行結果（[Functions/CMakeLists.txt](Functions/CMakeLists.txt)。表の 6 つの呼び出しを 3 つの版で覆い，範囲の端も加えた）:
+`main` の `average(2.0f, 4.0f)` と `power(2, 5)` の引数を書き換えた版の実行結果（表の 6 つの呼び出しを 3 つの版で確かめ，範囲の端も加える）:
 
 | `average` の引数 | `power` の引数 | 実行結果 | テスト |
 | --- | --- | --- | --- |
@@ -507,18 +490,18 @@ power=32
 ### 説明すること
 
 - **`result` を 0 で初期化してはいけない理由**: `power` は `result` に `base` を掛けていく。0 に何を掛けても 0 なので，どの呼び出しでも 0 が返る
-  （実際に `int result = 0;` にすると `average=3.0` / `power=0` と表示される。テスト `variant_result_0`）。掛け算の初期値は単位元の 1 にする。こうすると `exponent = 0` で本体を 0 回実行したときも，正しく 1（= base<sup>0</sup>）が返る。
+  （`int result = 0;` にすると `average=3.0` / `power=0` と表示される。テスト `variant_result_0`）。掛け算の初期値は単位元の 1 にする。こうすると `exponent = 0` で本体を 0 回実行したときも，正しく 1（= base<sup>0</sup>）が返る。
   足し算で合計を求める `sum` を 0 で初期化するのと対になっている。
 - **`return` を `for` の外へ置く理由**: `return` を実行するとその場で関数が終わり呼び出し元へ戻る。`for` の中に置くと 1 回掛けただけで返り，`exponent` 回の繰り返しにならない。
-  また `exponent = 0` のときは本体を 1 回も実行しないので，`for` の中の `return` に到達せず，値を返さずに関数の終わりに達する（コンパイラが警告。GCC は `-Wreturn-type`，MSVC は `C4715`（例）。その戻り値を使うと未定義動作）。
+  また `exponent = 0` のときは本体を 1 回も実行しないので，`for` の中の `return` に到達せず，値を返さずに関数の終わりに達する（コンパイラが警告する。GCC は `-Wreturn-type`，MSVC は C4715。その戻り値を使うと未定義動作）。
 - **プロトタイプ宣言の末尾にセミコロンが必要な理由**: プロトタイプ宣言は本体を持たない**宣言**で，変数の宣言と同じく `;` で終わる。`;` がないと，コンパイラは次の行の `int main(void)` を，その関数の旧式の仮引数宣言（本体の前に仮引数の型を並べる古い書き方）の続きとして読み，
-  `main` の本体の `{` でエラーになる（`int power(int base, int exponent)` の `;` を消して確かめると，GCC は `main` の `{` の行で `error: expected '=', ',', ';', 'asm' or '__attribute__' before '{' token`。
-  MSVC の `C2085: 'main': not in formal parameter list`（例）も，`main` を仮引数宣言として読んだという同じ理由。続けて別のエラーが出ることもある）。
+  `main` の本体の `{` でエラーになる。`int power(int base, int exponent)` の `;` を消すと，GCC は `main` の `{` の行で `error: expected '=', ',', ';', 'asm' or '__attribute__' before '{' token` を出す。
+  MSVC の C2085（`main` が仮引数の並びにない）も，`main` を仮引数宣言として読んだという同じ理由で，続けて別のエラーが出ることもある。
   定義（`{ … }` の本体を持つ）の後には `;` を付けない。
 
 **プロトタイプ宣言を書かなかった場合**（関数を `main` の後ろに置いたまま宣言を消した例）: `main` で呼ぶ時点で `average` を知らないので，
 GCC 13 は `warning: implicit declaration of function 'average'` の後に `error: conflicting types for 'average'`（戻り値を `int` と仮定したため。GCC 14 以降は implicit declaration 自体が既定でエラー），
-MSVC は（例）`C4013: 'average' undefined; assuming extern returning int` の後に `C2371: 'average': redefinition; different basic types` を出す。
+MSVC は C4013（宣言のない関数を `int` を返す外部関数と仮定）の後に C2371（異なる型での再定義）を出す。
 宣言はコンパイル時に呼び出し方（引数と戻り値の型）を確認するためのもので，「後ろの関数が実行時にまだ存在しない」からではない。
 
 ### 戻り値と表示を分ける
@@ -536,15 +519,15 @@ MSVC は（例）`C4013: 'average' undefined; assuming extern returning int` の
     printf("average=%.1f\n", result);
 ```
 
-どちらも実際の表示は `average=3.0` / `power=32` で同じ（変更後はテスト `basic`，変更前はテスト `variant_before_result` で確認）。
+どちらも実際の表示は `average=3.0` / `power=32` で同じ（変更後はテスト `basic`，変更前はテスト `variant_before_result`）。
 `average` の中で `printf` だけを実行して値を返さない形（例えば `void average(float a, float b)` の中で表示する）では，平均は画面に出るだけで呼び出し元に値が戻らず，
 `float result = average(...)` のように変数へ保存したり，別の計算（合計との比較など）に使ったりできない。`return` は呼び出し元へ値を返す操作，表示は `printf` の仕事，と区別する。
 
 ### 採点のポイント・よくある誤り
 
 - `average` の戻り値型を `int` にしている（`average(1.0f, 2.0f)` が 1 になる）。
-- `(a + b) / 2` と `2.0f` のどちらでもこの場合は `float` の除算になるが，`return (a + b) / 2.0;` は `double` の計算結果を `float` で返すので MSVC `/W4` で（例）`C4244: 'return': conversion from 'double' to 'float', possible loss of data` が出る。
-  `average(2.0, 4.0)` のように `double` のリテラルを渡しても MSVC は（例）`C4305: 'function': truncation from 'double' to 'float'` を出す。`f` 接尾辞の有無を確認する。
+- `(a + b) / 2` と `2.0f` のどちらでもこの場合は `float` の除算になるが，`return (a + b) / 2.0;` は `double` の計算結果を `float` で返すので MSVC `/W4` で C4244（`double` から `float` への変換でデータが失われる可能性）が出る。
+  `average(2.0, 4.0)` のように `double` のリテラルを渡しても MSVC は C4305（`double` から `float` への切り詰め）を出す。`f` 接尾辞の有無を確認する。
 - 累乗に `^` を使っている（`2 ^ 5` はビットごとの XOR で 7）。
 - `result` を 0 で初期化，`return` をループ内，`for (int i = 0; i <= exponent; ++i)`（1 回多く掛ける）。表の `power(2, 0)`・`power(5, 1)` で発見できる。
 - 関数の中で `printf` している（演習の指示「関数内で表示はせず，`main` で戻り値を表示」に反する）。
@@ -592,7 +575,7 @@ int sum_array(const int a[], int n)
 total=390 mean=78.0
 ```
 
-**値を変えて確かめる**（初期化子と `n` を書き換えた版。[SumMean/CMakeLists.txt](SumMean/CMakeLists.txt)。演習ページの期待どおり）
+**値を変えて確かめる**（初期化子と `n` を書き換えた版。演習ページの期待どおり）
 
 | 変更 | 実行結果 | テスト |
 | --- | --- | --- |
@@ -608,7 +591,7 @@ total=390 mean=78.0
 - `(double)total / n` は `total` を `double` に変換してから割るので，浮動小数点の除算になる。`total / n` と書くと `int` 同士の整数除算で小数部が切り捨てられる（例えば合計 7，`n = 2` なら 3）。
   `(double)(total / n)` も，先に整数除算してから変換するので誤り。
 - 合計を返す `sum_array` は，`n = 0` なら本体を 0 回実行して 0 を返すので，関数単独では `n = 0` を受け付けてよい（講義の契約「`n` は 0 以上」）。
-  `int n = 0;` にして平均を表示せず `printf("total=%d\n", total);` だけにした版で `total=0` と表示されることをテスト `variant_sum_only_n_0` で確認した。
+  `int n = 0;` にして平均を表示せず `printf("total=%d\n", total);` だけにした版では `total=0` と表示される（テスト `variant_sum_only_n_0`）。
   一方，`main` の平均は `n` で割るので `n = 0` は 0 除算になる。だから**この `main` の `n` は 1 以上**という前提が必要（関数の契約と，呼び出し側の前提は別に考える）。
 - 範囲（要素数 1〜5，値 0〜100）なら合計は最大 500 で `int` に収まる。
 
@@ -617,7 +600,7 @@ total=390 mean=78.0
 - `sum_array` の中で平均を計算・表示している（役割分担になっていない）。
 - `total / n` の整数除算，`(double)(total / n)` の変換位置の誤り。`{72, 85, 60, 93, 80}` では 390 / 5 = 78 で割り切れるため誤りが表に出ない。値を変えた確認（例: `{1, 2}`，`n = 2` で 1.5）で見つける。
 - 配列の初期化子だけを変えて `n` を直していない。`{0}` の場合は `n` が 5 のままでも表示は `total=0 mean=0.0` で変わらず，出力では見分けられないので，ソースの `n` を確認する。
-  `{100, 100, 100}` で `n` を 5 のままにすると `total=300 mean=60.0` になり（残りの 2 要素の 0 も数えて割る。テスト `variant_hundred_n_5_wrong` で確認），誤りが表に出る。
+  `{100, 100, 100}` で `n` を 5 のままにすると `total=300 mean=60.0` になり（残りの 2 要素の 0 も数えて割る。テスト `variant_hundred_n_5_wrong`），誤りが表に出る。
   配列自体を `int scores[1] = {0};` に変えたのに 5 を渡すと範囲外アクセス。
 - `n = 0` を許して 0 で割る。
 
@@ -638,8 +621,8 @@ total=390 mean=78.0
    `…26c` の次が `…270` になるのは 16 進数の繰り上がり（0x26c + 4 = 0x270）で，間隔は 4 のまま。
    補足: AddressSanitizer を有効にしたビルドでは局所配列が通常のスタックとは別の領域に置かれることがあり，`0x7fcb76300020`・`…24`・`…28` のようなアドレスになる（間隔はやはり 4）。Windows（MSVC）でも `int` は 4 バイトなので最後の行は同じ。`%p` の表示形式は環境で異なる（MSVC では `0x` なしの大文字 16 桁など）。
 4. **関数の仮引数 `a` は配列そのものではなく，先頭の要素を指す情報（ポインタ）だから**。配列を渡しても全要素はコピーされず，`sizeof a` はポインタのサイズになる。
-   実際に 3 要素の配列を渡した関数で `sizeof a` を表示すると，Linux x64 では `8`（`main` での `sizeof a` は 12）。Windows x64 でも 8，x86（Win32）では 4。
-   確かめたコード（値が環境で変わるのでテストにはしない）と，Linux x64（GCC 13.3）での表示:
+   3 要素の配列を渡した関数で `sizeof a` を表示すると，Linux x64 では `8`（`main` での `sizeof a` は 12）。Windows x64 でも 8，x86（Win32）では 4。
+   表示するコードと，Linux x64（GCC 13.3）での表示:
    ```c
    #include <stdio.h>
 
@@ -662,11 +645,10 @@ total=390 mean=78.0
    ```
    このコードをコンパイルすると GCC は `warning: 'sizeof' on array function parameter 'a' will return size of 'const int *' [-Wsizeof-array-argument]` を出す。だから長さは別の引数 `n` で渡す。
 5. **10 のまま**。`plus_one` の仮引数 `value` は `b` の値のコピーで，関数内で 11 になっても `b` は変わらない。戻り値 11 は使われずに捨てられる。
-   `int c = plus_one(b);` なら `c` が 11，`b = plus_one(b);` なら代入によって `b` が 11 になる（[ValueCopy/versions/plus_one.c](ValueCopy/versions/plus_one.c) で `b=10` / `b=10 c=11` / `b=11` と表示されることをテスト `variant_plus_one` で確認）。
+   `int c = plus_one(b);` なら `c` が 11，`b = plus_one(b);` なら代入によって `b` が 11 になる（[ValueCopy/versions/plus_one.c](ValueCopy/versions/plus_one.c) の表示は `b=10` / `b=10 c=11` / `b=11`。テスト `variant_plus_one`）。
 6. **局所変数のほう**。関数内で同名の局所変数を宣言すると，その関数（そのブロック）では内側の名前が外側を隠す（隠蔽，シャドーイング）。`++count` は局所変数を変え，グローバル変数は変わらない。
    講義の `tick` に `int count = 3;` を追加した [ValueCopy/versions/shadow_count.c](ValueCopy/versions/shadow_count.c) で，`global count=0` → `local count=4` → `global count=0` と表示される（テスト `variant_shadow_count`）。
-   MSVC `/W4` は（例）`C4459: declaration of 'count' hides global declaration` を出す（GCC/Clang は `-Wshadow` を付けたときだけで，`-Wall -Wextra` には含まれない）。
-   この版は隠蔽を示すためにわざと書いたものなので，CI の `/WX`（警告をエラーにする）で止まらないよう，`ValueCopy/CMakeLists.txt` でこの版だけ MSVC の C4459 を `/wd4459` で抑止している。
+   MSVC `/W4` は C4459（グローバル宣言の隠蔽）を出す（GCC/Clang は `-Wshadow` を付けたときだけで，`-Wall -Wextra` には含まれない）。
 7. **`void` 関数の `return;` は値を返さずに呼び出し元へ戻るだけ，`int` 関数の `return 0;` は値 0 を呼び出し元へ返して戻る**。`void` 関数の呼び出しは値を持たないので `int x = hello();` のように受け取れない。
    `void` 関数の末尾の `return;` は省略できるが，`void` でない関数はすべての経路で値を返す必要がある。`main` の `return 0;` は呼び出し元（実行環境）へ 0 を返し，プログラムの正常終了を表す。
 8. **呼び出しより前（`main` より前）にプロトタイプ宣言を書く**（例: `int square(int x);`，末尾に `;`）。コンパイラがその位置で引数と戻り値の型を確認できるようにするため。課題4の `functions.c` がこの形。
@@ -677,8 +659,8 @@ total=390 mean=78.0
 
 | 項目 | どこで確認できるか |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1の {0}・`n = 1`（本体 0 回）と最初・最後が最大の配列（`Maximum` の `variant_zero`〜`variant_last`），課題2の全要素 0（`ColumnSum` の `variant_zero`），課題3の初期値 0・−1（`ValueCopy` の `variant_x_0`・`variant_x_m1`），課題4の `power(2, 0)`・`power(5, 5)` と範囲の端（`Functions` の `variant_a_…`），発展の `n = 1` と {100, 100, 100}（`SumMean` の `variant_zero_n_1`・`variant_hundred_n_3`）。すべて自動テストで確認済み |
-| 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC 13.3／Clang 18.1 の `-Wall -Wextra -Wpedantic -Werror` で警告 0（MSVC `/W4` で警告になる書き方 ―― VLA，`double` から `float` への暗黙の変換，宣言のない呼び出し ―― も避けている。誤りを示すためにわざと書いた `Maximum` の `return_in_loop` 版と確認問題6 の `shadow_count` 版だけは，その警告を版ごとに抑止し理由を書いている）。MSVC（`/W4 /WX`）でも，CI（GitHub Actions。Debug・Release・sln）・MinGW・macOS で第5回の全プロジェクト（書き換え版と versions/ を含む）のビルドとテストに成功した（a76876f の時点）。MSVC でよく出る警告（番号は例）: プロトタイプ宣言なし（C4013），`return` がループ内で値を返さない経路（C4715），`double` から `float` への変換（C4244/C4305），グローバル変数の隠蔽（C4459）。CI で実際に出たのは `return_in_loop` 版の到達しないコード（C4702）。課題1・4・確認問題6 で説明 |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1の {0}・`n = 1`（本体 0 回）と最初・最後が最大の配列（`Maximum` の `variant_zero`〜`variant_last`），課題2の全要素 0（`ColumnSum` の `variant_zero`），課題3の初期値 0・−1（`ValueCopy` の `variant_x_0`・`variant_x_m1`），課題4の `power(2, 0)`・`power(5, 5)` と範囲の端（`Functions` の `variant_a_…`），発展の `n = 1` と {100, 100, 100}（`SumMean` の `variant_zero_n_1`・`variant_hundred_n_3`） |
+| 警告を確認し，原因を説明・修正した | 全プロジェクトを `-Wall -Wextra -Wpedantic` と MSVC `/W4` で警告の出ない書き方にしている（VLA，`double` から `float` への暗黙の変換，宣言のない呼び出しを避ける）。誤りを示すためにわざと書いた `Maximum` の `return_in_loop` 版と確認問題6 の `shadow_count` 版だけは，その警告を版ごとに抑止している。MSVC でよく出る警告: プロトタイプ宣言なし（C4013），`return` がループ内で値を返さない経路（C4715）と到達しないコード（C4702），`double` から `float` への変換（C4244/C4305），グローバル変数の隠蔽（C4459）。課題1・4・確認問題6 で説明 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1の `best` の追跡表，課題2の訪問順の表，課題4の関数の型の表（`float average(float, float)`，`int power(int, int)`），発展の `(double)` の説明 |
 | 添字の範囲と，関数に渡す要素数が一致している | 課題1・発展で配列の大きさと渡す長さに同じ `COUNT`／`n` を使う。課題2の `table[col][row]` が範囲外になる理由，確認問題2・4 |
 | 値を返すこと，変数へ代入すること，画面へ表示することを区別できる | 課題3の 3 つの呼び出し方の表，課題4の「戻り値と表示を分ける」，確認問題5（`variant_plus_one`）・7 |

@@ -3,10 +3,8 @@
 softprac_add_program(CopyCapacity strings.c)
 
 softprac_add_variant(CopyCapacity strings.c capacity_4 "char copy[16]" "char copy[4]"
-                     [[講義の strings.c そのもの
-// 演習で copy の容量を 4，3 に変えた版は CMakeLists.txt の variant でテストする。]]
-                     [[講義の strings.c で copy の容量を 4 に変えた版（CMakeLists.txt の variant）]])
+                     [[講義の strings.c そのもの（copy の容量は 16）。]]
+                     [[講義の strings.c で copy の容量を 4 に変えた版。]])
 softprac_add_variant(CopyCapacity strings.c capacity_3 "char copy[16]" "char copy[3]"
-                     [[講義の strings.c そのもの
-// 演習で copy の容量を 4，3 に変えた版は CMakeLists.txt の variant でテストする。]]
-                     [[講義の strings.c で copy の容量を 3 に変えた版（CMakeLists.txt の variant）]])
+                     [[講義の strings.c そのもの（copy の容量は 16）。]]
+                     [[講義の strings.c で copy の容量を 3 に変えた版。]])

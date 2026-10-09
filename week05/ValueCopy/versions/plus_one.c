@@ -1,4 +1,4 @@
-﻿// 第5回 確認問題5 の確認用（ValueCopy の versions/plus_one.c。本体とは別にテストする）
+﻿// 第5回 確認問題5　戻り値を使うか（ValueCopy / versions/plus_one.c）
 // 講義の plus_one で，戻り値を使わない・別の変数に保存する・同じ変数へ代入する，の 3 通りを比べる。
 #include <stdio.h>
 

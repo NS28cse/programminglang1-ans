@@ -1,6 +1,6 @@
-﻿// 第6回 課題3 符号の異なる比較の確認用（Average の versions/sign_compare.c。本体とは別にテストする）
+﻿// 第6回 課題3 符号の異なる比較（Average / versions/sign_compare.c）
 // int の -10 と unsigned int の 10u を < で比べる。i が unsigned int（4294967286）に変換されるので結果は 0。
-// 警告が出る書き方をわざと示す版なので，その警告だけ CMakeLists.txt で抑止している（README 参照）。
+// 符号の異なる比較の警告（GCC/Clang の -Wsign-compare，MSVC の C4018）が出る書き方をわざと示している。
 #include <stdio.h>
 
 int main(void)

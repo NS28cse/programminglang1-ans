@@ -1,5 +1,5 @@
-﻿// 第6回 課題3 変換する順序（Average / average.c）。整数拡張・積の型・往復変換を確かめる「完全なプログラム」
-// 最初の版（total / count のキャストの位置を比べる版）は versions/average_first.c。
+﻿// 第6回 課題3 変換する順序（Average / average.c）
+// 演習ページの「完全なプログラム」。整数拡張・積の型・往復変換・符号なしへの変換を確かめる。
 #include <stdio.h>
 int main(void)
 {
@@ -15,7 +15,7 @@ int main(void)
     char restored = (char)saved;
     // 符号なしへの変換は 256 を法とする値になり，失った情報は戻らない。
     // 演習ページの (unsigned char)300 は定数を切り詰めるキャストで MSVC /W4 の C4310 になるため，
-    // 300 をいったん int の変数に入れてから変換する（結果は同じ 44。README 参照）
+    // 300 をいったん int の変数に入れてから変換する（結果は同じ 44）
     int large = 300;
     unsigned char small = (unsigned char)large;
     printf("promoted=%d\n", promoted);
