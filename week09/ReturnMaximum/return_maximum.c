@@ -1,5 +1,5 @@
 ﻿// 第9回 課題1　値を返す版と場所を返す版の比較（ReturnMaximum / return_maximum.c）
-// 期待する表示は before=12 12 と after=12 99。負の配列・場所の版だけ n=0 などは CMakeLists.txt の variant でテストする。
+// 最大値のコピーを返す max_value と，最大要素の場所を返す max_pointer を比べる（表示は before=12 12 と after=12 99）。
 #include <stdio.h>
 
 // 最大の整数値を返す。条件: n>=1 で，a には n 要素以上あること（空入力には対応しない）

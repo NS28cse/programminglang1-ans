@@ -1,4 +1,5 @@
-﻿// 第9回 課題2　関数へ分ける前の途中版（main に直接交換を書いた版）
+﻿// 第9回 課題2　表示順を変更する（Names / versions/names_direct.c）
+// 関数へ分ける前の形: main の中で names[0] と names[2] のポインタ値を直接交換する。
 #include <stdio.h>
 int main(void)
 {

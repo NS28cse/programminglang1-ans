@@ -1,4 +1,5 @@
-﻿/* 第10回 課題4 WriteText: scores.txt へ 72，85，60 を 1 行ずつ書く（モード "w"：何回実行しても 3 行） */
+﻿/* 第10回 課題4　テキストを書き出す（WriteText / write_text.c）
+   scores.txt へ 72，85，60 を 1 行ずつ書く（モード "w"：何回実行しても 3 行） */
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 enum { COUNT = 3 };

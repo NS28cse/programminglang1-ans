@@ -1,4 +1,5 @@
-﻿/* 第10回 課題2 Arguments: 引数を順に表示し，北陸3県の名前があれば最後に hokuriku! を 1 回だけ表示する */
+﻿/* 第10回 課題2　引数を表示して文字列を探す（Arguments / arguments.c）
+   引数を順に表示し，北陸3県の名前があれば最後に hokuriku! を 1 回だけ表示する */
 #include <stdio.h>
 #include <string.h>
 enum { PREFECTURE_COUNT = 3 };

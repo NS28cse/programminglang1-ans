@@ -1,11 +1,10 @@
-# 第10回 課題2 ParseNumber
-# 本体は講義の parse_number.c（検証表のケースは tests/）。
-# 「複数の数値を合計するなら」の断片へ置き換えた版を sum としてビルドしてテストする（期待値: variants/tests/sum--<ケース>.*）
+# 第10回 課題2 ParseNumber: 本体は講義の parse_number.c。
+# 「複数の数値を合計するなら」の断片へ置き換えた版（sum）もビルドしてテストする。先頭コメントの 2 行目も版の説明に置き換える
 softprac_add_program(ParseNumber parse_number.c)
 
 softprac_add_variant(ParseNumber parse_number.c sum
-  [[/* 第10回 課題2 ParseNumber: 引数の整数 1 個（0〜100）を strtol で検査して表示する（講義の parse_number.c） */]]
-  [[/* 第10回 課題2 ParseNumber（合計版）: 引数の整数（各 0〜100，1〜10 個）を検査して合計を表示する */]]
+  [[   講義の parse_number.c。引数の整数 1 個（0〜100）を strtol で検査して表示する */]]
+  [[   講義の parse_number.c を合計版にしたもの。引数の整数（各 0〜100，1〜10 個）を検査して合計を表示する */]]
   [[    if (argc != 2) {
         fprintf(stderr, "usage: ParseNumber integer\n");
         return 1;

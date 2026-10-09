@@ -1,4 +1,5 @@
-﻿/* 第10回 課題1 ReadText: 引数で指定したテキストファイルを 1 文字ずつ読んで表示する（講義の read_text.c） */
+﻿/* 第10回 課題1　ファイルを読む（ReadText / read_text.c）
+   講義の read_text.c。引数で指定したテキストファイルを 1 文字ずつ読んで表示する */
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 int main(int argc, char *argv[])

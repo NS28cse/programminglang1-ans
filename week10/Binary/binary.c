@@ -1,4 +1,5 @@
-﻿/* 第10回 課題3 Binary: 4 バイトを bytes.bin へバイナリで書き，読み返して 16 進数で表示する（講義の binary.c） */
+﻿/* 第10回 課題3　バイト列を保存する（Binary / binary.c）
+   講義の binary.c。4 バイトを bytes.bin へバイナリで書き，読み返して 16 進数で表示する */
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 int main(void)

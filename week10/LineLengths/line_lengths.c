@@ -1,4 +1,5 @@
-﻿/* 第10回 課題1 LineLengths: 各行の長さ（改行を除く）を表示する（講義の line_lengths.c）
+﻿/* 第10回 課題1　行の長さを表示する（LineLengths / line_lengths.c）
+   講義の line_lengths.c。各行の長さ（改行を除く）を表示する。
    対象は ASCII・NUL なし・各行 31 文字以内のテキスト */
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
