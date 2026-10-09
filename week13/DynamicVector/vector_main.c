@@ -1,6 +1,6 @@
 ﻿// 第13回 発展3　不透明な Vector の生成と解放（DynamicVector / vector_main.c）
 // x，y，result の 3 つを所有し，どこで失敗しても cleanup で 3 つとも後始末する。
-// 「添字と保存先の検査」の断片（範囲外の添字 2 で vector_get が失敗し，out が 99.0 のまま）も追加した。
+// 演習ページの「添字と保存先の検査」の断片（範囲外の添字 2 で vector_get が失敗し，out が 99.0 のまま）も含む。
 #include "vector.h"
 #include <stdio.h>
 

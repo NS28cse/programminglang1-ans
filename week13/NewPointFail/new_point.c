@@ -1,7 +1,6 @@
 ﻿// 第13回 課題3「失敗を模擬する」（NewPointFail / new_point.c）
-// NewPoint のコピー。new_point の malloc だけを試験用の point_allocate に置き換え，
+// NewPoint のコピーで，new_point の malloc を試験用の point_allocate に置き換えたもの。
 // simulate_failure = 1 で確保失敗の経路（NULL を返し，main が診断を出して終了）を確かめる。
-// 正常版は NewPoint フォルダに残してある。
 #include <stdio.h>
 #include <stdlib.h>
 

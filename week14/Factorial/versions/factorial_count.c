@@ -1,4 +1,4 @@
-﻿/* 第14回 課題1 Factorial の確認用（本体には含めない）
+﻿/* 第14回 課題1　呼び出し回数と最大深さを数える（Factorial / versions/factorial_count.c）
  * factorial の呼び出し回数と最大深さを数え，0〜20 で反復版と一致することを確かめる。
  * 回数と最大深さは fibonacci.c と同じく Stats へのポインタで渡し，測定ごとに {0, 0} から始める。
  * 最初の factorial を深さ 1 と数え，main は数えない。

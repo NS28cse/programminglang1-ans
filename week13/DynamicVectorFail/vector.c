@@ -1,7 +1,6 @@
 ﻿// 第13回 発展3「途中で失敗した場合」（DynamicVectorFail / vector.c）
-// DynamicVector/vector.c のコピー。vector_create の malloc だけを試験用の vector_allocate に置き換えた。
-// fail_on_call 回目の確保だけ NULL を返す（0 なら失敗させない）。この版は演習ページの値 2。
-// 0，1，3 の版は CMakeLists.txt の softprac_add_variant が値を書き換えて作る。正常版は DynamicVector に残してある。
+// DynamicVector/vector.c のコピーで，vector_create の malloc を試験用の vector_allocate に置き換えたもの。
+// vector_allocate は fail_on_call 回目の確保だけ NULL を返す（0 なら失敗させない）。fail_on_call は演習ページの値 2。
 #include "vector.h"
 #include <stdlib.h>
 

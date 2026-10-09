@@ -1,4 +1,4 @@
-﻿/* 第14回 課題4 再帰の入口を安全にする（CheckedFactorial）
+﻿/* 第14回 課題4　再帰の入口を安全にする（CheckedFactorial / checked_factorial.c）
  * 入口 factorial_checked で検査し，再帰は内部関数 factorial_impl だけで行う。
  * n は main の初期値を書き換えて変える（0，1，5，20，-1，21）。
  */

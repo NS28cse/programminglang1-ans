@@ -1,5 +1,5 @@
 # 第13回 発展1 GrowArray
-# 本体（old_n = 3，new_n = 5）に加えて，「境界を調べる」の表の組を old_n，new_n を書き換えた版としてビルドしてテストする
+# 本体は old_n = 3，new_n = 5。「境界を調べる」の表の組は old_n，new_n を書き換えた版としてテストする
 softprac_add_program(GrowArray grow_array.c)
 
 # grow_array_variant(<ケース名> <old_n> <new_n> <書き換えた版の先頭コメントに入れる確認内容>)

@@ -5,29 +5,29 @@
 
 ## プロジェクト一覧
 
-| 課題 | プロジェクト | ソース | テスト数（本体 + 書き換え版） |
+| 課題 | プロジェクト | ソース | テスト |
 | --- | --- | --- | --- |
-| 課題1 階乗の境界 | `Factorial` | [recursion.c](Factorial/recursion.c) | 1 + 14 |
-| 課題2 再帰の復帰順 | `Trace` | [trace.c](Trace/trace.c) | 1 + 9 |
-| 課題3 互除法を反復へ書き換える | `GcdLoop` | [gcd_loop.c](GcdLoop/gcd_loop.c) | 1 + 11 |
-| 課題4 再帰の入口を安全にする | `CheckedFactorial` | [checked_factorial.c](CheckedFactorial/checked_factorial.c) | 1 + 6 |
-| 発展1 再帰の呼び出し数 | `Fibonacci` | [fibonacci.c](Fibonacci/fibonacci.c) | 1 + 10 |
-| 発展2 二分木の3つの走査 | `TreeTraversal` | [tree.c](TreeTraversal/tree.c) | 1 + 7 |
-| 発展3 帰りがけ順と解放の順序 | （プロジェクトなし） | 参考コード [TreeTraversal/versions/destroy_tree.c](TreeTraversal/versions/destroy_tree.c) | （`TreeTraversal` の `destroy` に含む） |
+| 課題1 階乗の境界 | `Factorial` | [recursion.c](Factorial/recursion.c) | 15 |
+| 課題2 再帰の復帰順 | `Trace` | [trace.c](Trace/trace.c) | 10 |
+| 課題3 互除法を反復へ書き換える | `GcdLoop` | [gcd_loop.c](GcdLoop/gcd_loop.c) | 12 |
+| 課題4 再帰の入口を安全にする | `CheckedFactorial` | [checked_factorial.c](CheckedFactorial/checked_factorial.c) | 7 |
+| 発展1 再帰の呼び出し数 | `Fibonacci` | [fibonacci.c](Fibonacci/fibonacci.c) | 11 |
+| 発展2 二分木の3つの走査 | `TreeTraversal` | [tree.c](TreeTraversal/tree.c) | 8 |
+| 発展3 帰りがけ順と解放の順序 | （プロジェクトなし） | 参考コード [TreeTraversal/versions/destroy_tree.c](TreeTraversal/versions/destroy_tree.c) | — |
 
 ファイル名を指定しているのは `recursion.c`・`trace.c`・`fibonacci.c`・`tree.c` だけなので，課題3・4 のソース名（`gcd_loop.c`・`checked_factorial.c`）は内容から付けた。
-発展3 は「完成した動的な木の構築プログラムは要求しません」とあるので，プロジェクトは作らず，参考コードを `TreeTraversal/versions/` に置いて ASan 付きでテストした。
+発展3 は「完成した動的な木の構築プログラムは要求しません」とあるので，プロジェクトは作らず，参考コードを `TreeTraversal/versions/` に置いた。
 
-### 値の変え方とテスト（全プロジェクト共通）
+表示は Windows x64 (MSVC) と Linux x64 で同じ（`unsigned long long` はどちらも 64 ビット，`unsigned int`・`int` は 32 ビット，`size_t` は `%zu` で表示）。アドレスなど環境で変わる値は表示していない。
+
+### 値の変え方（全プロジェクト共通）
 
 演習ページの手順どおり，値は **`main` の初期値を書き換えて**変える（`unsigned int n = 5;` を `unsigned int n = 21;` にするなど）。
 Visual Studio では書き換えて保存し，Ctrl+Shift+B でビルドしてから Ctrl+F5 で実行する。ビルドに失敗したときに古い実行ファイルの結果を読まないように，出力ウィンドウで「ビルド: 1 正常終了」を確かめる。
 
-フォルダのソースは演習ページ・講義の値（`Factorial` は `n = 5`，`Trace` は `n = 3`，`GcdLoop` は `a = 48`・`b = 18`，`CheckedFactorial` は `n = 5`，`Fibonacci` は `input = 4`，`TreeTraversal` は `preorder(&nodes[0])` と講義の接続）のままにし，
-検証表の他の値・小問の書き換えは，各プロジェクトの `CMakeLists.txt` の `softprac_add_variant` で**学生と同じ書き換え**をした版をビルドしてテストする
-（期待する出力は `variants/tests/<ケース>.out`，エラー終了の版は `.err`・`.code` も）。以下の実行結果の見出しにある `n_21` などがそのケース名である。
-確認用の計測プログラム（呼び出し回数・深さを数えるものなど）や発展3 の参考コードは `versions/` に別ソースとして置き，置換なしの `softprac_add_variant` でテストする（README には実行結果とケース名を載せる）。
-テストは本体 6 件，書き換え版・確認用 57 件の合計 63 件。
+フォルダのソースは演習ページ・講義の値（`Factorial` は `n = 5`，`Trace` は `n = 3`，`GcdLoop` は `a = 48`・`b = 18`，`CheckedFactorial` は `n = 5`，`Fibonacci` は `input = 4`，`TreeTraversal` は `preorder(&nodes[0])` と講義の接続）のままにしている。
+以下の実行結果に添えた `n_21` などは，その書き換えをした版のテスト名（`variant_n_21` など）である。呼び出し回数・深さを数える確認用のプログラムと発展3 の参考コードは `versions/` に置いている。
+書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
 
 ### 何が小さくなるから止まるのか（全課題のまとめ）
 
@@ -88,7 +88,7 @@ recursive=6 loop=6 equal=1
 
 ### 実行結果を比較する
 
-`main` の `unsigned int n = 5;` を 0，1，20，21 に書き換えて実行した結果（Linux x64，GCC 13。Windows x64 (MSVC) でも同じ表示（CI の MSVC x64 でもテストが成功）。`unsigned long long` はどちらも 64 ビット）:
+`main` の `unsigned int n = 5;` を 0，1，20，21 に書き換えて実行した結果:
 
 ```text
 n = 0（n_0）
@@ -130,7 +130,7 @@ n must be 0..20          ← 標準エラー出力。標準出力には何も出
 
 - 呼び出し回数・最大深さは 1 本道の再帰なので，どちらも `n + 1`（`factorial(n)` 〜 `factorial(0)`）。分岐しないので回数と深さが一致する（発展1 の `fib` とは違う）。
 - 表は「1 回の `factorial(n)` の計算」についての値である。解答の `main` は比較の断片でもう一度 `factorial(n)` を呼ぶので，**プログラム全体では `factorial` が 2(n+1) 回**呼ばれる（n=5 で 12 回）。最大深さは各回とも n+1 で変わらない。
-- 回数と深さは解答コードでは表示しないが，確認用の [Factorial/versions/factorial_count.c](Factorial/versions/factorial_count.c)（`factorial(n, depth, &stats)` の形で，深さの引数と，回数・最大深さを記録する `Stats` へのポインタを加えたもの。発展1 の `fibonacci.c` と同じ `Stats` 構造体で，測定ごとに `Stats stats = {0, 0};` から始める。ケース `count`）で確かめた:
+- 回数と深さは解答コードでは表示しない。確認用の [Factorial/versions/factorial_count.c](Factorial/versions/factorial_count.c)（`factorial(n, depth, &stats)` の形で，深さの引数と，回数・最大深さを記録する `Stats` へのポインタを加えたもの。発展1 の `fibonacci.c` と同じ `Stats` 構造体で，測定ごとに `Stats stats = {0, 0};` から始める。テスト `variant_count`）で数えると次のとおり:
 
 ```text
 n=0 result=1 calls=1 depth=1
@@ -179,7 +179,7 @@ n=20 result=2432902008176640000 calls=21 depth=21
 
 **要点**: `enter` は呼び出し時（再帰の前），`leave` は復帰時（再帰の後）に表示されるので，`enter` は n, n−1, …, 0，`leave` は 0, 1, …, n の順になる。各段の `n` は独立しており，後入れ先出し（LIFO）で戻る。
 
-解答: [Trace/trace.c](Trace/trace.c)（講義の `trace.c` と同じ。コメントだけ加えた）
+解答: [Trace/trace.c](Trace/trace.c)（講義の `trace.c` と同じ）
 
 ### 表示順を完全に書き出す（`n=2`）
 
@@ -294,7 +294,7 @@ int sum_to(int n)
         printf("leave 0: 0\n");
         return 0;
     }
-    printf("enter %d\n", n);           /* 書き換え版: enter を n==0 の判定の後へ移した（sum_to(0) では出ない） */
+    printf("enter %d\n", n);           /* enter を n==0 の判定の後へ移した（sum_to(0) では出ない） */
     int result = n + sum_to(n - 1);    /* 子が戻るまで result の初期化は終わらない */
     printf("leave %d: %d\n", n, result); /* 復帰時: 0,1,2,3 の順 */
     return result;
@@ -324,7 +324,7 @@ int sum_to(int n)
         printf("leave 0: 0\n");
         return 0;
     }
-    printf("leave %d\n", n);           /* 書き換え版: 再帰より前へ移したので n だけ表示する */
+    printf("leave %d\n", n);           /* 再帰より前へ移したので n だけ表示する */
     int result = n + sum_to(n - 1);    /* 子が戻るまで result の初期化は終わらない */
     return result;
 }
@@ -342,7 +342,7 @@ leave 0: 0
 sum=6
 ```
 
-`leave` が `enter` の直後に出て，復帰の順（0, 1, 2, 3）が見えなくなる。この位置は「関数から戻る直前」ではなく「子を呼ぶ直前」なので，`leave` という名前とも合わない。ここで `result` を表示しようとしても，`result` の宣言（`int result = ...;`）より前なのでコンパイルエラーになる（GCC「'result' undeclared」。MSVC では C2065 などの診断（番号は例。誤った版は CI でビルドしていないので未確認））。宣言だけを先に `int result;` と書いて表示すると，未初期化の値を読むことになり，値は意味がない（MSVC では C4700 などの診断（番号は例。誤った版は CI でビルドしていないので未確認。設定によっては警告ではなくエラーになることもある））。戻り値を観察する目的なら，元の位置（再帰呼び出しの後）が適切。
+`leave` が `enter` の直後に出て，復帰の順（0, 1, 2, 3）が見えなくなる。この位置は「関数から戻る直前」ではなく「子を呼ぶ直前」なので，`leave` という名前とも合わない。ここで `result` を表示しようとしても，`result` の宣言（`int result = ...;`）より前なのでコンパイルエラーになる（GCC は `'result' undeclared`，MSVC は C2065（宣言されていない識別子））。宣言だけを先に `int result;` と書いて表示すると，未初期化の値を読むことになり，値は意味がない（MSVC では C4700（初期化されていないローカル変数の使用）。設定によっては警告ではなくエラーになる）。戻り値を観察する目的なら，元の位置（再帰呼び出しの後）が適切。
 
 ### スタックの図を描く
 
@@ -590,7 +590,7 @@ ok=0 result=99
 
 ### 実行しないレビュー問題
 
-1. **基底条件の`if`を削除する。** → 停止条件がなくなる。`n` は 0 の次に `0 - 1` で `UINT_MAX`（4294967295）へ回り込むので，何周しても `n == 0` で止まる経路がなく止まらない（実際にはスタックの限界を超えて異常終了する）。結果の値も意味を失う。コンパイラも警告する（GCC: `infinite recursion detected`，Clang: `all paths through this function will call itself`。どちらも `-Winfinite-recursion`。MSVC では C4717 などの診断（番号は例。誤った版は CI でビルドしていないので未確認））。
+1. **基底条件の`if`を削除する。** → 停止条件がなくなる。`n` は 0 の次に `0 - 1` で `UINT_MAX`（4294967295）へ回り込むので，何周しても `n == 0` で止まる経路がなく止まらない（実際にはスタックの限界を超えて異常終了する）。結果の値も意味を失う。コンパイラも警告する（GCC: `infinite recursion detected`，Clang: `all paths through this function will call itself`。どちらも `-Winfinite-recursion`。MSVC では C4717（すべての制御パスで自分を呼び出す関数））。
 2. **再帰呼び出しの引数を`n`にする。** → 停止条件はあるが進行がない。`n = 0` 以外では同じ `n` で呼び続け，基底条件に近づかないので止まらない（`n = 0` のときだけ偶然 1 を返す）。`if` があるのでコンパイラの警告は出ないことが多く，見逃しやすい。
 3. **再帰呼び出しの引数を`n+1`にする。** → 基底条件から遠ざかる（進行の向きが逆）。`unsigned int` なので理論上は `UINT_MAX` から 0 へ回り込むが，それまでに約 43 億段の深さが必要で，スタックの限界を超える。途中の積もあふれて意味のない値になる。
 4. **再帰呼び出しの引数を`n--`にする。** → 後置デクリメントの値は減らす**前**の `n` なので，呼び出し先には同じ `n` が渡り，2. と同じく進行しない。さらに `return n * factorial(n--);` は同じ式の中で `n` の読み出し（左の `n`）と変更（`n--`）が順序付けられていないので**未定義動作**になる（GCC `-Wsequence-point`「operation on 'n' may be undefined」，Clang `-Wunsequenced`）。副作用を使わず `n - 1` と書く。
@@ -611,7 +611,7 @@ ok=0 result=99
 
 **要点**: 1 回の呼び出しから 2 つに分かれる再帰では，総呼び出し回数と最大深さが一致しない。素朴な再帰は同じ値を何度も計算するが，同時にスタックに積まれるのは深さの分だけ。
 
-解答: [Fibonacci/fibonacci.c](Fibonacci/fibonacci.c)（演習ページのコードそのまま。コメントだけ加えた）
+解答: [Fibonacci/fibonacci.c](Fibonacci/fibonacci.c)（演習ページのコードそのまま）
 
 ### `fib(4)` の呼び出しの木
 
@@ -679,7 +679,7 @@ n must be 0..20          ← 同上
 ### 計測結果の読み方
 
 1. **最初の呼び出しも数えるので，`n=0`で`calls`は0にならない。** → `fib` の先頭で `++stats->calls` してから基底条件を判定するので，`n=0` でも `calls=1`，`depth=1`（表の 1 行目）。`main` は数えない。
-2. **`stats`を初期化せずに再び`fib`を呼べば，`calls`は加算され続ける。** → `stats` は `main` の 1 つの変数をポインタで共有しているので，前の測定の値に足される。解答の `main` で `unsigned long long result = fib(n, 1, &stats);` の直後に `result = fib(n, 1, &stats);` を（初期化し直さずに）加えた書き換え版（`no_reset`）の結果:
+2. **`stats`を初期化せずに再び`fib`を呼べば，`calls`は加算され続ける。** → `stats` は `main` の 1 つの変数をポインタで共有しているので，前の測定の値に足される。解答の `main` で `unsigned long long result = fib(n, 1, &stats);` の直後に `result = fib(n, 1, &stats);` を（初期化し直さずに）加えた版（`no_reset`）の結果:
    ```text
    fib=3 calls=18 depth=4 loop=3
    ```
@@ -817,10 +817,10 @@ size_t tree_height(const Node *p)
 
 ### 木の形を変える（右へ一直線の木）
 
-演習の手順どおり，ノードをつなぐ代入文（5 行）をすべて外し，次のループだけを置いた版（`line`）で確かめた。最後のノード（`nodes[9]`）の `right` は `NULL` のままで，循環は作らない。フォルダのソースは元の接続のまま（「確認後は元の接続に戻します」）。
+演習の手順どおり，ノードをつなぐ代入文（5 行）をすべて外し，次のループだけを置いた版（`line`）で確かめる。最後のノード（`nodes[9]`）の `right` は `NULL` のままで，循環は作らない。演習ページの「確認後は元の接続に戻します」のとおり，`tree.c` は元の接続のまま。
 
 ```c
-    /* 書き換え版: 右へ一直線の 10 ノードの木（nodes[9].right は NULL のまま） */
+    /* 右へ一直線の 10 ノードの木（nodes[9].right は NULL のまま） */
     for (int i = 0; i < 9; ++i) {
         nodes[i].right = &nodes[i + 1];
     }
@@ -845,8 +845,7 @@ height: all=10 nodes[3]=7 null=0
 
 予測と一致した。一直線の木では `nodes[3]`（値 4）はもう葉ではなく，4〜10 の 7 ノードからなる部分木の根なので，ノード数・高さとも 7 になる。
 
-元の木と一直線の木の比較（確認用の [TreeTraversal/versions/traversal_depth.c](TreeTraversal/versions/traversal_depth.c) で，行きがけ順の 1 回の走査の呼び出し回数と深さを数えた。ケース `depth`）:
-
+元の木と一直線の木の比較（確認用の [TreeTraversal/versions/traversal_depth.c](TreeTraversal/versions/traversal_depth.c) で，行きがけ順の 1 回の走査の呼び出し回数と深さを数えた。テスト `variant_depth`）:
 
 | 比較 | 元の木 | 一直線の木 |
 | --- | --- | --- |
@@ -881,8 +880,8 @@ line calls=21 null=11 maxdepth(incl NULL)=11 real=10
 
 ### 参考: 動的な木を作って解放する（プロジェクトには含めない）
 
-演習は構築プログラムを要求していないが，TA の説明用に，講義の木と同じ形を個別の `malloc` で作り，`destroy_tree` で解放する例を [TreeTraversal/versions/destroy_tree.c](TreeTraversal/versions/destroy_tree.c) に置いた（ケース `destroy`）。
-テストは AddressSanitizer（LeakSanitizer）付きで実行されるので，リーク・不正アクセスがないことも毎回確かめられる（`destroy_tree(root);` を消すと `240 byte(s) leaked in 10 allocation(s)` と検出されることも確認した）。解放の順序を見るために `destroy_tree` に表示を 1 行加えている。
+演習は構築プログラムを要求していないが，TA の説明用に，講義の木と同じ形を個別の `malloc` で作り，`destroy_tree` で解放する例を [TreeTraversal/versions/destroy_tree.c](TreeTraversal/versions/destroy_tree.c) に置いた（テスト `variant_destroy`）。
+`destroy_tree(root);` を消すと，LeakSanitizer が `240 byte(s) leaked in 10 allocation(s)` とリークを報告する。解放の順序を見るために `destroy_tree` に表示を 1 行加えている。
 
 ```c
 /* 前提：共有・循環がなく，各ノードが個別にmallocされている */
@@ -938,27 +937,11 @@ free: 4 5 3 6 2 9 8 10 7 1
 
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の 0・1・20・21，課題2 の 0・100・−1・101，課題3 の (7,0)・(0,7)・(0,0)，課題4 の 0・20・−1・21・`NULL`，発展1 の 0・1・20・−1・21，発展2 の `NULL`・葉・一直線の木。すべて `main` の初期値や `preorder` の呼び出しの引数を書き換えた版（`variants/tests/`）の自動テストとしてある |
-| 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC・Clang の `-Wall -Wextra -Wpedantic`（`-Werror`）で警告 0（`-Wconversion -Wsign-conversion` でも 0）。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants・versions を含む）のビルドとテストが成功している（コミット a76876f の時点）。レビュー問題 1・4 でコンパイラが出す警告（`-Winfinite-recursion`，`-Wsequence-point`。MSVC では C4717 などの診断（番号は例。誤った版は CI でビルドしていないので未確認））と，課題2 の未初期化の `result`（MSVC では C4700 などの診断。番号は例で，同じく未確認）を説明 |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の 0・1・20・21，課題2 の 0・100・−1・101，課題3 の (7,0)・(0,7)・(0,0)，課題4 の 0・20・−1・21・`NULL`，発展1 の 0・1・20・−1・21，発展2 の `NULL`・葉・一直線の木。いずれも `main` の初期値や `preorder` の呼び出しの引数を書き換えた版のテストがある |
+| 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC・Clang の `-Wall -Wextra -Wpedantic` と MSVC `/W4` で警告 0。レビュー問題 1・4 でコンパイラが出す警告（`-Winfinite-recursion`，`-Wsequence-point`，MSVC の C4717）と，課題2 の宣言前の `result`（MSVC の C2065）・未初期化の `result`（MSVC の C4700）を説明 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1（`unsigned long long` と `%llu`，`unsigned int` と `%u`），課題2（`int` で 5050），課題4（入口の `int` と内部の `unsigned int`），発展2（`size_t` と `%zu`） |
 | 基底条件と，呼び出すたびに小さくなる量を説明できる | 冒頭の[まとめの表](#何が小さくなるから止まるのか全課題のまとめ)，課題1 小問 2，課題4 レビュー問題 1〜4 |
 | 呼び出し時と復帰時を分け，待機中の局所変数を追跡した | 課題1 の 3! の表，課題2 の `enter`/`leave`・呼び出し履歴・スタックの図 |
 | 数値の範囲，総呼び出し回数，最大深さを区別した | 課題1 の比較表（範囲は 0〜20，回数 = 深さ = n+1），発展1 の表（回数 21891 と深さ 20），発展2 の一直線の木（回数 21 は同じで深さ 4 と 10） |
-| 不正な入力は再帰に入る前に拒否し，無限再帰を実行しなかった | 課題1（21），課題2（−1・101 で `enter` が出ない），課題3（(0,0)），課題4（入口で拒否），発展1（−1・21）。レビュー問題の誤った版は実行していない（コンパイルの警告だけを確認） |
-| 木のノードの寿命と所有権を確認し，局所配列のノードを`free`していない | 発展2 は `main` の局所配列なので `free` しない。発展3 の参考コードは個別の `malloc` を帰りがけ順で解放し，ASan でリークがないことを確認 |
-
----
-
-## ビルド・テストの確認
-
-```sh
-B=/tmp/build-week14
-cmake -S . -B $B -G Ninja -DSOFTPRAC_WEEKS=week14 -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
-cmake --build $B && ctest --test-dir $B --output-on-failure
-```
-
-- GCC 13（AddressSanitizer/UBSan 付き）: 警告 0，テスト 63 件（本体 6 件，書き換え版・確認用 57 件）すべて成功。
-- MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants・versions を含む）のビルドとテストが成功している（コミット a76876f の時点）。
-- Clang 18（`-DCMAKE_C_COMPILER=clang`，この環境には Clang の sanitizer ランタイムがないため `SOFTPRAC_SANITIZE` なし）: 警告 0，テスト 63 件すべて成功。
-- GCC/Clang の追加の確認: `-Wconversion -Wsign-conversion -Wshadow` を付けても GCC・Clang とも警告 0。
-- 実行結果は Windows x64 (MSVC) と Linux x64 で同じ（CI の MSVC x64 でもテストが成功。`unsigned long long` はどちらも 64 ビット，`unsigned int`・`int` は 32 ビット，`size_t` の表示は `%zu`）。アドレスなど環境で変わる値は表示していない。
+| 不正な入力は再帰に入る前に拒否し，無限再帰を実行しなかった | 課題1（21），課題2（−1・101 で `enter` が出ない），課題3（(0,0)），課題4（入口で拒否），発展1（−1・21）。レビュー問題の誤った版は実行しない（コンパイラの警告だけを説明） |
+| 木のノードの寿命と所有権を確認し，局所配列のノードを`free`していない | 発展2 は `main` の局所配列なので `free` しない。発展3 の参考コードは個別の `malloc` を帰りがけ順で解放する（`destroy_tree` を呼ばないと LeakSanitizer がリークを報告する） |
