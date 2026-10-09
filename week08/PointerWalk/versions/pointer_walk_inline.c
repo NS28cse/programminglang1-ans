@@ -1,5 +1,5 @@
 ﻿/*
- * 第8回 課題4 PointerWalk の，講義と同じ書き方の版（比較用．CMakeLists.txt の書き換え版 inline でテストする）
+ * 第8回 課題4　ポインタで配列・文字列を走査する（PointerWalk / versions/pointer_walk_inline.c）
  * 講義の例と同じく，合計の添字版・ポインタ版のループを main の中に書き，
  * 合計する前に set_one(a, COUNT); を呼ぶ．set_one の仮引数は int a[] と書いている．
  */

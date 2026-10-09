@@ -1,9 +1,8 @@
 ﻿/*
- * 第8回 発展 Decompose: 複数の結果と場所を返す
+ * 第8回 発展　複数の結果と場所を返す（Decompose / decompose.c）
  *   - decompose: 整数部（long）と小数部（double）の 2 つの出力先へ書き込む
  *   - min_pointer: 小さい方の値ではなく，その値がある「場所」を返す（講義のとおり main の前に定義）
- * main は演習ページのプログラムどおり．入力を変えた版・値引数の版・min_pointer の実験は
- * CMakeLists.txt で書き換えた版としてテストする．
+ * main は演習ページのプログラムどおり（decompose(3.14, ...) の結果を表示する）．
  */
 #include <stdio.h>
 /* x は −100〜100 の有限な値．whole と fraction は有効な long と double を指す */

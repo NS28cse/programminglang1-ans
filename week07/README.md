@@ -11,37 +11,21 @@
 
 | 課題 | プロジェクト | ソース | テスト数 | データファイル |
 | --- | --- | --- | ---: | --- |
-| 1 複写 | `Echo` | [`echo.c`](Echo/echo.c)（講義の例題にコメントだけ追加） | 5＋変更版 10 | [`input.txt`](Echo/input.txt) |
-| 1 小文字化フィルタ | `LowerInput` | [`lower_input.c`](LowerInput/lower_input.c) | 9＋変更版 3 | [`input.txt`](LowerInput/input.txt)，[`ab.txt`](LowerInput/ab.txt)（課題4の入力ファイル） |
-| 2 英字数 | `LetterCount` | [`letter_count.c`](LetterCount/letter_count.c) | 11＋変更版 2 | [`input.txt`](LetterCount/input.txt) |
-| 2 バイト数 | `ByteCount` | [`byte_count.c`](ByteCount/byte_count.c)（演習ページのコードにコメントだけ追加） | 8 | [`input.txt`](ByteCount/input.txt) |
-| 3 行の容量 | `LineInput` | [`line.c`](LineInput/line.c)（講義の例題にコメントだけ追加） | 11＋変更版 6 | [`input.txt`](LineInput/input.txt) |
-| 4 書式 | `Formats` | [`formats.c`](Formats/formats.c)（演習ページのコードにコメントだけ追加） | 1＋変更版 3 | なし（入力を待たない） |
-| 発展 タイピング | `Typing` | [`typing.c`](Typing/typing.c) | 15＋変更版 8 | [`input.txt`](Typing/input.txt) |
-| | | | **92**（うち変更版 32） | |
+| 1 複写 | `Echo` | [`echo.c`](Echo/echo.c)（講義の例題） | 15 | [`input.txt`](Echo/input.txt) |
+| 1 小文字化フィルタ | `LowerInput` | [`lower_input.c`](LowerInput/lower_input.c) | 12 | [`input.txt`](LowerInput/input.txt)，[`ab.txt`](LowerInput/ab.txt)（課題4の入力ファイル） |
+| 2 英字数 | `LetterCount` | [`letter_count.c`](LetterCount/letter_count.c) | 13 | [`input.txt`](LetterCount/input.txt) |
+| 2 バイト数 | `ByteCount` | [`byte_count.c`](ByteCount/byte_count.c)（演習ページのコード） | 8 | [`input.txt`](ByteCount/input.txt) |
+| 3 行の容量 | `LineInput` | [`line.c`](LineInput/line.c)（講義の例題） | 17 | [`input.txt`](LineInput/input.txt) |
+| 4 書式 | `Formats` | [`formats.c`](Formats/formats.c)（演習ページのコード） | 4 | なし（入力を待たない） |
+| 発展 タイピング | `Typing` | [`typing.c`](Typing/typing.c) | 23 | [`input.txt`](Typing/input.txt) |
+| | | | **92** | |
 
 - 演習ページはソース名を指定していないため，講義の例題（`echo.c`，`line.c`）はその名前を使い，ほかはプロジェクト名を小文字・`_` 区切りにしました。
-- 演習ページの「一時的に置き換える」「`line[8]`へ変更する」「`n`を123456へ変更する」などの**実験用の変更**はフォルダのソース（本体）に入れません。
-  本体は講義の例題・演習ページの配布コードのまま（演習ページの期待する表示を出す版）とし，変更した版は README にコードブロックで載せ，`softprac_add_variant` でテストしています。
-  `Echo` の検証①〜③・`LineInput` の 31/32 個の `A`・`Formats` の期待する表示は，すべて変更前のコードに対する仕様だからです。
-- 変更版（`Echo` の `character=`/`new line` 表示と `putchar('/')` の追加，`line[8]`，`n`・`base` の値，大文字・小文字を区別する比較）と，
-  採点のポイントで挙げた**誤りの例**（`Echo` の括弧を省いた `while` と `char ch`，`LetterCount` の 1 範囲判定，`LowerInput` の `>`/`<` 判定，`Typing` の「一致したときだけ位置を進める」），
-  課題4のプログラム `A`（`LowerInput` に処理状況の `stderr` 出力・`Ready` の `stdout` 出力を加えた版）は，
-  各フォルダの `CMakeLists.txt` の `softprac_add_variant` で README と同じ書き換えをした版をビルドしてテストしています。
-  期待値とテスト名は，同じ版に複数の入力を与える `Echo`・`LowerInput`・`LetterCount`・`LineInput`・`Typing` では `variants/tests/<版>--<入力>.*`（テスト名 `variant_<版>--<入力>`），
-  入力のない `Formats` では `variants/tests/<版>.out`（テスト名 `variant_<版>`）です。
-- `Typing` は演習ページの「作成する最終版」（大文字・小文字を区別しない版）です。区別する版は README に載せ，`softprac_add_variant` でテストしています。
-
-ビルドとテスト（警告 0・92 テスト成功を確認済み。GCC 13.3 + AddressSanitizer/UBSan，Clang 18.1（sanitizer なし）でも同じ）。
-MSVC `/W4 /WX` でも，CI（GitHub Actions）で week07 の全プロジェクト（変更版を含む）のビルドとテストが成功しています（コミット a76876f。MSVC の Debug・Release・sln のすべてと，MinGW・macOS のジョブ）。
-`Echo` の誤りの例 2 版（`no_parens`・`char_ch`）は，その版だけ MSVC の警告を `/wd4706`・`/wd4244` で抑止したうえで成功しています。
-`C4706`・`C4244` は番号の例（ドキュメントによる）で，MSVC がこれらの版で実際にその番号を出すことは確かめていません。
-
-```sh
-cmake -S . -B /tmp/build-week07 -G Ninja -DSOFTPRAC_WEEKS=week07 -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
-cmake --build /tmp/build-week07
-ctest --test-dir /tmp/build-week07 --output-on-failure
-```
+- 演習ページの「一時的に置き換える」「`line[8]`へ変更する」「`n`を123456へ変更する」などの**実験用の変更**は，フォルダのソース（本体）には入れていません。
+  本体は講義の例題・演習ページの配布コードのまま（演習ページの期待する表示を出す版）です。`Echo` の検証①〜③・`LineInput` の 31/32 個の `A`・`Formats` の期待する表示は，すべて変更前のコードに対する仕様だからです。
+  変更した版と採点のポイントで挙げた誤りの例は，各課題の節にコードを載せ，テスト名を添えています（同じ版に複数の入力を与えるものは `variant_<版>--<入力>`）。
+  書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
+- `Typing` の本体は演習ページの指示をすべて反映した版（大文字・小文字を区別しない版）です。区別する版は発展の節に載せています。
 
 ## 共通: 入力の与え方・入力終了・リダイレクト
 
@@ -78,7 +62,7 @@ rem stderr だけを err.txt へ（stdout は画面のまま）
 LineInput.exe < input.txt 2> err.txt
 ```
 
-**PowerShell**（VS Code の既定のターミナル）: `<` は使えません（`The '<' operator is reserved for future use.`（英語版の文面の例）というエラーになる。日本語版での表示の例は「`<` 演算子は将来使用するために予約されています」）。
+**PowerShell**（VS Code の既定のターミナル）: `<` は使えません（英語版では `The '<' operator is reserved for future use.`，日本語版では「`<` 演算子は将来使用するために予約されています」というエラーになる）。
 
 ```powershell
 Get-Content input.txt | .\Echo.exe                      # 入力ファイルを標準入力へ（行ごとに送られる）
@@ -105,7 +89,7 @@ C の標準ストリームは**テキストモード**で開かれています�
 | 入力中の Ctrl+Z の文字（0x1A） | テキストモードでは入力終了として扱われる | ふつうの 1 バイト |
 
 このため，`ByteCount` が数えるのは「プログラムが読み取ったバイト数」で，**ディスク上のファイルサイズと一致するとは限りません**。
-実際に Linux で CR LF の入力を与えると，`\r` も数えます（Linux x64，GCC で実行）。
+Linux で CR LF の入力を与えると，`\r` も数えます。
 
 ```console
 $ printf 'abcd\r\n' | ./ByteCount
@@ -114,7 +98,7 @@ $ printf 'ab\r\nC\r\n' | ./ByteCount
 7
 ```
 
-同じ内容（メモ帳で保存した CR LF のファイル）を Windows で `ByteCount.exe < file.txt` とすると，`\r\n` が `\n` になるので 5 になります（テキストモードの仕様による。Windows では未実行）。
+同じ内容（メモ帳で保存した CR LF のファイル）を Windows で `ByteCount.exe < file.txt` とすると，`\r\n` が `\n` になるので 5 になります。
 逆に，Windows で `LowerInput.exe < ab.txt > out.txt` として作った `out.txt` は `ab` と CR LF の 4 バイトになります（Linux では 3 バイト）。
 本リポジトリのテストの入力（`tests/*.in`）は，下の `crlf` ケースを除いて LF なので，どちらの環境でも同じ結果になります。
 CR LF の入力を与える `crlf` ケース（`LowerInput`・`LetterCount`・`Typing`）は，`\r` が結果に影響しない（英字でない・お手本の 14 文字目以降・
@@ -128,7 +112,7 @@ CR LF の入力を与える `crlf` ケース（`LowerInput`・`LetterCount`・`T
 
 **要点**: `getchar` が返す値を `int` で受け，`EOF` でない間だけ `putchar` で書く**複写**。Enter（改行文字）と `EOF`（入力の状態）は別物で，Enter ではループは終わらない。
 
-解答: [`Echo/echo.c`](Echo/echo.c)（講義の `echo.c` と同じ。コメントだけ追加）
+解答: [`Echo/echo.c`](Echo/echo.c)（講義の `echo.c` と同じ）
 
 ```c
 int ch; // EOF と 256 通りのバイト値を区別するため char ではなく int で受ける
@@ -146,7 +130,7 @@ if (ferror(stdin)) {           // 入力終了と読み取りエラーはどち�
 
 ### 実行結果
 
-コンソールでの実行例（Linux の端末で実行。Windows では最後に `^Z` の行が見え，その後 Enter を押す）。
+コンソールでの実行例（Linux の端末。Windows では最後に `^Z` の行が見え，その後 Enter を押す）。
 **入力行（コンソールが映した文字）とプログラムの出力が交互に並ぶ**ことに注意します。
 
 ```text
@@ -289,29 +273,26 @@ azaz09
 
 - `ch` を `char` で宣言している → 誤り（確認問題1）。`char` が符号付きの環境では，バイト 0xFF が `EOF` と等しくなって途中で止まる
   （下の誤りの版 `char_ch` に `ab` 0xFF `cd` と改行を与えると `ab` だけ出る。テスト `variant_char_ch--ab_ff_cd`）。
-  GCC・Clang の `-Wall -Wextra -Wpedantic` では（`char` が符号付きなら）警告が出ないので，警告だけでは気付けない。
-  0xFF で止まることと GCC・Clang で警告が出ないことは Linux で確認。MSVC の `C4244`（`int` から `char` への変換）は番号の例（ドキュメントによる。CI ではこの版だけ `/wd4244` で抑止してビルド・テストが成功）。
+  GCC・Clang の `-Wall -Wextra -Wpedantic` では（`char` が符号付きなら）警告が出ないので，警告だけでは気付けない。MSVC では C4244（`int` から `char` への変換）。
 - `while (ch = getchar() != EOF)` と括弧を省く → `!=` が `=` より先に評価され，`ch` には比較結果 1 が入る。`ab` Enter で `\x01` が 3 バイト出力される
-  （実際に試した結果。GCC・Clang は `-Wparentheses` を出す。下の誤りの版 `no_parens` のテスト `variant_no_parens--ab`）。
-  `\x01` 3 バイトと GCC の `-Wparentheses` は Linux で確認。MSVC の `C4706` は番号の例（ドキュメントによる。CI ではこの版だけ `/wd4706` で抑止してビルド・テストが成功）。
+  （下の誤りの版 `no_parens`。テスト `variant_no_parens--ab`）。GCC・Clang は `-Wparentheses`，MSVC は C4706（条件式の中の代入）を出す。
 - `putchar(ch + 32)` のように範囲判定なしで変換 → 数字・記号・改行まで変わる。`'a' - 'A'` または `- 'A' + 'a'` を使い，32 を直接書かない方が意図が明確。
 - 範囲を `ch > 'A'` / `ch < 'Z'` とする境界の誤り → `AZaz09` で `A`・`Z` が変わらず `AZaz09` のまま出力される（この誤りの版のテスト `variant_strict--azaz09`）。
 - Enter を押しても終わらないのを「止まった」と誤解し，強制停止している → `EOF` の知らせ方（行頭で Ctrl+Z, Enter）を確認させる。
 - 記録で，コンソールが映した入力行と `putchar` の出力行を区別していない（`abc` が 2 回見えるのは正常）。
 
-#### 誤りの例をビルドして確かめる（`Echo` の `no_parens`・`char_ch` 版）
+#### 誤りの例の版（`Echo` の `no_parens`・`char_ch`）
 
-上の 2 つの誤りは，`Echo/CMakeLists.txt` の `softprac_add_variant` で `echo.c` を書き換えた版をビルドしてテストしています（期待値は `Echo/variants/tests/`）。
-どちらも警告をエラーにする設定ではビルドが止まる書き方なので，誤りの動作を確かめるために**その版だけ**警告を抑止しています。
+どちらも警告をエラーにする設定ではビルドが止まる書き方なので，誤りの動作を確かめる版では**その版だけ**警告を抑止しています。
 
 | 版 | 書き換えた行 | 入力 | 標準出力 | テスト | 警告の抑止（その版だけ） |
 | --- | --- | --- | --- | --- | --- |
 | `no_parens` | `while (ch = getchar() != EOF) {` | `ab` と改行 | `\x01` が 3 バイト（改行なし） | `variant_no_parens--ab` | GCC/Clang `-Wno-parentheses`，MSVC `/wd4706` |
-| `char_ch` | `char ch;` | `ab` 0xFF `cd` と改行（`.in` にバイナリで置く） | `ab`（終了コード 0） | `variant_char_ch--ab_ff_cd` | MSVC `/wd4244`。GCC/Clang は `-fsigned-char` を付ける |
+| `char_ch` | `char ch;` | `ab` 0xFF `cd` と改行 | `ab`（終了コード 0） | `variant_char_ch--ab_ff_cd` | MSVC `/wd4244`。GCC/Clang は `-fsigned-char` を付ける |
 
 `char` が符号付きか符号なしかは処理系定義です（MSVC と x86/x64 の GCC・Clang は符号付き，Linux の ARM などは符号なし）。
-テストの結果を環境によらず固定するため，`char_ch` 版は GCC/Clang でも `-fsigned-char` で符号付きにしてビルドしています（MSVC の `char` は既定で符号付き）。
-符号なしの環境では 0xFF でも `EOF` でも止まらず無限ループになるので，テストにはしていません（Linux で `-funsigned-char` を付けると，GCC は `ch != EOF` に `-Wtype-limits`（比較が常に真）の警告を出す）。
+結果を環境によらず固定するため，`char_ch` 版は GCC/Clang でも `-fsigned-char` で符号付きにしています（MSVC の `char` は既定で符号付き）。
+符号なしの環境では 0xFF でも `EOF` でも止まらず無限ループになるので，テストにはしていません（`-funsigned-char` を付けると，GCC は `ch != EOF` に `-Wtype-limits`（比較が常に真）の警告を出す）。
 
 ---
 
@@ -361,7 +342,7 @@ abc 12!
 
 ### 改行も含めた全入力のバイト数（`ByteCount`）
 
-解答: [`ByteCount/byte_count.c`](ByteCount/byte_count.c)（演習ページのコードにコメントだけ追加）
+解答: [`ByteCount/byte_count.c`](ByteCount/byte_count.c)（演習ページのコード）
 
 | 入力してから`EOF` | 期待する数 | 実行結果 | テスト |
 | --- | ---: | ---: | --- |
@@ -395,7 +376,7 @@ CR LF のファイルをリダイレクトした場合だけ，Windows は改行
 
 ### 採点のポイント・よくある誤り（課題2）
 
-- 英字判定を `ch >= 'A' && ch <= 'z'` の 1 範囲にしている → `[` `\` `]` `^` `_` `` ` `` も数える。`@AZ[` が 3，`` `az{ `` が 3 になれば誤り（この誤りの版のテスト `variant_one_range--outside_az`・`variant_one_range--lower_boundary` で 3 になることを確認）。
+- 英字判定を `ch >= 'A' && ch <= 'z'` の 1 範囲にしている → `[` `\` `]` `^` `_` `` ` `` も数える。`@AZ[` が 3，`` `az{ `` が 3 になれば誤り（テスト `variant_one_range--outside_az`・`variant_one_range--lower_boundary`）。
 - `ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z'` と括弧を省いても，`&&` が `||` より先に結合するので結果は同じ。ただし GCC は `-Wparentheses`（Clang は `-Wlogical-op-parentheses`）の警告を出すので，意図を明示するため `(... && ...) || (... && ...)` と括弧を付ける（`-Werror` の環境ではビルドが止まる）。
 - `while (getchar() != '\n')` だけで `EOF` を見ていない → 改行なしで入力が終わると無限ループ。
 - 右側にも `getchar()` を書いて 1 文字おきに読む。
@@ -408,7 +389,7 @@ CR LF のファイルをリダイレクトした場合だけ，Windows は改行
 
 **要点**: `fgets(line, sizeof line, stdin)` は最大で容量−1 バイトを読み終端を付ける。改行が配列に入ったかどうかで「容量内に収まった」かを判断し，入らなかったときは残りを読んで「ちょうど 31 バイト」と「超過」を区別する。
 
-解答: [`LineInput/line.c`](LineInput/line.c)（講義の `line.c` と同じ。コメントだけ追加）
+解答: [`LineInput/line.c`](LineInput/line.c)（講義の `line.c` と同じ）
 
 ### 実行結果
 
@@ -460,7 +441,7 @@ Text: No line read.        ← Text: の後に行頭で Ctrl+D（Windows では 
 Enter だけの空行は `'\n'` と `'\0'` を読めているので `fgets` は成功し，`length=0` の正常な行になります。
 「長さ 0 の文字列を読み取れた」（空行）と「行を読み取れなかった」（`EOF` だけ）は別の結果です。
 
-### 容量を小さくして仕組みを見る（`line[8]` に変更した版）
+### 容量を小さくして仕組みを見る（`line[8]` の版）
 
 変更は宣言 1 か所だけです（`fgets(line, sizeof line, stdin)` が容量を `sizeof` で受け取っているので，読み込み上限が自動で 8 に追従します）。
 
@@ -531,7 +512,7 @@ Enter だけの空行は `'\n'` と `'\0'` を読めているので `fgets` は�
 | 4 | `B` は **3** と表示する | `B` が読むのは `a`・`b`・改行の 3 バイト。処理状況は `stderr` なので数えない |
 | 5 | `B` の集計は **9**（6 増える） | `Ready` の 5 バイトと改行 1 バイトが `stdout` のデータに混ざり，`B` はそれも数える |
 
-答えの根拠はテストで確認しています（`A` は `LowerInput` に `fprintf(stderr, "A: start\n")` と `fprintf(stderr, "A: done\n")` を加えた版 `status`，`A_ready` はさらに先頭で `printf("Ready\n")` する版 `ready`。`LowerInput/CMakeLists.txt`）。
+`A` は `LowerInput` に `fprintf(stderr, "A: start\n")` と `fprintf(stderr, "A: done\n")` を加えた版 `status`，`A_ready` はさらに先頭で `printf("Ready\n")` する版 `ready` です。答えの根拠は次のテストで確かめられます。
 
 | 問 | 確かめること | テスト | 入力 → 期待する結果 |
 | --- | --- | --- | --- |
@@ -541,7 +522,7 @@ Enter だけの空行は `'\n'` と `'\0'` を読めているので `fgets` は�
 | 4 | `B` は `A` の `stdout`（`ab\n`）を 3 と数える | `ByteCount` の `pipe_ab` | `ab\n` → `3` |
 | 5 | `B` は `Ready\nab\n` を 9 と数える | `ByteCount` の `pipe_ready` | `Ready\nab\n` → `9` |
 
-テストはパイプそのものではなく，`A` の `stdout` の内容と，それを `B` の `stdin` に与えた結果を別々に固定しています。参考として，Linux で実際にリダイレクト・パイプでつないだ結果:
+テストはパイプそのものではなく，`A` の `stdout` の内容と，それを `B` の `stdin` に与えた結果を別々に固定しています。参考として，Linux でリダイレクト・パイプでつないだ結果:
 
 ```console
 $ ./A < ab.txt > out.txt
@@ -563,12 +544,12 @@ A: done
 9
 ```
 
-Windows でパイプを使っても `B` の表示は同じ 3 と 9 です（`A` のテキストモード出力で `\n` が `\r\n` になり，`B` のテキストモード入力で `\n` に戻るため。テキストモードの仕様による。Windows では未実行）。
+Windows でパイプを使っても `B` の表示は同じ 3 と 9 です（`A` のテキストモード出力で `\n` が `\r\n` になり，`B` のテキストモード入力で `\n` に戻るため）。
 なお，`stdout` と `stderr` は別々にバッファされるので，画面上で処理状況と結果が見える順番は環境によって前後します（`stdout` がパイプやファイルのときは，まとめて最後に書かれることが多い）。画面の並び順を処理順の証拠にしないよう注意します。
 
 ### `printf` の幅と書式を確かめる（`Formats`）
 
-解答: [`Formats/formats.c`](Formats/formats.c)（演習ページのコードにコメントだけ追加。テスト `basic`）
+解答: [`Formats/formats.c`](Formats/formats.c)（演習ページのコード。テスト `basic`）
 
 実行結果（期待する表示と 1 文字ずつ一致）:
 
@@ -580,7 +561,7 @@ Windows でパイプを使っても `B` の表示は同じ 3 と 9 です（`A` 
 5000000000
 ```
 
-MSVC（Visual Studio 2015 以降）でも同じ表示です（MSVC の CI で同じ期待値のテスト `Formats/basic` が成功しているので，`%e` の指数は 2 桁 `e+10`。古い MSVC は 3 桁 `e+010` で出していた）。
+MSVC（Visual Studio 2015 以降）でも同じ表示で，`%e` の指数は 2 桁の `e+10` です（それより古い MSVC は 3 桁の `e+010`）。
 
 #### 値を変えて確かめる
 
@@ -629,7 +610,7 @@ MSVC（Visual Studio 2015 以降）でも同じ表示です（MSVC の CI で同
 
 **要点**: 入力位置 `position` と得点 `score` を分けて管理し，**範囲内かを先に調べてから**お手本を読む（短絡評価で配列外を読まない）。小文字化関数は `EOF` を除いた `int` の値に使う。
 
-解答: [`Typing/typing.c`](Typing/typing.c)（最終版: 大文字・小文字を区別しない）
+解答: [`Typing/typing.c`](Typing/typing.c)（大文字・小文字を区別しない版）
 
 ```c
 // ASCII の英大文字だけを小文字にする。EOF を除いた後の値を渡す
@@ -703,7 +684,7 @@ score=13        ← プログラムの出力
         if (position < length && ch == target[position]) {
 ```
 
-| 入力 | 区別しない版（最終版） | 区別する版（実行結果） | テスト（区別する版） |
+| 入力 | 区別しない版（本体） | 区別する版（実行結果） | テスト（区別する版） |
 | --- | ---: | ---: | --- |
 | `This is a pen` | 13 | 13 | `variant_case_sensitive--exact` |
 | `thiS is a Pen` | 13 | 10（`t`・`S`・`P` の 3 文字が不一致） | `variant_case_sensitive--mixed` |
@@ -719,7 +700,7 @@ score=13        ← プログラムの出力
 ### 採点のポイント・よくある誤り（発展）
 
 - `target[position]` を範囲の確認より前に読む（`target[position] == ch && position < length` の順）→ 14 文字目以降で配列の外を読む。`&&` の左側に範囲確認を置く。
-- 一致しなかったときに `position` を進めない（`++position;` を `if` の中に入れる）→ 一致した文字だけで位置が進む別の仕様になり，`Txxxxxxxxxp` が 1，`Thi is a pen` が 5 になる（この誤りの版のテスト `variant_advance_on_match--same_position`・`variant_advance_on_match--missing_char`。完全一致の `This is a pen` は 13 のままなので，完全一致だけでは誤りに気付けない）。
+- 一致しなかったときに `position` を進めない（`++position;` を `if` の中に入れる）→ 一致した文字だけで位置が進む別の仕様になり，`Txxxxxxxxxp` が 1，`Thi is a pen` が 5 になる（テスト `variant_advance_on_match--same_position`・`variant_advance_on_match--missing_char`。完全一致の `This is a pen` は 13 のままなので，完全一致だけでは誤りに気付けない）。
 - `score` と `position` を 1 つの変数で兼用する。
 - 小文字化を `getchar` の直後（`EOF` の判定前）に行う，または `char` で受けた値に行う。
 - 改行も 1 文字として比較・加点している（`This is a pen` Enter が 13 を超える，または 14 文字目扱いになる）。
@@ -734,7 +715,7 @@ score=13        ← プログラムの出力
    `char` が符号付きの環境（MSVC，x86 の GCC）ではバイト 0xFF が −1 になり `EOF` と等しくなって途中で止まります
    （`Echo` の誤りの版 `char_ch` に `ab` 0xFF `cd` と改行を与えると `ab` だけ出力して終了します。テスト `variant_char_ch--ab_ff_cd`。課題1の採点のポイントを参照）。
    `char` が符号なしの環境では `EOF` が 255 になり，`EOF` と一度も等しくならず止まりません（無限ループになるのでテストはしていない）。
-   GCC・Clang の `-Wall -Wextra` では（`char` が符号付きなら）警告が出ません。MSVC `/W4` の `C4244` は番号の例です（ドキュメントによる。`char_ch` 版は CI でこの版だけ `/wd4244` で抑止してビルド・テストが成功）。
+   GCC・Clang の `-Wall -Wextra` では（`char` が符号付きなら）警告が出ません。MSVC `/W4` では C4244（`int` から `char` への変換）が出ます。
 
 2. **`'0'`，`'\0'`，`'\n'`，`EOF` の役割**
    → `'0'` は数字の文字ゼロ（ASCII で 48）で，`getchar` で読める普通の文字です。`'\0'` は値 0 の文字で，**配列の中で文字列の終わりを示す終端**です（入力の末尾に自動で流れてくるものではない）。
@@ -774,7 +755,7 @@ score=13        ← プログラムの出力
 | 項目 | 確認できる課題と内容 |
 | --- | --- |
 | 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 ``@AZ[`az{``（`A`/`Z`/`a`/`z` の前後），課題2 `@AZ[`・空行・`EOF` だけ・改行込み 1000 バイト（`LetterCount`・`ByteCount` の `max_1000`），課題3 `A` 30/31/32 個と `line[8]` の 6/7/8 文字，発展 14 文字目以降（`This is a pen!`）と本文 1000 バイトの行（`max_1000`）。すべて `tests/` または `variants/tests/` にテストケースがある |
-| 警告を確認し，原因を説明・修正した | 全プログラム（変更版を含む）が GCC 13・Clang 18 の `-Wall -Wextra -Wpedantic -Werror` で警告 0（`-DSOFTPRAC_WERROR=ON` でビルドして確認）。MSVC `/W4 /WX` でも，CI（GitHub Actions。コミット a76876f）の Debug・Release・sln のすべてで全プロジェクト（変更版を含む）のビルド・テストが成功（MinGW・macOS のジョブでも成功）。誤りの例の `no_parens` 版（括弧なしの代入）と `char_ch` 版（`char ch`）だけは，誤りの動作を確かめるためにその版だけ警告を抑止してビルドし（MSVC は `/wd4706`・`/wd4244`），原因を課題1の採点ポイントで説明（`-Wparentheses` は Linux で確認。MSVC の `C4706`・`C4244` は番号の例（ドキュメントによる）で，MSVC が実際にその番号を出すことは確かめていない） |
+| 警告を確認し，原因を説明・修正した | 全プログラム（変更版を含む）が GCC・Clang の `-Wall -Wextra -Wpedantic` と MSVC `/W4` で警告 0。誤りの例の `no_parens` 版（括弧なしの代入。GCC・Clang の `-Wparentheses`，MSVC の C4706）と `char_ch` 版（`char ch`。MSVC の C4244）は，誤りの動作を確かめるためその版だけ警告を抑止しており，原因を課題1の採点のポイントで説明。英字判定の括弧を省いたときの `-Wparentheses` は課題2の採点のポイント |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1の読み取り順の表，`getchar` を `int` で受ける理由（確認問題1），`strlen` の `size_t`（課題3），`long long` と `%lld`（課題4） |
 | Enter による改行，`EOF` による終了，強制停止を区別できる | 課題1 ①②③（空の入力と空行），課題2（`LetterCount` は Enter で表示，`ByteCount` は `EOF` で表示，強制停止では表示されない），共通の「入力終了」の表 |
 | 入力文字の表示と，プログラム自身の出力を区別して記録した | 課題1・課題3・発展のコンソールでの実行例（入力行と出力行に注記），`character=` 版の確認 |

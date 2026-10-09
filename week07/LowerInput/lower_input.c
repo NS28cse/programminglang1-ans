@@ -1,4 +1,5 @@
-﻿// 第7回 課題1: 小文字化フィルタ（ASCII の英大文字だけを小文字にして出力する）
+﻿// 第7回 課題1　小文字化フィルタ（LowerInput / lower_input.c）
+// 入力を 1 バイトずつ読み，ASCII の英大文字だけを小文字にして出力する。
 #include <stdio.h>
 int main(void)
 {

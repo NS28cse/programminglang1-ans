@@ -1,6 +1,7 @@
 ﻿/*
- * 第8回 課題1 Swap の「ポインタのコピーを比較する」（演習のコードを main 内にそのまま書いた版）
- * CMakeLists.txt の書き換え版 copy_pointer として，置換なしでビルド・テストする．
+ * 第8回 課題1　ポインタのコピーを比較する（Swap / versions/copy_pointer.c）
+ * 演習のコードを main 内にそのまま書いたもの．*p = *q（指す先の値のコピー）と
+ * p = q（ポインタ値のコピー）の違いを，p がどの変数を指すかの比較（1 か 0）で表示する．
  */
 #include <stdio.h>
 int main(void)
