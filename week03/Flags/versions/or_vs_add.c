@@ -1,4 +1,6 @@
-﻿/* 第3回 課題5（発展） 説明すること: 同じビットを OR で重ねる場合と加算する場合の比較（Flags の比較用） */
+﻿/* 第3回 課題5（発展） OR と加算の比較（Flags / versions/or_vs_add.c）
+ * 同じビットを OR で重ねた値（1u | 1u）と加算した値（1u + 1u）を並べて表示する。
+ */
 #include <stdio.h>
 
 int main(void)

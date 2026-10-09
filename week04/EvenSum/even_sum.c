@@ -1,4 +1,4 @@
-﻿// 第4回 課題2 偶数の合計（EvenSum）
+﻿// 第4回 課題2 偶数の合計（EvenSum / even_sum.c）
 // 1 から n までの偶数の合計を for 文で求める．n は 0〜100 の固定値．
 #include <stdio.h>
 

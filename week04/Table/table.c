@@ -1,4 +1,4 @@
-﻿// 第4回 課題3 小さな掛け算表（Table）
+﻿// 第4回 課題3 小さな掛け算表（Table / table.c）
 // 外側の for を行 row，内側の for を列 col として 1〜3 の掛け算表を表示する．
 #include <stdio.h>
 

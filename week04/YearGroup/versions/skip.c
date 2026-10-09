@@ -1,4 +1,5 @@
-﻿// 第4回 発展 途中で飛ばす処理（演習ページの断片を main に入れた版．確認用）
+﻿// 第4回 発展 途中で飛ばす処理（YearGroup / versions/skip.c）
+// 演習ページの断片を main に入れたもの．
 // i == 2 では continue で printf を飛ばして更新 ++i へ進み，i == 4 では break で for を抜ける．
 #include <stdio.h>
 

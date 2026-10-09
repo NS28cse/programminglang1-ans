@@ -1,5 +1,5 @@
-﻿// 第4回 課題4 100 未満の 2 の累乗（Powers）の while 版
-// for の初期化をループの前へ，更新を本体の最後へ移した．
+﻿// 第4回 課題4 100 未満の 2 の累乗：while 版（Powers / versions/powers_while.c）
+// for の初期化をループの前に，更新を本体の最後に置く．
 #include <stdio.h>
 
 int main(void)

@@ -1,4 +1,4 @@
-﻿// 第4回 確認問題7 default のない switch で，一致する case がないとき（確認用）
+﻿// 第4回 確認問題7 default のない switch で，一致する case がないとき（YearGroup / versions/no_default.c）
 // school_year = 5 はどの case にも一致しないので，switch の中の文を何も実行せずに switch の後の文へ進む．
 #include <stdio.h>
 
