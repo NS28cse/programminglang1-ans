@@ -1,4 +1,4 @@
-﻿# 第1回 演習 解答・解説（プログラミングの基礎）
+# 第1回 演習 解答・解説（プログラミングの基礎）
 
 - 演習ページ: <https://t-yokoga.github.io/softprac1/ex01.html>（[ソース](https://github.com/t-yokoga/softprac1/blob/main/docs/ex01.md)）
 - 講義ページ: <https://t-yokoga.github.io/softprac1/lec01.html>
@@ -9,27 +9,17 @@
 
 | 課題 | 内容 | プロジェクト | ソース | テスト |
 | --- | --- | --- | --- | --- |
-| 1 | 最初のプログラム | `Welcome` | [welcome.c](Welcome/welcome.c)，[CMakeLists.txt](Welcome/CMakeLists.txt) | 3（[basic](Welcome/tests/basic.out)，[variant_one_printf](Welcome/variants/tests/one_printf.out)，[variant_missing_newline](Welcome/variants/tests/missing_newline.out)） |
-| 2 | 改行と特殊な文字 | `Message` | [message.c](Message/message.c)，[CMakeLists.txt](Message/CMakeLists.txt) | 3（[basic](Message/tests/basic.out)，[variant_backslash_n_only](Message/variants/tests/backslash_n_only.out)，[variant_blank_line_in_first](Message/variants/tests/blank_line_in_first.out)） |
-| 3 | エラーの修正（修正後） | `Broken` | [broken.c](Broken/broken.c) | 1（[basic](Broken/tests/basic.out)） |
-| 3 | エラーの修正（修正前，ビルドしない） | `_Broken` | [broken.c](_Broken/broken.c) | なし（ビルドエラーを再現する用） |
-| 4 | ソースと実行ファイルの区別（最終版 = Version B） | `Version` | [version.c](Version/version.c)，[CMakeLists.txt](Version/CMakeLists.txt) | 2（[basic](Version/tests/basic.out)，[variant_version_a](Version/variants/tests/version_a.out)） |
-| 5 | 発展：文字で図を描く | `House` | [house.c](House/house.c)，[CMakeLists.txt](House/CMakeLists.txt) | 2（[basic](House/tests/basic.out)，[variant_single_backslash](House/variants/tests/single_backslash.out)） |
+| 1 | 最初のプログラム | `Welcome` | [welcome.c](Welcome/welcome.c)，[CMakeLists.txt](Welcome/CMakeLists.txt) | 3 |
+| 2 | 改行と特殊な文字 | `Message` | [message.c](Message/message.c)，[CMakeLists.txt](Message/CMakeLists.txt) | 3 |
+| 3 | エラーの修正（修正後） | `Broken` | [broken.c](Broken/broken.c) | 1 |
+| 3 | エラーの修正（修正前，ビルドしない） | `_Broken` | [broken.c](_Broken/broken.c) | 0 |
+| 4 | ソースと実行ファイルの区別（本体は Version B） | `Version` | [version.c](Version/version.c)，[CMakeLists.txt](Version/CMakeLists.txt) | 2 |
+| 5 | 発展：文字で図を描く | `House` | [house.c](House/house.c)，[CMakeLists.txt](House/CMakeLists.txt) | 2 |
 
-- どのプログラムも入力を取らず，表示が 1 通りに決まるので，本体のテスト（`basic`）は各 1 ケース（標準出力の完全一致と終了コード 0）。本体 5 件と下の書き換え版 6 件で，合計 11 件。
-- README で取り上げた別の書き方・途中版・誤りの例は，本体を変えずに `softprac_add_variant`（各フォルダの `CMakeLists.txt`）でソースの一部を置き換えた版をビルドしてテストしている（期待値は `variants/tests/`）。
-  - `Welcome/one_printf`: 2 つの `printf` を 1 つにまとめた版（出力は本体と同じ）
-  - `Welcome/missing_newline`: 1 行目の末尾の `\n` を忘れた誤りの例（2 行が 1 行につながる）
-  - `Message/backslash_n_only`: `Backslash: \\\n` を `\\n` と書いた誤りの例（`\` と `n` が表示され改行されない）
-  - `Message/blank_line_in_first`: 空行を 1 行目の `printf("My first C program\n\n");` で作る版（出力は本体と同じ）
-  - `Version/version_a`: 手順 1 の最初の版（`Version A`）
-  - `House/single_backslash`: `\` を 1 つしか書かなかった誤りの例（1 行目と 3 行目）
-- `_Broken/` は名前が `_` で始まるのでビルド対象外（CMake も `.vs/launch.vs.json` も無視する）。TA がエラーを再現するときは，このファイルを Visual Studio の空のプロジェクトに追加してビルドする。
-  診断の行番号を演習ページのコード（1〜7 行目）と一致させるため，説明のコメントはファイルの末尾に置いている。
-- 修正後の `Broken/broken.c` も同じ理由でコメントを末尾に置き，行番号を演習ページと一致させている（5 行目が `;` を追加した行）。
-- 実行結果は Linux x64（GCC 13.3 / Clang 18.1，`-std=c17 -Wall -Wextra -Wpedantic -Werror`）で実際にビルド・実行した出力。表示は ASCII だけなので MSVC でも同じ表示になる。
-  MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）で全プロジェクト（variants・versions を含む）のビルドとテストが成功している（コミット a76876f の時点）。
-- MSVC の診断（エラー・警告の番号，文面，行番号）は，この README の作成環境（Linux）では実際に出していない。Microsoft のドキュメントなどに基づく**例**で，文面・行番号はバージョンや言語設定で異なる。GCC/Clang の診断は実際の出力。
+- 書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
+- `_Broken/` は修正前のコードで，ビルドしない（名前が `_` で始まるフォルダはビルドの対象外）。TA がエラーを再現するときは，このファイルを Visual Studio の空のプロジェクトに追加してビルドする。
+- `_Broken/broken.c` と修正後の `Broken/broken.c` は，診断の行番号を演習ページのコード（1〜7 行目）と一致させるため，説明のコメントをファイルの末尾に置いている（修正後は 5 行目が `;` を追加した行）。
+- 表示は ASCII だけなので，MSVC でも同じ表示になる。
 
 ### 実行ファイルの場所（このリポジトリと授業の違い）
 
@@ -58,7 +48,7 @@ int main(void)
 }
 ```
 
-`printf` 1 回で 2 行を表示する方法でもよい（テスト `Welcome/variant_one_printf` で同じ出力になることを確認）。
+`printf` 1 回で 2 行を表示する方法でもよい（出力は同じ。テスト `Welcome/variant_one_printf`）。
 
 ```c
     printf("Welcome to Programming Languages 1.\nI can build and run a C program.\n");
@@ -87,11 +77,11 @@ I can build and run a C program.
 **採点のポイント・よくある誤り**
 
 - 2 行が演習ページと 1 文字も違わないか（`Languages` の綴り，`1.` のピリオド，`C program.` の末尾のピリオド）。
-- 1 行目の末尾の `\n` を忘れると `Welcome to Programming Languages 1.I can build and run a C program.` と 1 行につながる（ビルドは成功し，GCC/Clang の `-Wall -Wextra -Wpedantic` でも警告は出ない。テスト `Welcome/variant_missing_newline` の実際の出力）。
+- 1 行目の末尾の `\n` を忘れると `Welcome to Programming Languages 1.I can build and run a C program.` と 1 行につながる（ビルドは成功し，GCC/Clang の `-Wall -Wextra -Wpedantic` でも警告は出ない。テスト `Welcome/variant_missing_newline`）。
 - ファイル名が `welcome.cpp` や `welcome.c.txt` になっていないか。`.cpp` だと C++ としてコンパイルされる。
 - `/TC`・C17・`/W4` の 3 つを「すべての構成」「すべてのプラットフォーム」で設定しているか（Debug だけ設定して Release は未設定，などが多い）。
 - 「保存場所」の答えが「デスクトップ」「Visual Studio の中」のような曖昧なものでなく，ソースと `.exe` の**フルパス**を別々に書いているか。`.exe` がソースと同じフォルダにあると書いていたら誤り。
-- `#include <stdio.h>;` のように前処理指令に `;` を付ける誤り（GCC/Clang では `extra tokens at end of #include directive` の警告，MSVC では例えば C4067 の警告）。
+- `#include <stdio.h>;` のように前処理指令に `;` を付ける誤り（GCC/Clang では `extra tokens at end of #include directive` の警告，MSVC では C4067（前処理指令の後に余分なトークンがある）の警告）。
 
 ---
 
@@ -109,7 +99,7 @@ I can build and run a C program.
     printf("Progress: 100%%\n");        // 最後の行の末尾にも改行を入れる
 ```
 
-空行は `printf("My first C program\n\n");` のように 1 行目に `\n` を 2 つ続けてもよい（テスト `Message/variant_blank_line_in_first` で本体と同じ出力になることを確認）。
+空行は `printf("My first C program\n\n");` のように 1 行目に `\n` を 2 つ続けてもよい（出力は本体と同じ。テスト `Message/variant_blank_line_in_first`）。
 
 **実行結果**
 
@@ -140,7 +130,7 @@ Progress: 100%
 `printf` が受け取るのは既に改行文字なので，画面では次の行へ移るだけで `\` と `n` は出ない（上の `od` の出力でも改行は 1 バイト）。
 なお Windows では，C ランタイムがテキストモードの標準出力（`stdout`）に書き出すときに改行文字（LF）を CR+LF に変換する。変換するのはコンソールではなく C ランタイムなので，出力をファイルへリダイレクトした場合も CR+LF になる。どちらにしても `\` と `n` の 2 文字にはならない。
 
-`\` と `n` の 2 文字を表示したいときは `\\n` と書く（`\\` が `\` 1 文字，`n` はそのまま）。実際に `message.c` の `Backslash` の行を `printf("Backslash: \\n");` に置き換えて実行すると（テスト `Message/variant_backslash_n_only` の実際の出力），次のように `\n` が文字として表示され，改行されない。
+`\` と `n` の 2 文字を表示したいときは `\\n` と書く（`\\` が `\` 1 文字，`n` はそのまま）。`message.c` の `Backslash` の行を `printf("Backslash: \\n");` に置き換えて実行すると（テスト `Message/variant_backslash_n_only`），次のように `\n` が文字として表示され，改行されない。
 
 ```text
 My first C program
@@ -156,10 +146,10 @@ Backslash: \nProgress: 100%
 **採点のポイント・よくある誤り**
 
 - 2 行目が本当に空行か（空白だけの行や，空行なしは誤り）。最後の `Progress: 100%` の後にも改行があるか（演習ページに明記）。
-- `"Hello!"` の `"` を `\"` にしていない → 文字列がそこで終わるのでコンパイルエラー。GCC: `error: expected ')' before 'Hello'`，Clang: `error: expected ')'`，MSVC の例: `error C2146: 構文エラー: ')' が識別子 'Hello' の前にありません。`（続けて別の診断が出ることもあり，番号・文面はバージョンで異なる）。
-- `"Backslash: \"` のように `\` を 1 つしか書かない → `\"` が引用符のエスケープになり，文字列が閉じない。MSVC の例: `C2001`（定数が 2 行目に続いています / newline in constant），GCC: `error: missing terminating " character`。
+- `"Hello!"` の `"` を `\"` にしていない → 文字列がそこで終わるのでコンパイルエラー。GCC: `error: expected ')' before 'Hello'`，Clang: `error: expected ')'`，MSVC: C2146（識別子 `Hello` の前に `)` がない構文エラー）。続けて別の診断が出ることもある。
+- `"Backslash: \"` のように `\` を 1 つしか書かない → `\"` が引用符のエスケープになり，文字列が閉じない。MSVC: C2001（文字列定数の途中で改行している），GCC: `error: missing terminating " character`。
 - `"Backslash: \\n"` と書いて `\` と改行の両方のつもりになっている → `\` と `n` が表示され改行されない（警告なし。上の実行例）。正しくは `\\\n`（`\\` + `\n`）。
-- `100%\n` と書く → 書式として不正（`%` の後に変換指定がない）で，動作は未定義。MSVC は例えば `/W4` で C4476（`'printf' : unknown type field character '\n' in format specifier`，表示は環境で異なる），GCC は `warning: unknown conversion type character '\x0a' in format [-Wformat=]`，Clang は `warning: invalid conversion specifier '\x0a'` を出す。警告なので**ビルドは成功してしまう**点を指摘する。
+- `100%\n` と書く → 書式として不正（`%` の後に変換指定がない）で，動作は未定義。MSVC は `/W4` で C4476（書式指定の型フィールドに不明な文字がある），GCC は `warning: unknown conversion type character '\x0a' in format [-Wformat=]`，Clang は `warning: invalid conversion specifier '\x0a'` を出す。警告なので**ビルドは成功してしまう**点に注意させる。
 - 円記号（全角の `￥`）を入力している。日本語キーボードでは半角のバックスラッシュが `¥` に見えることがある（講義の注意）。
 
 ---
@@ -194,15 +184,15 @@ I fixed the error!
 
 **記録すること（修正前の診断と，修正した箇所）**
 
-| 項目 | MSVC（例。文面・行番号は環境で異なる） | GCC 13（実際の出力） | Clang 18（実際の出力） |
+| 項目 | MSVC | GCC 13 | Clang 18 |
 | --- | --- | --- | --- |
 | 診断の番号・種類 | エラー `C2143` | `error` | `error` |
 | ファイル | `broken.c` | `broken.c` | `broken.c` |
 | 行 | **6**（`return` の行） | 5 行 35 列（5 行目の末尾）。6 行目の `return` も併せて示される | 5 行 35 列 |
-| 説明 | 構文エラー: `';'` が `'return'` の前にありません。（英語版: `syntax error: missing ';' before 'return'`） | `expected ';' before 'return'` | `expected ';' after expression` |
+| 説明 | 構文エラー（`return` の前に `;` がない） | `expected ';' before 'return'` | `expected ';' after expression` |
 | 修正した箇所 | 5 行目 `printf("I fixed the error!\n")` の末尾に `;` を追加 | 同左 | 同左 |
 
-MSVC の「出力」ウィンドウ（ビルド）に出る診断の例（パス・列の有無・言語は環境で異なる）。
+MSVC の「出力」ウィンドウ（ビルド）には次のように出る（パスは各自の環境で異なる）。
 
 ```text
 1>broken.c
@@ -211,10 +201,10 @@ MSVC の「出力」ウィンドウ（ビルド）に出る診断の例（パス
 ========== ビルド: 0 正常終了、1 失敗、0 更新不要、0 スキップ ==========
 ```
 
-「エラー一覧」には「コード C2143，説明，プロジェクト Broken，ファイル broken.c，行 6」と表示される例。
-エラー一覧の表示を「ビルド + IntelliSense」にしていると，IntelliSense の診断（`E0065`，`';' が必要です`）が 5 行目に出ることもある。どちらも原因は同じ 1 か所。
+「エラー一覧」には，コード C2143・説明・プロジェクト Broken・ファイル broken.c・行 6 が表示される。
+エラー一覧の表示を「ビルド + IntelliSense」にしていると，IntelliSense の診断 E0065（`;` が必要）が 5 行目に出ることもある。どちらも原因は同じ 1 か所。
 
-GCC の実際の出力（`gcc -std=c17 -Wall -Wextra -Wpedantic -c broken.c`）:
+GCC の出力（`gcc -std=c17 -Wall -Wextra -Wpedantic -c broken.c`）:
 
 ```text
 broken.c: In function 'main':
@@ -226,7 +216,7 @@ broken.c:5:35: error: expected ';' before 'return'
       |     ~~~~~~
 ```
 
-Clang の実際の出力（`clang -std=c17 -Wall -Wextra -Wpedantic -c broken.c`）:
+Clang の出力（`clang -std=c17 -Wall -Wextra -Wpedantic -c broken.c`）:
 
 ```text
 broken.c:5:35: error: expected ';' after expression
@@ -236,7 +226,7 @@ broken.c:5:35: error: expected ';' after expression
 1 error generated.
 ```
 
-**なぜ MSVC は 6 行目を指すのか**（上の例のように `return` の行を指す場合）: C では改行は単なる空白で，`printf("...")` の後に改行があっても文は終わらない。
+**なぜ MSVC は 6 行目を指すのか**: C では改行は単なる空白で，`printf("...")` の後に改行があっても文は終わらない。
 コンパイラは 5 行目の終わりではまだ「式が続くかもしれない」と考えて読み進め，6 行目の `return` が来た時点で初めて「`;` がない」と分かる。
 そのため，診断の行（6 行目）の**前の行**（5 行目）を直す必要がある（講義「示された行の前の行も確認」）。
 GCC/Clang は「直前のトークンの直後」に位置を戻して 5 行目を指すので，コンパイラによって行番号が異なる。
@@ -258,7 +248,7 @@ GCC/Clang は「直前のトークンの直後」に位置を戻して 5 行目�
 
 **要点**: 保存はソースファイルを書き換える操作，ビルドはソースから実行ファイルを作り直す操作であり，保存しただけでは `Version.exe` は変わらないことを確かめる。
 
-**解答**: フォルダのソースは手順 3 で書き換えた最終版（[Version/version.c](Version/version.c)，`Version B` を表示）。手順 1 の最初の版は次のとおり（テスト `Version/variant_version_a` で `Version A` と表示されることを確認）。
+**解答**: フォルダのソースは手順 3 の後の内容（[Version/version.c](Version/version.c)，`Version B` を表示）。手順 1 の最初の版は次のとおり（`Version A` を表示。テスト `Version/variant_version_a`）。
 
 ```c
 #include <stdio.h>
@@ -276,7 +266,7 @@ int main(void)
     printf("Version B\n");
 ```
 
-**実行結果**: 手順を Linux（GCC 13.3）で再現した実際の記録（打ったコマンドをそのまま載せている。最初の `version.c` は上の `Version A` の版）。
+**実行結果**: 手順を Linux（GCC 13.3）のコマンドで再現した記録（最初の `version.c` は上の `Version A` の版）。
 `sed` によるソースの書き換えが「Visual Studio で編集して保存」に相当する。`sha256sum` は実行ファイルの内容が変わったかを見るためのハッシュ値。
 
 ```text
@@ -329,7 +319,7 @@ eadd5aea45dd00af3b40772bee154bb2d55a8f621582cec57efc817e4981dd23  Version
 - 最初の表示 `Version A` と再ビルド後の表示 `Version B` の**両方**を記録しているか。
 - 保存とビルドの違いを「ソースファイルへの書き込み」と「実行ファイルの作成」という**対象のファイルの違い**で説明しているか。「保存は保存，ビルドはビルド」のような同語反復は不可。
 - 手順 4 で Ctrl+F5 を押してしまい，自動ビルドで `Version B` が表示された → 「保存しただけで変わった」と結論していないか。
-- 提出された `version.c` が最終版（`Version B`）になっているか。
+- 提出された `version.c` が手順 3 の後の内容（`Version B`）になっているか。
 
 ---
 
@@ -367,10 +357,10 @@ eadd5aea45dd00af3b40772bee154bb2d55a8f621582cec57efc817e4981dd23  Version
 - `\` を 1 つしか書かない誤りは，後ろの文字によって症状が変わる。
   - `/\` と改行のつもりで `printf("  /\\n");` と書く → `\\` + `n` になり，改行されず `  /\n /  \` のように 1 行目と 2 行目がつながる（警告なし）。
   - `printf("/____\n");` → `\` が消えて `/____` と表示される（警告なし。ビルドは成功する）。
-  - `printf(" /  \ \n");` のように `\` の後に空白 → 未定義のエスケープシーケンス。MSVC の例: C4129（`' ': unrecognized character escape sequence`，`\` を無視して空白を表示），GCC は `warning: unknown escape sequence: '\040'`，Clang は `warning: unknown escape sequence '\ '`。
-  - `printf("/____\");` → `\"` で文字列が閉じず，コンパイルエラー（MSVC の例: C2001，GCC: `missing terminating " character`）。
-- `/` はエスケープ不要。`\/` と書くと MSVC は C4129 の警告を出す（Microsoft のドキュメントの C4129 の例による）。
-- 実際に間違えた版を実行すると次のようになる（テスト `House/variant_single_backslash` の実際の出力。1 行目を `"  /\\n"`，3 行目を `"/____\n"` とした場合）。ビルドが成功しても表示が正しいとは限らない例（確認問題 6）。
+  - `printf(" /  \ \n");` のように `\` の後に空白 → 未定義のエスケープシーケンス。MSVC は C4129（認識できないエスケープシーケンス。`\` を無視して空白を表示），GCC は `warning: unknown escape sequence: '\040'`，Clang は `warning: unknown escape sequence '\ '`。
+  - `printf("/____\");` → `\"` で文字列が閉じず，コンパイルエラー（MSVC: C2001，GCC: `missing terminating " character`）。
+- `/` はエスケープ不要。`\/` と書くと MSVC は C4129 の警告を出す。
+- 間違えた版を実行すると次のようになる（テスト `House/variant_single_backslash`。1 行目を `"  /\\n"`，3 行目を `"/____\n"` とした場合）。ビルドが成功しても表示が正しいとは限らない例（確認問題 6）。
 
   ```text
     /\n /  \
@@ -433,18 +423,7 @@ Visual Studio が「最後に成功したビルドを実行しますか?」と�
 | 項目 | どこで確認できるか |
 | --- | --- |
 | Visual Studio でプロジェクトを作成し，C のソースファイルを追加できる | 課題1〜5 の各プロジェクト（空のプロジェクト，拡張子 `.c`，`/TC`・C17・`/W4`）。確認問題1 |
-| 課題ごとのプロジェクトと，`welcome.c`，`message.c`，修正済みの `broken.c`，`version.c` を保存した | プロジェクト一覧の表（`Welcome`・`Message`・`Broken`・`Version`。`House` は発展）。`broken.c` は修正後（5 行目に `;`），`version.c` は `Version B` の最終版 |
-| 警告やエラーを確認したうえで，それぞれのプログラムをビルド・実行できる | 全プログラムが GCC/Clang（`-Wall -Wextra -Wpedantic -Werror`）で警告 0 でビルドでき，テスト 11 件が成功。MSVC `/W4 /WX`（Debug・Release・sln）・MinGW・macOS の CI（GitHub Actions）でも全プロジェクトのビルドとテストが成功している（コミット a76876f の時点）。課題3でエラーを確認 |
+| 課題ごとのプロジェクトと，`welcome.c`，`message.c`，修正済みの `broken.c`，`version.c` を保存した | プロジェクト一覧の表（`Welcome`・`Message`・`Broken`・`Version`。`House` は発展）。`broken.c` は修正後（5 行目に `;`），`version.c` は `Version B` を表示する版 |
+| 警告やエラーを確認したうえで，それぞれのプログラムをビルド・実行できる | 各課題の解答は警告なしでビルドでき，実行結果のとおりに表示される。エラーの読み方は課題3，警告の例は課題1・2・5 の「採点のポイント・よくある誤り」 |
 | 課題2 の空行・引用符・バックスラッシュ・パーセントを正しく表示できる | 課題2 の実行結果と `od -An -c` の出力（`\n\n`，`\"`，`\\`，`%%`），テスト `Message/basic` |
-| 課題3 の診断と修正箇所，課題4 の結果の違いを説明できる | 課題3「記録すること」の表（MSVC の例では C2143・6 行目，修正は 5 行目末尾に `;`），課題4 の表（保存だけでは `Version A` のまま，再ビルドで `Version B`） |
-
----
-
-## ビルドとテスト（このリポジトリ）
-
-```sh
-B=/tmp/build-week01
-cmake -S . -B $B -G Ninja -DSOFTPRAC_WEEKS=week01 -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
-cmake --build $B
-ctest --test-dir $B --output-on-failure    # 11 件すべて成功
-```
+| 課題3 の診断と修正箇所，課題4 の結果の違いを説明できる | 課題3「記録すること」の表（MSVC では C2143・6 行目，修正は 5 行目末尾に `;`），課題4 の表（保存だけでは `Version A` のまま，再ビルドで `Version B`） |
