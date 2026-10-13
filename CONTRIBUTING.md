@@ -108,6 +108,7 @@ README とソースのコメントは，TA と学生が読む完成した資料�
 - テストのしくみ・実行環境・MSVC の診断番号の扱いはルートの README.md にまとめてあるので，各回の README で繰り返さない。書き換えた版を示すときは，テスト名（`variant_<名前>`）を添えるだけでよい。
 - MSVC の番号は「MSVC では C4244（`int` から `char` への変換）」のように番号と意味を書く。文面を「」で引用しない。
 - 学生が読むソース（`weekNN/<プロジェクト>/*.c`・`*.h`・`versions/*.c`）のコメントには，テストやビルドのしくみ（variant・CMakeLists.txt など）を書かない。
+- Visual Studio の画面の表記（メニュー・ウィンドウ名・プロパティ名と値・ダイアログや出力の文面）は **Visual Studio 2026 Enterprise（英語版）** に合わせ，**太字**で書く。メニューの階層は ` > ` でつなぐ（例: **Configuration Properties > Debugging > Command Arguments**）。本文と，概念としての「プロジェクト」「ブレークポイント」などは日本語のままでよい。
 
 ## 5. 仕上げ
 
