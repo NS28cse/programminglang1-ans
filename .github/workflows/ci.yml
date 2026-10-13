@@ -53,7 +53,8 @@ jobs:
       - name: Test
         run: ctest --test-dir build -C Debug -j 4 --timeout 60 --output-on-failure
 
-  # 学生の環境 3: Visual Studio を入れずに VS Code + MSYS2 の gcc を使う（CMakePresets の mingw-debug）
+  # 学生の環境 3: Visual Studio を入れずに VS Code + MSYS2 の gcc を使う
+  # （Visual Studio が既定の構成として選ばないよう，MinGW 用のプリセットは置かずにここで直接指定する）
   windows-mingw:
     if: ${{ !(github.event.repository.private && github.event_name != 'workflow_dispatch') }}
     runs-on: windows-latest
@@ -72,11 +73,11 @@ jobs:
             mingw-w64-ucrt-x86_64-cmake
             mingw-w64-ucrt-x86_64-ninja
       - name: Configure (-Werror)
-        run: cmake --preset mingw-debug -DSOFTPRAC_WERROR=ON
+        run: cmake -S . -B out/build/mingw-debug -G Ninja -DCMAKE_C_COMPILER=gcc -DCMAKE_BUILD_TYPE=Debug -DSOFTPRAC_WERROR=ON
       - name: Build
-        run: cmake --build --preset mingw-debug
+        run: cmake --build out/build/mingw-debug
       - name: Test
-        run: ctest --preset mingw-debug -j 4 --timeout 60
+        run: ctest --test-dir out/build/mingw-debug -j 4 --timeout 60 --output-on-failure
 
   # 未定義動作・メモリ誤りの検出（AddressSanitizer/UBSan）。最適化の有無で出る警告が違うので両方試す
   linux:
