@@ -35,14 +35,14 @@
 | --- | --- | --- |
 | Windows（Visual Studio の Ctrl+F5 のコンソール，cmd，PowerShell，VS Code のターミナル） | **新しい行の先頭で Ctrl+Z，続けて Enter** | 画面には `^Z` と映る。行の途中で押した Ctrl+Z は確実な入力終了にならないので，必ず行頭で押す |
 | macOS / Linux の端末 | **新しい行の先頭で Ctrl+D**（Enter は不要） | 行の途中で Ctrl+D を押すと，それまでの文字が改行なしで渡されるだけ。もう一度 Ctrl+D で `EOF` |
-| 強制停止（Ctrl+C，「デバッグの停止」） | 入力終了ではない | 実行そのものが中断され，`EOF` の後の集計（`ByteCount` の表示など）は実行されない |
+| 強制停止（Ctrl+C，**Debug > Stop Debugging**） | 入力終了ではない | 実行そのものが中断され，`EOF` の後の集計（`ByteCount` の表示など）は実行されない |
 
 Visual Studio では，入力するのはエディタではなく Ctrl+F5 で開いたコンソールです。
 
 ### リダイレクト・パイプ（任意。授業の範囲外の確認用）
 
 演習ページは「シェル操作は行わない」としていますが，TA が動作確認する場合や，興味のある学生に聞かれた場合のために使い方をまとめます。
-実行ファイルの場所は，学生の Visual Studio プロジェクトなら出力ウィンドウに表示される `...\x64\Debug\Echo.exe`，
+実行ファイルの場所は，学生の Visual Studio プロジェクトなら **Output** ウィンドウ（**Show output from: Build**）に表示される `...\x64\Debug\Echo.exe`，
 このリポジトリを CMake で開いた場合は `out\build\msvc-debug\bin\week07\Echo.exe` です。
 以下は実行ファイルのあるフォルダで実行する例です。このリポジトリでは，プロジェクトフォルダ（`week07\Echo` など。`input.txt` がある）で
 `..\..\out\build\msvc-debug\bin\week07\Echo.exe < input.txt` のように実行ファイルを相対パスで指定すれば，入力ファイルをコピーする必要はありません。
