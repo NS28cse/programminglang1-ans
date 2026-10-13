@@ -54,8 +54,8 @@ Windows（Visual Studio，x64）でも Linux x64 でも表示は同じです（`
 
 ### 準備（起動引数の設定）
 
-- Visual Studio（プロジェクト方式）: ソリューションエクスプローラーでプロジェクトを右クリック →「プロパティ」→「構成プロパティ」→「デバッグ」→「コマンド引数」に `5` だけを入力します。**実行ファイル名（`Dynamic.exe`）は含めません**（`argv[0]` は自動で渡される）。
-  ダイアログ上部の「構成」と「プラットフォーム」を，実際に実行する構成（ツールバーの `Debug` と `x64`）に合わせてから設定します。
+- Visual Studio（プロジェクト方式）: **Solution Explorer** でプロジェクトを右クリック → **Properties** → **Configuration Properties > Debugging** の **Command Arguments** に `5` だけを入力します。**実行ファイル名（`Dynamic.exe`）は含めません**（`argv[0]` は自動で渡される）。
+  ダイアログ上部の **Configuration** と **Platform** を，実際に実行する構成（ツールバーの **Solution Configurations** の `Debug` と **Solution Platforms** の `x64`）に合わせてから設定します。
 - よくある誤り: `Release` や `Win32` の構成に引数を設定し，`Debug | x64` で実行している。その構成には引数がないので，`argc` が 1 になり `usage: Dynamic count (1..1000)` と表示して終了コード 1 で終わります。プログラムの誤りではなく設定の誤りです。
 - このリポジトリ（CMake のフォルダーを開く方式）では，[Dynamic/run.args](Dynamic/run.args) の `5` が既定の引数になります（Visual Studio は `.vs/launch.vs.json`）。別の値で試すときは，起動構成の `args`（Visual Studio は `.vs/launch.vs.json`，VS Code は `.vscode/launch.json` の「引数つきで実行」）を書き換えます。
 - 予測: `5` なら `n=5 sum=15 mean=3.0`。0，-1，1001，`abc` などは**確保の前に**診断を出して終了し，合計は表示されない。
@@ -149,7 +149,7 @@ reversed: 5 4 3 2 1
 | 999999999999999999999999 | `count must be 1..1000`（stderr），終了コード 1 | `strtol` が `LONG_MAX` を返し `errno == ERANGE` |
 | 指定なし，5 6 | `usage: Dynamic count (1..1000)`（stderr），終了コード 1 | `argc != 2`。引数の不足・過剰 |
 
-- どのエラーも「何も表示されずに落ちた」のではなく，**診断を出して `return 1` で意図的に終了**しています。終了コードは Visual Studio の出力ウィンドウ（「…はコード 1 (0x1) で終了しました」）で確認できます。
+- どのエラーも「何も表示されずに落ちた」のではなく，**診断を出して `return 1` で意図的に終了**しています。終了コードは Visual Studio の **Output** ウィンドウ（`The program '[12345] Dynamic.exe' has exited with code 1 (0x1).`）で確認できます。
 - `strtol` は先頭の空白と `+` を受け付けるので，`+5` は 5 として受理されます（テスト `plus_sign`）。これは講義の説明どおりの仕様です。
 - 空白 1 文字だけの引数（テスト `blank_space`）も，空引数 `""`（テスト `empty_arg`）と同じく数字がないので拒否されます。
 - `long` は Windows（MSVC）では 32 ビット，Linux x64 では 64 ビットです。たとえば `3000000000` は Windows では `ERANGE`，Linux では「1000 より大きい」で拒否されます。経路は違っても結果（拒否）は同じです。
@@ -461,7 +461,7 @@ x=3.0 y=4.0
 ```
 
 - `simulate_failure=1` では `point_allocate` が `NULL` を返し，`new_point` は**メンバに触れずに** `NULL` を返し，`main` は `allocation failed` を出して `return 1` します。`p->x` を読む `printf` には到達しません。
-- ステップ実行での確認: `Point *p = new_point(3.0, 4.0);` の行にブレークポイントを置き，F11 で `new_point` へ入ると，`point_allocate` が `NULL` を返して `return NULL;` に進み，`*p = ...` の行が実行されないことが分かります。戻った後の `if (p == NULL)` で `p` が `0x0000000000000000` で，次に `fprintf` → `return 1` へ進み，`printf("x=...")` の行は通りません。
+- ステップ実行での確認: `Point *p = new_point(3.0, 4.0);` の行にブレークポイントを置き，F11（**Step Into**）で `new_point` へ入ると，`point_allocate` が `NULL` を返して `return NULL;` に進み，`*p = ...` の行が実行されないことが分かります。戻った後の `if (p == NULL)` で `p` が `0x0000000000000000` で，次に `fprintf` → `return 1` へ進み，`printf("x=...")` の行は通りません。
 - `point_allocate` は `errno` を設定しません。この試験で確かめているのは「`NULL` を見て失敗を判定し，安全に終了できること」であり，本物の `malloc` のメモリ不足や OS の診断を再現したわけではありません。
 - `const int simulate_failure = 1; if (simulate_failure)` は演習ページのコードどおりです。`point_allocate`・`try_resize` とも，MSVC `/W4 /WX`（Release を含む）で C4127（条件式が定数）・C4702（到達できないコード）によってビルドが止まることはありません。
 
@@ -910,7 +910,7 @@ ok=0 out=99.0
    3 つとも成功時に所有権が `main` へ移り，`main` が `vector_destroy` で解放します。`vector_axpy` の引数 `x`，`y` は**借りるだけ**で，`vector_axpy` は解放しません。
 4. **`&x` を渡す理由**: `vector_destroy(Vector **p)` は呼び出し元の**ポインタ変数 `x` 自身のアドレス**を受け取り，`free(*p)` の後 `*p = NULL;` で `x` を `NULL` に書き換えます。
    `void vector_destroy(Vector *p)` のように `x` の値を渡すと，関数の中の `p` は `x` のコピーなので，`p = NULL;` としても呼び出し元の `x` は古いアドレスのまま残ります。
-5. **解放後に `NULL` になること**: Visual Studio では `return status;` にブレークポイントを置き，ウォッチで `x`，`y`，`result` がすべて `0x0000000000000000` になっていることを確認します（`x->v` などメンバの参照はしない）。
+5. **解放後に `NULL` になること**: Visual Studio では `return status;` にブレークポイントを置き，**Watch 1** ウィンドウで `x`，`y`，`result` がすべて `0x0000000000000000` になっていることを確認します（`x->v` などメンバの参照はしない）。
    `return status;` の前に `vector_destroy(&x);` をもう一度呼ぶ文と，3 つのポインタがすべて `NULL` なら `x=NULL y=NULL result=NULL` を表示する `if` 文を差し込んだ版（テスト `variant_destroy_again`）では，次のように表示されます。
    ```text
    > DynamicVector_destroy_again
