@@ -17,7 +17,7 @@
 | 5 | 発展：文字で図を描く | `House` | [house.c](House/house.c)，[CMakeLists.txt](House/CMakeLists.txt) | 2 |
 
 - 書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
-- `_Broken/` は修正前のコードで，ビルドしない（名前が `_` で始まるフォルダはビルドの対象外）。TA がエラーを再現するときは，このファイルを Visual Studio の空のプロジェクトに追加してビルドする。
+- `_Broken/` は修正前のコードで，ビルドしない（名前が `_` で始まるフォルダはビルドの対象外）。TA がエラーを再現するときは，このファイルを Visual Studio の **Empty Project** に追加してビルドする。
 - `_Broken/broken.c` と修正後の `Broken/broken.c` は，診断の行番号を演習ページのコード（1〜7 行目）と一致させるため，説明のコメントをファイルの末尾に置いている（修正後は 5 行目が `;` を追加した行）。
 - 表示は ASCII だけなので，MSVC でも同じ表示になる。
 
@@ -25,9 +25,9 @@
 
 | 環境 | ソース | 実行ファイル |
 | --- | --- | --- |
-| 授業の手順（Visual Studio の空のプロジェクト，「ソリューションとプロジェクトを同じディレクトリに配置する」に✓，x64 / Debug） | `...\PL1\week01\Welcome\welcome.c` | `...\PL1\week01\Welcome\x64\Debug\Welcome.exe` |
+| 授業の手順（Visual Studio の **Empty Project**，**Place solution and project in the same directory** に✓，x64 / Debug） | `...\PL1\week01\Welcome\welcome.c` | `...\PL1\week01\Welcome\x64\Debug\Welcome.exe` |
 | 同上（プラットフォームが x86 / Win32 の場合） | 同上 | `...\PL1\week01\Welcome\Debug\Welcome.exe` |
-| このリポジトリ（CMake。Visual Studio の「フォルダーを開く」や VS Code） | `week01\Welcome\welcome.c` | `out\build\<プリセット>\bin\week01\Welcome.exe`（Linux では拡張子なし） |
+| このリポジトリ（CMake。Visual Studio の **File > Open > Folder** や VS Code） | `week01\Welcome\welcome.c` | `out\build\<プリセット>\bin\week01\Welcome.exe`（Linux では拡張子なし） |
 
 ---
 
@@ -63,10 +63,10 @@ I can build and run a C program.
 
 **確認すること（`welcome.c` と `Welcome.exe` の保存場所）**
 
-- `welcome.c`（ソースファイル）: プロジェクトフォルダ `...\PL1\week01\Welcome\welcome.c`。ソリューション エクスプローラーでファイルを右クリック →「エクスプローラーでフォルダーを開く」でも確かめられる。
+- `welcome.c`（ソースファイル）: プロジェクトフォルダ `...\PL1\week01\Welcome\welcome.c`。**Solution Explorer** でファイルを右クリック → **Open Containing Folder** でも確かめられる。
 - `Welcome.exe`（実行ファイル）: ビルドで新しく作られるファイルで，ソースと同じフォルダではなく構成ごとの出力フォルダにできる。
   上の設定（x64 / Debug）では `...\PL1\week01\Welcome\x64\Debug\Welcome.exe`。
-  正確な場所は，ビルドの「出力」ウィンドウに出る次のような行で確認する（パスは各自の環境で異なる）。
+  正確な場所は，**Output** ウィンドウ（**Show output from: Build**）に出る次のような行で確認する（パスは各自の環境で異なる）。
 
   ```text
   1>Welcome.vcxproj -> C:\Users\<ユーザ名>\Documents\PL1\week01\Welcome\x64\Debug\Welcome.exe
@@ -79,7 +79,7 @@ I can build and run a C program.
 - 2 行が演習ページと 1 文字も違わないか（`Languages` の綴り，`1.` のピリオド，`C program.` の末尾のピリオド）。
 - 1 行目の末尾の `\n` を忘れると `Welcome to Programming Languages 1.I can build and run a C program.` と 1 行につながる（ビルドは成功し，GCC/Clang の `-Wall -Wextra -Wpedantic` でも警告は出ない。テスト `Welcome/variant_missing_newline`）。
 - ファイル名が `welcome.cpp` や `welcome.c.txt` になっていないか。`.cpp` だと C++ としてコンパイルされる。
-- `/TC`・C17・`/W4` の 3 つを「すべての構成」「すべてのプラットフォーム」で設定しているか（Debug だけ設定して Release は未設定，などが多い）。
+- `/TC`・C17・`/W4` の 3 つを **Configuration: All Configurations**・**Platform: All Platforms** で設定しているか（Debug だけ設定して Release は未設定，などが多い）。
 - 「保存場所」の答えが「デスクトップ」「Visual Studio の中」のような曖昧なものでなく，ソースと `.exe` の**フルパス**を別々に書いているか。`.exe` がソースと同じフォルダにあると書いていたら誤り。
 - `#include <stdio.h>;` のように前処理指令に `;` を付ける誤り（GCC/Clang では `extra tokens at end of #include directive` の警告，MSVC では C4067（前処理指令の後に余分なトークンがある）の警告）。
 
@@ -189,20 +189,20 @@ I fixed the error!
 | 診断の番号・種類 | エラー `C2143` | `error` | `error` |
 | ファイル | `broken.c` | `broken.c` | `broken.c` |
 | 行 | **6**（`return` の行） | 5 行 35 列（5 行目の末尾）。6 行目の `return` も併せて示される | 5 行 35 列 |
-| 説明 | 構文エラー（`return` の前に `;` がない） | `expected ';' before 'return'` | `expected ';' after expression` |
+| 説明 | `syntax error: missing ';' before 'return'`（`return` の前に `;` がない） | `expected ';' before 'return'` | `expected ';' after expression` |
 | 修正した箇所 | 5 行目 `printf("I fixed the error!\n")` の末尾に `;` を追加 | 同左 | 同左 |
 
-MSVC の「出力」ウィンドウ（ビルド）には次のように出る（パスは各自の環境で異なる）。
+MSVC の **Output** ウィンドウ（**Show output from: Build**）には次のように出る（パスは各自の環境で異なる）。
 
 ```text
 1>broken.c
-1>C:\Users\<ユーザ名>\Documents\PL1\week01\Broken\broken.c(6,5): error C2143: 構文エラー: ';' が 'return' の前にありません。
-1>プロジェクト "Broken.vcxproj" のビルドが終了しました -- 失敗。
-========== ビルド: 0 正常終了、1 失敗、0 更新不要、0 スキップ ==========
+1>C:\Users\<ユーザ名>\Documents\PL1\week01\Broken\broken.c(6,5): error C2143: syntax error: missing ';' before 'return'
+1>Done building project "Broken.vcxproj" -- FAILED.
+========== Build: 0 succeeded, 1 failed, 0 up-to-date, 0 skipped ==========
 ```
 
-「エラー一覧」には，コード C2143・説明・プロジェクト Broken・ファイル broken.c・行 6 が表示される。
-エラー一覧の表示を「ビルド + IntelliSense」にしていると，IntelliSense の診断 E0065（`;` が必要）が 5 行目に出ることもある。どちらも原因は同じ 1 か所。
+**Error List** には，**Code** C2143・**Description**（`syntax error: missing ';' before 'return'`）・**Project** Broken・**File** broken.c・**Line** 6 が表示される。
+**Error List** の表示を **Build + IntelliSense** にしていると，IntelliSense の診断 E0065（`expected a ';'`）が 5 行目に出ることもある。どちらも原因は同じ 1 か所。
 
 GCC の出力（`gcc -std=c17 -Wall -Wextra -Wpedantic -c broken.c`）:
 
@@ -231,8 +231,8 @@ broken.c:5:35: error: expected ';' after expression
 そのため，診断の行（6 行目）の**前の行**（5 行目）を直す必要がある（講義「示された行の前の行も確認」）。
 GCC/Clang は「直前のトークンの直後」に位置を戻して 5 行目を指すので，コンパイラによって行番号が異なる。
 
-**手順 3〜4**: 修正して保存し，再ビルドすると「1 正常終了、0 失敗」となり，Ctrl+F5 で `I fixed the error!` が表示される。
-ビルドに失敗した状態で Ctrl+F5 を押すと「ビルド エラーが発生しました。続行して、最後に成功したビルドを実行しますか?」と聞かれるが，「いいえ」を選ぶ（今回は初回ビルドが失敗しているので，成功した `exe` はそもそもない）。
+**手順 3〜4**: 修正して保存し，再ビルドすると `Build: 1 succeeded, 0 failed` となり，Ctrl+F5 で `I fixed the error!` が表示される。
+ビルドに失敗した状態で Ctrl+F5 を押すと `There were build errors. Would you like to continue and run the last successful build?` と聞かれるが，**No** を選ぶ（今回は初回ビルドが失敗しているので，成功した `exe` はそもそもない）。
 
 **採点のポイント・よくある誤り**
 
@@ -375,12 +375,12 @@ eadd5aea45dd00af3b40772bee154bb2d55a8f621582cec57efc817e4981dd23  Version
 
 **1. Visual Studio の C++ プロジェクトで C 言語を使うには，ファイル名や設定のどこに注意するか。**
 
-結論: ソースファイルの**拡張子を `.c`** にし，プロジェクトのプロパティで**コンパイル言語を「C コードとしてコンパイル（`/TC`）」**，**C 言語標準を「ISO C17（`/std:c17`）」**にする（警告レベルは 4 `/W4`）。
+結論: ソースファイルの**拡張子を `.c`** にし，プロジェクトの **Properties** で **C/C++ > Advanced > Compile As** を **Compile as C Code (/TC)**，**C/C++ > Language > C Language Standard** を **ISO C17 (2018) Standard (/std:c17)** にする（**C/C++ > General > Warning Level** は **Level4 (/W4)**）。
 理由・注意点:
-- 「新しい項目」で C++ ファイル（`.cpp`）を選んだまま追加すると，C++ としてコンパイルされる。名前を `hello.c` に変える。`hello.c.txt` や `hello.cpp` になっていないか，ソリューション エクスプローラーで確認する。
+- **Add > New Item** で **C++ File (.cpp)** を選んだまま追加すると，C++ としてコンパイルされる。名前を `hello.c` に変える。`hello.c.txt` や `hello.cpp` になっていないか，**Solution Explorer** で確認する。
 - `/TC` はプロジェクト全体を C としてコンパイルする設定で，拡張子の付け間違いがあっても C として扱われる。
-- プロパティは**プロジェクト**を右クリックして開き，「構成: すべての構成」「プラットフォーム: すべてのプラットフォーム」で設定する（ソリューションのプロパティではない）。新しいプロジェクトごとに設定し直す。
-- テンプレートは「空のプロジェクト」を選ぶ（他のテンプレートだと `pch.h` などが必要になる）。1 プロジェクトに `main` を持つファイルは 1 つだけ。
+- **Properties** は**プロジェクト**を右クリックして開き，**Configuration: All Configurations**・**Platform: All Platforms** で設定する（ソリューションの **Properties** ではない）。新しいプロジェクトごとに設定し直す。
+- テンプレートは **Empty Project** を選ぶ（他のテンプレートだと `pch.h` などが必要になる）。1 プロジェクトに `main` を持つファイルは 1 つだけ。
 
 **2. ソースファイルを保存する操作と，プロジェクトをビルドする操作は，何が違うか。**
 
@@ -399,16 +399,18 @@ eadd5aea45dd00af3b40772bee154bb2d55a8f621582cec57efc817e4981dd23  Version
 Ctrl+F5 で実行すると，コンソールの最後に例えば次のように表示されるが，これは Visual Studio が終了コードを知らせる案内で，プログラムの `printf` の出力ではない（パスとプロセス番号は環境で異なる）。
 
 ```text
-C:\Users\<ユーザ名>\Documents\PL1\week01\Welcome\x64\Debug\Welcome.exe (プロセス 12345) は、コード 0 で終了しました。
+C:\Users\<ユーザ名>\Documents\PL1\week01\Welcome\x64\Debug\Welcome.exe (process 12345) exited with code 0 (0x0).
+To automatically close the console when debugging stops, enable Tools->Options->Debugging->Automatically close the console when debugging stops.
+Press any key to close this window . . .
 ```
 
-Visual Studio のバージョンによっては `コード 0 (0x0) で終了しました。` のように 16 進数も付く。
+1 行目の `exited with code 0` が `main` の返した終了コード（`(0x0)` は同じ値の 16 進数）で，続く 2 行もコンソールを閉じるための Visual Studio の案内である。
 
 **5. 編集・保存した後にビルドが失敗した。以前からある `exe` が動けば，修正したプログラムが正しいといえるか。**
 
 結論: **いえない。**
 理由: 以前からある `exe` は，最後に**成功したビルド**のときのソースから作られたもので，ビルドに失敗した今のソースは反映されていない（課題4で，ソースを変えても再ビルドするまで `Version A` のままだったことと同じ）。
-Visual Studio が「最後に成功したビルドを実行しますか?」と聞いてきても実行せず，エラーを直してビルドを成功させてから確かめる。
+Visual Studio が `There were build errors. Would you like to continue and run the last successful build?` と聞いてきても **Yes** を選ばず，エラーを直してビルドを成功させてから確かめる。
 
 **6. ビルドが成功すれば，必ず課題で指定された表示になるか。**
 
@@ -422,7 +424,7 @@ Visual Studio が「最後に成功したビルドを実行しますか?」と�
 
 | 項目 | どこで確認できるか |
 | --- | --- |
-| Visual Studio でプロジェクトを作成し，C のソースファイルを追加できる | 課題1〜5 の各プロジェクト（空のプロジェクト，拡張子 `.c`，`/TC`・C17・`/W4`）。確認問題1 |
+| Visual Studio でプロジェクトを作成し，C のソースファイルを追加できる | 課題1〜5 の各プロジェクト（**Empty Project**，拡張子 `.c`，`/TC`・C17・`/W4`）。確認問題1 |
 | 課題ごとのプロジェクトと，`welcome.c`，`message.c`，修正済みの `broken.c`，`version.c` を保存した | プロジェクト一覧の表（`Welcome`・`Message`・`Broken`・`Version`。`House` は発展）。`broken.c` は修正後（5 行目に `;`），`version.c` は `Version B` を表示する版 |
 | 警告やエラーを確認したうえで，それぞれのプログラムをビルド・実行できる | 各課題の解答は警告なしでビルドでき，実行結果のとおりに表示される。エラーの読み方は課題3，警告の例は課題1・2・5 の「採点のポイント・よくある誤り」 |
 | 課題2 の空行・引用符・バックスラッシュ・パーセントを正しく表示できる | 課題2 の実行結果と `od -An -c` の出力（`\n\n`，`\"`，`\\`，`%%`），テスト `Message/basic` |

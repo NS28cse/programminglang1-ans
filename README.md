@@ -58,23 +58,27 @@ programminglang1-ans/
 
 ## Visual Studio で使う（Windows）
 
-**準備**: Visual Studio 2022 以降で「**C++ によるデスクトップ開発**」ワークロードを入れる（「Windows 用 C++ CMake ツール」が含まれます）。
+画面の表記は Visual Studio 2026 Enterprise（英語版）に合わせています。
+
+**準備**: Visual Studio 2022 以降の Visual Studio Installer で **Desktop development with C++** ワークロードを入れる（**C++ CMake tools for Windows** が含まれます）。
 
 1. リポジトリを clone する（または ZIP を展開する）。
-2. Visual Studio を起動し，**「ファイル → 開く → フォルダー」** でリポジトリのフォルダを開く。
+2. Visual Studio を起動し，**File > Open > Folder** でリポジトリのフォルダを開く。
    （`.sln` はありません。CMake プロジェクトとして開きます。）
-3. 上部の構成のドロップダウンで **`Windows / MSVC (x64 Debug)`** を選ぶ。出力ウィンドウに「CMake の生成が完了しました」と出るまで待つ。
-4. ツールバーの**スタートアップ項目**（▶ の横のドロップダウン）から実行したいものを選ぶ。
+3. ツールバーの構成のドロップダウンで **`Windows / MSVC (x64 Debug)`** を選ぶ。**Output** ウィンドウに `CMake generation finished.` と出るまで待つ。
+4. ツールバーの **Startup Item**（▶ の横のドロップダウン）から実行したいものを選ぶ。
    - `week10 ReadText  [input.txt]` のような項目は，`.vs/launch.vs.json` の設定で**作業ディレクトリ = プロジェクトフォルダ**，**引数 = `run.args`** になっています。
    - `ReadText.exe` のような項目（CMake が自動で作るもの）は，作業ディレクトリが出力先フォルダになり，引数もありません。ファイルや引数を使う回では `weekNN 名前` の項目を選んでください。
-5. **Ctrl+F5**（デバッグなしで開始）で実行，**F5** でデバッグ実行，**Ctrl+Shift+B** ですべてビルド。
+5. **Ctrl+F5**（**Debug > Start Without Debugging**）で実行，**F5**（**Debug > Start Debugging**）でデバッグ実行，**Ctrl+Shift+B**（**Build > Build All**）ですべてビルド。
 
-引数を変えたいときは，スタートアップ項目を選んだ状態で **「デバッグ → `<項目>` のデバッグ設定と起動設定」** を開き，`args` を書き換えます（授業の「プロパティ → デバッグ → コマンド引数」に当たります）。
+引数を変えたいときは，**Startup Item** で項目を選んだ状態で **Debug > Debug and Launch Settings for \<項目\>** を開き，`args` を書き換えます（授業の **Properties > Configuration Properties > Debugging > Command Arguments** に当たります）。
 
-テストの実行は **「テスト → CTest テストの実行」**，またはテスト エクスプローラーから行います。
+テストの実行は **Test > Run CTests for softprac1_answers**，または **Test Explorer** から行います。
+
+**Solution Explorer** は既定でフォルダ表示です。ツールバーの **Select View** ボタンから **CMake Targets View** を選ぶと，実行ファイル（ターゲット）ごとに表示できます。
 
 > [!TIP]
-> 授業と同じ形（`.sln` と 1 課題 1 プロジェクト）で確認したいときは，空のプロジェクトを作り，該当フォルダの `.c`/`.h` を「既存の項目の追加」で入れるだけで動きます。ソースは BOM 付き UTF-8 なので，`/utf-8` を指定していないプロジェクトでも日本語のコメントは文字化けしません。
+> 授業と同じ形（`.sln` と 1 課題 1 プロジェクト）で確認したいときは，**Create a new project > Empty Project** で空のプロジェクトを作り，該当フォルダの `.c`/`.h` を **Add > Existing Item** で入れるだけで動きます。ソースは BOM 付き UTF-8 なので，`/utf-8` を指定していないプロジェクトでも日本語のコメントは文字化けしません。
 
 ## VS Code で使う（Windows / macOS / Linux）
 
@@ -82,7 +86,7 @@ programminglang1-ans/
 
 | OS | コンパイラ | その他 |
 | --- | --- | --- |
-| Windows | Visual Studio 2022 以降，または「Build Tools for Visual Studio」の「C++ によるデスクトップ開発」 | CMake と Ninja は Visual Studio に含まれる |
+| Windows | Visual Studio 2022 以降，または Build Tools for Visual Studio の **Desktop development with C++** | CMake と Ninja は Visual Studio に含まれる |
 | macOS | `xcode-select --install`（Clang） | `brew install cmake` |
 | Linux | `sudo apt install build-essential gdb cmake ninja-build` | |
 
@@ -147,7 +151,7 @@ ctest --preset gcc-debug          # すべての自動テスト
 
 | 症状 | 対処 |
 | --- | --- |
-| Visual Studio でスタートアップ項目が出ない | 「プロジェクト → CMake キャッシュの削除と再構成」。構成が `Windows / MSVC` になっているか確認 |
+| Visual Studio の **Startup Item** に項目が出ない | **Project > Delete Cache and Reconfigure**。構成が `Windows / MSVC` になっているか確認 |
 | VS Code で `cl.exe` が見つからない | プリセットを `Windows / MSVC` にする。Visual Studio（または Build Tools）の C++ ワークロードが入っているか確認 |
 | `input.txt` が開けない | 作業ディレクトリがプロジェクトフォルダか確認（Visual Studio は `weekNN 名前` の項目を，VS Code は `.c` を開いた状態で起動） |
 | 日本語が文字化けする | プログラムの表示は ASCII にしています。ソースのコメントが化ける場合はファイルを BOM 付き UTF-8 で保存し直す |
