@@ -44,29 +44,29 @@
 - プログラムが書き出すファイル（`bytes.bin`・`scores.txt`・`numbers.txt`・`numbers.bin`・`squares.txt`）はリポジトリに置いていない（書かれるべき内容は `tests/<ケース>.files/` にある）。
 - 表示は ASCII だけで，Windows x64（MSVC）でも同じになる。環境で変わる点（改行コード，`long` のサイズなど）はそれぞれの節に「Windows x64 (MSVC) では…，Linux x64 では…」として書いた。
 - 実行例の `$ ReadText input.txt` は「コマンド引数に `input.txt` を設定して実行した」という意味。`(終了コード 1)` はプログラムが返した値で，画面には出ない
-  （Visual Studio の Ctrl+F5 のコンソールでは，プログラムの終了後に（プロセス番号）と終了コード 1 が表示される）。標準エラー出力も同じ画面に出る。
+  （Visual Studio の Ctrl+F5 のコンソールでは，プログラムの終了後に `C:\...\ReadText.exe (process 12345) exited with code 1 (0x1).` のように終了コードが表示される）。標準エラー出力も同じ画面に出る。
 
 ## 実行のしかた（コマンド引数と作業ディレクトリ）
 
 この回のプログラムは，相対パスのファイル名（`input.txt` など）を**作業ディレクトリ**を基準に探す・作る。ソースの場所や実行ファイル（`.exe`）の場所ではない。
 
-### Visual Studio（授業の手順：空のプロジェクト）
+### Visual Studio（授業の手順：**Empty Project**）
 
-1. ソリューションエクスプローラーで**プロジェクト**（例: `ReadText`）を右クリック →「プロパティ」。
-2. 上の「構成」を実行に使う構成（通常は `Debug`，迷ったら「すべての構成」）と，「プラットフォーム」を `x64` にする。
-3. 「構成プロパティ → デバッグ」の **コマンド引数** に `input.txt` と書く（`ReadText.exe` は書かない）。2 個なら `squares.txt 9` のように空白で区切る。
+1. **Solution Explorer** で**プロジェクト**（例: `ReadText`）を右クリック → **Properties**。
+2. 上の **Configuration** を実行に使う構成（通常は `Debug`，迷ったら **All Configurations**）に，**Platform** を `x64` にする。
+3. **Configuration Properties > Debugging** の **Command Arguments** に `input.txt` と書く（`ReadText.exe` は書かない）。2 個なら `squares.txt 9` のように空白で区切る。
    空白を含む 1 個の名前は `"my input.txt"`，空文字列の引数は `""` と書く。この欄は C の文字列リテラルではないので `\` を二重にしない。
-4. **作業ディレクトリ** を `$(ProjectDir)`（`.vcxproj` のあるフォルダ）にする。
+4. **Working Directory** を `$(ProjectDir)`（`.vcxproj` のあるフォルダ）にする。
 5. `input.txt` を `.vcxproj` と同じフォルダに保存する（エクスプローラーで拡張子を表示し，`input.txt.txt` になっていないか確認）。
 6. Ctrl+Shift+B でビルド，Ctrl+F5 で実行。引数を変えるたびにソースを直す必要はない。
 
-複数のプロジェクトがあるソリューションでは，実行されるのは「スタートアップ プロジェクト」（太字）である。
-別のプロジェクトのプロパティを変えても結果が変わらないときは，ここを確認させる（講義「パスが見つからない場合」の表）。
+複数のプロジェクトがあるソリューションでは，実行されるのはスタートアップ プロジェクト（**Solution Explorer** で太字のもの。右クリック → **Set as Startup Project** で変える）である。
+別のプロジェクトの **Properties** を変えても結果が変わらないときは，ここを確認させる（講義「パスが見つからない場合」の表）。
 
-### このリポジトリを Visual Studio で開く場合（フォルダーを開く）
+### このリポジトリを Visual Studio で開く場合（**File > Open > Folder**）
 
 各プロジェクトは「作業ディレクトリ = プロジェクトフォルダ」「引数 = `run.args`（1 行 1 引数）」の起動構成になる（`tools/gen_launch_vs.py` が `.vs/launch.vs.json` を生成）。
-ツールバーの起動項目で `week10 ReadText  [input.txt]` などを選んで Ctrl+F5。引数を変えたいときは `.vs/launch.vs.json` の `"args"` を書き換える。
+ツールバーの **Startup Item** で `week10 ReadText  [input.txt]` などを選んで Ctrl+F5。引数を変えたいときは `.vs/launch.vs.json` の `"args"` を書き換える。
 
 ### VS Code
 
@@ -99,7 +99,7 @@ cd ../WriteText
 ../../out/build/gcc-debug/variants/week10/WriteText_mode_a
 ```
 
-- 空文字列の引数 `""` は cmd・bash・zsh では 1 個の空の引数として渡るが，**Windows PowerShell 5.1 は空の引数を落とす**（`argc` が 1 になる）。`""` の確認は cmd か Visual Studio の「コマンド引数」欄で行う。
+- 空文字列の引数 `""` は cmd・bash・zsh では 1 個の空の引数として渡るが，**Windows PowerShell 5.1 は空の引数を落とす**（`argc` が 1 になる）。`""` の確認は cmd か Visual Studio の **Command Arguments** 欄で行う。
 - VS Code の gdb/lldb（cppdbg）は引数をデバッガ経由で渡すので，空白や空文字列を含む引数の扱いが環境で異なることがある。境界の確認はターミナルで行うのが確実。
 - `ctest` で全部を確かめる場合: `ctest --preset msvc-debug -R week10`（macOS/Linux は `gcc-debug`）。
 
@@ -168,9 +168,9 @@ usage: ReadText filename
 
 ### 採点のポイント・よくある誤り
 
-- `input.txt` が `x64\Debug\` やソリューションのフォルダにある（作業ディレクトリが `$(ProjectDir)` でない）→ `fopen: No such file or directory`。
+- `input.txt` が `x64\Debug\` やソリューションのフォルダにある（**Working Directory** が `$(ProjectDir)` でない）→ `fopen: No such file or directory`。
 - `input.txt.txt`（拡張子非表示），BOM 付き UTF-8 で保存（先頭に `EF BB BF` の 3 バイトが増え，表示の先頭に余分な文字が出る）。
-- 「コマンド引数」に `ReadText.exe input.txt` と書く → `argc` が 3 になり usage。
+- **Command Arguments** に `ReadText.exe input.txt` と書く → `argc` が 3 になり usage。
 - `char ch = fgetc(fp);` で受ける（`EOF` と `0xFF` を区別できない），`while (!feof(fp))` で回して最後に `EOF` を 1 回余分に処理する。
 - `fopen` の `NULL` を調べずに `fgetc` へ渡す，`fclose(NULL)` を呼ぶ。`ferror`・`fclose` の戻り値を見ていない。
 

@@ -18,7 +18,7 @@
 | 発展3 | `LibraryCheck` | [library_check.c](LibraryCheck/library_check.c)，[CMakeLists.txt](LibraryCheck/CMakeLists.txt) | 2 |
 | 課題3・4 のエラー版 | `_BuildErrors`（ビルドしない） | [split/](_BuildErrors/split/)（課題1 の講義どおりの 3 ファイルと，エラーの 3 版），[noguard/](_BuildErrors/noguard/)（ガードを外した `vector.h` と組み合わせる一式），[noinclude/](_BuildErrors/noinclude/)（`#include "vector.h"` を外した `matrix.h` と，それだけを読む `vector_main.c`） | ― |
 
-- フォルダ名＝Visual Studio のプロジェクト名＝実行ファイル名。フォルダ内の `.c` はすべて 1 つの実行ファイルにリンクされる（Visual Studio で「ソース ファイル」に登録したのと同じ）。
+- フォルダ名＝Visual Studio のプロジェクト名＝実行ファイル名。フォルダ内の `.c` はすべて 1 つの実行ファイルにリンクされる（Visual Studio で **Source Files** に登録したのと同じ）。
   `main` を持つのは `SplitCalc/main.c`・`VectorCalc/vector_main.c`・`CalcApp/main.c`・`SortModule/sort_main.c`・`LibraryCheck/library_check.c` の各 1 つだけ。
 - `SplitCalc` のフォルダのソース（本体）は，演習ページの期待する表示（課題2 の「5.0 から 2.0 を引いた 3.0 を表示」と `calc_divide` の成功例）を出す**課題2 の関数を追加した形**。
   課題1 の講義どおりの 3 ファイル（加算・乗算だけ）は [_BuildErrors/split/](_BuildErrors/split/) にある。
@@ -76,26 +76,32 @@ multiply=3.0
 解答は GCC/Clang（`-Wall -Wextra -Wpedantic`）でも Visual Studio（C17・`/W4`・`/TC`）でも**警告 0・エラー 0** になる書き方にしている（C4996 になる関数，可変長配列などは使わない）。
 警告が出た場合は，拡張子が `.cpp` になっていないか（C++ としてコンパイルされる），`calc.h` の保存場所が `main.c` と同じ実フォルダか，を確認させる。
 
-### 手順5　出力ウィンドウの比較（`calc.c` だけ保存し直した場合と，何も変えない場合）
+### 手順5　**Output** ウィンドウの比較（`calc.c` だけ保存し直した場合と，何も変えない場合）
 
-Visual Studio 2022（日本語）での表示の例（版・言語設定・タイムスタンプで文言や行は変わる）:
+Visual Studio 2026（英語版）での表示の例（版・言語設定・タイムスタンプで文言や行は変わる。時刻・パス・秒数は例）:
 
 ```text
 （calc.c だけを保存し直してビルド）
-1>------ ビルド開始: プロジェクト: SplitCalc, 構成: Debug x64 ------
+Build started at 10:15...
+1>------ Build started: Project: SplitCalc, Configuration: Debug x64 ------
 1>calc.c
 1>SplitCalc.vcxproj -> C:\...\PL1\week12\SplitCalc\x64\Debug\SplitCalc.exe
-========== ビルド: 1 正常終了、0 失敗、0 更新不要、0 スキップ ==========
+========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
+========== Build completed at 10:15 and took 01.234 seconds ==========
 
 （何も変えずにもう一度ビルド）
-========== ビルド: 0 正常終了、0 失敗、1 更新不要、0 スキップ ==========
+Build started at 10:16...
+========== Build: 0 succeeded, 0 failed, 1 up-to-date, 0 skipped ==========
+========== Build completed at 10:16 and took 00.123 seconds ==========
 
-（何も変えずに「リビルド」）
-1>------ すべてのリビルド開始: プロジェクト: SplitCalc, 構成: Debug x64 ------
+（何も変えずに Rebuild）
+Rebuild started at 10:17...
+1>------ Rebuild All started: Project: SplitCalc, Configuration: Debug x64 ------
 1>calc.c
 1>main.c
 1>SplitCalc.vcxproj -> C:\...\PL1\week12\SplitCalc\x64\Debug\SplitCalc.exe
-========== すべてリビルド: 1 正常終了、0 失敗、0 スキップ ==========
+========== Rebuild All: 1 succeeded, 0 failed, 0 skipped ==========
+========== Rebuild completed at 10:17 and took 01.456 seconds ==========
 ```
 
 CMake（Ninja）で同じ操作をした場合（各コマンドの最初に出る `[0/2] Re-checking globbed directories...` の行は省略。`--clean-first` では消去の後にもう一度出るが，それも省略）:
@@ -119,17 +125,17 @@ $ touch week12/SplitCalc/calc.h && cmake --build $B --target SplitCalc     ← �
 ```
 
 `--clean-first` は，CMake（Ninja）では指定したターゲットだけでなく**ビルドフォルダのすべての生成物を消してから**作り直す（上の `Cleaning... 57 files.` は week12 の全プロジェクトの分）。
-Visual Studio の「リビルド」（プロジェクトを右クリックした場合はそのプロジェクトだけ）より範囲が広いが，`SplitCalc` についての動き（全 `.c` を再コンパイルしてリンク）は同じ。
+Visual Studio の **Rebuild**（プロジェクトを右クリックした場合はそのプロジェクトだけ）より範囲が広いが，`SplitCalc` についての動き（全 `.c` を再コンパイルしてリンク）は同じ。
 
 観察の要点: `calc.c` だけが新しくなると**`calc.c` の再コンパイルとリンク**だけが行われ，`main.c` はコンパイルされない（`main.obj` は前のものを使う）。
-何も変えなければビルドは「更新不要」で何もしない。リビルドはすべての `.c` をコンパイルし直してリンクする。`calc.h` を変えると，それを読む `main.c` と `calc.c` の両方が再コンパイルされる（講義 1.2）。
+何も変えなければビルドは `up-to-date`（更新不要）で何もしない。リビルドはすべての `.c` をコンパイルし直してリンクする。`calc.h` を変えると，それを読む `main.c` と `calc.c` の両方が再コンパイルされる（講義 1.2）。
 
 ### 考察
 
 - **なぜ `main.c` に `add` の本体がなくてもコンパイルできるか**: コンパイルに必要なのは `add` の**宣言**（名前・引数の型・戻り値の型）だけだから。`calc.h` の宣言で，`main.c` のコンパイラは `double` 2 つを渡して `double` を受け取るコードを作れる。
   `main.obj` には「`add` を呼びたい」という未解決の参照が残り，本体（定義）との結び付けは**リンク**で `calc.obj` を使って行われる。
 - **`calc.h` を取り込んだだけで `calc.c` もビルド対象になるか**: ならない。`#include "calc.h"` は前処理でヘッダの文字を取り込むだけで，`calc.c` を探してコンパイルしたりリンクしたりはしない（ヘッダ名と `.c` 名が同じなのは人間のための慣習にすぎない）。
-  `calc.c` をプロジェクトの「ソース ファイル」に追加しないと，課題3のようにリンクエラー（`LNK2019`）になる。
+  `calc.c` をプロジェクトの **Source Files** に追加しないと，課題3のようにリンクエラー（`LNK2019`）になる。
 - **`.obj` と `.exe` は同じものか**: 違う。`.obj`（オブジェクト）は 1 つの翻訳単位をコンパイルした機械語と名前・未解決の参照の情報で，単独では実行できない。
   `.exe` はリンカが `main.obj`・`calc.obj` と標準ライブラリを結び付けて参照をすべて解決した実行ファイル。Visual Studio の既定では `.obj` は `<プロジェクトフォルダ>\x64\Debug\`（例 `SplitCalc\x64\Debug\main.obj`），`.exe` は `<ソリューションフォルダ>\x64\Debug\`（例 `SplitCalc.exe`）にできる
   （このリポジトリの CMake では `projects/week12/SplitCalc/CMakeFiles/SplitCalc.dir/calc.c.o`・`main.c.o` と `bin/week12/SplitCalc`）。
@@ -139,9 +145,9 @@ Visual Studio の「リビルド」（プロジェクトを右クリックした
 ### 採点のポイント・よくある誤り
 
 - `main.c` に `#include "calc.c"` と書いて動かしている（講義 2 で禁止。`calc.c` もプロジェクトに入れると `add` が二重定義になる）。
-- `calc.c` をフォルダにコピーしただけでプロジェクトに追加していない（ソリューションエクスプローラーに出ない → `LNK2019`）。
+- `calc.c` をフォルダにコピーしただけでプロジェクトに追加していない（**Solution Explorer** に出ない → `LNK2019`）。
 - 拡張子が `main.c.cpp`・`calc.h.txt` になっている，`main` が 2 つあるプロジェクトになっている（`LNK2005 main`）。
-- 手順5で「何も表示されなかった」だけを書いている → 「更新不要」の表示と，どのファイルがコンパイルされたかを記録させる。
+- 手順5で「何も表示されなかった」だけを書いている → `1 up-to-date` の表示と，どのファイルがコンパイルされたかを記録させる。
 - 考察で「ヘッダに本体がある」「include でリンクされる」と答えている → 宣言と定義，前処理とリンクを区別させる。
 
 ---
@@ -242,9 +248,9 @@ calc_divide(6.0, 2.0): ok=1 q=3.0
 
 エラーになる版は [_BuildErrors/split/](_BuildErrors/split/) に置いている（`_` で始まるフォルダはビルドしない）。GCC の診断の `$` の行はコマンド。
 
-### `calc.c` を「ビルドから除外」した場合
+### `calc.c` をビルドから除外した場合（**Excluded From Build**）
 
-`calc.c` のプロパティ → 構成プロパティ → 全般 →「ビルドから除外」を「はい」にしてリビルドすると，`main.c` のコンパイルは成功し，**リンク**で失敗する。
+**Solution Explorer** で `calc.c` を右クリック → **Properties** の **Configuration Properties > General** で **Excluded From Build** を **Yes** にして **Rebuild** すると，`main.c` のコンパイルは成功し，**リンク**で失敗する。
 
 MSVC（x64）の診断（`LNK2019` は未解決の外部シンボル，`LNK1120` はその件数のまとめ）:
 
@@ -270,8 +276,8 @@ main.c:(.text+0x34): undefined reference to `add'
 collect2: error: ld returned 1 exit status
 ```
 
-`gcc -c main.c` だけなら `main.o` は正常にできる（コンパイルは成功している）。「ビルドから除外」を「いいえ」に戻してリビルドすると成功し，元の 4 行に戻る。
-ビルド失敗時に「最後に成功したビルドを実行しますか」と出ても**実行しない**（古い `.exe` を動かしても修正の確認にならない）。
+`gcc -c main.c` だけなら `main.o` は正常にできる（コンパイルは成功している）。**Excluded From Build** を **No** に戻して **Rebuild** すると成功し，元の 4 行に戻る。
+ビルド失敗時に `There were build errors. Would you like to continue and run the last successful build?` と出ても **No** を選び，**実行しない**（古い `.exe` を動かしても修正の確認にならない）。
 
 ### エラーの比較（表の解答）
 
@@ -279,7 +285,7 @@ collect2: error: ld returned 1 exit status
 | --- | --- | --- |
 | `main.c` の `include` を存在しない `calc_missing.h` にする | **前処理**（`#include` のファイルが見つからない） | `calc.h` へ戻す |
 | `calc.c` の `add` の戻り値型だけを `int` にする | **コンパイル**（`calc.c` が読む `calc.h` の宣言と定義の型が食い違う） | `double` へ戻す |
-| `calc.c` をビルドから除外する | **リンク**（`add` などの定義がどの `.obj` にもない） | 除外を「いいえ」へ戻す |
+| `calc.c` をビルドから除外する | **リンク**（`add` などの定義がどの `.obj` にもない） | **Excluded From Build** を **No** へ戻す |
 | `add` の本体を `main.c` にもコピーする | **リンク**（`add` の定義が `main.obj` と `calc.obj` に 1 つずつある） | コピーした本体だけを除く |
 
 ### ビルド記録（解答例）
@@ -288,7 +294,7 @@ collect2: error: ld returned 1 exit status
 | --- | --- | --- | --- | --- | --- |
 | 1 | [main_missing_header.c](_BuildErrors/split/main_missing_header.c) 3 行目 `#include "calc_missing.h"` | 前処理 | 前処理（`main.c` のコンパイルの最初で停止） | MSVC `C1083`（インクルード ファイル `calc_missing.h` を開けない）／ GCC `fatal error: calc_missing.h: No such file or directory` | `calc.h` に戻してビルド成功，`add=3.5`・`multiply=3.0` |
 | 2 | [calc_int_add.c](_BuildErrors/split/calc_int_add.c) 3 行目 `int add(double a, double b)` | コンパイル | コンパイル（`calc.c`） | MSVC `C2371`（`add` の再定義。基本型が異なる）＋ `/W4` で `C4244`（`return` で `double` から `int` への変換）／ GCC `error: conflicting types for 'add'; have 'int(double,  double)'` と `note: previous declaration of 'add' with type 'double(double,  double)'`（calc.h:4） | `double` に戻して成功，元の 2 行 |
-| 3 | `calc.c` を「ビルドから除外」 | リンク | リンク | MSVC `LNK2019`（関数 `main` で参照された外部シンボル `add` が未解決）と `LNK1120` ／ GCC(ld) `undefined reference to 'add'` | 「いいえ」に戻してリビルド成功，元の 2 行 |
+| 3 | `calc.c` をビルドから除外（**Excluded From Build** を **Yes**） | リンク | リンク | MSVC `LNK2019`（関数 `main` で参照された外部シンボル `add` が未解決）と `LNK1120` ／ GCC(ld) `undefined reference to 'add'` | **No** に戻して **Rebuild** で成功，元の 2 行 |
 | 4 | [main_dup_add.c](_BuildErrors/split/main_dup_add.c) に `add` の本体をコピー | リンク | リンク | MSVC `LNK2005`（`add` は `main.obj` で定義済み）と `LNK1169`（複数定義されたシンボルがある）／ GCC(ld) `multiple definition of 'add'; ...main_dup_add.c: first defined here` | コピーした本体を削除して成功，元の 2 行 |
 
 エラーになる版の変えた部分（他の行は課題1 の `main.c`・`calc.c` と同じ。記録 3 はコードを変えず，プロジェクトの設定だけを変える）:
@@ -359,7 +365,7 @@ Clang 18 も同じ段階で失敗する（前処理 `fatal error: 'calc_missing.
 
 ### 診断の違いから分かること
 
-- **`C1083`（前処理）** → ヘッダの**検索先**の問題。ファイル名の綴り・拡張子（`calc.h.txt`）・保存した実フォルダ・「追加のインクルード ディレクトリ」を確認する。`.c` をプロジェクトに足しても直らない。
+- **`C1083`（前処理）** → ヘッダの**検索先**の問題。ファイル名の綴り・拡張子（`calc.h.txt`）・保存した実フォルダ・**Additional Include Directories** を確認する。`.c` をプロジェクトに足しても直らない。
 - **`C2371` など（コンパイル）** → 宣言と定義（またはヘッダと呼び出し）の**型**の不一致。どちらが正しい契約かを決め，ヘッダに合わせる。
 - **`LNK2019`（リンク）** → 宣言は見えているが**定義がリンクされていない**。実装の `.c` がプロジェクトに入っていてビルド対象か，ライブラリが参照・リンクされているか，名前の綴りを確認する。インクルードパスを直しても直らない。
 - **`LNK2005`（リンク）** → 定義が**2 か所以上**。ヘッダや `main.c` に関数本体を書いていないか，`#include "calc.c"` をしていないか，`main` が 2 つないかを確認する。インクルードガードでは直らない。
@@ -479,7 +485,7 @@ MSVC では C2371（`Vector` の再定義。基本型が異なる）などのコ
 確認後はガードの 3 行を戻し，ビルドが成功して元の出力に戻ることを確認する。
 
 前処理後の内容（講義 4.2 の `/P`。GCC では `gcc -E`）で `} Vector;` を数えると，ガードありは 1 回，ガードなしは 2 回だった。
-ガードありの `vector_main.c` も前処理後は GCC の `-E` で 48 行（元は 16 行）に増える（ヘッダの展開と，元の行位置を表す行のため。標準ヘッダを読むファイルではさらに大きく増える）。`/P` の設定は必ず戻してリビルドさせる（`/P` のままでは `.obj` が作られない）。
+ガードありの `vector_main.c` も前処理後は GCC の `-E` で 48 行（元は 16 行）に増える（ヘッダの展開と，元の行位置を表す行のため。標準ヘッダを読むファイルではさらに大きく増える）。`/P` の設定は必ず戻して **Rebuild** させる（`/P` のままでは `.obj` が作られない）。
 
 ### ヘッダの独立性を確認する（直接の `#include "vector.h"` を外す）
 
@@ -570,22 +576,22 @@ MSVC では C2061（識別子 `Vector` の位置の構文エラー）などの�
 
 ### Visual Studio での手順（授業どおり）
 
-1. ソリューション `LibraryDemo` に空のプロジェクト `CalcLib` を作り，「プロパティ → 構成プロパティ → 全般 → 構成の種類」を「スタティック ライブラリ (.lib)」にする。C/C++ → 言語で C17，詳細設定で「C コードとしてコンパイル (/TC)」。
-2. `CalcLib` に `calc.c`（ソース ファイル）と `calc.h`（ヘッダー ファイル）を保存・追加する。`main.c` は入れない（ライブラリには `main` は要らない）。
-3. 同じソリューションに空のプロジェクト `CalcApp` を追加し，C17・`/TC` を設定して `main.c` だけを入れる。
-4. `CalcApp` の「参照」を右クリック →「参照の追加」で `CalcLib` にチェックを付ける。ビルド順（`CalcLib` → `CalcApp`）と `CalcLib.lib` のリンクが自動で設定される。
-5. `CalcApp` の「C/C++ → 全般 → 追加のインクルード ディレクトリ」に `calc.h` のある `CalcLib` の実フォルダ（例: `$(SolutionDir)CalcLib`）を追加する。既存の値（`%(AdditionalIncludeDirectories)`）は消さない。
-6. 両プロジェクトの構成（Debug/Release）とプラットフォーム（x64）をそろえ，`CalcApp` を右クリック →「スタートアップ プロジェクトに設定」してビルド・実行する。
+1. ソリューション `LibraryDemo` に **Empty Project** で `CalcLib` を作り，**Properties** の **Configuration Properties > General > Configuration Type** を **Static library (.lib)** にする。**C/C++ > Language > C Language Standard** を **ISO C17 (2018) Standard (/std:c17)**，**C/C++ > Advanced > Compile As** を **Compile as C Code (/TC)** にする。
+2. `CalcLib` に `calc.c`（**Source Files**）と `calc.h`（**Header Files**）を保存・追加する。`main.c` は入れない（ライブラリには `main` は要らない）。
+3. 同じソリューションに **Empty Project** で `CalcApp` を追加し，C17・`/TC` を設定して `main.c` だけを入れる。
+4. **Solution Explorer** で `CalcApp` を右クリック → **Add > Reference** で `CalcLib` にチェックを付ける。ビルド順（`CalcLib` → `CalcApp`）と `CalcLib.lib` のリンクが自動で設定される。
+5. `CalcApp` の **Properties** の **C/C++ > General > Additional Include Directories** に `calc.h` のある `CalcLib` の実フォルダ（例: `$(SolutionDir)CalcLib`）を追加する。既存の値（`%(AdditionalIncludeDirectories)`）は消さない。
+6. 両プロジェクトの構成（Debug/Release）とプラットフォーム（x64）をそろえ，`CalcApp` を右クリック → **Set as Startup Project** にしてビルド・実行する。
 
 ### このリポジトリ（CMake）での対応
 
 | Visual Studio の操作 | CMake（このリポジトリ） |
 | --- | --- |
-| `CalcLib` の構成の種類を「スタティック ライブラリ」 | [CalcLib/CMakeLists.txt](CalcLib/CMakeLists.txt) の `add_library(CalcLib STATIC calc.c calc.h)`（授業と同じ警告設定は `softprac_apply_options(CalcLib)`） |
+| `CalcLib` の **Configuration Type** を **Static library (.lib)** | [CalcLib/CMakeLists.txt](CalcLib/CMakeLists.txt) の `add_library(CalcLib STATIC calc.c calc.h)`（授業と同じ警告設定は `softprac_apply_options(CalcLib)`） |
 | `CalcApp` に `main.c` だけを入れる | [CalcApp/CMakeLists.txt](CalcApp/CMakeLists.txt) の `softprac_add_program(CalcApp main.c)` |
-| 「参照の追加」で `CalcLib` | `target_link_libraries(CalcApp PRIVATE CalcLib)`（ビルド順もこれで決まる） |
-| 「追加のインクルード ディレクトリ」に `CalcLib` のフォルダ | `target_include_directories(CalcApp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../CalcLib")` |
-| `CalcApp` をスタートアップ プロジェクトに | 起動項目（`.vs/launch.vs.json`）で「week12 CalcApp」を選ぶ |
+| **Add > Reference** で `CalcLib` | `target_link_libraries(CalcApp PRIVATE CalcLib)`（ビルド順もこれで決まる） |
+| **Additional Include Directories** に `CalcLib` のフォルダ | `target_include_directories(CalcApp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../CalcLib")` |
+| `CalcApp` を **Set as Startup Project** | **Startup Item**（`.vs/launch.vs.json`）で `week12 CalcApp` を選ぶ |
 
 - フォルダ名順では `CalcApp` が `CalcLib` より先に読まれるが，`target_link_libraries` のターゲット名はすべての `CMakeLists.txt` を読み終えてから解決されるので，そのまま参照できる。
 - ライブラリは MSVC では `CalcLib.lib`，GCC/Clang では `libCalcLib.a` として `<ビルドフォルダ>/lib/week12/` にできる（他の環境の `.a` が Windows の `.lib` に当たる）。中身は `calc.c` のオブジェクト 1 つで，`add`・`multiply`・`subtract` の定義を持つ（`ar t` → `calc.c.o`，`nm` → `T add`・`T multiply`・`T subtract`）。
@@ -605,7 +611,7 @@ subtract=3.0
 
 | 作業 | 何をするか | 失敗するとどうなるか |
 | --- | --- | --- |
-| 1. `calc.h` に宣言を追加して利用側へ見せる | `double subtract(double a, double b);` を追加。`CalcApp` の `main.c` は追加のインクルード ディレクトリからこの宣言を読む | 宣言がないと `main.c` のコンパイルで警告 `C4013`（暗黙の宣言。GCC 14 以降や `-Werror`・`/WX` ではエラー）。無視すると `int` を返すと見なされ，正しい値を受け取れない |
+| 1. `calc.h` に宣言を追加して利用側へ見せる | `double subtract(double a, double b);` を追加。`CalcApp` の `main.c` は **Additional Include Directories** の検索先からこの宣言を読む | 宣言がないと `main.c` のコンパイルで警告 `C4013`（暗黙の宣言。GCC 14 以降や `-Werror`・`/WX` ではエラー）。無視すると `int` を返すと見なされ，正しい値を受け取れない |
 | 2. `calc.c` に実装を追加し，`CalcLib` をビルドして `.lib` を更新する | `subtract` の本体を `CalcLib` でコンパイルし，`CalcLib.lib` を作り直す | `.lib` に `subtract` がないと 4. で `LNK2019` |
 | 3. `CalcApp` の呼び出しをコンパイルする | `main.c` を 1. の宣言でコンパイルし，`subtract` への未解決の参照を持つ `main.obj` を作る | 宣言と呼び出しの型が合わないとここでエラー |
 | 4. `CalcApp` を更新後の `.lib` とリンクする | `main.obj` と新しい `CalcLib.lib` の `subtract` を結び付けて `CalcApp.exe` を作る | 古い `.lib` とリンクすると `LNK2019`。静的ライブラリの更新は再リンクして初めて `.exe` に入る |
@@ -635,23 +641,23 @@ $ touch week12/CalcLib/calc.h && cmake --build $B --target CalcApp      ← （�
 
 同じソリューションにソースのない（配布された `calc.h` と `CalcLib.lib` だけがある）ライブラリは，プロジェクト参照ではなく次の 3 つを設定する。
 
-| 設定（`CalcApp` のプロパティ） | 役割 | 設定値の例 |
+| 設定（`CalcApp` の **Properties**） | 役割 | 設定値の例 |
 | --- | --- | --- |
-| C/C++ → 全般 → 追加のインクルード ディレクトリ | `#include "calc.h"` の**検索先**（宣言を読む）。コンパイル時に使う | `C:\libs\calc\include;%(AdditionalIncludeDirectories)` |
-| リンカー → 全般 → 追加のライブラリ ディレクトリ | `.lib` を探す**検索先**。フォルダを足すだけでは何もリンクされない | `C:\libs\calc\lib\x64\Debug;%(AdditionalLibraryDirectories)` |
-| リンカー → 入力 → 追加の依存ファイル | 実際にリンクする**`.lib` のファイル名** | `CalcLib.lib;%(AdditionalDependencies)` |
+| **C/C++ > General > Additional Include Directories** | `#include "calc.h"` の**検索先**（宣言を読む）。コンパイル時に使う | `C:\libs\calc\include;%(AdditionalIncludeDirectories)` |
+| **Linker > General > Additional Library Directories** | `.lib` を探す**検索先**。フォルダを足すだけでは何もリンクされない | `C:\libs\calc\lib\x64\Debug;%(AdditionalLibraryDirectories)` |
+| **Linker > Input > Additional Dependencies** | 実際にリンクする**`.lib` のファイル名** | `CalcLib.lib;%(AdditionalDependencies)` |
 
-- 検索先（ディレクトリ）とファイル名は別の設定。ライブラリ ディレクトリだけを設定すると `LNK2019`，依存ファイルだけで検索先がないと `LNK1104`（ファイル `CalcLib.lib` を開けない），インクルード ディレクトリがないと `C1083`。
-- `%(...)`／「親またはプロジェクトの既定値から継承」を消すと標準ライブラリなどの既定の設定も失われるので，**既存の継承設定を残して追加**する。
+- 検索先（ディレクトリ）とファイル名は別の設定。**Additional Library Directories** だけを設定すると `LNK2019`，**Additional Dependencies** だけで検索先がないと `LNK1104`（ファイル `CalcLib.lib` を開けない），**Additional Include Directories** がないと `C1083`。
+- `%(...)`／**Inherit from parent or project defaults** を消すと標準ライブラリなどの既定の設定も失われるので，**既存の継承設定を残して追加**する。
 - 今回の `CalcLib` は静的ライブラリなので，実装は `CalcApp.exe` に組み込まれ，**`CalcLib.dll` は存在せず探す必要もない**。ただし `CalcApp.exe` は Visual C++ ランタイムには依存する（Release の `/MD` なら `vcruntime140.dll`・`ucrtbase.dll`，Debug の `/MDd` なら `vcruntime140d.dll`・`ucrtbased.dll` など）。
 - プラットフォームが違う（x86 の `.lib` を x64 のアプリに）と `LNK4272`（マシンの種類の競合），実行時ライブラリの設定が違う（`/MT` と `/MD`，Debug と Release）と，C のライブラリでは主に `LNK4098`（既定のライブラリ `LIBCMT` などが他のライブラリと競合する）の警告と，場合により `LNK2005` が出る（C++ では標準ライブラリのヘッダの仕組みで `LNK2038`（`RuntimeLibrary` の不一致）になる）ので，構成・プラットフォーム・実行時ライブラリをそろえる。
 
 ### 採点のポイント・よくある誤り
 
 - `CalcLib` に `main.c` を入れた／`CalcApp` に `calc.c` も入れた（後者はライブラリを使わずに直接コンパイルしているだけ。参照も加えると `LNK2005` になることがある）。
-- 「参照の追加」をせずにビルド → `LNK2019`。インクルード ディレクトリの設定をしない → `C1083`。この 2 つの違いを説明できているか。
-- `CalcLib` を「動的ライブラリ (.dll)」にした，`CalcLib.dll` が見つからないと書いた（静的ライブラリなので不要）。
-- Debug x64 と Release x64（あるいは x86）が混在している，`CalcApp` をスタートアップにせず静的ライブラリは起動できないというメッセージを出している。
+- **Add > Reference** をせずにビルド → `LNK2019`。**Additional Include Directories** の設定をしない → `C1083`。この 2 つの違いを説明できているか。
+- `CalcLib` を **Dynamic Library (.dll)** にした，`CalcLib.dll` が見つからないと書いた（静的ライブラリなので不要）。
+- Debug x64 と Release x64（あるいは x86）が混在している，`CalcApp` を **Set as Startup Project** にせず静的ライブラリは起動できないというメッセージを出している。
 - 更新の 4 作業を 1 つの「ビルド」として説明している → 宣言の公開・ライブラリの再ビルド・利用側のコンパイル・再リンクを分けて書かせる。
 - 「`.lib` を作り直せば配布済みの `.exe` も新しくなる」と書いている（確認問題4）。
 
@@ -704,7 +710,7 @@ void sort_ints(int a[], size_t n)
 
 ### 引数を設定して検証する（表の解答）
 
-Visual Studio では `SortModule` の「プロパティ → 構成プロパティ → デバッグ → コマンド引数」に設定する（設定の対象が実行する構成・プラットフォームと一致しているか確認）。
+Visual Studio では `SortModule` の **Properties** の **Configuration Properties > Debugging > Command Arguments** に設定する（設定の対象が実行する構成・プラットフォームと一致しているか確認）。
 このリポジトリでは [run.args](SortModule/run.args)（`5`）が Visual Studio の起動構成の引数になる。エラーの表示は `stderr`，終了コードは 1。
 
 | コマンド引数 | 期待する結果（実際の表示） |
@@ -922,8 +928,8 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
    `calc.c` をビルド対象にしなければ，`main.c` のコンパイルは通ってもリンクで `LNK2019`（未解決の外部シンボル）になる（課題3の記録 3）。
 2. **インクルードガードで，同じ外部関数を 2 つの `.c` に定義した問題は解決するか** — 解決しない。ガードが防ぐのは**同じ翻訳単位の中**で同じヘッダの内容が 2 回展開されることだけ。
    `main.c` と `calc.c` は別々の翻訳単位なので，それぞれに `add` の定義があれば `main.obj` と `calc.obj` の両方に定義ができ，リンクで `LNK2005`／`LNK1169` になる（課題3の記録 4）。ヘッダに関数本体を書いた場合も同じ。定義は 1 つの `.c` だけに置く。
-3. **`.lib` の検索先が正しくても，ヘッダが見つからないことはあるか** — ある。`.lib` の検索先（リンカー → 全般 → 追加のライブラリ ディレクトリ）はリンク時に `.lib` を探す設定で，
-   `#include "calc.h"` の検索先（C/C++ → 全般 → 追加のインクルード ディレクトリ）とは別の設定だから。インクルード ディレクトリが正しくなければ，前処理で `C1083` になる（リンクの段階まで進まない）。
+3. **`.lib` の検索先が正しくても，ヘッダが見つからないことはあるか** — ある。`.lib` の検索先（**Linker > General > Additional Library Directories**）はリンク時に `.lib` を探す設定で，
+   `#include "calc.h"` の検索先（**C/C++ > General > Additional Include Directories**）とは別の設定だから。インクルード ディレクトリが正しくなければ，前処理で `C1083` になる（リンクの段階まで進まない）。
 4. **静的ライブラリを更新すれば，配布済みの `.exe` も自動的に新しくなるか** — ならない。静的ライブラリのコードはリンク時に `.exe` へ**組み込まれる**ので，配布済みの `.exe` は古いコードのまま。
    更新を反映するには利用側を**再リンク**して新しい `.exe` を作り，配り直す必要がある（発展1「更新の伝わり方」）。DLL なら互換性があれば DLL の差し替えで済む場合があるが，今回の `CalcLib` は静的ライブラリ。
 5. **不完全型の `Vector *` を宣言できることと，`Vector` の実体を作れることは同じか** — 同じではない。`typedef struct vector Vector;` だけ（中身を示さない不完全型）でも，ポインタ `Vector *p` は大きさが分かるので宣言・受け渡しができる。
@@ -959,6 +965,6 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 
 ## 補足：引数とエラー版の試し方
 
-- `SortModule` を別の引数で試すときは，Visual Studio（フォルダーを開く）では [run.args](SortModule/run.args) を書き換えて `python tools/gen_launch_vs.py` を実行するか，
-  VS Code では「開いている課題を引数つきで実行」の `args` を書き換える。空文字列の引数は Visual Studio のコマンド引数では `""` と入力する。
+- `SortModule` を別の引数で試すときは，Visual Studio（**File > Open > Folder**）では [run.args](SortModule/run.args) を書き換えて `python tools/gen_launch_vs.py` を実行するか，
+  VS Code では「開いている課題を引数つきで実行」の `args` を書き換える。空文字列の引数は Visual Studio の **Command Arguments** では `""` と入力する。
 - `_BuildErrors/` のエラー版を GCC で再現するには，`_BuildErrors/split/` で課題3 の「GCC の診断」のコマンドを，`_BuildErrors/` で `gcc -std=c17 -c noguard/vector_main.c` と `gcc -std=c17 -c noinclude/vector_main.c` を実行する。
