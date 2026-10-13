@@ -151,6 +151,7 @@ ctest --preset gcc-debug          # すべての自動テスト
 
 | 症状 | 対処 |
 | --- | --- |
+| Visual Studio で `The CMAKE_C_COMPILER: gcc is not a full path and was not found in the PATH` | 構成のドロップダウンで **`Windows / MSVC (x64 Debug)`** を選ぶ（MSVC 以外の構成が選ばれている） |
 | Visual Studio の **Startup Item** に項目が出ない | **Project > Delete Cache and Reconfigure**。構成が `Windows / MSVC` になっているか確認 |
 | VS Code で `cl.exe` が見つからない | プリセットを `Windows / MSVC` にする。Visual Studio（または Build Tools）の C++ ワークロードが入っているか確認 |
 | `input.txt` が開けない | 作業ディレクトリがプロジェクトフォルダか確認（Visual Studio は `weekNN 名前` の項目を，VS Code は `.c` を開いた状態で起動） |

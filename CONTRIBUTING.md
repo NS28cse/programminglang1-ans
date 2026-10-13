@@ -129,7 +129,7 @@ python3 tools/gen_readme_index.py    # ルート README の目次（各回の表
 | --- | --- |
 | `windows-msvc-preset` | MSVC `/W4 /WX`。CMakePresets の `msvc-debug`・`msvc-release`（Visual Studio の「フォルダーを開く」と同じ構成）。IDE の起動構成で全プロジェクトを起動する |
 | `windows-msvc-sln` | Visual Studio ジェネレーター（.sln）での MSBuild |
-| `windows-mingw` | MSYS2 UCRT64 の gcc（VS Code + MinGW）。プリセット `mingw-debug` |
+| `windows-mingw` | MSYS2 UCRT64 の gcc（VS Code + MinGW）。Visual Studio の構成の一覧に MinGW が出ないよう，プリセットを使わず CMake のオプションで指定する |
 | `linux` | GCC・Clang × Debug・Release。`-Werror`，AddressSanitizer/UBSan |
 | `macos` | Apple Clang。プリセット `gcc-debug`。IDE の起動構成で全プロジェクトを起動する |
 | `repository-checks` | Windows で使えないファイル名，ソースの BOM・改行，生成ファイル（`.vs/launch.vs.json`・README の目次）が最新か |
