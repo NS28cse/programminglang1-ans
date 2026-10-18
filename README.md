@@ -4,6 +4,7 @@
 
 - 授業サイト: <https://t-yokoga.github.io/softprac1/>（資料: <https://github.com/t-yokoga/softprac1>）
 - 全 14 回の演習について，課題・発展課題のソースコード，自動テスト，解答・解説（各回の `README.md`）をまとめています。
+- 各回の演習に，テスト・エラーの読み方・デバッグ・バージョン管理など実際の開発で必要になることを添えて教えるための TA 用の手引きを [practice/README.md](practice/README.md) にまとめています。
 - 1 つのリポジトリで **Visual Studio**（Windows）と **VS Code**（Windows / macOS / Linux）のどちらからでもビルド・実行できるように，CMake で管理しています。
 
 > [!WARNING]

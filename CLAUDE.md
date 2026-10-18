@@ -4,6 +4,7 @@
 
 - 規約: [CONTRIBUTING.md](CONTRIBUTING.md)（フォルダ構成，コード規約，テスト形式，README の構成と書き方，CI）
 - 評価: [.claude/agents/softprac-grader.md](.claude/agents/softprac-grader.md)（回ごとの採点エージェント）
+- 評価（指導資料）: [.claude/agents/practice-reviewer.md](.claude/agents/practice-reviewer.md)（`practice/` の評価エージェント）
 - 授業資料: https://github.com/t-yokoga/softprac1 の `docs/exNN.md`（演習）と `docs/lecNN.md`（講義）
 
 解答を追加・修正したら，その回をビルド・テストし，`python3 tools/normalize_sources.py`・
