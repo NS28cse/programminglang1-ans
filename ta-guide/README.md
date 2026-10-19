@@ -188,7 +188,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 
 **デバッグの補足（条件付きブレークポイント。授業では未習）**: `n = 100` で `i` が 50 の反復だけを見たいときは，ブレークポイントを右クリックして **Conditions** を選び，**Conditional Expression** の **Is true** に `i == 50` と書く。F5 を何十回も押さなくても，条件が真のときだけ止まる（条件付きのブレークポイントには **+** が付く）。
 
-**関連**: 第4回 README の [課題2　偶数の合計](../week04/README.md#課題2偶数の合計evensum--even_sumc) の [値を追跡する（`n = 4`）](../week04/README.md#値を追跡するn--4)・[説明すること](../week04/README.md#説明すること-1)，講義 [lec04](https://t-yokoga.github.io/softprac1/lec04.html) の「7　二重ループとテスト」，デバッグの題材 [BugEvenSum](../debugging/BugEvenSum/README.md)，[BugSkipCount](../debugging/BugSkipCount/README.md)
+**関連**: 第4回 README の [課題2　偶数の合計](../week04/README.md#課題2偶数の合計evensum--even_sumc) の [値を追跡する（`n = 4`）](../week04/README.md#値を追跡するn--4)・「説明すること」，講義 [lec04](https://t-yokoga.github.io/softprac1/lec04.html) の「7　二重ループとテスト」，デバッグの題材 [BugEvenSum](../debugging/BugEvenSum/README.md)，[BugSkipCount](../debugging/BugSkipCount/README.md)
 
 ## 第5回　読みやすいコードと関数の約束（配列と関数）
 

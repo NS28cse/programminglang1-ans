@@ -965,6 +965,6 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 
 ## 補足：引数とエラー版の試し方
 
-- `SortModule` を別の引数で試すときは，Visual Studio（**File > Open > Folder**）では [run.args](SortModule/run.args) を書き換えて `python3 tools/update_generated.py` を実行するか（ルートの README の [Visual Studio で使う](../README.md#visual-studio-で使うwindows)），
+- `SortModule` を別の引数で試すときは，Visual Studio（**File > Open > Folder**）では **Debug > Debug and Launch Settings for SortModule** の `args` を書き換える（既定の引数を変えるときだけ [run.args](SortModule/run.args)。ルートの README の [Visual Studio で使う](../README.md#visual-studio-で使うwindows)）。
   VS Code では「開いている課題を引数つきで実行」の `args` を書き換える。空文字列の引数は Visual Studio の **Command Arguments** では `""` と入力する。
 - `_BuildErrors/` のエラー版を GCC で再現するには，`_BuildErrors/split/` で課題3 の「GCC の診断」のコマンドを，`_BuildErrors/` で `gcc -std=c17 -c noguard/vector_main.c` と `gcc -std=c17 -c noinclude/vector_main.c` を実行する。
