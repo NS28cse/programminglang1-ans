@@ -16,29 +16,35 @@
 
 Visual Studio の画面の表記は Visual Studio 2026（英語版）に合わせて太字で書き，メニューの階層は ` > ` でつなぐ。授業ページは日本語版の表記なので，学生の画面に合わせて読み替える。
 
-| この手引きの表記（英語版） | 授業資料の表記 | 授業資料の場所 |
-| --- | --- | --- |
-| **View > Error List** / **View > Output** | 「エラー一覧」/「表示 → 出力」 | 第1回 講義 3・6 節 |
-| **Build > Build Solution**（Ctrl+Shift+B） | 「ビルド → ソリューションのビルド」 | 第1回 講義 3 節 |
-| **Build > Rebuild Solution** | 「リビルド」 | 第12回 講義 1.2 節，演習 課題3 |
-| **Debug > Start Without Debugging**（Ctrl+F5） | 「デバッグ → デバッグなしで開始」 | 第1回 講義 3 節 |
-| **Debug > Start Debugging**（F5） | — | （F5 で開始することは第14回 講義 5.2 節） |
-| **Debug > Toggle Breakpoint**（F9） | — | （F9 でブレークポイントを置くことは第14回 講義 5.2 節） |
-| **Debug > Step Over**（F10） | 「ステップオーバー」 | 第4回 講義 7 節 |
-| **Debug > Step Into**（F11） | 「ステップイン」 | 第14回 講義 5 節 |
-| **Debug > Step Out**（Shift+F11） / **Debug > Continue**（F5） / **Debug > Break All** | — | |
-| **Debug > Stop Debugging**（Shift+F5） | 「デバッグの停止」 | 第4回 講義 4・7 節 |
-| **Debug > Windows > Locals** | — | （第4回 講義 7 節は「ローカル変数の値」） |
-| **Debug > Windows > Watch > Watch 1** | 「変数ウォッチ」 | 第13回 演習 発展3 |
-| **Debug > Windows > Call Stack** | 「デバッグ → ウィンドウ → 呼び出し履歴」 | 第14回 講義 5.2 節 |
-| **Configuration Properties > Debugging > Command Arguments** | 「プロパティ → 構成プロパティ → デバッグ → コマンド引数」 | 第13回 演習 課題1（第10回 講義 2 節） |
-| **Configuration Properties > General > Excluded From Build** | 「ビルドから除外」 | 第12回 演習 課題3 |
-| **Add > Reference** | 「参照 → 参照の追加」 | 第12回 演習 発展1 |
-| **C/C++ > General > Additional Include Directories** | 「C/C++ → 全般 → 追加のインクルード ディレクトリ」 | 第12回 演習 発展1 |
-| **C/C++ > General > Treat Warnings As Errors** / **C/C++ > General > Enable Address Sanitizer** | — | |
-| **Git > Settings**，**Git > Create Git Repository**，**View > Git Changes**，**Commit All**，**Undo Changes**，**Git > View Branch History**，**Revert** | — | |
+| この手引きの表記（英語版） | 授業資料の表記 | 授業資料の場所 | 日本語版の画面の表記 |
+| --- | --- | --- | --- |
+| **View > Error List** / **View > Output** | 「エラー一覧」/「表示 → 出力」 | 第1回 講義 3・6 節 | — |
+| **Build > Build Solution**（Ctrl+Shift+B） | 「ビルド → ソリューションのビルド」 | 第1回 講義 3 節 | — |
+| **Build > Rebuild Solution** | 「リビルド」 | 第12回 講義 1.2 節，演習 課題3 | — |
+| **Debug > Start Without Debugging**（Ctrl+F5） | 「デバッグ → デバッグなしで開始」 | 第1回 講義 3 節 | — |
+| **Debug > Start Debugging**（F5） | — | 第4回 講義 7 節（デバッグ実行），第14回 講義 5.2 節（F5） | デバッグ > デバッグの開始 |
+| **Debug > Toggle Breakpoint**（F9） | — | 第4回 講義 7 節（ブレークポイント），第14回 講義 5.2 節（F9） | デバッグ > ブレークポイントの設定/解除 |
+| **Debug > Step Over**（F10） | 「ステップオーバー」 | 第4回 講義 7 節 | デバッグ > ステップ オーバー |
+| **Debug > Step Into**（F11） | 「ステップイン」 | 第14回 講義 5 節 | デバッグ > ステップ イン |
+| **Debug > Step Out**（Shift+F11） | — | | デバッグ > ステップ アウト |
+| **Debug > Continue**（F5） | — | | デバッグ > 続行 |
+| **Debug > Break All** | — | | — |
+| **Debug > Stop Debugging**（Shift+F5） | 「デバッグの停止」 | 第4回 講義 4・7 節 | — |
+| **Debug > Windows > Locals** | — | （第4回 講義 7 節は「ローカル変数の値」） | ローカル（ウィンドウ） |
+| **Debug > Windows > Watch > Watch 1** | 「変数ウォッチ」 | 第13回 演習 発展3 | ウォッチ（ウィンドウ） |
+| **Debug > Windows > Call Stack** | 「デバッグ → ウィンドウ → 呼び出し履歴」 | 第14回 講義 5.2 節 | 呼び出し履歴 |
+| **Configuration Properties > Debugging > Command Arguments** | 「プロパティ → 構成プロパティ → デバッグ → コマンド引数」 | 第13回 演習 課題1（第10回 講義 2 節） | コマンド引数 |
+| **Configuration Properties > General > Excluded From Build** | 「ビルドから除外」 | 第12回 演習 課題3 | — |
+| **Add > Reference** | 「参照 → 参照の追加」 | 第12回 演習 発展1 | — |
+| **C/C++ > General > Additional Include Directories** | 「C/C++ → 全般 → 追加のインクルード ディレクトリ」 | 第12回 演習 発展1 | — |
+| **C/C++ > General > Treat Warnings As Errors** | — | | — |
+| **C/C++ > General > Enable AddressSanitizer** | — | | 構成プロパティ > C/C++ > 全般 > AddressSanitizer を有効にする |
+| **Git > Settings** の **Git Global Config** の **User name** / **Email** | — | | Git > 設定 の「Git グローバル構成」の「ユーザー名」/「電子メール」 |
+| **Git > Create Git Repository** → **Other** > **Local** → **Create and Push** | — | | Git > Git リポジトリの作成 →「その他」>「ローカル」→「作成とプッシュ」 |
+| **Git Changes**（ウィンドウ） / **Commit All** / **Undo Changes** | — | | Git の変更 /「すべてコミット」/「変更を元に戻す」 |
+| **Git > View Branch History** / **Revert** | — | | Git > ブランチ履歴の表示 /「元に戻す」（文書によっては「復元」） |
 
-— は授業資料に表記がないもの。学生の画面で確かめる。
+授業資料の表記は docs/*.md，日本語版の画面の表記は Microsoft Learn 日本語版（learn.microsoft.com/ja-jp）による。— は確かめられなかったもの。学生の画面で確かめる。
 
 VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run and Debug** ビューの **VARIABLES**・**WATCH**・**CALL STACK**，Git は **Source Control** ビュー（Ctrl+Shift+G）で同じことを見せる。
 
@@ -99,8 +105,8 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 - 「どの行を変えたかは，**Git Changes** の差分で確かめてから戻しましょう」
 
 **見せ方（3 分。初回だけ。課題を終えた学生に限る）**（授業では未習。初めて見せる）
-0. **Git > Settings** で **User name**・**Email** を確かめる（未設定なら入力）。
-1. `Rectangle` のソリューションを開いたまま **Git > Create Git Repository** を選び，**Other** > **Local** を選ぶ。ローカルのパスを作業場所の `PL1` のフォルダにして作成する（`PL1` 全体が 1 つのリポジトリになり，他の課題の `.sln` を開いても同じリポジトリが使われる）。
+0. **Git > Settings** の **Git Global Config** で **User name**・**Email** を確かめる（未設定なら入力）。
+1. `Rectangle` のソリューションを開いたまま **Git > Create Git Repository** を選ぶ。**Create a Git repository** ダイアログの **Other** で **Local** を選び，**Initialize a local Git repository** のローカルのパスを作業場所の `PL1` のフォルダにして **Create and Push** を押す（ボタン名は Create and Push だが，**Local** ならどこにもプッシュされない）。`PL1` 全体が 1 つのリポジトリになり，他の課題の `.sln` を開いても同じリポジトリが使われる。
 2. `Rectangle` が期待する 3 行を出したら，**View > Git Changes** でメッセージ（例: `week02 Rectangle: 期待する表示`）を書いて **Commit All**。
 3. `width = 6;` を `width = 0;` に変えて保存し，ビルド・実行する。**Git Changes** のファイルをダブルクリックすると，変えた 1 行が前（左）と今（右）で並ぶ。
 4. ファイルを右クリックして **Undo Changes** → ソースが commit した状態に戻る。ビルドし直して元の 3 行が出ることを確かめる。
@@ -199,7 +205,7 @@ int count_passed(const int scores[], int n);   /* 本体は if (scores[i] >= PAS
 
 **よくある反応**
 - 「短い名前の方が速く書ける」→ 読むのは 1 週間後の自分も含めて何度もある。ループの `i` のように慣例が決まっているものはそのままでよい。
-- 「最初の表示 `average=3.0` が合ったので `average` は正しい」→ (2 + 4) / 2 は割り切れるので，戻り値の型を `int` にした誤りが表に出ない。`average(1.0f, 2.0f)` が 1.5 になるかを試させる。
+- 「最初の表示 `average=3.0` が合ったので `average` は正しい」→ (2 + 4) / 2 は割り切れるので，戻り値の型を `int` にした誤りが表示には出ない（`/W4` なら C4244 が出るので，警告も見させる）。`average(1.0f, 2.0f)` が 1.5 になるかを試させる。
 
 **副テーマ（AI のコーディング支援を使う場合）**: 使ってよいかは授業の規則に従う。使う場合も，出てきたコードは自分で書いたコードと同じく境界の表（`power(2, 0)`・`power(5, 5)` など）で確かめ，説明できない行を残さない。
 `^` を累乗の意味で使う（第3回のビット XOR）のように，もっともらしく見える誤りがあることを伝える。
@@ -218,7 +224,7 @@ int count_passed(const int scores[], int n);   /* 本体は if (scores[i] >= PAS
 
 **見せ方（2 分）**
 1. `char text[10] = "hoge";` の 10 要素を紙に書かせ，「容量 10・長さ 4・終端の添字 4」を記入させる（演習ページの準備）。
-2. 条件 `added < sizeof text - used` の `<` を `<=` にすると，容量 8 のとき 4 <= 4 が真になり `text[8]`（容量の外）へ書くことを，紙の上で確かめる（実行しない）。
+2. 条件 `added < sizeof text - used` の `<` を `<=` にすると，容量 8 のとき 4 <= 4 が真になり `text[8]`（容量の外）へ書くことを，紙の上で確かめる（実行しない）。手元で確かめたい学生には，後述の「AddressSanitizer」を紹介する。
 3. コピーのループ `i <= added` を `i < added` にすると終端を書かないが，この初期値（残りの要素が 0）では表示が変わらないことを口頭で伝え，「出力が合う」と「正しい」は別だと示す。
 
 **確かめる問い**
@@ -374,7 +380,7 @@ if (fp == NULL) {
 **よくある反応**
 - 「指摘されるのは恥ずかしい」→ レビューは人ではなくコードを見るもの。指摘する側も「ここはなぜ `<=` ？」のように質問の形で言う。
 
-**副テーマ（容量に名前を付ける）**: `Rect`・`RectContains` の解答では `enum { MAX_NAME = 20 };` と `char name[MAX_NAME + 1];` で，名前の最大長と終端の 1 要素を分けて書いている。`char name[21];` の 21 より意図（20 文字＋終端）が読み取りやすく，レビューで容量を確かめやすい。
+**副テーマ（容量に名前を付ける）**: `Rect`・`RectContains` の解答では `enum { MAX_NAME = 20 };` と `char name[MAX_NAME + 1];` で，名前の最大長と終端の 1 要素を分けて書いている。`char name[21];` の 21 より意図（20 文字＋終端）が読み取りやすく，レビューで容量を確かめやすい。演習ページの `char name[21];` のままでも誤りではない。課題では演習ページの形でよく，実務の書き方として紹介する。
 
 **関連**: [第11回 README](../week11/README.md) の「課題2　点数の平均」の「名前と点数を一緒に交換する」，「課題4　配列メンバとポインタメンバを比較する」，「発展2　長方形を正規化して点を判定する」の採点のポイント
 
@@ -423,7 +429,7 @@ if (fp == NULL) {
 1. `NewPoint` のコピー（このリポジトリでは `NewPointFail`）で，演習ページの `point_allocate` を `new_point` の前に追加し，`new_point` の `malloc(sizeof *p)` を `point_allocate(sizeof *p)` に置き換え，`simulate_failure` を 1 にしてビルドする（正常版の `NewPoint` はそのまま残す）。
 2. `Point *p = new_point(3.0, 4.0);` の行で F9，F5，F11 で `new_point` に入る。`point_allocate` が `NULL` を返し，`return NULL;` へ進んでメンバへの代入を通らないことを見せる。
 3. `main` に戻ったら **Locals** で `p` が `0x0000000000000000` であることを確かめ，F10 で `fprintf` から `return 1;` へ進む（`p->x` を表示する `printf` は通らない）。
-4. 最後に `simulate_failure` を 0 に戻し，正常版のビルド・実行を確かめる（演習ページのチェックリスト）。
+4. コピーの `simulate_failure` を 0 に戻すと正常出力になることを確かめ（このリポジトリでは `NewPointFail` の variant `simulate_failure_0` の版），正常版の `NewPoint` もビルド・実行する（演習ページのチェックリスト）。TA が見せるときは，リポジトリの `NewPointFail` の本体を書き換えず，自分用のコピーで行う。
 
 F11 は第8回で先取りしたもので，ステップ実行とウォッチはこの回の演習ページにも出てくる。
 
@@ -433,7 +439,7 @@ F11 は第8回で先取りしたもので，ステップ実行とウォッチは
 
 **よくある反応**
 - 「`p = NULL;` にしたから解放した」→ `NULL` の代入は解放ではない。`free(p);` の後に `p = NULL;`。`free` せずに `NULL` を代入するとリークになる。
-- 「`int a[3]; free(a);` で後始末した」→ `free` に渡せるのは `malloc`・`calloc`・`realloc` が返したポインタだけ。自動変数の配列はブロックの終わりで寿命が終わる。
+- 「`int a[3]; free(a);` で後始末した」→ `free` に渡せるのは `malloc`・`calloc`・`realloc` が返したポインタか `NULL` だけ。自動変数の配列はブロックの終わりで寿命が終わる。
 
 解放後の使用や範囲外アクセスを実行時に見つける道具として，後述の「AddressSanitizer」を紹介してもよい（授業では未習）。
 
@@ -551,9 +557,10 @@ int main(void)
 学生が自分の課題フォルダの履歴を，自分の PC の中に残すための手順である。GitHub などへ公開する必要はない。課題の解答を公開の場所に置かないこと。
 
 **最初に 1 回**
-1. **Git > Settings** で **User name** と **Email** を確かめる（未設定なら入力。commit に記録される名前で，公開しないので自分が分かる値でよい）。
-2. 課題のソリューションを開いたまま **Git > Create Git Repository** を選び，**Other** > **Local** を選ぶ。ローカルのパスを作業場所の `PL1` のフォルダにして作成する。
-   `.gitignore` のテンプレートを既定（Visual Studio 用）のままにすると，`x64` や `.vs` などのビルドの生成物は履歴に入らない。
+1. **Git > Settings** を開き，**Git Global Config** の **User name** と **Email** を確かめる（未設定なら入力。commit に記録される名前で，公開しないので自分が分かる値でよい）。
+2. 課題のソリューションを開いたまま **Git > Create Git Repository** を選ぶ。**Create a Git repository** ダイアログの **Other** で **Local** を選び，**Initialize a local Git repository** のローカルのパスを作業場所の `PL1` のフォルダにして **Create and Push** を押す（**Local** ならどこにもプッシュされない）。
+   **.gitignore template** を Visual Studio 用のままにすると，`x64` や `.vs` などのビルドの生成物は履歴に入らない。
+   （VS 2022 ではこの選択肢が **Local only**，ボタンが **Create**。）
 3. 以後は各課題の `.sln` を開けば，`PL1` のリポジトリが使われる。
 
 **毎回の作業**
@@ -565,7 +572,7 @@ int main(void)
 | commit する | メッセージ（例: `week03 Leap: 1900 を含む 4 年で確認`）を書いて **Commit All** |
 | 保存した変更を前回の commit の状態に戻す | ファイルを右クリック → **Undo Changes**（commit していない変更は消える） |
 | 履歴を見る | **Git > View Branch History** |
-| commit した変更を取り消す | 履歴で commit を右クリック → **Revert**（取り消す変更を新しい commit として記録する） |
+| commit した後で実験を取り消したいとき | 履歴で commit を右クリック → **Revert**（取り消す変更を新しい commit として記録する） |
 
 - commit は「1 つの意味のある変更」ごと。動いたら commit，実験の前に commit。
 - 戻したらビルドし直す（ソースが戻っても `exe` は戻らない）。
@@ -574,8 +581,11 @@ int main(void)
 ### AddressSanitizer（範囲外アクセスと解放後の使用を実行時に見つける）
 
 授業の課題では使わなくてよい。手元で確かめる道具として，第6回・第13回で興味を持った学生に紹介する（授業では未習）。
-プロジェクトの **Configuration Properties > C/C++ > General > Enable Address Sanitizer** を **Yes** にして F5 で実行すると，配列の外への書き込みや解放後の使用が起きた行で止まり，その種類が表示される。
-Debug 構成では `/ZI`（Edit and Continue 用のデバッグ情報）・`/RTC1`（実行時チェック）・`/INCREMENTAL`（インクリメンタル リンク）と同時に使えないので，それらを外す必要がある（Microsoft Learn の「AddressSanitizer」）。
+プロジェクトの **Configuration Properties > C/C++ > General > Enable AddressSanitizer** を **Yes (/fsanitize=address)** にして F5 で実行すると，配列の外への書き込みや解放後の使用が起きた所で止まり，その種類が表示される。Ctrl+F5 で実行した場合は，報告がコンソールに表示される。
+AddressSanitizer は Edit and Continue（`/ZI`）・`/RTC`（実行時チェック）・インクリメンタル リンク（`/INCREMENTAL`）と併用できない（Microsoft Learn の「AddressSanitizer」）。Debug 構成では次の 3 つを変える。
+- **C/C++ > General > Debug Information Format** を **Program Database (/Zi)**
+- **C/C++ > Code Generation > Basic Runtime Checks** を **Default**
+- **Linker > General > Enable Incremental Linking** を **No (/INCREMENTAL:NO)**
 見つかるのは実行した経路の誤りだけなので，境界の値のテストと組み合わせて使う。
 
 ### AI のコーディング支援を使う場合
@@ -602,5 +612,7 @@ Debug 構成では `/ZI`（Edit and Continue 用のデバッグ情報）・`/RTC
 | ビルドシステム（CMake） | | | | | | | | | | | | ○ | | |
 | 性能の測定 | | | | | | | | | | | | | | ● |
 | CI | | | | | | | | | | | | | | ○ |
+| 道具で誤りを見つける（警告をエラーに・AddressSanitizer） | | ○ | | | | ○ | | | | | | | ○ | |
+| 仕様・リファレンスを読む | | | | | | | | | | ○ | | ○ | | |
 | 問題の切り分け・質問とバグ報告 | | | | | | | ● | ○ | | ○ | | | | |
 | AI のコーディング支援 | | | | | ○ | | | | | | | | | |
