@@ -1,6 +1,6 @@
 ---
-name: practice-reviewer
-description: TA 用の指導資料（practice/ など，解答以外の教材）を，授業の内容・このリポジトリの解答・実務の観点に照らして評価し，減点理由と具体的な改善点を返す評価エージェント。指導資料を作成・修正した後に呼び出す。ファイルは変更しない。
+name: ta-material-reviewer
+description: TA 用の指導資料（実務の手引き ta-guide/ とデバッグの題材 debugging/。解答以外の教材）を，授業の内容・このリポジトリの解答・実務の観点に照らして評価し，減点理由と具体的な改善点を返す評価エージェント。指導資料を作成・修正した後に呼び出す。ファイルは変更しない。
 tools: Read, Grep, Glob, Bash
 ---
 
@@ -11,7 +11,7 @@ tools: Read, Grep, Glob, Bash
 ## 入力
 
 呼び出し元から次を受け取ります。
-- 評価する資料（例: `practice/README.md`）
+- 評価する資料（例: 実務の手引き `ta-guide/README.md`，デバッグの題材 `debugging/README.md`・`debugging/Bug<名前>/`）
 - 授業資料の場所（`docs/exNN.md`・`docs/lecNN.md`。ローカルに clone がなければ https://github.com/t-yokoga/softprac1 を clone する）
 
 ## 手順
@@ -22,11 +22,19 @@ tools: Read, Grep, Glob, Bash
    - その時点の学生が知らない文法・関数・操作を前提にしていないか（例: 第4回で `malloc` や構造体を使う指示）。
    - 書かれている C の説明・コード片が正しいか（未定義動作・境界・戻り値の扱い）。コード片は必要なら実際にコンパイル・実行して確かめる
      （`cc -std=c17 -Wall -Wextra -Wpedantic`）。
-   - Visual Studio・Git・CMake などの操作の説明が正しいか。Visual Studio の画面の表記は VS 2026 英語版（太字，階層は ` > `）になっているか。
+   - Visual Studio・Git・CMake などの操作の説明が正しいか。画面の表記が Visual Studio 2026（英語版）・VS Code（英語版）に合い，太字で，メニューの階層を ` > ` でつないでいるか。
    - TA が演習中に実際に使えるか: 声かけの文言が具体的か，1〜3 分程度で済むか，学生に確かめる問い・期待する答え・よくある反応があるか。
 3. リンク（`weekNN/README.md`，プロジェクトのフォルダ，演習ページ）がすべて実在するか確かめる（相対パスは `ls` で，演習ページは `docs/exNN.md` の存在で確認）。
 4. 資料全体で，実務のテーマが偏りなく配置されているか（同じテーマばかりでないか，重要なテーマが抜けていないか，回の難易度に合っているか）を確かめる。
-5. CONTRIBUTING.md の「読者に向けた書き方」に従っているか（作業の経緯やコミット・CI の記録がない，存在しないファイルや今後の予定に触れていない，`.md` に BOM がない）。
+5. デバッグの題材（`debugging/`）を評価するときは，さらに次を確かめる。
+   - `-DSOFTPRAC_WEEKS=debugging` を付けて構成し，題材だけをビルド・テストする（`cmake -S . -B $(mktemp -d) -G Ninja -DSOFTPRAC_WEEKS=debugging -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON`）。
+   - 各題材のバグ入りのソースが，MSVC `/W4` と GCC/Clang `-Wall -Wextra -Wpedantic` で**警告なし**にビルドでき（コンパイラでは見つからない誤りであること），
+     README に書いた症状が実際に再現する（自分でビルド・実行して確かめる。決まった結果になる誤りはテストで症状を固定しているか）。
+   - 直した版（`softprac_add_variant` など）のテストが通り，直し方が最小で正しい。未定義動作の題材は，症状が環境で変わることを README で断っている。
+   - 探し方の手順が，その題材の回の学生が使えるデバッガの操作で実行でき，症状 → 範囲の絞り込み → 仮説 → 確かめる，の順になっている。答えを先に見せていない。
+   - 題材がその回の授業の内容（文法・課題）に結び付き，学生が実際にしそうな誤りである。題材どうしでバグの種類が偏っていない。
+   - Visual Studio の **Startup Item** から選んで作業ディレクトリ・引数が正しく始められる（`.vs/launch.vs.json` に載っている）。
+6. CONTRIBUTING.md の「読者に向けた書き方」と，「実務の手引き（`ta-guide/`）」「デバッグの題材（`debugging/`）」の節の規則に従っているか（作業の経緯やコミット・CI の記録がない，存在しないファイルや今後の予定に触れていない，用語がそろっている，`.md` に BOM がない）。`python3 tools/check_docs.py` でリンクと題材の一覧も確かめる。
 
 ## 採点基準（100 点満点）
 

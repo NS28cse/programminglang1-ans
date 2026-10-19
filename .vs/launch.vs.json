@@ -750,6 +750,146 @@
       "name": "week14 TreeTraversal",
       "currentDir": "${workspaceRoot}\\week14\\TreeTraversal",
       "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugAnswerCheck.exe (bin\\debugging\\BugAnswerCheck.exe)",
+      "name": "debugging BugAnswerCheck",
+      "currentDir": "${workspaceRoot}\\debugging\\BugAnswerCheck",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugBackupScores.exe (bin\\debugging\\BugBackupScores.exe)",
+      "name": "debugging BugBackupScores",
+      "currentDir": "${workspaceRoot}\\debugging\\BugBackupScores",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugCharCount.exe (bin\\debugging\\BugCharCount.exe)",
+      "name": "debugging BugCharCount  [input.txt]",
+      "currentDir": "${workspaceRoot}\\debugging\\BugCharCount",
+      "args": [
+        "input.txt"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugCopyText.exe (bin\\debugging\\BugCopyText.exe)",
+      "name": "debugging BugCopyText",
+      "currentDir": "${workspaceRoot}\\debugging\\BugCopyText",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugDigitSum.exe (bin\\debugging\\BugDigitSum.exe)",
+      "name": "debugging BugDigitSum",
+      "currentDir": "${workspaceRoot}\\debugging\\BugDigitSum",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugEvenSum.exe (bin\\debugging\\BugEvenSum.exe)",
+      "name": "debugging BugEvenSum",
+      "currentDir": "${workspaceRoot}\\debugging\\BugEvenSum",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugFactorial.exe (bin\\debugging\\BugFactorial.exe)",
+      "name": "debugging BugFactorial",
+      "currentDir": "${workspaceRoot}\\debugging\\BugFactorial",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugFactorialOverflow.exe (bin\\debugging\\BugFactorialOverflow.exe)",
+      "name": "debugging BugFactorialOverflow",
+      "currentDir": "${workspaceRoot}\\debugging\\BugFactorialOverflow",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugFindMax.exe (bin\\debugging\\BugFindMax.exe)",
+      "name": "debugging BugFindMax",
+      "currentDir": "${workspaceRoot}\\debugging\\BugFindMax",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugGrade.exe (bin\\debugging\\BugGrade.exe)",
+      "name": "debugging BugGrade",
+      "currentDir": "${workspaceRoot}\\debugging\\BugGrade",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugMallocSize.exe (bin\\debugging\\BugMallocSize.exe)",
+      "name": "debugging BugMallocSize  [5]",
+      "currentDir": "${workspaceRoot}\\debugging\\BugMallocSize",
+      "args": [
+        "5"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugReverseWord.exe (bin\\debugging\\BugReverseWord.exe)",
+      "name": "debugging BugReverseWord",
+      "currentDir": "${workspaceRoot}\\debugging\\BugReverseWord",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugRowSum.exe (bin\\debugging\\BugRowSum.exe)",
+      "name": "debugging BugRowSum",
+      "currentDir": "${workspaceRoot}\\debugging\\BugRowSum",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugSharedCounter.exe (bin\\debugging\\BugSharedCounter.exe)",
+      "name": "debugging BugSharedCounter",
+      "currentDir": "${workspaceRoot}\\debugging\\BugSharedCounter",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugSkipCount.exe (bin\\debugging\\BugSkipCount.exe)",
+      "name": "debugging BugSkipCount",
+      "currentDir": "${workspaceRoot}\\debugging\\BugSkipCount",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugStudentNames.exe (bin\\debugging\\BugStudentNames.exe)",
+      "name": "debugging BugStudentNames",
+      "currentDir": "${workspaceRoot}\\debugging\\BugStudentNames",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugUpper.exe (bin\\debugging\\BugUpper.exe)",
+      "name": "debugging BugUpper",
+      "currentDir": "${workspaceRoot}\\debugging\\BugUpper",
+      "args": []
     }
   ]
 }

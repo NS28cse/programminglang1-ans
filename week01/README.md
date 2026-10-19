@@ -1,7 +1,7 @@
 # 第1回 演習 解答・解説（プログラミングの基礎）
 
-- 演習ページ: <https://t-yokoga.github.io/softprac1/ex01.html>（[ソース](https://github.com/t-yokoga/softprac1/blob/main/docs/ex01.md)）
-- 講義ページ: <https://t-yokoga.github.io/softprac1/lec01.html>
+- 演習ページ: [ex01](https://t-yokoga.github.io/softprac1/ex01.html)（原稿: [docs/ex01.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex01.md)）・講義: [lec01](https://t-yokoga.github.io/softprac1/lec01.html)（例題: [docs/sample/01/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/01/)）
+- TA 用の資料: [実務の手引き 第1回](../ta-guide/README.md#第1回エラーメッセージを読むプログラミングの基礎)
 - 今回の範囲: `#include <stdio.h>`，`int main(void)`，`printf`（文字列リテラルとエスケープシーケンス `\n` `\"` `\\`，書式の `%%`），`return 0;`，コメント。
   変数・繰り返し・`if` は使わない（演習ページ「今回は変数や繰り返しを使わず」）。
 

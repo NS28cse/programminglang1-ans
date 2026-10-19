@@ -1,7 +1,7 @@
 # 第10回 演習 解答・解説（ファイル）
 
-- 演習ページ: <https://t-yokoga.github.io/softprac1/ex10.html>（[ソース](https://github.com/t-yokoga/softprac1/blob/main/docs/ex10.md)）
-- 講義ページ: <https://t-yokoga.github.io/softprac1/lec10.html>（例題: [`sample/10/`](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/10)）
+- 演習ページ: [ex10](https://t-yokoga.github.io/softprac1/ex10.html)（原稿: [docs/ex10.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex10.md)）・講義: [lec10](https://t-yokoga.github.io/softprac1/lec10.html)（例題: [docs/sample/10/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/10/)）
+- TA 用の資料: [実務の手引き 第10回](../ta-guide/README.md#第10回失敗を伝えるエラー処理ファイル)・デバッグの題材 [BugCharCount](../debugging/BugCharCount/README.md)
 - 今回の範囲: `fopen`/`fclose`（モード `r`・`w`・`a`・`rb`・`wb`・`wx`），`fgetc`・`fgets`・`fprintf`・`fscanf`・`fread`・`fwrite`，
   `ferror`・`perror`・`fflush`，`int main(int argc, char *argv[])`，`strtol` と `errno`/`ERANGE`，テキストとバイナリ，エンディアン，UTF-8。
   そのほかは第9回までの範囲（関数，`enum` の定数，ポインタ配列，`strcmp`，ビット演算）だけを使う。
@@ -65,12 +65,11 @@
 
 ### このリポジトリを Visual Studio で開く場合（**File > Open > Folder**）
 
-各プロジェクトは「作業ディレクトリ = プロジェクトフォルダ」「引数 = `run.args`（1 行 1 引数）」の起動構成になる（`tools/gen_launch_vs.py` が `.vs/launch.vs.json` を生成）。
-ツールバーの **Startup Item** で `week10 ReadText  [input.txt]` などを選んで Ctrl+F5。引数を変えたいときは `.vs/launch.vs.json` の `"args"` を書き換える。
+ツールバーの **Startup Item** で `week10 ReadText  [input.txt]` などを選んで Ctrl+F5。引数の変え方はルートの README の [Visual Studio で使う](../README.md#visual-studio-で使うwindows) にある。
 
 ### VS Code
 
-1. 実行したい課題の `.c` を開き，「実行とデバッグ」で **「開いている課題を引数つきで実行」**（Windows は MSVC，macOS/Linux は gdb/lldb）を選ぶ。
+1. 実行したい課題の `.c` を開き，**Run and Debug** ビューで「**開いている課題を引数つきで実行**」（Windows は MSVC，macOS/Linux は gdb/lldb）を選ぶ。
 2. `.vscode/launch.json` のその構成の `"args"` を課題に合わせて書き換える。**1 要素が 1 引数**で，引用符は要らない:
    - `ReadText`: `"args": [ "input.txt" ]`，空白を含む名前: `"args": [ "my input.txt" ]`
    - `CheckValue`: `"args": [ "squares.txt", "9" ]`，`WriteSquares`: `"args": [ "4", "squares.txt" ]`
@@ -105,7 +104,7 @@ cd ../WriteText
 
 ---
 
-## 課題1　ファイルを読む（`ReadText`）
+## 課題1　ファイルを読む（`ReadText` / `read_text.c`）
 
 **要点**: `fopen` の戻り値（`NULL`）を検査し，`fgetc` の戻り値を `int` で受けて `EOF` までループし，`ferror` と `fclose` の結果まで確かめる。
 `argc` を調べてから `argv[1]` を使う。相対パスは作業ディレクトリが基準。
@@ -174,7 +173,7 @@ usage: ReadText filename
 - `char ch = fgetc(fp);` で受ける（`EOF` と `0xFF` を区別できない），`while (!feof(fp))` で回して最後に `EOF` を 1 回余分に処理する。
 - `fopen` の `NULL` を調べずに `fgetc` へ渡す，`fclose(NULL)` を呼ぶ。`ferror`・`fclose` の戻り値を見ていない。
 
-## 課題1（続き）　行の長さを表示する（`LineLengths`）
+## 課題1（続き）　行の長さを表示する（`LineLengths` / `line_lengths.c`）
 
 **要点**: `fgets` は改行を配列に残す。改行を**実際に読んだときだけ**除く。容量（31 文字 + 終端）ちょうどで改行がないときは，次の 1 文字で「31 文字の行」か「長すぎる行」かを区別する。
 
@@ -228,7 +227,7 @@ $ LineLengths empty.txt    ← 空ファイル: 何も表示しない（終了�
 
 ---
 
-## 課題2　数値引数の検査（`ParseNumber`）
+## 課題2　数値引数の検査（`ParseNumber` / `parse_number.c`）
 
 **要点**: `argv[1]` は数値ではなく文字列。`strtol` の `end`（変換が終わった位置）と `errno == ERANGE`，範囲 0〜100 を組み合わせて，
 「数字がない」「余分な文字が残る」「`long` の範囲外」「課題の範囲外」をすべて拒否する。
@@ -394,7 +393,7 @@ hokuriku!
 
 ---
 
-## 課題3　バイト列を保存する（`Binary`）
+## 課題3　バイト列を保存する（`Binary` / `binary.c`）
 
 **要点**: `wb`/`rb` は改行変換をしない。`fread`/`fwrite` の戻り値は「処理した要素の個数」で，`size = 1` のときだけバイト数と一致する。
 読んだ個数 `n` だけを使い，配列の残り（未初期化）や `%s` を使わない。
@@ -499,7 +498,7 @@ sizeof value = 2
 
 ---
 
-## 課題4　テキストを書き出す（`WriteText`）
+## 課題4　テキストを書き出す（`WriteText` / `write_text.c`）
 
 **要点**: `w` は開いた時点で以前の内容を消す，`a` は末尾へ追記する，`wx` は既存ファイルがあれば開くのに失敗する。
 `fprintf` が成功しても，バッファに残った出力は `fclose` のときに書かれるので `fclose` の戻り値も調べる。
@@ -570,7 +569,7 @@ fopen: File exists
 
 ---
 
-## 発展1　数値をテキスト・バイナリで往復する（`NumberFormats`）
+## 発展1　数値をテキスト・バイナリで往復する（`NumberFormats` / `number_formats.c`）
 
 **要点**: 同じ 3 つの `double` を，テキスト（個数の行 + 値を `%.2f` で 3 行）とバイナリ（個数 1 バイト + `double` 3 個のメモリ表現）で保存し，読み戻して比べる。
 テキストは書式で桁が失われることがあり，バイナリは同じ処理系なら値をそのまま戻せる。ヘッダの個数は配列の要素数と一致するか確かめてから値を読む。
@@ -651,7 +650,7 @@ glibc（Linux）と現在の Windows の UCRT はどちらも偶数側へ丸め�
 
 ---
 
-## 発展2　二乗の一覧を書き出して検索する
+## 発展2　二乗の一覧を書き出して検索する（`WriteSquares` / `write_squares.c`，`CheckValue` / `check_value.c`）
 
 保存形式（講義「保存形式を先に決める」）: 1 行目が個数 `N`（0〜100），続く `N` 行が 0〜`N`−1 の二乗（0〜9801）。ASCII・1 行 1 整数。
 

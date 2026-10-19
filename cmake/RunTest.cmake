@@ -1,6 +1,6 @@
 # 1 つのテストケースを実行して結果を比較する（CTest から cmake -P で呼ばれる）
 #   -DPROGRAM=実行ファイル -DPROJECT_DIR=プロジェクトフォルダ -DCASE=ケース名 -DWORK_DIR=作業フォルダ
-# 仕様はルートの CMakeLists.txt の softprac_add_tests の説明を参照
+# テストのファイル形式は CONTRIBUTING.md の「自動テスト」を参照
 cmake_minimum_required(VERSION 3.21)
 
 foreach(var PROGRAM PROJECT_DIR CASE WORK_DIR)

@@ -1,11 +1,13 @@
 # プログラミング言語I・ソフトウェア演習I 解答リポジトリ
 #
-# 規則（詳しくは README.md）
+# 規則（詳しくは CONTRIBUTING.md）
 #   weekNN/<プロジェクト名>/ の 1 フォルダ = Visual Studio の 1 プロジェクト = 1 つの実行ファイル
 #   - フォルダ内の *.c をすべてまとめて <プロジェクト名>.exe を作る（分割コンパイルもそのまま動く）
 #   - フォルダに CMakeLists.txt があれば，自動の規則の代わりにそれを使う（ライブラリを作る回など）
 #   - 名前が _ で始まるフォルダはビルドしない（意図的にエラーを含むコードの置き場所）
 #   - tests/ フォルダがあれば，その内容を CTest のテストとして登録する（cmake/RunTest.cmake）
+#   debugging/<題材名>/（デバッグの題材）も同じ規則で登録する。実行ファイルは bin/debugging/ にできる
+#   新しいフォルダ・.c を足すと，次のビルドで自動的に構成し直す（file(GLOB) の CONFIGURE_DEPENDS）
 cmake_minimum_required(VERSION 3.21)
 project(softprac1_answers LANGUAGES C)
 
@@ -16,7 +18,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(SOFTPRAC_WERROR   "警告をエラーとして扱う（CI 用）" OFF)
 option(SOFTPRAC_SANITIZE "AddressSanitizer/UBSan を有効にする（GCC/Clang のみ，CI 用）" OFF)
-set(SOFTPRAC_WEEKS "" CACHE STRING "ビルドする回を限定する（例: week01;week02）。空ならすべて")
+set(SOFTPRAC_WEEKS "" CACHE STRING "ビルドする回を限定する（例: week01;week02。debugging/ の題材は debugging）。空ならすべて")
 
 enable_testing()
 
@@ -56,7 +58,7 @@ function(softprac_add_program name)
 
   add_executable(${name} ${ARGN})
   softprac_apply_options(${name})
-  # 実行ファイルは out/build/<プリセット>/bin/weekNN/ にまとめる
+  # 実行ファイルは out/build/<プリセット>/bin/weekNN/（debugging/ の題材は bin/debugging/）にまとめる
   set_target_properties(${name} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${SOFTPRAC_WEEK}"
     VS_DEBUGGER_WORKING_DIRECTORY "${SOFTPRAC_PROJECT_DIR}"
@@ -65,13 +67,7 @@ function(softprac_add_program name)
 endfunction()
 
 # <プロジェクト>/tests/<ケース>.out があれば CTest に登録する
-#   <ケース>.args  コマンドライン引数（1 行に 1 つ。空行は空文字列の引数）
-#   <ケース>.in    標準入力
-#   <ケース>.out   期待する標準出力（必須。改行コードの違いは無視）
-#   <ケース>.err   期待する標準エラー出力（任意）
-#   <ケース>.code  期待する終了コード（省略時 0）
-#   <ケース>.files/ 実行後に作業フォルダにあるべきファイル（バイト単位で比較）
-# プログラムは「プロジェクトフォルダのデータファイルをコピーした作業フォルダ」で実行される
+# テストのファイル形式は CONTRIBUTING.md の「自動テスト」を参照
 function(softprac_add_tests name project_dir)
   file(GLOB outs CONFIGURE_DEPENDS "${project_dir}/tests/*.out")
   foreach(out IN LISTS outs)
@@ -86,16 +82,19 @@ function(softprac_add_tests name project_dir)
   endforeach()
 endfunction()
 
-# weekNN/ を走査してプロジェクトを登録する
-file(GLOB week_dirs LIST_DIRECTORIES true RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+# weekNN/ と debugging/ を走査してプロジェクトを登録する
+file(GLOB week_dirs LIST_DIRECTORIES true CONFIGURE_DEPENDS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
      "${CMAKE_CURRENT_SOURCE_DIR}/week[0-9][0-9]")
 list(SORT week_dirs)
+if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/debugging")
+  list(APPEND week_dirs debugging)   # デバッグの題材。名前は全回のプロジェクト名と重ならないよう Bug で始める
+endif()
 foreach(week IN LISTS week_dirs)
   if(SOFTPRAC_WEEKS AND NOT week IN_LIST SOFTPRAC_WEEKS)
     continue()
   endif()
   set(SOFTPRAC_WEEK "${week}")
-  file(GLOB project_dirs LIST_DIRECTORIES true "${CMAKE_CURRENT_SOURCE_DIR}/${week}/*")
+  file(GLOB project_dirs LIST_DIRECTORIES true CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${week}/*")
   list(SORT project_dirs)
   foreach(dir IN LISTS project_dirs)
     get_filename_component(project_name "${dir}" NAME)
@@ -103,7 +102,9 @@ foreach(week IN LISTS week_dirs)
       continue()
     endif()
     set(SOFTPRAC_PROJECT_DIR "${dir}")
-    if(EXISTS "${dir}/CMakeLists.txt")
+    # CMakeLists.txt を後から置いたときも構成し直すよう，EXISTS ではなく CONFIGURE_DEPENDS の GLOB で調べる
+    file(GLOB own_cmake CONFIGURE_DEPENDS "${dir}/CMakeLists.txt")
+    if(own_cmake)
       add_subdirectory("${dir}" "${CMAKE_BINARY_DIR}/projects/${week}/${project_name}")
     else()
       file(GLOB sources CONFIGURE_DEPENDS "${dir}/*.c" "${dir}/*.h")

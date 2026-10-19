@@ -1,7 +1,7 @@
 # 第12回 演習 解答・解説（コンパイル：分割コンパイルとライブラリ）
 
-- 演習ページ: <https://t-yokoga.github.io/softprac1/ex12.html>（[ソース](https://github.com/t-yokoga/softprac1/blob/main/docs/ex12.md)）
-- 講義ページ: <https://t-yokoga.github.io/softprac1/lec12.html>（例題 [`sample/12/`](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/12)：`calc.h`・`calc.c`・`main.c`，`vector.h`・`matrix.h`・`vector.c`・`matrix.c`・`vector_main.c`）
+- 演習ページ: [ex12](https://t-yokoga.github.io/softprac1/ex12.html)（原稿: [docs/ex12.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex12.md)）・講義: [lec12](https://t-yokoga.github.io/softprac1/lec12.html)（例題: [docs/sample/12/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/12/)）
+- TA 用の資料: [実務の手引き 第12回](../ta-guide/README.md#第12回コンパイルとリンクを分けて考えるコンパイル)・デバッグの題材 [BugSharedCounter](../debugging/BugSharedCounter/README.md)
 - 今回の範囲: 前処理・コンパイル・リンク，翻訳単位，宣言と定義，ヘッダ（インクルードガード `PL1_..._H`），1 プロジェクトに複数の `.c`，
   静的ライブラリ（`.lib`）と動的ライブラリ（`.dll`），ファイルスコープの `static`／`extern`，標準ライブラリ（`math.h`・`ctype.h`・`float.h`・`limits.h`・
   `string.h`・`assert.h`・`stdlib.h` の `strtol`・`qsort`・`rand`・`srand`）。第10回のコマンドライン引数と `strtol` による検査，第8回のポインタで結果を返す関数も使う。
@@ -566,7 +566,7 @@ MSVC では C2061（識別子 `Vector` の位置の構文エラー）などの�
 
 ---
 
-## 発展1　静的ライブラリとして使う（`CalcLib` / `CalcApp`）
+## 発展1　静的ライブラリとして使う（`CalcLib` / `calc.c`・`calc.h`，`CalcApp` / `main.c`）
 
 **要点**: `calc.c` を**静的ライブラリ**（`.lib`）としてビルドし，別のプロジェクト `CalcApp`（`main.c` だけ）から参照してリンクする。
 「宣言を読む（インクルード ディレクトリ）」と「実装をリンクする（参照・`.lib`）」が別の設定であることを確かめる。
@@ -965,6 +965,6 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 
 ## 補足：引数とエラー版の試し方
 
-- `SortModule` を別の引数で試すときは，Visual Studio（**File > Open > Folder**）では [run.args](SortModule/run.args) を書き換えて `python tools/gen_launch_vs.py` を実行するか，
+- `SortModule` を別の引数で試すときは，Visual Studio（**File > Open > Folder**）では **Debug > Debug and Launch Settings for SortModule** の `args` を書き換える（既定の引数を変えるときだけ [run.args](SortModule/run.args)。ルートの README の [Visual Studio で使う](../README.md#visual-studio-で使うwindows)）。
   VS Code では「開いている課題を引数つきで実行」の `args` を書き換える。空文字列の引数は Visual Studio の **Command Arguments** では `""` と入力する。
 - `_BuildErrors/` のエラー版を GCC で再現するには，`_BuildErrors/split/` で課題3 の「GCC の診断」のコマンドを，`_BuildErrors/` で `gcc -std=c17 -c noguard/vector_main.c` と `gcc -std=c17 -c noinclude/vector_main.c` を実行する。

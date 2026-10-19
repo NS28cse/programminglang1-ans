@@ -25,14 +25,14 @@ tools: Read, Grep, Glob, Bash
    cmake -S . -B $B -G Ninja -DSOFTPRAC_WEEKS=weekNN -DSOFTPRAC_WERROR=ON -DSOFTPRAC_SANITIZE=ON
    cmake --build $B && ctest --test-dir $B --output-on-failure
    ```
-   さらに `clang` でも別フォルダでビルド・テストする（`-DCMAKE_C_COMPILER=clang -DSOFTPRAC_WERROR=ON`。環境によって Clang の sanitizer ランタイムがないため `SOFTPRAC_SANITIZE` は付けない）。`python3 tools/normalize_sources.py --check` も実行する。
+   さらに `clang` でも別フォルダでビルド・テストする（`-DCMAKE_C_COMPILER=clang -DSOFTPRAC_WERROR=ON`。環境によって Clang の sanitizer ランタイムがないため `SOFTPRAC_SANITIZE` は付けない）。`python3 tools/update_generated.py --check`（ソースの BOM・改行と生成物）と `python3 tools/check_docs.py`（文書のリンク）も実行する。
 3. 各プログラムを実際に実行し，演習ページの期待する表示と**1 文字ずつ**比べる。検証表・境界値・異常な入力（引数なし，範囲外，`12x`，空入力，存在しないファイルなど）も自分で試す。
    テストがあっても，テストの期待値自体が演習ページと食い違っていないか確認する。
 4. ソースを読み，未定義動作・境界の誤り・資源の解放漏れ・戻り値の未検査・講義範囲外の機能・MSVC 固有の問題
    （C4996 になる関数で `_CRT_SECURE_NO_WARNINGS` がない，`/W4` で出る警告 C4100/C4244/C4267/C4389/C4701 など，VLA は MSVC で使えない）を探す。
-4.5 `softprac_add_variant` で生成されたソース（`$B/projects/weekNN/*/variants/*/`）を開き，コメントが書き換え後のコードと合っているか確認する。
-5. README.md を読み，要求の一覧の**すべて**に答えているか，内容が技術的に正しいか，実行結果が実際の出力と一致するかを確認する。
-6. README とソースのコメントが CONTRIBUTING.md の「読者に向けた書き方」に従っているか確認する（作業の経緯・コミットや CI の記録・テストのしくみの説明が残っていないか，学生が読むソースにテストの話が書かれていないか，Visual Studio の画面の表記が VS 2026 英語版に合っているか）。違反は「説明の質」で減点する。
+5. `softprac_add_variant` で生成されたソース（`$B/projects/weekNN/*/variants/*/`）を開き，コメントが書き換え後のコードと合っているか確認する。
+6. README.md を読み，要求の一覧の**すべて**に答えているか，内容が技術的に正しいか，実行結果が実際の出力と一致するかを確認する。
+7. README とソースのコメントが CONTRIBUTING.md の「読者に向けた書き方」に従っているか確認する（作業の経緯・コミットや CI の記録・テストのしくみの説明が残っていないか，学生が読むソースにテストの話が書かれていないか，Visual Studio の画面の表記が Visual Studio 2026（英語版）に合っているか）。違反は「説明の質」で減点する。
 
 ## 採点基準（100 点満点）
 
