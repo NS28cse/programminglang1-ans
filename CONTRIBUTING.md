@@ -2,6 +2,7 @@
 
 このリポジトリに解答を追加・修正するときの規約です。人が書くときも，Claude のサブエージェントが書くときも，これに従います。
 採点（評価）は [`.claude/agents/softprac-grader.md`](.claude/agents/softprac-grader.md) の基準で行います。
+解答以外の TA 用の指導資料（`practice/`）は [`.claude/agents/practice-reviewer.md`](.claude/agents/practice-reviewer.md) の基準で評価します。
 
 - 授業サイト: <https://t-yokoga.github.io/softprac1/>
 - 授業資料のリポジトリ: <https://github.com/t-yokoga/softprac1>（`docs/exNN.md` が演習，`docs/lecNN.md` が講義，`docs/sample/` が例題）
@@ -30,6 +31,7 @@ weekNN/
   - 迷ったら「TA が IDE で本体を実行すると，演習ページの期待する表示がそのまま出る」ことを優先する。途中版のコードは README にも載せる。
   - 演習ページがプロジェクト名を付けている派生版は，別フォルダにする。
 - ライブラリを作る回（第12回の `CalcLib`/`CalcApp` など）は，フォルダに `CMakeLists.txt` を置き，`softprac_add_program(<名前> <ソース>...)` と `add_library` を使う。
+- `practice/` は TA 用の指導資料（各回の演習に添える実務のテーマ）で，ビルドの対象ではない。内容は各回の演習と解答に合わせ，回や課題名を変えたら合わせて直す。
 
 ## 2. ソースコードの規約
 
