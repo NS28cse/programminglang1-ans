@@ -61,8 +61,8 @@ mean=81.7
 
 ## ヒントの段階
 
-1. 「`Scores backup = today;` の直後，`today.data` と `backup.data` のアドレスは？」
-2. 「`scores_destroy(&today);` の後，`backup.data` が指す先はまだ使ってよい？」
+1. 「表示する直前，`backup.data` は何を指している？ `today.data` は？」
+2. 「`Scores backup = today;` の直後，`today.data` と `backup.data` のアドレスは？ `scores_destroy(&today);` の後，`backup.data` が指す先はまだ使ってよい？」
 3. 「この配列を `free` しているのは何回？」
 
 ## 原因

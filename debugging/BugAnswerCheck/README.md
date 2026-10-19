@@ -40,7 +40,7 @@ Apple: correct
 
 1. **症状を分類する**: 3 つとも逆。「一部の解答だけ」ではなく「判定のしかたが反対」と範囲を絞る。判定しているのは `check` の `if` だけ。
 2. **止めて経路を見る**: `check` の `if (strcmp(answer, guess)) {` の行に F9，F5。1 回目（**Locals** の `guess` が `"apple"`）で F10 を押すと，`correct` ではなく `wrong` の `printf` の行へ進む。
-3. **条件の値を見る**: `strcmp(answer, guess)` の値を確かめる。**Debug > Windows > Watch > Watch 1**（授業では未習）に `strcmp(answer, guess)` と書くか，F10 で `if` の行を通った直後の **Debug > Windows > Autos** に出る `strcmp` の戻り値を見る。`"apple"` 同士では 0。
+3. **条件の値を見る**: `strcmp(answer, guess)` の値を確かめる。F10 で `if` の行を通った直後の **Debug > Windows > Autos**（授業では未習）に `strcmp` の戻り値が出る。`"apple"` 同士では 0。評価できる環境なら，**Debug > Windows > Watch > Watch 1**（授業では未習）に `strcmp(answer, guess)` と書いても見られる（ウォッチで関数呼び出しを評価するには，その関数のシンボルが要る）。
    ウォッチを使わない場合は，講義 3 節の表（「等しければ0」）を読み，`if (0)` がどちらへ進むかを言わせる。
 4. **仮説**: 「`strcmp` は等しいときに 0 を返す。`if` は 0 を偽として扱うので，等しいときに `else`（wrong）へ進む」。
 5. **確かめる**: `"apply"` のときの値（`'e'` と `'y'` の違いで負の値）と，`if` が真になることを確かめる。「`strcmp` は『違うかどうか』を返す関数のように振る舞っている」と言葉にさせる。

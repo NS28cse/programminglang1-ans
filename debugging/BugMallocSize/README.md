@@ -32,7 +32,7 @@ sum=15
   malloc(): corrupted top size
   ```
 
-- AddressSanitizer 付き（`-DSOFTPRAC_SANITIZE=ON`）: 確保した 5 バイトの外へ初めて書く 2 回目の書き込み（`values[1]`。領域の先頭から 4 バイト目）で止まる（引数 `1` なら 1 回目の `values[0]`）。
+- AddressSanitizer 付き（`-DSOFTPRAC_SANITIZE=ON`）: 確保した 5 バイトの外へ初めて書く 2 回目の書き込み（`values[1]`。領域の先頭から 4 バイト進んだ位置（オフセット 4）から 4 バイト書き，5 バイトの領域を越える）で止まる（引数 `1` なら 1 回目の `values[0]`）。
 
   ```text
   ==...==ERROR: AddressSanitizer: heap-buffer-overflow on address ... 

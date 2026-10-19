@@ -53,18 +53,18 @@ VS Code では，題材の `.c` を開いた状態で「開いている課題を
 | 第5回 | [BugRowSum](BugRowSum/README.md) | 二次元配列の行ごとの合計 | 初期化の位置（累積変数をループの外で 1 回だけ 0 に） | F9・F5（**Continue**）・**Locals** | いいえ |
 | 第5回 | [BugGrade](BugGrade/README.md) | 点数から A〜D を返す関数 | 条件の順序（`else if` の並び） | 関数の中の F9・F10・**Locals** | いいえ |
 | 第6回 | [BugDigitSum](BugDigitSum/README.md) | 数字の文字列の各桁の和 | 文字と数の取り違え（`- '0'` の忘れ） | F9・F10・**Locals**（文字コードの表示） | いいえ |
-| 第6回 | [BugAnswerCheck](BugAnswerCheck/README.md) | 答えと解答を `strcmp` で比べる | 戻り値の読み違い（`if (strcmp(a, b))` を「等しい」と読む） | 関数の中の F9・F10・**Locals**（**Watch 1** は未習） | いいえ |
+| 第6回 | [BugAnswerCheck](BugAnswerCheck/README.md) | 答えと解答を `strcmp` で比べる | 戻り値の読み違い（`if (strcmp(a, b))` を「等しい」と読む） | 関数の中の F9・F10・**Locals**（**Autos**・**Watch 1** は未習） | いいえ |
 | 第7回 | [BugUpper](BugUpper/README.md) | 入力を大文字にして写す | 入力の読み方（1 回の繰り返しで `getchar` を 2 回） | F9・F10・**Locals**，コンソールへの入力と `EOF` | いいえ |
 | 第7回 | [BugReverseWord](BugReverseWord/README.md) | 8 文字までの単語を逆順に表示 | 配列の範囲外（終端 `'\0'` の分の要素がない） | 実行時チェックのダイアログ・F9・**Locals**（**Memory 1** は未習） | **はい** |
 | 第8回 | [BugCopyText](BugCopyText/README.md) | 文字列をコピーする関数 | 文字列の終端のコピー忘れ | F9・**Locals**（F11・**Watch 1** は未習） | いいえ |
 | 第9回 | [BugFindMax](BugFindMax/README.md) | 最大の要素の場所を返す関数 | ポインタの指す先（ポインタの値渡しで呼び出し元を書き換えられない） | F9・F10・**Locals**（**Watch 1** は未習） | いいえ |
 | 第10回 | [BugCharCount](BugCharCount/README.md) | ファイルの文字数と行数 | ファイルの読み方（`while (!feof(fp))` で `EOF` も数える） | **Command Arguments**・F9・F5（**Continue**）・**Locals** | いいえ |
 | 第11回 | [BugStudentNames](BugStudentNames/README.md) | 名簿を読んで表示 | 構造体のポインタメンバの共有（全員が同じ配列を指す） | F9・F5（**Continue**）・**Locals**（構造体の配列を展開） | いいえ |
-| 第12回 | [BugSharedCounter](BugSharedCounter/README.md) | 呼び出し回数を数える（3 ファイル） | リンケージ（ヘッダの `static` 変数がファイルごとに別物） | 2 つのファイルで F9・データヒント（未習） | いいえ |
+| 第12回 | [BugSharedCounter](BugSharedCounter/README.md) | 呼び出し回数を数える（3 ファイル） | リンケージ（ヘッダの `static` 変数がファイルごとに別物） | 2 つのファイルで F9・データヒント（DataTip。未習） | いいえ |
 | 第13回 | [BugMallocSize](BugMallocSize/README.md) | `n` 個の `int` を動的に確保 | `malloc` のサイズの誤り（要素数をバイト数として渡す） | ヒープ破壊のダイアログ・**Command Arguments**・**Watch 1**（`values,5`） | **はい** |
 | 第13回 | [BugBackupScores](BugBackupScores/README.md) | 点数の控えを作ってから元を解放 | 解放後の使用・二重解放（構造体の代入で配列を共有） | F9・F10・**Locals**・**Watch 1** | **はい** |
 | 第14回 | [BugFactorial](BugFactorial/README.md) | 0!〜5! の表 | 再帰の基底条件（0 で止まらない） | 例外で止まる・**Call Stack**・**Locals**・F11 | 異常終了（スタックオーバーフロー） |
-| 第14回 | [BugFactorialOverflow](BugFactorialOverflow/README.md) | 0!〜15! の表 | `int` の桁あふれ（型の上限を確かめていない） | F9・F11・**Locals**・**Autos**（戻り値） | **はい** |
+| 第14回 | [BugFactorialOverflow](BugFactorialOverflow/README.md) | 0!〜15! の表 | `int` の桁あふれ（型の上限を確かめていない） | F9・F11・**Locals**（**Autos** の戻り値は未習） | **はい** |
 
 ## テスト
 

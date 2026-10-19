@@ -9,7 +9,7 @@
 ## 対象の回と前提
 
 - 第14回（再帰）。講義 3.1「階乗の型と上限」と，課題1「階乗の境界」の後。`int` の範囲（第2回・第6回）の復習。
-- 学生が知っていること: 再帰関数，`int`・`long long`・`unsigned long long` と `printf` の書式，ブレークポイント（F9）・F5・F10・F11・**Locals**・**Call Stack**。
+- 学生が知っていること: 再帰関数，`int`・`long long`・`unsigned long long` と `printf` の書式，ブレークポイント（F9）・F5・F10・F11・**Locals**・**Call Stack**。**Autos** と条件付きブレークポイントは授業では未習。
 - 入力も引数もない。
 
 ## プログラムがするはずのこと
@@ -50,7 +50,7 @@ UndefinedBehaviorSanitizer 付き（`-DSOFTPRAC_SANITIZE=ON`）では，最初�
 ## 探し方
 
 1. **境目を探す**: 12! までは正しく，13! から誤る。「13! の計算で何かが起きる」と範囲を絞る。13! = 13 × 12! を手で（電卓で）計算させ，6227020800 であることを確かめる。
-2. **止めて値を見る**: `factorial` の `return n * factorial(n - 1);` の行に F9 を置くと何度も止まるので，`main` の `printf` の行に F9 を置き，F5 を押して **Locals** の `n` が 13 になるまで進める。そこで F11（**Debug > Step Into**）で `factorial` に入り，`return` の行で F10 を押しながら，戻ってきた値を見る（**Debug > Windows > Autos** に `factorial` の戻り値が出る）。`n` が 13 の呼び出しで，479001600 に 13 を掛けた結果が 1932053504 になる。
+2. **止めて値を見る**: `factorial` の `return n * factorial(n - 1);` の行に F9 を置くと何度も止まるので，`main` の `printf` の行に F9 を置き，F5 を押して **Locals** の `n` が 13 になるまで進める（F5 を 14 回押す。ブレークポイントを右クリックして **Conditions** で `n == 13` を指定すれば 1 回で止まる。条件付きブレークポイント。授業では未習，[practice/README.md](../../practice/README.md) の第4回の「デバッグの補足」）。そこで F11（**Debug > Step Into**）で `factorial` に入り，`return` の行で F10 を押しながら，戻ってきた値を見る（**Debug > Windows > Autos**（授業では未習）に `factorial` の戻り値が出る）。`n` が 13 の呼び出しで，479001600 に 13 を掛けた結果が 1932053504 になる。
 3. **仮説**: 「6227020800 は `int` に入らない。`int` で計算しているので，積が範囲を超えた」。
 4. **確かめる**: `int` の最大値（Windows・Linux の一般的な環境では 2147483647。`<limits.h>` の `INT_MAX`）と 6227020800 を比べ，13! が `int` に入らないことを確かめる。`factorial` の戻り値の型と，掛け算 `n * factorial(n - 1)` の型がどちらも `int` であることを言わせる。
 
