@@ -3,7 +3,7 @@
 
 使い方: python3 tools/check_launch.py <ビルド先>   例: out/build/msvc-debug
 
-  1. Visual Studio（フォルダーを開く）: .vs/launch.vs.json の各構成について，
+  1. Visual Studio（File > Open > Folder）: .vs/launch.vs.json の各構成について，
      projectTarget の実行ファイルが <ビルド先>/bin/weekNN/ にあり，currentDir があり，
      その作業ディレクトリと args で起動すると（標準入力は空）正常に終わることを確かめる。
      終了コードは 0 か，同じ引数・空の入力のテストケース（tests/）が期待する値（失敗を示す課題の 1 など）。
@@ -22,9 +22,8 @@ import re
 import subprocess
 import sys
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "tools"))
-from gen_launch_vs import group_dirs, programs  # noqa: E402
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from projects import ROOT, all_projects, programs, read_lines  # noqa: E402
 
 EXE = ".exe" if os.name == "nt" else ""
 
@@ -35,14 +34,10 @@ def expected_codes(project: pathlib.Path, args):
     for code in project.glob("tests/*.code"):
         case = code.with_suffix("")
         a = case.with_suffix(".args")
-        case_args = []
-        if a.exists():
-            text = a.read_text(encoding="utf-8").replace("\r", "")
-            if text:
-                case_args = text[:-1].split("\n") if text.endswith("\n") else text.split("\n")
+        case_args = read_lines(a) if a.exists() else []
         i = case.with_suffix(".in")
         if case_args == args and (not i.exists() or i.stat().st_size == 0):
-            codes.add(int(code.read_text().strip()))
+            codes.add(int(code.read_text(encoding="utf-8").strip()))
     return codes
 
 
@@ -89,8 +84,7 @@ def main():
     print(f"launch.vs.json: {launched} 構成を起動，{len(configs) - launched} 構成（debugging/）は実行ファイルの存在だけを確認")
 
     # 2. VS Code の起動構成（フォルダ名 = 実行ファイル名）
-    folders = [p for g in group_dirs() for p in sorted(g.iterdir())
-               if p.is_dir() and not p.name.startswith(("_", ".")) and p.name in programs(p)]
+    folders = [p for p in all_projects() if p.name in programs(p)]
     for p in folders:
         exe = build / "bin" / p.parent.name / (p.name + EXE)
         if not exe.is_file():

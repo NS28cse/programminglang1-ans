@@ -1,4 +1,4 @@
-﻿# 第1回 課題4 Version
+# 第1回 課題4 Version
 # 本体は手順3 の後の内容（Version B）。手順1 の最初の版（Version A）もビルドしてテストする
 # （先頭コメントの 1〜3 行目も「手順1 の最初の版」の説明に置き換える）
 softprac_add_program(Version version.c)

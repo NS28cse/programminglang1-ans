@@ -15,7 +15,7 @@ concurrency:
 # すべてのジョブを動かしたいときは Actions タブから手動で実行する（workflow_dispatch）。
 
 jobs:
-  # 学生の環境 1: Visual Studio の「フォルダーを開く」/ VS Code + CMake Tools（CMakePresets の msvc-*）
+  # 学生の環境 1: Visual Studio の File > Open > Folder / VS Code + CMake Tools（CMakePresets の msvc-*）
   # 開発者コマンド プロンプトと同じ環境（VS 付属の cl.exe・CMake・Ninja）で，プリセットをそのまま使う
   windows-msvc-preset:
     runs-on: windows-latest
@@ -36,6 +36,8 @@ jobs:
       - name: Test
         run: ctest --preset ${{ matrix.preset }} -j 4 --timeout 60
       - name: IDE launch configurations (.vs/launch.vs.json, .vscode/launch.json)
+        # weekNN/ の構成は起動して終了コードを確かめる。debugging/ の題材（バグ入り）は起動せず，
+        # 実行ファイルと作業ディレクトリがあることだけを確かめる
         run: python tools/check_launch.py out/build/${{ matrix.preset }}
 
   # 学生の環境 2: Visual Studio のソリューション（.sln）を生成する使い方（CMake GUI など）
@@ -115,8 +117,10 @@ jobs:
           cmake --build --preset gcc-debug -j 4
           ctest --preset gcc-debug -j 4 --timeout 60
       - name: IDE launch configurations (.vs/launch.vs.json, .vscode/launch.json)
+        # windows-msvc-preset と同じ（debugging/ の題材は存在だけを確かめる）
         run: python3 tools/check_launch.py out/build/gcc-debug
 
+  # ビルドしない検査: ファイル名，生成物が最新か（tools/update_generated.py --check），文書のリンク（tools/check_docs.py）
   repository-checks:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -130,10 +134,8 @@ jobs:
                  if re.search(r'(^|/)(con|prn|aux|nul|com[0-9]|lpt[0-9])(\.[^/]*)?(/|$)', l, re.I)
                  or re.search(r'[<>:\"|?*\\\\]', l) or re.search(r'[ .](/|$)', l)]
           print('\n'.join(bad)); sys.exit(1 if bad else 0)"
-      - name: Sources are UTF-8 with BOM and LF
-        run: python3 tools/normalize_sources.py --check
-      - name: .vs/launch.vs.json and README index are up to date
-        run: |
-          python3 tools/gen_launch_vs.py
-          python3 tools/gen_readme_index.py
-          git diff --exit-code -- .vs/launch.vs.json README.md
+      - name: Generated files are up to date (source BOM/LF, .vs/launch.vs.json, README index)
+        # 失敗したら手元で python3 tools/update_generated.py を実行してコミットする
+        run: python3 tools/update_generated.py --check
+      - name: Markdown links and the debugging/ topic list
+        run: python3 tools/check_docs.py
