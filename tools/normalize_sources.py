@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""weekNN/ 以下の .c/.h を「BOM 付き UTF-8・LF・末尾改行あり」にそろえる。
+"""weekNN/ と debugging/ 以下の .c/.h を「BOM 付き UTF-8・LF・末尾改行あり」にそろえる。
 
 BOM を付けると，/utf-8 を指定していない Visual Studio のプロジェクトへ
 ファイルをコピーしても日本語コメントが正しく読まれる（C4819 や文字化けを防ぐ）。
     python tools/normalize_sources.py          # 修正する
     python tools/normalize_sources.py --check  # 確認だけ（CI 用）
-    python tools/normalize_sources.py week05   # 指定した回だけ
+    python tools/normalize_sources.py week05   # 指定した回（または debugging）だけ
 """
 import pathlib
 import sys
@@ -31,7 +31,7 @@ def main():
     if unknown:
         sys.exit(f"不明なオプション: {' '.join(unknown)}")
     check = "--check" in sys.argv
-    weeks = [a for a in sys.argv[1:] if not a.startswith("--")] or ["week[0-9][0-9]"]
+    weeks = [a for a in sys.argv[1:] if not a.startswith("--")] or ["week[0-9][0-9]", "debugging"]
     bad = []
     paths = sorted({p for w in weeks for p in ROOT.glob(f"{w}/**/*")})
     for path in paths:

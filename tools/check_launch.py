@@ -7,8 +7,11 @@
      projectTarget の実行ファイルが <ビルド先>/bin/weekNN/ にあり，currentDir があり，
      その作業ディレクトリと args で起動すると（標準入力は空）正常に終わることを確かめる。
      終了コードは 0 か，同じ引数・空の入力のテストケース（tests/）が期待する値（失敗を示す課題の 1 など）。
+     debugging/ の題材（バグ入り）は，異常終了や MSVC の実行時チェックのダイアログで止まり得るので起動せず，
+     実行ファイル（<ビルド先>/bin/debugging/）と作業ディレクトリがあることだけを確かめる。
   2. VS Code: .vscode/launch.json は「開いている .c のフォルダ名」= 実行ファイル名で起動するので，
-     実行ファイルを作る全プロジェクトフォルダ（ライブラリだけのフォルダは除く）について <ビルド先>/bin/weekNN/<フォルダ名>(.exe) があることを確かめる。
+     実行ファイルを作る全プロジェクトフォルダ（ライブラリだけのフォルダは除く。debugging/ の題材を含む）について
+     <ビルド先>/bin/<weekNN または debugging>/<フォルダ名>(.exe) があることを確かめる。
 
 実行時にプロジェクトフォルダへ書き出されるファイル（.gitignore 済み）は実行後に消す。
 """
@@ -21,7 +24,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
-from gen_launch_vs import programs  # noqa: E402
+from gen_launch_vs import group_dirs, programs  # noqa: E402
 
 EXE = ".exe" if os.name == "nt" else ""
 
@@ -54,8 +57,9 @@ def main():
 
     # 1. Visual Studio の起動構成
     configs = json.loads((ROOT / ".vs" / "launch.vs.json").read_text(encoding="utf-8"))["configurations"]
+    launched = 0
     for c in configs:
-        m = re.fullmatch(r"(\w+)\.exe \(bin\\(week\d\d)\\(\w+)\.exe\)", c["projectTarget"])
+        m = re.fullmatch(r"(\w+)\.exe \(bin\\(week\d\d|debugging)\\(\w+)\.exe\)", c["projectTarget"])
         if not m or m.group(1) != m.group(3):
             errors.append(f"{c['name']}: projectTarget の形が不正: {c['projectTarget']}")
             continue
@@ -67,6 +71,9 @@ def main():
         if not cwd.is_dir():
             errors.append(f"{c['name']}: 作業ディレクトリがない: {cwd}")
             continue
+        if m.group(2) == "debugging":
+            continue   # バグ入りの題材は起動しない（存在だけを確かめる）
+        launched += 1
         before = set(p.name for p in cwd.iterdir())
         try:
             r = subprocess.run([str(exe), *c["args"]], cwd=cwd, stdin=subprocess.DEVNULL,
@@ -79,10 +86,10 @@ def main():
             for p in cwd.iterdir():
                 if p.name not in before and p.is_file():
                     p.unlink()
-    print(f"launch.vs.json: {len(configs)} 構成を起動")
+    print(f"launch.vs.json: {launched} 構成を起動，{len(configs) - launched} 構成（debugging/）は実行ファイルの存在だけを確認")
 
     # 2. VS Code の起動構成（フォルダ名 = 実行ファイル名）
-    folders = [p for p in sorted(ROOT.glob("week[0-9][0-9]/*"))
+    folders = [p for g in group_dirs() for p in sorted(g.iterdir())
                if p.is_dir() and not p.name.startswith(("_", ".")) and p.name in programs(p)]
     for p in folders:
         exe = build / "bin" / p.parent.name / (p.name + EXE)

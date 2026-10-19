@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Visual Studio（フォルダーを開く）用の .vs/launch.vs.json を生成する。
 
-各プロジェクト（weekNN/<名前>/）について，
+各プロジェクト（weekNN/<名前>/ と，バグ探しの題材 debugging/<名前>/）について，
   - 作業ディレクトリ = プロジェクトフォルダ（授業の $(ProjectDir) と同じ）
   - コマンドライン引数 = プロジェクトフォルダの run.args（1 行 1 引数，任意）
 を設定した起動構成を作る。プロジェクトを追加・変更したら再実行する:
@@ -13,6 +13,14 @@ import sys
 import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+
+
+def group_dirs():
+    """プロジェクトを入れるフォルダ（weekNN/ と debugging/）を，CMake が登録する順に返す。"""
+    dirs = sorted(ROOT.glob("week[0-9][0-9]"))
+    if (ROOT / "debugging").is_dir():
+        dirs.append(ROOT / "debugging")
+    return dirs
 
 
 def programs(project: pathlib.Path):
@@ -30,7 +38,7 @@ def main():
         print(__doc__)
         return
     configs = []
-    for week in sorted(ROOT.glob("week[0-9][0-9]")):
+    for week in group_dirs():
         for project in sorted(p for p in week.iterdir() if p.is_dir() and not p.name.startswith(("_", "."))):
             args = []
             run_args = project / "run.args"

@@ -6,6 +6,7 @@
 #   - フォルダに CMakeLists.txt があれば，自動の規則の代わりにそれを使う（ライブラリを作る回など）
 #   - 名前が _ で始まるフォルダはビルドしない（意図的にエラーを含むコードの置き場所）
 #   - tests/ フォルダがあれば，その内容を CTest のテストとして登録する（cmake/RunTest.cmake）
+#   debugging/<題材名>/（バグ探しの題材）も同じ規則で登録する。実行ファイルは bin/debugging/ にできる
 cmake_minimum_required(VERSION 3.21)
 project(softprac1_answers LANGUAGES C)
 
@@ -16,7 +17,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(SOFTPRAC_WERROR   "警告をエラーとして扱う（CI 用）" OFF)
 option(SOFTPRAC_SANITIZE "AddressSanitizer/UBSan を有効にする（GCC/Clang のみ，CI 用）" OFF)
-set(SOFTPRAC_WEEKS "" CACHE STRING "ビルドする回を限定する（例: week01;week02）。空ならすべて")
+set(SOFTPRAC_WEEKS "" CACHE STRING "ビルドする回を限定する（例: week01;week02。debugging/ の題材は debugging）。空ならすべて")
 
 enable_testing()
 
@@ -56,7 +57,7 @@ function(softprac_add_program name)
 
   add_executable(${name} ${ARGN})
   softprac_apply_options(${name})
-  # 実行ファイルは out/build/<プリセット>/bin/weekNN/ にまとめる
+  # 実行ファイルは out/build/<プリセット>/bin/weekNN/（debugging/ の題材は bin/debugging/）にまとめる
   set_target_properties(${name} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${SOFTPRAC_WEEK}"
     VS_DEBUGGER_WORKING_DIRECTORY "${SOFTPRAC_PROJECT_DIR}"
@@ -86,10 +87,13 @@ function(softprac_add_tests name project_dir)
   endforeach()
 endfunction()
 
-# weekNN/ を走査してプロジェクトを登録する
+# weekNN/ と debugging/ を走査してプロジェクトを登録する
 file(GLOB week_dirs LIST_DIRECTORIES true RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
      "${CMAKE_CURRENT_SOURCE_DIR}/week[0-9][0-9]")
 list(SORT week_dirs)
+if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/debugging")
+  list(APPEND week_dirs debugging)   # バグ探しの題材。名前は全回のプロジェクト名と重ならないよう Bug で始める
+endif()
 foreach(week IN LISTS week_dirs)
   if(SOFTPRAC_WEEKS AND NOT week IN_LIST SOFTPRAC_WEEKS)
     continue()

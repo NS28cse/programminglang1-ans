@@ -33,6 +33,32 @@ weekNN/
 - ライブラリを作る回（第12回の `CalcLib`/`CalcApp` など）は，フォルダに `CMakeLists.txt` を置き，`softprac_add_program(<名前> <ソース>...)` と `add_library` を使う。
 - `practice/` は TA 用の指導資料（各回の演習に添える実務のテーマ）で，ビルドの対象ではない。内容は各回の演習と解答に合わせ，回や課題名を変えたら合わせて直す。
 
+### デバッグの題材（`debugging/`）
+
+学生にデバッガで原因を探させるための，誤りを 1 つ入れたプログラムの置き場所（TA 用。評価は [`.claude/agents/practice-reviewer.md`](.claude/agents/practice-reviewer.md) の手順 5）。
+
+```
+debugging/
+├── README.md            ← 使い方・デバッグの進め方の型・題材の一覧
+└── Bug<名前>/           ← 1 題材 = 1 実行ファイル（weekNN/ のプロジェクトと同じ規則で自動登録。実行ファイルは bin/debugging/）
+    ├── <ソース名>.c      ← バグ入りの版
+    ├── input.txt・run.args など（必要なら）
+    ├── CMakeLists.txt   ← softprac_add_program と，直した版の softprac_add_variant(<名前> <ソース> fixed ...)
+    ├── tests/           ← バグ入りの版の症状（間違った出力）
+    ├── variants/tests/  ← 直した版の正しい出力（fixed.out，fixed--<名前>.out）
+    └── README.md        ← TA 用の解説
+```
+
+- 題材名は `Bug` で始める（全回のプロジェクト名と重複させないため）。`_` で始まるフォルダはビルドしない，`CMakeLists.txt` があればそれを使う，など weekNN/ と同じ規則で登録される。
+  `SOFTPRAC_WEEKS` で回を絞ったときは，`debugging` を含めたときだけビルドする（空ならすべて）。
+- その回までに講義で扱った文法・関数だけを使う。誤りは学生が実際にしそうなもので，**コンパイラの警告では見つからない**ものにする（MSVC `/W4`，GCC/Clang `-Wall -Wextra -Wpedantic` で警告 0。CI は `-Werror`・`/WX` でビルドする）。種類（境界・条件・初期化の位置・入力の読み方・範囲外・ポインタ・メモリ・再帰など）を偏らせない。
+- ソースの先頭コメントは「デバッグ題材: ○○（第N回）」と，プログラムが**するはずのこと**だけを書く。バグの場所やヒントになるコメントは書かない。
+- 決まった結果になる題材は，`tests/` でバグ入りの版の症状を固定し，直した版を `softprac_add_variant` で作って `variants/tests/` で正しい出力をテストする（置き換えは README の「直し方」の差分と同じにし，先頭コメントも「〜を直した版」に置き換える）。
+- 未定義動作（範囲外アクセス・解放後の使用など）の題材は全体で 3〜4 個までにする。バグ入りの版はテストで実行せず（CI は AddressSanitizer 付きでテストする），直した版だけをテストする。異常終了・無限ループになる題材も同じ。README では「症状は環境で変わる」と断り，Debug 構成の MSVC と Linux での症状を分けて書く。
+- `tools/check_launch.py` は，バグ入りの題材が異常終了や MSVC の実行時チェックのダイアログで止まり得るので，`debugging/` の起動構成を起動せず，実行ファイルの存在だけを確かめる。
+- 題材の README.md の構成: 対象の回と前提 / プログラムがするはずのこと / 症状（再現の手順と，実際にビルド・実行した出力）/ 学生への渡し方（最初に言うこと。答えは言わない）/ 探し方（症状 → 範囲を絞る → 仮説 → 確かめる。その回の学生が使える Visual Studio の操作を中心に，未習の操作は「授業では未習」と書く）/ ヒントの段階（3 段階）/ 原因 / 直し方（差分）/ 学生への問い / 関連（その回の解答 README・practice/README.md の節）。
+  題材を足したら `debugging/README.md` の一覧の表にも加える。
+
 ## 2. ソースコードの規約
 
 - C17 の標準 C だけを使う（`scanf_s` などの MSVC 専用関数，POSIX 専用関数は使わない）。
@@ -129,12 +155,12 @@ python3 tools/gen_readme_index.py    # ルート README の目次（各回の表
 
 | ジョブ | 内容 |
 | --- | --- |
-| `windows-msvc-preset` | MSVC `/W4 /WX`。CMakePresets の `msvc-debug`・`msvc-release`（Visual Studio の「フォルダーを開く」と同じ構成）。IDE の起動構成で全プロジェクトを起動する |
+| `windows-msvc-preset` | MSVC `/W4 /WX`。CMakePresets の `msvc-debug`・`msvc-release`（Visual Studio の「フォルダーを開く」と同じ構成）。IDE の起動構成で全プロジェクトを起動する（`debugging/` は実行ファイルの存在だけを確かめる） |
 | `windows-msvc-sln` | Visual Studio ジェネレーター（.sln）での MSBuild |
 | `windows-mingw` | MSYS2 UCRT64 の gcc（VS Code + MinGW）。Visual Studio の構成の一覧に MinGW が出ないよう，プリセットを使わず CMake のオプションで指定する |
 | `linux` | GCC・Clang × Debug・Release。`-Werror`，AddressSanitizer/UBSan |
 | `macos` | Apple Clang。プリセット `gcc-debug`。IDE の起動構成で全プロジェクトを起動する |
-| `repository-checks` | Windows で使えないファイル名，ソースの BOM・改行，生成ファイル（`.vs/launch.vs.json`・README の目次）が最新か |
+| `repository-checks` | Windows で使えないファイル名，ソース（weekNN/・debugging/）の BOM・改行，生成ファイル（`.vs/launch.vs.json`・README の目次）が最新か |
 
 - 全ジョブに時間制限があり，同じブランチに新しい push が来ると古い実行は取り消される。
 - 非公開リポジトリでは Actions の実行時間が課金対象になる（Windows は 2 倍，macOS は 10 倍で数える）。そのため非公開のときの push・PR では，MSVC Debug・Linux Debug・repository-checks だけを動かす。すべてのジョブは Actions タブから手動で実行すると動く。
