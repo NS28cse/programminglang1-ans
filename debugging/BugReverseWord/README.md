@@ -3,7 +3,7 @@
 ソース: [reverse_word.c](reverse_word.c)
 
 > [!IMPORTANT]
-> この題材の誤りは**未定義動作**（配列の外への書き込み）で，症状は環境・構成で変わる。下の症状は Debug 構成の MSVC と，Linux の GCC で確かめたもの。
+> この題材の誤りは**未定義動作**（配列の外への書き込み）で，症状は環境・構成で変わる。下の MSVC の症状は，Debug 構成の実行時チェック（`/RTC1`）の仕様から通常見られるもの（授業の前に TA が手元で一度確かめる）。Linux の症状は GCC で実際に実行したもの。
 > 学生に「表示が正しいので問題ない」と結論させないことが，この題材のねらいの 1 つ。
 
 ## 対象の回と前提
@@ -26,7 +26,7 @@ reversed: kcats
 **Startup Item** で `debugging BugReverseWord` を選び，Ctrl+F5 で実行して，1 行入力して Enter を押す。
 
 - 7 文字以下（`stack` など）: 期待どおりに表示して終わる。
-- 8 文字ちょうど（`abcdefgh`）以上: Debug 構成の MSVC では，`word: abcdefgh` と `reversed: hgfedcba` が**正しく表示された後**，`main` から戻るときに **Run-Time Check Failure #2 - Stack around the variable 'word' was corrupted.** というダイアログが出る（Ctrl+F5 では **Microsoft Visual C++ Runtime Library** の **Debug Error!** のダイアログ）。
+- 8 文字ちょうど（`abcdefgh`）以上: Debug 構成の MSVC では，`word: abcdefgh` と `reversed: hgfedcba` が**正しく表示された後**，`main` から戻るときに **Run-Time Check Failure #2 - Stack around the variable 'word' was corrupted.** というダイアログが出る（Debug 構成の既定の設定。Ctrl+F5 では **Microsoft Visual C++ Runtime Library** の **Debug Error!** のダイアログ）。
   Release 構成ではこの検査がないので，何も起きないように見えることが多い。
 - Linux の GCC（Debug，サニタイザーなし）では，8 文字でも 11 文字でも表示は正しく，異常終了もしない:
 
@@ -49,7 +49,7 @@ reversed: kcats
 ## 学生への渡し方
 
 - 渡すもの: `reverse_word.c` だけ。Debug 構成で実行するように言う。
-- 最初に言うこと: 「8 文字までの単語を逆順に表示するプログラムです。`stack` は正しく動きます。`abcdefgh`（8 文字）を入れると，表示は正しいのに，終わるときにエラーのダイアログが出ます。ダイアログの文面を読んで，どの変数がどう壊れたのかを探してください」
+- 最初に言うこと: 「8 文字までの単語を逆順に表示するプログラムです。Debug 構成で Ctrl+F5 で実行し，`abcdefgh` と入力して Enter を押すと，`word: abcdefgh` と `reversed: hgfedcba` が出て正常に終わるはずですが，表示の後でエラーのダイアログが出ます（`stack` では出ません）。原因をデバッガで探してください」
 - 言わないこと: 終端の分の要素，`word[8]`。
 
 ## 探し方
@@ -62,7 +62,7 @@ reversed: kcats
 
 ## ヒントの段階
 
-1. 「何文字から出る？ 7 文字と 8 文字で比べよう」
+1. 「ダイアログの文面を読もう。どの変数が壊れたと言っている？ 7 文字と 8 文字で比べると？」
 2. 「8 文字入れたとき，`'\0'` を書く行の `length` はいくつ？ `word` の添字は何番まで？」
 3. 「8 文字の文字列を入れるのに，`char` は何個必要？」
 

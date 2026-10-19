@@ -3,7 +3,7 @@
 ソース: [dynamic.c](dynamic.c)，既定の引数: [run.args](run.args)（`5`）
 
 > [!IMPORTANT]
-> この題材の誤りは**未定義動作**（確保した領域の外への書き込み）で，症状は環境・構成・引数で変わる。下の症状は Debug 構成の MSVC と，Linux の GCC で確かめたもの。
+> この題材の誤りは**未定義動作**（確保した領域の外への書き込み）で，症状は環境・構成・引数で変わる。下の MSVC の症状は，Debug 構成の検査（デバッグヒープ）の仕様から通常見られるもの（授業の前に TA が手元で一度確かめる）。Linux の症状は GCC で実際に実行したもの。
 > 「`n = 5` では正しく表示される」こと自体が，この題材で見せたい点の 1 つ。
 
 ## 対象の回と前提
@@ -25,19 +25,21 @@ sum=15
 
 **Startup Item** で `debugging BugMallocSize  [5]` を選び，Ctrl+F5 で実行する。
 
-- Debug 構成の MSVC: 期待どおりの 2 行が表示された後，`free` のところで **Microsoft Visual C++ Runtime Library** の **Debug Error!** のダイアログが出て，**HEAP CORRUPTION DETECTED: after Normal block (#…) at 0x…** と **CRT detected that the application wrote to memory after end of heap buffer.** と表示される（F5 で実行した場合も同じ文面で止まる）。
+- Debug 構成の MSVC: 期待どおりの 2 行が表示された後，`free` のところで **Microsoft Visual C++ Runtime Library** の **Debug Error!** のダイアログが出て（Debug 構成の既定の設定），**HEAP CORRUPTION DETECTED: after Normal block (#…) at 0x…** と **CRT detected that the application wrote to memory after end of heap buffer.** と表示される（F5 で実行した場合も同じ文面で止まる）。
 - Linux の GCC（Debug，サニタイザーなし）: 引数 `5` では期待どおりに表示して正常に終わり，誤りが見えない。引数 `1000` では何も表示せずに異常終了する（終了コード 134）:
 
   ```text
   malloc(): corrupted top size
   ```
 
-- AddressSanitizer 付き（`-DSOFTPRAC_SANITIZE=ON`）: 最初の書き込みで止まる。
+- AddressSanitizer 付き（`-DSOFTPRAC_SANITIZE=ON`）: 確保した 5 バイトの外へ初めて書く 2 回目の書き込み（`values[1]`。領域の先頭から 4 バイト目）で止まる（引数 `1` なら 1 回目の `values[0]`）。
 
   ```text
   ==...==ERROR: AddressSanitizer: heap-buffer-overflow on address ... 
   WRITE of size 4 at ... thread T0
       #0 ... in main .../dynamic.c:31
+  ...
+  ... is located 0 bytes after 5-byte region [...)
   ```
 
 未定義動作なので，バグ入りの版は自動テストで実行しない（直した版だけをテストする）。
@@ -45,7 +47,7 @@ sum=15
 ## 学生への渡し方
 
 - 渡すもの: `dynamic.c` だけ。**Command Arguments** を `5` にし，Debug 構成で実行するように言う。
-- 最初に言うこと: 「表示は正しいのに，終わるときにヒープが壊れたというダイアログが出ます。ダイアログの文面から，どの領域の外に書いたのかを探してください。確保したバイト数と，書き込んだバイト数を比べるのが目標です」
+- 最初に言うこと: 「**Command Arguments** を `5` にして Debug 構成で Ctrl+F5 で実行すると，`values: 1 2 3 4 5` と `sum=15` が出て正常に終わるはずですが，表示の後でヒープが壊れたというダイアログが出ます。原因をデバッガで探してください」
 - 言わないこと: `malloc(n)` の引数。
 
 ## 探し方
@@ -58,9 +60,9 @@ sum=15
 
 ## ヒントの段階
 
-1. 「`malloc(n)` で確保されるのは何バイト？ `n` 個の `int` には何バイト必要？」
-2. 「**Watch 1** に `sizeof *values` と書くといくつ？」
-3. 「`malloc` の引数は『個数』と『バイト数』のどちら？」
+1. 「ダイアログの **after Normal block** は，どの領域の後ろ？ その領域に書き込んでいる行はどれ？」
+2. 「`values` には全部で何バイト書き込む？（**Watch 1** に `n * sizeof *values`）」
+3. 「`malloc(n)` は何バイト確保する？ `malloc` の引数は個数とバイト数のどちら？」
 
 ## 原因
 
@@ -78,7 +80,7 @@ sum=15
 
 ## 学生への問い
 
-- 問「Linux で `n = 5` を試したら正しく動いた。それでも誤り？」→ 誤り。範囲外の書き込みは未定義動作で，壊した場所がたまたま使われていないだけ。`n = 1000` では異常終了する。
+- 問「Linux で `n = 5` を試したら正しく動いた。それでも誤り？」→ 誤り。範囲外の書き込みは未定義動作で，壊した場所がたまたま使われていないだけ。Linux の GCC（Debug）では引数 6 以下は正常に終わり，7 以上で glibc が壊れたことを検出して異常終了する。「`n = 5` で正しく見える」ことは「正しい」ことの根拠にならない。
 - 問「`malloc(n * sizeof(int *))` と書いたら？」→ x64 ではポインタが 8 バイトなので確保しすぎになる（範囲外にはならないが誤り）。`sizeof *values` なら要素の型に追従する（講義 2 節）。
 - 問「Debug 構成でダイアログが出るのはどの行？ 書き込んだ行で止まらないのはなぜ？」→ `free` の行。Debug の C ランタイムは書き込みのたびには調べず，解放のときに領域の後ろが書き換えられていないかを調べるから。
 

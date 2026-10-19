@@ -754,9 +754,9 @@
     {
       "type": "default",
       "project": "CMakeLists.txt",
-      "projectTarget": "BugAverage.exe (bin\\debugging\\BugAverage.exe)",
-      "name": "debugging BugAverage",
-      "currentDir": "${workspaceRoot}\\debugging\\BugAverage",
+      "projectTarget": "BugAnswerCheck.exe (bin\\debugging\\BugAnswerCheck.exe)",
+      "name": "debugging BugAnswerCheck",
+      "currentDir": "${workspaceRoot}\\debugging\\BugAnswerCheck",
       "args": []
     },
     {
@@ -807,6 +807,14 @@
       "projectTarget": "BugFactorial.exe (bin\\debugging\\BugFactorial.exe)",
       "name": "debugging BugFactorial",
       "currentDir": "${workspaceRoot}\\debugging\\BugFactorial",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "BugFactorialOverflow.exe (bin\\debugging\\BugFactorialOverflow.exe)",
+      "name": "debugging BugFactorialOverflow",
+      "currentDir": "${workspaceRoot}\\debugging\\BugFactorialOverflow",
       "args": []
     },
     {

@@ -30,13 +30,13 @@ calls=0
 ## 学生への渡し方
 
 - 渡すもの: `counter.h`・`counter.c`・`main.c` の 3 ファイル（空のプロジェクトに 3 つとも追加する）。
-- 最初に言うこと: 「3 回呼んだら `calls=3` のはずが `calls=0` です。`count_call` の中では `call_count` は増えているのか，`main` から見た `call_count` と同じものなのかを確かめてください」
+- 最初に言うこと: 「`count_call` を 3 回呼んで `calls=3` と出るはずですが，Ctrl+F5 で実行すると `calls=0` と出ます。原因をデバッガで探してください」
 - 言わないこと: `static` の意味，`extern`。
 
 ## 探し方
 
 1. **範囲を 2 つに分ける**: 「`count_call` が呼ばれていない」「呼ばれて増えているが，`main` が別のものを読んでいる」のどちらか。
-2. **関数の中で止める**: `counter.c` の `++call_count;` の行に F9，F5。3 回止まることで，呼ばれていることが分かる。3 回目に止まったら F10 を 1 回押し，コードの `call_count` にマウスポインターを重ねて（データヒント。授業では未習）値が 3 になることを見る。`call_count` は関数の外の変数なので **Locals** には出ない（**Debug > Windows > Autos** には出る）。
+2. **関数の中で止める**: `counter.c` の `++call_count;` の行に F9，F5。3 回止まることで，呼ばれていることが分かる。3 回目に止まったら F10 を 1 回押し，コードの `call_count` にマウスポインターを重ねて（データヒント（DataTip）。授業では未習）値が 3 になることを見る。`call_count` は関数の外の変数なので **Locals** には出ない（**Debug > Windows > Autos** には出る）。
 3. **呼び出し元で見る**: `main.c` の `printf` の行に F9 を置いて F5。ここで `call_count` にマウスポインターを重ねると 0。
 4. **仮説**: 「`counter.c` の `call_count` と `main.c` の `call_count` は別の変数。ヘッダの `static int call_count = 0;` が，インクルードした `.c` ごとに 1 つずつ別の変数を作っている」。
 5. **確かめる**: **Debug > Windows > Watch > Watch 1**（授業では未習）に `&call_count` を書き，`counter.c` で止まったときと `main.c` で止まったときのアドレスが違うことを見る。
@@ -82,5 +82,5 @@ calls=0
 ## 関連
 
 - [第12回 README](../../week12/README.md) の「課題3　リンクエラーを調べる」（「エラーの比較（表の解答）」）
-- [第13回 README](../../week13/README.md) の「プロジェクト一覧」の発展2「共有変数の宣言」（`SharedCount`，`_SharedCountDupDef`）
+- [第13回 README](../../week13/README.md) の「発展2　`static`変数の寿命を確かめる」の「第12回との接続：共有変数の宣言（`SharedCount`）」
 - [practice/README.md](../../practice/README.md) の「第12回　コンパイルとリンクを分けて考える」

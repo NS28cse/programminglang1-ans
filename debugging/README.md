@@ -15,7 +15,7 @@
 3. Ctrl+F5（**Debug > Start Without Debugging**）で実行し，題材の README の「症状」と同じになることを確かめる。F5（**Debug > Start Debugging**）でデバッガの手順を事前に試しておく。
 
 症状は **Debug 構成**で確かめる。実行時チェック（`/RTC1`）や Debug の C ランタイムの検査で見える症状は，Release 構成では出ない。
-VS Code では，題材の `.c` を開いた状態で「開いている課題を実行」を選ぶ（作業ディレクトリは題材のフォルダ。引数が要る題材は「引数つきで実行」）。
+VS Code では，題材の `.c` を開いた状態で「開いている課題を実行」を選ぶ（作業ディレクトリは題材のフォルダ）。引数が要る題材は「引数つきで実行」を選ぶ。この構成の `args` は `["input.txt"]` なので，`BugCharCount` はそのまま使え，`BugMallocSize` は `.vscode/launch.json` の `args` を `["5"]` に書き換える。
 
 ### 学生への渡し方
 
@@ -53,7 +53,7 @@ VS Code では，題材の `.c` を開いた状態で「開いている課題を
 | 第5回 | [BugRowSum](BugRowSum/README.md) | 二次元配列の行ごとの合計 | 初期化の位置（累積変数をループの外で 1 回だけ 0 に） | F9・F5（**Continue**）・**Locals** | いいえ |
 | 第5回 | [BugGrade](BugGrade/README.md) | 点数から A〜D を返す関数 | 条件の順序（`else if` の並び） | 関数の中の F9・F10・**Locals** | いいえ |
 | 第6回 | [BugDigitSum](BugDigitSum/README.md) | 数字の文字列の各桁の和 | 文字と数の取り違え（`- '0'` の忘れ） | F9・F10・**Locals**（文字コードの表示） | いいえ |
-| 第6回 | [BugAverage](BugAverage/README.md) | 合計と平均 | 整数除算（代入先が `double` でも割り算は `int`） | F9・**Locals**（**Watch 1** は未習） | いいえ |
+| 第6回 | [BugAnswerCheck](BugAnswerCheck/README.md) | 答えと解答を `strcmp` で比べる | 戻り値の読み違い（`if (strcmp(a, b))` を「等しい」と読む） | 関数の中の F9・F10・**Locals**（**Watch 1** は未習） | いいえ |
 | 第7回 | [BugUpper](BugUpper/README.md) | 入力を大文字にして写す | 入力の読み方（1 回の繰り返しで `getchar` を 2 回） | F9・F10・**Locals**，コンソールへの入力と `EOF` | いいえ |
 | 第7回 | [BugReverseWord](BugReverseWord/README.md) | 8 文字までの単語を逆順に表示 | 配列の範囲外（終端 `'\0'` の分の要素がない） | 実行時チェックのダイアログ・F9・**Locals**（**Memory 1** は未習） | **はい** |
 | 第8回 | [BugCopyText](BugCopyText/README.md) | 文字列をコピーする関数 | 文字列の終端のコピー忘れ | F9・**Locals**（F11・**Watch 1** は未習） | いいえ |
@@ -64,11 +64,12 @@ VS Code では，題材の `.c` を開いた状態で「開いている課題を
 | 第13回 | [BugMallocSize](BugMallocSize/README.md) | `n` 個の `int` を動的に確保 | `malloc` のサイズの誤り（要素数をバイト数として渡す） | ヒープ破壊のダイアログ・**Command Arguments**・**Watch 1**（`values,5`） | **はい** |
 | 第13回 | [BugBackupScores](BugBackupScores/README.md) | 点数の控えを作ってから元を解放 | 解放後の使用・二重解放（構造体の代入で配列を共有） | F9・F10・**Locals**・**Watch 1** | **はい** |
 | 第14回 | [BugFactorial](BugFactorial/README.md) | 0!〜5! の表 | 再帰の基底条件（0 で止まらない） | 例外で止まる・**Call Stack**・**Locals**・F11 | 異常終了（スタックオーバーフロー） |
+| 第14回 | [BugFactorialOverflow](BugFactorialOverflow/README.md) | 0!〜15! の表 | `int` の桁あふれ（型の上限を確かめていない） | F9・F11・**Locals**・**Autos**（戻り値） | **はい** |
 
 ## テスト
 
 - 結果が決まる題材は，`tests/` に**バグ入りの版の症状**（間違った出力）を，`variants/tests/` に**直した版**の正しい出力を置いている。直した版は，各題材の `CMakeLists.txt` に書いた置き換え（README の「直し方」と同じ差分）でソースを書き換えてビルドする。
-- 未定義動作・異常終了・無限ループの題材（`BugReverseWord`・`BugMallocSize`・`BugBackupScores`・`BugFactorial`・`BugSkipCount`）は，バグ入りの版をテストで実行せず，直した版だけをテストする。
+- 未定義動作・異常終了・無限ループの題材（`BugReverseWord`・`BugMallocSize`・`BugBackupScores`・`BugFactorialOverflow`・`BugFactorial`・`BugSkipCount`）は，バグ入りの版をテストで実行せず，直した版だけをテストする。
 - テスト名は `debugging/<題材>/<ケース>`（症状）と `debugging/<題材>/variant_fixed…`（直した版）。`-DSOFTPRAC_WEEKS=debugging` を付けて構成すると，この題材だけをビルド・テストできる。
 
 題材を足すときの規則は [CONTRIBUTING.md](../CONTRIBUTING.md) の「フォルダ構成」にある。
