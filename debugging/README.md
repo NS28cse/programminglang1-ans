@@ -13,7 +13,7 @@
 
 ### TA が症状を確かめる（Visual Studio）
 
-1. リポジトリを **File > Open > Folder** で開き，構成を `Windows / MSVC (x64 Debug)` にする（[ルートの README](../README.md) の「Visual Studio で使う」）。
+1. リポジトリを **File > Open > Folder** で開き，構成を **`Windows / MSVC (x64 Debug)`** にする（ルートの README の [Visual Studio で使う](../README.md#visual-studio-で使うwindows)）。
 2. ツールバーの **Startup Item** で `debugging BugEvenSum` のような項目を選ぶ。作業ディレクトリは題材のフォルダ，引数は `run.args` になる（`debugging BugCharCount  [input.txt]` のように引数が項目名に出る）。
 3. Ctrl+F5（**Debug > Start Without Debugging**）で実行し，題材の README の「症状」と同じになることを確かめる。F5（**Debug > Start Debugging**）でデバッガの手順を事前に試しておく。
 

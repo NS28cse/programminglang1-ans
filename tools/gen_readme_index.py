@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ルートの README.md の目次（各回とデバッグの題材の表）を weekNN/・debugging/ の内容から作り直す。
+"""ルートの README.md の「各回の解答と題材の表」を weekNN/・debugging/ の内容から作り直す。
 
 <!-- WEEK-TABLE:BEGIN --> と <!-- WEEK-TABLE:END --> の間を置き換える。
   - 各回の行: 回（weekNN/README.md へのリンク）・テーマ（weekNN/README.md の 1 行目の（）の中）・
@@ -57,12 +57,12 @@ def run(check=False):
     new = text[:start] + "\n" + "\n".join(rows) + "\n" + text[end:]
     summary = f"テスト {total} 件"
     if write_text(README, new, check):
-        print(f"README.md の目次: 最新（{summary}）")
+        print(f"README.md の各回の解答と題材の表: 最新（{summary}）")
         return True
     if check:
-        print("[NG] README.md の目次が最新ではない（python3 tools/update_generated.py で作り直す）")
+        print("[NG] README.md の各回の解答と題材の表が最新ではない（python3 tools/update_generated.py で作り直す）")
         return False
-    print(f"README.md の目次: 作り直した（{summary}）")
+    print(f"README.md の各回の解答と題材の表: 作り直した（{summary}）")
     return True
 
 

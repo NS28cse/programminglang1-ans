@@ -93,10 +93,11 @@ TA が授業で解説・採点に使う資料。演習ページの**すべての
 
 - 演習ページ: [exNN](https://t-yokoga.github.io/softprac1/exNN.html)（原稿: [docs/exNN.md](https://github.com/t-yokoga/softprac1/blob/main/docs/exNN.md)）・講義: [lecNN](https://t-yokoga.github.io/softprac1/lecNN.html)（例題: [docs/sample/NN/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/NN/)）
 - TA 用の資料: [実務の手引き 第N回](../ta-guide/README.md#<その回の節の見出しのアンカー>)・デバッグの題材 [Bug<名前>](../debugging/Bug<名前>/README.md)，[Bug<名前>](../debugging/Bug<名前>/README.md)
-- 今回の範囲: その回までに講義で扱った文法・関数と，使わないもの
+- 今回の範囲: その回までに講義で扱った文法・関数と，使わないもの（任意）
 ```
 
-- 1 行目の（）の中のテーマは，ルートの README の表にそのまま使われる（`tools/gen_readme_index.py`）。
+- 1 行目の（）の中のテーマは，ルートの README の「各回の解答と題材の表」にそのまま使われる（`tools/gen_readme_index.py`）。
+- 「今回の範囲」の行は任意。箇条書きの後の文章で書いてもよい。
 - 例題は，講義の例題のフォルダ `docs/sample/NN/` への 1 本のリンクにする（ファイルごとに並べない）。
 - 「TA 用の資料」の行は，実務の手引きのその回の節と，その回のデバッグの題材（`debugging/README.md` の一覧の「回」の列）へリンクする。題材がない回は手引きだけを書く。
   手引きの節へのアンカーは見出しから作られるので，手引きの見出しを変えたら各回のリンクも直す（`python3 tools/check_docs.py` で見つかる）。
@@ -179,6 +180,7 @@ python3 tools/check_docs.py         # 文書のリンクとアンカー，デバ
 ```
 
 - 生成されたファイルも同じコミットに含める（テスト数が変わったのに作り直さないと，CI の repository-checks が失敗する）。
+- push して CI の repository-checks が失敗したら，手元でこの 2 つを実行し，変わったファイルを commit する。Visual Studio の **Debug and Launch Settings** で `.vs/launch.vs.json` の引数を書き換えたまま commit したときも失敗する（既定の引数は `run.args` で変える）。
 - push したら CI の全ジョブが成功したことを確かめる。
 
 `tools/` のスクリプト:
@@ -188,7 +190,7 @@ python3 tools/check_docs.py         # 文書のリンクとアンカー，デバ
 | `update_generated.py` | 次の 3 つを順に実行する。`--check` は書き換えずに確かめる（CI 用） |
 | `normalize_sources.py` | `weekNN/`・`debugging/` の `.c`・`.h` を BOM 付き UTF-8・LF・末尾改行ありにそろえる。引数に回のフォルダ名（`week05`，`debugging`）を付けるとその回だけ |
 | `gen_launch_vs.py` | Visual Studio の起動構成 `.vs/launch.vs.json` を作り直す（作業ディレクトリ = プロジェクトフォルダ，引数 = `run.args`） |
-| `gen_readme_index.py` | ルートの README.md の各回の表（テスト数を含む）を作り直す |
+| `gen_readme_index.py` | ルートの README.md の「各回の解答と題材の表」（テスト数を含む）を作り直す |
 | `check_docs.py` | すべての `.md` の相対リンクとアンカーがあること，`debugging/README.md` の一覧と `Bug*` フォルダが一致すること |
 | `check_launch.py` | IDE の起動構成が実際に動くこと（`python3 tools/check_launch.py <ビルド先>`。CI 用。手元でも確かめられる） |
 | `projects.py` | プロジェクトの列挙（ルートの `CMakeLists.txt` と同じ規則）を各スクリプトで共有するライブラリ |

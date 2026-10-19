@@ -65,12 +65,11 @@
 
 ### このリポジトリを Visual Studio で開く場合（**File > Open > Folder**）
 
-各プロジェクトは「作業ディレクトリ = プロジェクトフォルダ」「引数 = `run.args`（1 行 1 引数）」の起動構成になる（`tools/gen_launch_vs.py` が `.vs/launch.vs.json` を生成）。
-ツールバーの **Startup Item** で `week10 ReadText  [input.txt]` などを選んで Ctrl+F5。引数を変えたいときは `.vs/launch.vs.json` の `"args"` を書き換える。
+ツールバーの **Startup Item** で `week10 ReadText  [input.txt]` などを選んで Ctrl+F5。引数の変え方はルートの README の [Visual Studio で使う](../README.md#visual-studio-で使うwindows) にある。
 
 ### VS Code
 
-1. 実行したい課題の `.c` を開き，「実行とデバッグ」で **「開いている課題を引数つきで実行」**（Windows は MSVC，macOS/Linux は gdb/lldb）を選ぶ。
+1. 実行したい課題の `.c` を開き，**Run and Debug** ビューで「**開いている課題を引数つきで実行**」（Windows は MSVC，macOS/Linux は gdb/lldb）を選ぶ。
 2. `.vscode/launch.json` のその構成の `"args"` を課題に合わせて書き換える。**1 要素が 1 引数**で，引用符は要らない:
    - `ReadText`: `"args": [ "input.txt" ]`，空白を含む名前: `"args": [ "my input.txt" ]`
    - `CheckValue`: `"args": [ "squares.txt", "9" ]`，`WriteSquares`: `"args": [ "4", "squares.txt" ]`

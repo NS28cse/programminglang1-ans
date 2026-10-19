@@ -91,6 +91,6 @@ C の引数は値渡しなので，`find_max(scores, COUNT, best)` は `best` �
 ## 関連
 
 - [題材の一覧と渡し方の共通ルール](../README.md)
-- [第9回 README](../../week09/README.md) の「課題1　見つからない場合（`FindMax`）」（「二重ポインタの代入を追う」，「値を返す版と，場所を返す版（`ReturnMaximum`）」）
-- [第8回 README](../../week08/README.md) の「課題1　`swap`を追う」（「説明すること：`*a = *b` を `a = b` に変えても交換にならない理由」）
-- [実務の手引き](../../ta-guide/README.md) の「第8回　Step Into とウォッチでポインタを見る」，「第9回　実験の前に commit，後で差分」
+- 第9回 README の [課題1　見つからない場合](../../week09/README.md#課題1見つからない場合findmax--double_pointerc)（[二重ポインタの代入を追う](../../week09/README.md#二重ポインタの代入を追う)，[値を返す版と，場所を返す版（`ReturnMaximum`）](../../week09/README.md#値を返す版と場所を返す版returnmaximum)）
+- 第8回 README の [課題1　`swap`を追う](../../week08/README.md#課題1swapを追うswap--pointersc)（[説明すること：`*a = *b` を `a = b` に変えても交換にならない理由](../../week08/README.md#説明することa--b-を-a--b-に変えても交換にならない理由)）
+- 実務の手引きの [第8回　Step Into とウォッチでポインタを見る](../../ta-guide/README.md#第8回step-into-とウォッチでポインタを見るポインタ1)，[第9回　実験の前に commit，後で差分](../../ta-guide/README.md#第9回実験の前に-commit後で差分ポインタ2)

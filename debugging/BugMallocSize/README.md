@@ -87,5 +87,5 @@ sum=15
 ## 関連
 
 - [題材の一覧と渡し方の共通ルール](../README.md)
-- [第13回 README](../../week13/README.md) の「課題1　動的配列（`Dynamic`）」（「確保量を説明する」）
-- [実務の手引き](../../ta-guide/README.md) の「第13回　所有者と失敗経路」（「デバッグの補足」の 0xCD・0xFD），「どの回でも使う型」の「AddressSanitizer」
+- 第13回 README の [課題1　動的配列](../../week13/README.md#課題1動的配列dynamic--dynamicc)（[確保量を説明する](../../week13/README.md#確保量を説明する)）
+- 実務の手引きの [第13回　所有者と失敗経路](../../ta-guide/README.md#第13回所有者と失敗経路メモリ管理)（「デバッグの補足」の 0xCD・0xFD），[どの回でも使う型](../../ta-guide/README.md#どの回でも使う型) の [AddressSanitizer](../../ta-guide/README.md#addresssanitizer範囲外アクセスと解放後の使用を実行時に見つける)

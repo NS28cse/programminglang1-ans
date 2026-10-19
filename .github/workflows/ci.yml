@@ -15,7 +15,7 @@ concurrency:
 # すべてのジョブを動かしたいときは Actions タブから手動で実行する（workflow_dispatch）。
 
 jobs:
-  # 学生の環境 1: Visual Studio の File > Open > Folder / VS Code + CMake Tools（CMakePresets の msvc-*）
+  # 想定する環境 1: Visual Studio の File > Open > Folder / VS Code + CMake Tools（CMakePresets の msvc-*）
   # 開発者コマンド プロンプトと同じ環境（VS 付属の cl.exe・CMake・Ninja）で，プリセットをそのまま使う
   windows-msvc-preset:
     runs-on: windows-latest
@@ -40,7 +40,7 @@ jobs:
         # 実行ファイルと作業ディレクトリがあることだけを確かめる
         run: python tools/check_launch.py out/build/${{ matrix.preset }}
 
-  # 学生の環境 2: Visual Studio のソリューション（.sln）を生成する使い方（CMake GUI など）
+  # 想定する環境 2: Visual Studio のソリューション（.sln）を生成する使い方（CMake GUI など）
   windows-msvc-sln:
     if: ${{ !(github.event.repository.private && github.event_name != 'workflow_dispatch') }}
     runs-on: windows-latest
@@ -55,7 +55,7 @@ jobs:
       - name: Test
         run: ctest --test-dir build -C Debug -j 4 --timeout 60 --output-on-failure
 
-  # 学生の環境 3: Visual Studio を入れずに VS Code + MSYS2 の gcc を使う
+  # 想定する環境 3: Visual Studio を入れずに VS Code + MSYS2 の gcc を使う
   # （Visual Studio が既定の構成として選ばないよう，MinGW 用のプリセットは置かずにここで直接指定する）
   windows-mingw:
     if: ${{ !(github.event.repository.private && github.event_name != 'workflow_dispatch') }}
@@ -104,7 +104,7 @@ jobs:
       - name: Test
         run: ctest --test-dir build -j 4 --timeout 60 --output-on-failure
 
-  # 学生の環境 4: macOS（Apple Clang）で CMakePresets の gcc-debug を使う
+  # 想定する環境 4: macOS（Apple Clang）で CMakePresets の gcc-debug を使う
   macos:
     if: ${{ !(github.event.repository.private && github.event_name != 'workflow_dispatch') }}
     runs-on: macos-latest

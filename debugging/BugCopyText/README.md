@@ -77,5 +77,5 @@ catse
 ## 関連
 
 - [題材の一覧と渡し方の共通ルール](../README.md)
-- [第8回 README](../../week08/README.md) の「課題3　安全な文字列コピー（`CopyText`）」（「`char out[] = "aaaaaaaaaa";` へ `"hoge"` をコピーした場合」）
-- [実務の手引き](../../ta-guide/README.md) の「第8回　Step Into とウォッチでポインタを見る」
+- 第8回 README の [課題3　安全な文字列コピー](../../week08/README.md#課題3安全な文字列コピーcopytext--copy_textc)（[`char out[] = "aaaaaaaaaa";` へ `"hoge"` をコピーした場合](../../week08/README.md#char-out--aaaaaaaaaa-へ-hoge-をコピーした場合)）
+- 実務の手引きの [第8回　Step Into とウォッチでポインタを見る](../../ta-guide/README.md#第8回step-into-とウォッチでポインタを見るポインタ1)

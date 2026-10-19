@@ -92,5 +92,5 @@ UndefinedBehaviorSanitizer 付き（`-DSOFTPRAC_SANITIZE=ON`）では，最初�
 ## 関連
 
 - [題材の一覧と渡し方の共通ルール](../README.md)
-- [第14回 README](../../week14/README.md) の「課題1 階乗の境界」（`unsigned long long` と 0〜20 の検査），「課題4 再帰の入口を安全にする」
-- [実務の手引き](../../ta-guide/README.md) の「第3回　期待値を先に書くテスト」，「第14回　推測せずに計測する」
+- 第14回 README の [課題1　階乗の境界](../../week14/README.md#課題1階乗の境界factorial--recursionc)（`unsigned long long` と 0〜20 の検査），[課題4　再帰の入口を安全にする](../../week14/README.md#課題4再帰の入口を安全にするcheckedfactorial--checked_factorialc)
+- 実務の手引きの [第3回　期待値を先に書くテスト](../../ta-guide/README.md#第3回期待値を先に書くテスト演算子)，[第14回　推測せずに計測する](../../ta-guide/README.md#第14回推測せずに計測する再帰)

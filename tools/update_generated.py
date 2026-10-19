@@ -3,7 +3,7 @@
 
   1. normalize_sources.py  weekNN/・debugging/ の .c/.h を BOM 付き UTF-8・LF・末尾改行ありにそろえる
   2. gen_launch_vs.py      Visual Studio（File > Open > Folder）の起動構成 .vs/launch.vs.json を作り直す
-  3. gen_readme_index.py   ルート README.md の目次（各回とデバッグの題材の表，テスト数）を作り直す
+  3. gen_readme_index.py   ルート README.md の「各回の解答と題材の表」（テスト数を含む）を作り直す
 
     python3 tools/update_generated.py          # そろえる・作り直す
     python3 tools/update_generated.py --check  # 書き換えずに確かめ，直すべきものがあれば失敗する（CI 用）

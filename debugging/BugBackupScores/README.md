@@ -101,6 +101,6 @@ mean=81.7
 ## 関連
 
 - [題材の一覧と渡し方の共通ルール](../README.md)
-- [第13回 README](../../week13/README.md) の「課題2　配列を逆順にする」（「追加：独立したコピー（`DynamicCopy`）」），「課題4　コードレビュー」（「所有者を図にする」）
-- [第11回 README](../../week11/README.md) の「課題4　配列メンバとポインタメンバを比較する（`CopyMembers`）」
-- [実務の手引き](../../ta-guide/README.md) の「第13回　所有者と失敗経路」，「どの回でも使う型」の「AddressSanitizer」
+- 第13回 README の [課題2　配列を逆順にする](../../week13/README.md#課題2配列を逆順にするdynamic--dynamicc)（[追加：独立したコピー（`DynamicCopy`）](../../week13/README.md#追加独立したコピーdynamiccopy)），[課題4　コードレビュー](../../week13/README.md#課題4コードレビュー)（[所有者を図にする](../../week13/README.md#所有者を図にする)）
+- 第11回 README の [課題4　配列メンバとポインタメンバを比較する](../../week11/README.md#課題4配列メンバとポインタメンバを比較するcopymembers--copy_membersc)
+- 実務の手引きの [第13回　所有者と失敗経路](../../ta-guide/README.md#第13回所有者と失敗経路メモリ管理)，[どの回でも使う型](../../ta-guide/README.md#どの回でも使う型) の [AddressSanitizer](../../ta-guide/README.md#addresssanitizer範囲外アクセスと解放後の使用を実行時に見つける)

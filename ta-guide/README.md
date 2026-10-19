@@ -101,7 +101,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 
 **副テーマ（ビルドの成功と正しさは別）**: 課題2 `Message` で，演習ページの期待する表示と自分の出力を 1 行ずつ並べて比べさせる（空行・`"`・`\`・`%` の 1 文字の違い）。期待する出力と比べることが，テストのいちばん小さな形である（確認問題6）。
 
-**関連**: [第1回 README](../week01/README.md) の「課題3　エラーメッセージを読んで修正する」（MSVC・GCC・Clang の診断の比較，採点のポイント），「課題4　ソースファイルと実行ファイル」
+**関連**: 第1回 README の [課題3　エラーメッセージを読んで修正する](../week01/README.md#課題3エラーメッセージを読んで修正するbroken--brokenc)（MSVC・GCC・Clang の診断の比較，採点のポイント），[課題4　ソースファイルと実行ファイル](../week01/README.md#課題4ソースファイルと実行ファイルversion--versionc)
 
 ## 第2回　バージョン管理を始める（変数）
 
@@ -133,7 +133,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 
 **デバッグの補足（デバッガの前に）**: デバッガは第4回から。この回は「実行する前に表示を予測して書く → 実行して比べる」が出発点になる。予測と違ったら，例えば `Rectangle` の再計算の前に `printf("width=%d area=%d\n", width, area);` を 1 行足し，どの代入の後から値が予測とずれたかを確かめる。確かめ終わったら足した行は消す（期待する表示と 1 文字も違えないため）。
 
-**関連**: [第2回 README](../week02/README.md) の「全課題に共通の採点ポイント」（警告が出たまま提出していないか），「課題2　型と表示の対応」の「型と違う書式で試さない」
+**関連**: 第2回 README の [全課題に共通の採点ポイント](../week02/README.md#全課題に共通の採点ポイント)（警告が出たまま提出していないか），[課題2　型と表示の対応](../week02/README.md#課題2型と表示の対応profile--profilec) の [型と違う書式で試さない](../week02/README.md#型と違う書式で試さない演習ページの注意について)
 
 ## 第3回　期待値を先に書くテスト（演算子）
 
@@ -159,7 +159,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 
 **副テーマ（試してはいけない実験）**: 0 による整数除算・範囲外のシフト・`printf` の引数に `x++` と `x` を並べる書き方は未定義動作で，「実行したら動いた」は根拠にならない（演習ページの注意）。MSVC では警告が出ないこともあるので，コードを読んで判断させる。
 
-**関連**: [第3回 README](../week03/README.md) の「記録（`memo.txt`）の書き方の例」，「課題1」の「境界の値を試す」，「課題4」の「例外を含む年で確認する」，「課題2」の採点のポイント（`printf` の引数の未定義動作）
+**関連**: 第3回 README の [記録（`memo.txt`）の書き方の例](../week03/README.md#記録memotxtの書き方の例)，[課題1　秒を分と秒へ分解する](../week03/README.md#課題1秒を分と秒へ分解するtimeparts--time_partsc) の [境界の値を試す](../week03/README.md#境界の値を試すseconds-を-0596061-に変更)，[課題4　うるう年の条件式](../week03/README.md#課題4うるう年の条件式leap--leapc) の [例外を含む年で確認する](../week03/README.md#例外を含む年で確認する1900200020242025)，[課題2　前置・後置と複合代入](../week03/README.md#課題2前置後置と複合代入update--updatec) の採点のポイント（`printf` の引数の未定義動作）
 
 ## 第4回　デバッガで流れを追う（制御構造）
 
@@ -188,7 +188,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 
 **デバッグの補足（条件付きブレークポイント。授業では未習）**: `n = 100` で `i` が 50 の反復だけを見たいときは，ブレークポイントを右クリックして **Conditions** を選び，**Conditional Expression** の **Is true** に `i == 50` と書く。F5 を何十回も押さなくても，条件が真のときだけ止まる（条件付きのブレークポイントには **+** が付く）。
 
-**関連**: [第4回 README](../week04/README.md) の「課題2　偶数の合計」の「値を追跡する（`n = 4`）」「説明すること」，講義 [lec04](https://t-yokoga.github.io/softprac1/lec04.html) の「7　二重ループとテスト」，デバッグの題材 [BugEvenSum](../debugging/BugEvenSum/README.md)，[BugSkipCount](../debugging/BugSkipCount/README.md)
+**関連**: 第4回 README の [課題2　偶数の合計](../week04/README.md#課題2偶数の合計evensum--even_sumc) の [値を追跡する（`n = 4`）](../week04/README.md#値を追跡するn--4)・[説明すること](../week04/README.md#説明すること-1)，講義 [lec04](https://t-yokoga.github.io/softprac1/lec04.html) の「7　二重ループとテスト」，デバッグの題材 [BugEvenSum](../debugging/BugEvenSum/README.md)，[BugSkipCount](../debugging/BugSkipCount/README.md)
 
 ## 第5回　読みやすいコードと関数の約束（配列と関数）
 
@@ -224,7 +224,7 @@ int count_passed(const int scores[], int n);   /* 本体は if (scores[i] >= PAS
 
 **デバッグの補足（配列をウォッチする。授業では未習）**: `max_score` の中の `a` はポインタなので，**Watch 1** に `a` と書くと先頭の要素しか見えない。`a,5` のように「,要素数」を付けると（書式指定子），5 要素を配列として表示できる。`main` の `scores` は配列なので，そのまま全要素が見える。この違いは「配列を渡すと先頭の場所が渡る」（講義 4 節）の確かめになる。
 
-**関連**: [第5回 README](../week05/README.md) の「課題4　平均と累乗を関数にする」「発展　役割を分ける」（それぞれの採点のポイント），デバッグの題材 [BugRowSum](../debugging/BugRowSum/README.md)，[BugGrade](../debugging/BugGrade/README.md)
+**関連**: 第5回 README の [課題4　平均と累乗を関数にする](../week05/README.md#課題4平均と累乗を関数にするfunctions--functionsc)・[発展　役割を分ける](../week05/README.md#発展役割を分けるsummean--summeanc)（それぞれの採点のポイント），デバッグの題材 [BugRowSum](../debugging/BugRowSum/README.md)，[BugGrade](../debugging/BugGrade/README.md)
 
 ## 第6回　容量と範囲外書き込み（文字列）
 
@@ -255,7 +255,7 @@ int count_passed(const int scores[], int n);   /* 本体は if (scores[i] >= PAS
 **デバッグの補足（終端をメモリで見る。授業では未習）**: デバッグ中に **Debug > Windows > Memory > Memory 1** を開き，**Address** 欄に `text` と入れると，各バイトが 16 進で並ぶ。`hoge` なら 68・6F・67・65 の後に 00（終端 `'\0'`）が続く。連結の後に 00 がどこへ移ったかを見れば，`i <= added` の等号の意味が分かる（初期化で残りが 0 なので，`i < added` でも 00 が見えてしまうことも分かる）。**Memory** ウィンドウは **Tools > Options** の **Debugging > General** で **Enable address-level debugging** が有効なときに使える。
 Debug 構成の実行時チェック（**Basic Runtime Checks**，`/RTC1`）は，**関数から戻るとき**に局所配列のすぐ外が書き換えられていないかを調べ，変数名を挙げてスタックの破壊を報告して止まる。止まるのは関数の終わりなので，その行ではなく，名前の出た配列への書き込み（特に容量の判定の差 1）を探す。すぐ外より遠くへの書き込みや，範囲外の読み取りは見つからない。
 
-**関連**: [第6回 README](../week06/README.md) の「課題4　比較してから連結する」（容量の境界の表，説明すること，採点のポイント），「課題3」の「符号の異なる比較を読む」，デバッグの題材 [BugDigitSum](../debugging/BugDigitSum/README.md)，[BugAnswerCheck](../debugging/BugAnswerCheck/README.md)
+**関連**: 第6回 README の [課題4　比較してから連結する](../week06/README.md#課題4比較してから連結するcomparejoin--compare_joinc)（容量の境界の表，説明すること，採点のポイント），[課題3　変換する順序](../week06/README.md#課題3変換する順序average--averagec) の [符号の異なる比較を読む](../week06/README.md#符号の異なる比較を読む)，デバッグの題材 [BugDigitSum](../debugging/BugDigitSum/README.md)，[BugAnswerCheck](../debugging/BugAnswerCheck/README.md)
 
 ## 第7回　再現できる質問・バグ報告（入出力）
 
@@ -281,7 +281,7 @@ Debug 構成の実行時チェック（**Basic Runtime Checks**，`/RTC1`）は�
 **副テーマ（結果は `stdout`，診断は `stderr`）**: `LineInput` は行を読めなかったとき `No line read.` を `stderr` に出し，`return 1;` で終わる。Ctrl+F5 のコンソールでは終了後に `exited with code 1` と終了コードが表示される。
 結果と診断の出力先を分けておくと，パイプの次のプログラムにエラーメッセージが混ざらない（課題4 の冒頭の問いと問5）。
 
-**関連**: [第7回 README](../week07/README.md) の「共通: 入力の与え方・入力終了・リダイレクト」，「課題2　英字の数を数える」「課題3　行の容量」の採点のポイント，デバッグの題材 [BugUpper](../debugging/BugUpper/README.md)，[BugReverseWord](../debugging/BugReverseWord/README.md)
+**関連**: 第7回 README の [共通: 入力の与え方・入力終了・リダイレクト](../week07/README.md#共通-入力の与え方入力終了リダイレクト)，[課題2　英字の数を数える](../week07/README.md#課題2英字の数を数えるlettercount--letter_countcbytecount--byte_countc)・[課題3　行の容量](../week07/README.md#課題3行の容量lineinput--linec) の採点のポイント，デバッグの題材 [BugUpper](../debugging/BugUpper/README.md)，[BugReverseWord](../debugging/BugReverseWord/README.md)
 
 ## 第8回　Step Into とウォッチでポインタを見る（ポインタ1）
 
@@ -313,7 +313,7 @@ F11・ウォッチ・呼び出し履歴は第14回の講義で正式に扱う（
 **デバッグの補足（アクセス違反で止まったら）**: 演習では無効なポインタを実行して試さないが，学生のプログラムが誤って止まったときは次の順に見る。
 ① **Exception Thrown** ウィンドウの文面を読む（read access violation と，`p was nullptr` のようにどのポインタかが出ることがある。C のプログラムでも `nullptr` と表示されるが，`NULL` のこと）。② 黄色の矢印の行で，どの式がポインタをたどっているかを見る。③ **Locals** でそのポインタの値を確かめる（`0x0000000000000000` なら `NULL`）。④ **Call Stack** で呼び出し元の行をダブルクリックし，そのポインタをどこで受け取ったか・作ったかをさかのぼる。確かめたら Shift+F5 で止めてから直す。
 
-**関連**: [第8回 README](../week08/README.md) の「課題1　`swap`を追う」（図，「`*a = *b` を `a = b` に変えても交換にならない理由」，採点のポイント），デバッグの題材 [BugCopyText](../debugging/BugCopyText/README.md)
+**関連**: 第8回 README の [課題1　`swap`を追う](../week08/README.md#課題1swapを追うswap--pointersc)（図，「`*a = *b` を `a = b` に変えても交換にならない理由」，採点のポイント），デバッグの題材 [BugCopyText](../debugging/BugCopyText/README.md)
 
 ## 第9回　実験の前に commit，後で差分（ポインタ2）
 
@@ -341,7 +341,7 @@ F11・ウォッチ・呼び出し履歴は第14回の講義で正式に扱う（
 **副テーマ（警告と「動いた」を区別する）**: `MatrixMean` の仮引数を `int *a[COLS]` にすると，MSVC は C4047（間接参照のレベルが異なる）と C4024（仮引数と実引数の型が異なる）を出す。
 この形のまま実行すると範囲外アクセスになり得るので実行しない。「実行して期待値になった」ことは，型や境界の誤りを正当化しない（演習ページ「連続性と範囲」）。
 
-**関連**: [第9回 README](../week09/README.md) の「課題1　見つからない場合」の「検索範囲と同点の扱い（表）」，「課題3　行ごとの平均」の「配列へのポインタで表す」，デバッグの題材 [BugFindMax](../debugging/BugFindMax/README.md)
+**関連**: 第9回 README の [課題1　見つからない場合](../week09/README.md#課題1見つからない場合findmax--double_pointerc) の [検索範囲と同点の扱い（表）](../week09/README.md#検索範囲と同点の扱い表)，[課題3　行ごとの平均](../week09/README.md#課題3行ごとの平均matrixmean--matrixc) の [配列へのポインタで表す](../week09/README.md#配列へのポインタで表す)，デバッグの題材 [BugFindMax](../debugging/BugFindMax/README.md)
 
 ## 第10回　失敗を伝えるエラー処理（ファイル）
 
@@ -377,7 +377,7 @@ if (fp == NULL) {
 
 **デバッグの補足（バイト順をメモリで見る。授業では未習）**: `ByteOrder` の `for` の行で止め，**Memory 1** の **Address** に `&value` と入れると，`value = 1` が 01・00 の順に並ぶ（x64 の Visual Studio）。プログラムの表示 `01 00` と同じ並びであることを画面で確かめられる。`Binary` では `fread` の後で `buffer` を見ると，読んだ 4 バイト（41・00・42・0A）の後ろに，読んでいない残りの 12 バイトの意味のない値（Debug 構成では CC が並ぶことが多い）が並ぶ（`n` 個目以降を使わない理由）。
 
-**関連**: [第10回 README](../week10/README.md) の「課題1　ファイルを読む」の表，「課題2　数値引数の検査」，「発展2」の「表「異常なデータも別ファイルで確認する」（記入済み）」，期待値の例 [CheckValue/tests](../week10/CheckValue/tests/)（`.err` が標準エラー出力，`.code` が終了コード），デバッグの題材 [BugCharCount](../debugging/BugCharCount/README.md)
+**関連**: 第10回 README の [課題1　ファイルを読む](../week10/README.md#課題1ファイルを読むreadtext--read_textc) の表，[課題2　数値引数の検査](../week10/README.md#課題2数値引数の検査parsenumber--parse_numberc)，[発展2　二乗の一覧を書き出して検索する](../week10/README.md#発展2二乗の一覧を書き出して検索するwritesquares--write_squaresccheckvalue--check_valuec) の「表「異常なデータも別ファイルで確認する」（記入済み）」，期待値の例 [CheckValue/tests](../week10/CheckValue/tests/)（`.err` が標準エラー出力，`.code` が終了コード），デバッグの題材 [BugCharCount](../debugging/BugCharCount/README.md)
 
 ## 第11回　コードレビュー：読み合いで見つける（構造体）
 
@@ -406,7 +406,7 @@ if (fp == NULL) {
 
 **デバッグの補足（構造体の隙間をメモリで見る。授業では未習）**: `StructLayout` の `main` に確かめ用の `Record r = {'A', 1, 'B'};` を一時的に足し，**Memory 1** に `&r` と入れる。先頭の 41（`tag`），先頭から 4 バイト進んだ位置（オフセット 4）からの 01・00・00・00（`count`），オフセット 8 の 42（`flag`）が見え，`offsetof` の 0・4・8 と対応する。間の 3 バイトずつが隙間で，その値は決まっていないので意味を読まない。確かめ用の行は，使わない変数の警告（C4189）が出るので，終わったら消す。
 
-**関連**: [第11回 README](../week11/README.md) の「課題2　点数の平均」の「名前と点数を一緒に交換する」，「課題4　配列メンバとポインタメンバを比較する」，「発展2　長方形を正規化して点を判定する」の採点のポイント，デバッグの題材 [BugStudentNames](../debugging/BugStudentNames/README.md)
+**関連**: 第11回 README の [課題2　点数の平均](../week11/README.md#課題2点数の平均students--studentsc) の [名前と点数を一緒に交換する](../week11/README.md#名前と点数を一緒に交換する)，[課題4　配列メンバとポインタメンバを比較する](../week11/README.md#課題4配列メンバとポインタメンバを比較するcopymembers--copy_membersc)，[発展2　長方形を正規化して点を判定する](../week11/README.md#発展2長方形を正規化して点を判定するrectcontains--rect_containsc) の採点のポイント，デバッグの題材 [BugStudentNames](../debugging/BugStudentNames/README.md)
 
 ## 第12回　コンパイルとリンクを分けて考える（コンパイル）
 
@@ -438,7 +438,7 @@ if (fp == NULL) {
 このリポジトリの [CalcApp/CMakeLists.txt](../week12/CalcApp/CMakeLists.txt) は，発展1 の参照の追加とインクルードの検索先を `target_link_libraries` と `target_include_directories` の 2 行で書いている。壊して戻す実験には，第2回・第9回の **Undo Changes** が使える。
 なお発展3 の `assert` は開発中に前提を確かめる道具で，`NDEBUG` を定義すると無効になる。利用者の入力やファイルの内容は，`assert` ではなく `if` で常に検査する（演習ページ 発展3 の追加の観察と注意）。
 
-**関連**: [第12回 README](../week12/README.md) の「課題3　リンクエラーを調べる」（ビルド記録，診断の違いから分かること），「発展1」の「このリポジトリ（CMake）での対応」，デバッグの題材 [BugSharedCounter](../debugging/BugSharedCounter/README.md)
+**関連**: 第12回 README の [課題3　リンクエラーを調べる](../week12/README.md#課題3リンクエラーを調べるsplitcalc-と-builderrorssplit)（ビルド記録，診断の違いから分かること），[発展1　静的ライブラリとして使う](../week12/README.md#発展1静的ライブラリとして使うcalclib--calcccalchcalcapp--mainc) の [このリポジトリ（CMake）での対応](../week12/README.md#このリポジトリcmakeでの対応)，デバッグの題材 [BugSharedCounter](../debugging/BugSharedCounter/README.md)
 
 ## 第13回　所有者と失敗経路（メモリ管理）
 
@@ -472,7 +472,7 @@ F11 は第8回で先取りしたもので，ステップ実行とウォッチは
 
 **デバッグの補足（確保した領域をメモリで見る。授業では未習）**: Debug 構成の C ランタイムは，`malloc` した領域を 0xCD で埋め，その前後 4 バイトずつを 0xFD で埋めて確保する（Microsoft Learn「CRT debug heap details」）。`Dynamic` で `malloc` の直後に **Memory 1** に `values` と入れると，代入前の要素が CD の並びで，最後の要素の後ろに FD が 4 つ見える。**Watch 1** に `values,5` と書けば（コマンド引数を 5 にしたとき）5 要素を配列として見られる（第5回）。この FD を範囲外への書き込みで壊すと，`free` のときに Debug の C ランタイムが検査してエラーを報告する。アクセス違反で止まったときの見方は第8回と同じ。
 
-**関連**: [第13回 README](../week13/README.md) の「課題4　コードレビュー」（指摘・修正版・所有者の図），「課題3」の「失敗を模擬する（`NewPointFail`）」，「発展3」の「途中で失敗した場合（`DynamicVectorFail`）」，デバッグの題材 [BugMallocSize](../debugging/BugMallocSize/README.md)，[BugBackupScores](../debugging/BugBackupScores/README.md)
+**関連**: 第13回 README の [課題4　コードレビュー](../week13/README.md#課題4コードレビュー)（指摘・修正版・所有者の図），[課題3　構造体を確保する関数](../week13/README.md#課題3構造体を確保する関数newpoint--new_pointc) の [失敗を模擬する（`NewPointFail`）](../week13/README.md#失敗を模擬するnewpointfail)，[発展3　不透明な`Vector`の生成と解放](../week13/README.md#発展3不透明なvectorの生成と解放dynamicvector--vector_maincvectorcvectorh) の [途中で失敗した場合（`DynamicVectorFail`）](../week13/README.md#途中で失敗した場合dynamicvectorfail)，デバッグの題材 [BugMallocSize](../debugging/BugMallocSize/README.md)，[BugBackupScores](../debugging/BugBackupScores/README.md)
 
 ## 第14回　推測せずに計測する（再帰）
 
@@ -504,7 +504,7 @@ F11 は第8回で先取りしたもので，ステップ実行とウォッチは
 **副テーマ（自動テストと CI）**: 課題1 の「再帰版と反復版を 0〜20 のすべてで比べる」確認を，人が目で見る代わりにプログラムに任せるのが自動テストで，変更のたびに自動で実行する仕組みが CI（継続的インテグレーション）である。
 参考までに，この解答リポジトリでも，各プロジェクトの `tests/`（例: [Fibonacci/tests](../week14/Fibonacci/tests/)）を [.github/workflows/ci.yml](../.github/workflows/ci.yml) に定義し，Windows（MSVC・MinGW）・Linux・macOS でビルドして実行できるようにしている。
 
-**関連**: [第14回 README](../week14/README.md) の「発展1 再帰の呼び出し数」（小さい値から比較する，計測結果の読み方，改善案），「課題2 再帰の復帰順」の「**Call Stack** ウィンドウを見る」（第4回・第8回のデバッガの続き），デバッグの題材 [BugFactorial](../debugging/BugFactorial/README.md)，[BugFactorialOverflow](../debugging/BugFactorialOverflow/README.md)
+**関連**: 第14回 README の [発展1　再帰の呼び出し数](../week14/README.md#発展1再帰の呼び出し数fibonacci--fibonaccic)（小さい値から比較する，計測結果の読み方，改善案），[課題2　再帰の復帰順](../week14/README.md#課題2再帰の復帰順trace--tracec) の [**Call Stack** ウィンドウを見る](../week14/README.md#call-stack-ウィンドウを見るvisual-studion3-から-n0-まで進んだとき)（第4回・第8回のデバッガの続き），デバッグの題材 [BugFactorial](../debugging/BugFactorial/README.md)，[BugFactorialOverflow](../debugging/BugFactorialOverflow/README.md)
 
 ## どの回でも使う型
 
