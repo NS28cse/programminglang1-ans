@@ -81,6 +81,7 @@ calls=0
 
 ## 関連
 
+- [題材の一覧と渡し方の共通ルール](../README.md)
 - [第12回 README](../../week12/README.md) の「課題3　リンクエラーを調べる」（「エラーの比較（表の解答）」）
 - [第13回 README](../../week13/README.md) の「発展2　`static`変数の寿命を確かめる」の「第12回との接続：共有変数の宣言（`SharedCount`）」
-- [practice/README.md](../../practice/README.md) の「第12回　コンパイルとリンクを分けて考える」
+- [実務の手引き](../../ta-guide/README.md) の「第12回　コンパイルとリンクを分けて考える」

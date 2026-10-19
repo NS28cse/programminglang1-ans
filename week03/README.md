@@ -1,7 +1,7 @@
 # 第3回 演習 解答・解説（演算子）
 
-- 演習ページ: <https://t-yokoga.github.io/softprac1/ex03.html>（[ソース](https://github.com/t-yokoga/softprac1/blob/main/docs/ex03.md)）
-- 講義ページ: <https://t-yokoga.github.io/softprac1/lec03.html>（例題 [operators.c](https://github.com/t-yokoga/softprac1/blob/main/docs/sample/03/operators.c)）
+- 演習ページ: [ex03](https://t-yokoga.github.io/softprac1/ex03.html)（原稿: [docs/ex03.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex03.md)）・講義: [lec03](https://t-yokoga.github.io/softprac1/lec03.html)（例題: [docs/sample/03/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/03/)）
+- TA 用の資料: [実務の手引き 第3回](../ta-guide/README.md#第3回期待値を先に書くテスト演算子)
 - 今回の範囲: 算術演算子（`+` `-` `*` `/` `%`），代入と複合代入（`+=` `*=` など），インクリメント・デクリメント（前置・後置），
   比較演算子，論理演算子（`&&` `||` `!`）と短絡評価，優先順位と括弧，`unsigned int` のビット演算（`&` `|` `^` `~` `<<` `>>`）とマスク。
   表示は `printf` の `%d` `%u` `%.2f`。

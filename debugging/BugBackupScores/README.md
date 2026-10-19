@@ -68,7 +68,7 @@ mean=81.7
 ## 原因
 
 構造体の代入 `Scores backup = today;` は `count` と `data`（アドレス）をコピーするだけで，`data` が指す配列はコピーしない（講義 7.1）。`today` と `backup` が同じ配列を指したまま `scores_destroy(&today)` で配列を解放するので，`backup` の表示は**解放後の使用**，最後の `scores_destroy(&backup)` は同じ領域の**二重解放**になる。
-`scores_destroy` は `today.data` を `NULL` にするが，コピーである `backup.data` は変わらない（講義 4 節，第13回の手引きの問い「`int *b = a; free(a); a = NULL;` の後，`b` も `NULL` になる？」と同じ）。
+`scores_destroy` は `today.data` を `NULL` にするが，コピーである `backup.data` は変わらない（講義 4 節，実務の手引きの第13回の問い「`int *b = a; free(a); a = NULL;` の後，`b` も `NULL` になる？」と同じ）。
 解放と読み取りが別のファイル（`scores.c`）の関数で起きるので，コンパイラの警告では見つからない。
 
 ## 直し方
@@ -100,6 +100,7 @@ mean=81.7
 
 ## 関連
 
+- [題材の一覧と渡し方の共通ルール](../README.md)
 - [第13回 README](../../week13/README.md) の「課題2　配列を逆順にする」（「追加：独立したコピー（`DynamicCopy`）」），「課題4　コードレビュー」（「所有者を図にする」）
 - [第11回 README](../../week11/README.md) の「課題4　配列メンバとポインタメンバを比較する（`CopyMembers`）」
-- [practice/README.md](../../practice/README.md) の「第13回　所有者と失敗経路」，「どの回でも使う型」の「AddressSanitizer」
+- [実務の手引き](../../ta-guide/README.md) の「第13回　所有者と失敗経路」，「どの回でも使う型」の「AddressSanitizer」

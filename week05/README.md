@@ -1,7 +1,7 @@
 # 第5回 演習 解答・解説（配列と関数）
 
-- 演習ページ: <https://t-yokoga.github.io/softprac1/ex05.html>（[ソース](https://github.com/t-yokoga/softprac1/blob/main/docs/ex05.md)）
-- 講義ページ: <https://t-yokoga.github.io/softprac1/lec05.html>（例題 [`arrays.c`](https://github.com/t-yokoga/softprac1/blob/main/docs/sample/05/arrays.c)）
+- 演習ページ: [ex05](https://t-yokoga.github.io/softprac1/ex05.html)（原稿: [docs/ex05.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex05.md)）・講義: [lec05](https://t-yokoga.github.io/softprac1/lec05.html)（例題: [docs/sample/05/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/05/)）
+- TA 用の資料: [実務の手引き 第5回](../ta-guide/README.md#第5回読みやすいコードと関数の約束配列と関数)・デバッグの題材 [BugRowSum](../debugging/BugRowSum/README.md)，[BugGrade](../debugging/BugGrade/README.md)
 - 今回の範囲: 一次元・二次元・三次元配列（初期化子，添字，`sizeof` による要素数），`enum` による定数，関数の定義・呼び出し・戻り値・`void`，
   プロトタイプ宣言，値渡し，配列の引数（`const int a[]` と長さの引数），スコープ（ブロック・局所変数・グローバル変数・隠蔽）。
   第4回までの `if`・`for` は使ってよい。`scanf` やコマンドライン引数（第10回）は使わないので，値を変える小問は「初期値を変えて再ビルド」で行う。

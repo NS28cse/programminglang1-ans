@@ -73,5 +73,6 @@ Apple: correct
 
 ## 関連
 
+- [題材の一覧と渡し方の共通ルール](../README.md)
 - [第6回 README](../../week06/README.md) の「課題4　比較してから連結する」（「比較の条件を変える（容量 10）」）
-- [practice/README.md](../../practice/README.md) の「第6回　容量と範囲外書き込み」の「よくある反応」（`strcmp(...) == -1`）
+- [実務の手引き](../../ta-guide/README.md) の「第6回　容量と範囲外書き込み」の「よくある反応」（`strcmp(...) == -1`）

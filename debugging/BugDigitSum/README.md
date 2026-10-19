@@ -64,5 +64,6 @@ sum=200
 
 ## 関連
 
+- [題材の一覧と渡し方の共通ルール](../README.md)
 - [第6回 README](../../week06/README.md) の「ウォームアップ：文字と数値（`CharCode`）」，「課題2」の「補足：ASCIIの印字可能な範囲（`AsciiTable`）」
-- [practice/README.md](../../practice/README.md) の「第3回　期待値を先に書くテスト」
+- [実務の手引き](../../ta-guide/README.md) の「第3回　期待値を先に書くテスト」

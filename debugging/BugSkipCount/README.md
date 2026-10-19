@@ -82,5 +82,6 @@ count=7
 
 ## 関連
 
+- [題材の一覧と渡し方の共通ルール](../README.md)
 - [第4回 README](../../week04/README.md) の「発展　`break`・`continue`・`switch` を追跡する」（「途中で飛ばす処理（演習ページの断片）」），「課題2」の「`while` へ書き換える」
-- [practice/README.md](../../practice/README.md) の「第4回　デバッガで流れを追う」の「よくある反応」（無限ループと **Debug > Break All**）
+- [実務の手引き](../../ta-guide/README.md) の「第4回　デバッガで流れを追う」の「よくある反応」（無限ループと **Debug > Break All**）

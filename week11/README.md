@@ -1,6 +1,7 @@
 # 第11回 演習 解答・解説（構造体）
 
-演習ページ: <https://t-yokoga.github.io/softprac1/ex11.html>（講義: <https://t-yokoga.github.io/softprac1/lec11.html>）
+- 演習ページ: [ex11](https://t-yokoga.github.io/softprac1/ex11.html)（原稿: [docs/ex11.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex11.md)）・講義: [lec11](https://t-yokoga.github.io/softprac1/lec11.html)（例題: [docs/sample/11/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/11/)）
+- TA 用の資料: [実務の手引き 第11回](../ta-guide/README.md#第11回コードレビュー読み合いで見つける構造体)・デバッグの題材 [BugStudentNames](../debugging/BugStudentNames/README.md)
 
 ## プロジェクト一覧
 
@@ -22,7 +23,7 @@
 
 ---
 
-## 課題1　値とポインタの違い（`PointMove`）
+## 課題1　値とポインタの違い（`PointMove` / `structs.c`）
 
 **要点**: `moved(Point p, ...)` の `p` は `a` のコピーなので `a` は変わらない（結果は戻り値で受け取る）。`move_in_place(Point *p, ...)` の `p` はアドレスのコピーで，その先の `a` 本体を書き換える。
 
@@ -153,7 +154,7 @@ C に特別な参照渡しの構文があるのではなく，「ポインタを
 
 ---
 
-## 課題2　点数の平均（`Students`）
+## 課題2　点数の平均（`Students` / `students.c`）
 
 **要点**: `Student` 配列の各要素から `.score` を取り出して平均する。仮引数 `const Student a[]` は先頭要素へのポインタで，3 人分はコピーされない。構造体全体の代入で「1 人分」をまとめて交換できる。
 
@@ -344,7 +345,7 @@ same as first: a[0]=0 a[2]=0
 
 ---
 
-## 課題3　長方形を表す（`Rect`）
+## 課題3　長方形を表す（`Rect` / `rect.c`）
 
 **要点**: `Point` を 2 つ（と名前）持つ入れ子の構造体。`main` の `r.lower.x`（`r` は `Rect` 本体）と `area` の `r->lower.x`（`r` は `Rect` へのポインタ）の違い。
 
@@ -445,7 +446,7 @@ renamed=other
 
 ---
 
-## 課題4　配列メンバとポインタメンバを比較する（`CopyMembers`）
+## 課題4　配列メンバとポインタメンバを比較する（`CopyMembers` / `copy_members.c`）
 
 **要点**: 配列メンバは構造体の中に文字を持つので，構造体のコピーで文字も複製される。ポインタメンバはアドレスだけがコピーされ（浅いコピー），同じ先を共有する。
 
@@ -588,7 +589,7 @@ C17 より前の既定の MSVC では C4221（自動変数のアドレスで集�
 
 ---
 
-## 発展1　初期化と構造体を返す関数（`PointInit`）
+## 発展1　初期化と構造体を返す関数（`PointInit` / `point_init.c`）
 
 **要点**: 指定初期化子はメンバ名で対応し，省略したメンバは 0.0 になる。宣言後の構造体全体の代入には型名付きの複合リテラルを使う。構造体は値として返せる。
 
@@ -672,7 +673,7 @@ assigned=-1.0 4.0
 
 ---
 
-## 発展2　長方形を正規化して点を判定する（`RectContains`）
+## 発展2　長方形を正規化して点を判定する（`RectContains` / `rect_contains.c`）
 
 **要点**: 2 点を `x`・`y` それぞれ独立に下限・上限へそろえる `normalized`（`Rect result = r;` で名前も引き継ぐ）と，下限を含み上限を含まない（半開区間）`contains`。
 
@@ -769,7 +770,7 @@ inside=0 original=1.0 1.0
 
 ---
 
-## 発展3　構造体のサイズを観察する（`StructLayout`）
+## 発展3　構造体のサイズを観察する（`StructLayout` / `struct_layout.c`）
 
 **要点**: 構造体にはアラインメントのためのパディング（隙間）が入ることがあり，`sizeof` はメンバのサイズの合計と等しいとは限らない。位置は `offsetof` で調べる。
 

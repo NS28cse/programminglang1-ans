@@ -6,7 +6,7 @@
 
 - 第9回（ポインタ2）。講義 1 節「関数に渡す星の数を決める」と，課題1 `FindMax`（講義の `find_max(int a[], int n, int **out)`）の後。
 - 学生が知っていること: ポインタの値渡し（第8回の `swap`），二重ポインタ，ブレークポイント（F9）・F5・F10・**Locals**。
-  ステップイン（F11）・**Watch 1**・**Call Stack** は授業では未習（第8回の手引きで先取りして見せる操作）。
+  ステップイン（F11）・**Watch 1**・**Call Stack** は授業では未習（実務の手引きの第8回で先取りして見せる操作）。
 - 入力も引数もない。
 
 ## プログラムがするはずのこと
@@ -90,6 +90,7 @@ C の引数は値渡しなので，`find_max(scores, COUNT, best)` は `best` �
 
 ## 関連
 
+- [題材の一覧と渡し方の共通ルール](../README.md)
 - [第9回 README](../../week09/README.md) の「課題1　見つからない場合（`FindMax`）」（「二重ポインタの代入を追う」，「値を返す版と，場所を返す版（`ReturnMaximum`）」）
 - [第8回 README](../../week08/README.md) の「課題1　`swap`を追う」（「説明すること：`*a = *b` を `a = b` に変えても交換にならない理由」）
-- [practice/README.md](../../practice/README.md) の「第8回　Step Into とウォッチでポインタを見る」，「第9回　実験の前に commit，後で差分」
+- [実務の手引き](../../ta-guide/README.md) の「第8回　Step Into とウォッチでポインタを見る」，「第9回　実験の前に commit，後で差分」

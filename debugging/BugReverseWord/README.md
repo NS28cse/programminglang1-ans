@@ -89,6 +89,7 @@ reversed: kcats
 
 ## 関連
 
+- [題材の一覧と渡し方の共通ルール](../README.md)
 - [第7回 README](../../week07/README.md) の「課題3　行の容量」（「3つの長さを区別する（表）」）
 - [第6回 README](../../week06/README.md) の「課題4　比較してから連結する」（「容量の境界を確認する（表）」）
-- [practice/README.md](../../practice/README.md) の「第6回　容量と範囲外書き込み」（「デバッグの補足」の `/RTC1` と **Memory** ウィンドウ），「どの回でも使う型」の「AddressSanitizer」
+- [実務の手引き](../../ta-guide/README.md) の「第6回　容量と範囲外書き込み」（「デバッグの補足」の `/RTC1` と **Memory** ウィンドウ），「どの回でも使う型」の「AddressSanitizer」

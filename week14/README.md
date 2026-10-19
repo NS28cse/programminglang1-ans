@@ -1,7 +1,7 @@
 # 第14回 演習 解答・解説（再帰）
 
-- 演習ページ: <https://t-yokoga.github.io/softprac1/ex14.html>（[ソース](https://github.com/t-yokoga/softprac1/blob/main/docs/ex14.md)）
-- 講義ページ: <https://t-yokoga.github.io/softprac1/lec14.html>
+- 演習ページ: [ex14](https://t-yokoga.github.io/softprac1/ex14.html)（原稿: [docs/ex14.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex14.md)）・講義: [lec14](https://t-yokoga.github.io/softprac1/lec14.html)（例題: [docs/sample/14/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/14/)）
+- TA 用の資料: [実務の手引き 第14回](../ta-guide/README.md#第14回推測せずに計測する再帰)・デバッグの題材 [BugFactorial](../debugging/BugFactorial/README.md)，[BugFactorialOverflow](../debugging/BugFactorialOverflow/README.md)
 
 ## プロジェクト一覧
 
@@ -42,7 +42,7 @@ Visual Studio では書き換えて保存し，Ctrl+Shift+B でビルドして�
 
 ---
 
-## 課題1 階乗の境界
+## 課題1　階乗の境界（`Factorial` / `recursion.c`）
 
 **要点**: 基底条件 `n == 0` で 1 を返し，`n` を 1 ずつ減らして 0 に近づける。結果が `unsigned long long` に収まる 0〜20 だけを受け付け，21 は `main` の入力検査で再帰に入る前に拒否する。再帰版と反復版の戻り値を比べ，積を作るタイミングの違いを説明する。
 
@@ -175,7 +175,7 @@ n=20 result=2432902008176640000 calls=21 depth=21
 
 ---
 
-## 課題2 再帰の復帰順
+## 課題2　再帰の復帰順（`Trace` / `trace.c`）
 
 **要点**: `enter` は呼び出し時（再帰の前），`leave` は復帰時（再帰の後）に表示されるので，`enter` は n, n−1, …, 0，`leave` は 0, 1, …, n の順になる。各段の `n` は独立しており，後入れ先出し（LIFO）で戻る。
 
@@ -388,7 +388,7 @@ sum=6
 
 ---
 
-## 課題3 互除法を反復へ書き換える
+## 課題3　互除法を反復へ書き換える（`GcdLoop` / `gcd_loop.c`）
 
 **要点**: 再帰の引数 `(a, b)` の変化を，`while` の状態変数 `a`・`b` の更新に対応させる。余りを一時変数に保存してから更新する。(0,0) は関数の中ではなく呼び出し側（`main`）で拒否する。
 
@@ -516,7 +516,7 @@ gcd(7, 0): loop=7 recursive=7 equal=1
 
 ---
 
-## 課題4 再帰の入口を安全にする
+## 課題4　再帰の入口を安全にする（`CheckedFactorial` / `checked_factorial.c`）
 
 **要点**: 外から使う入口 `factorial_checked` で範囲（0〜20）と `NULL` を検査し，再帰は前提を守った内部関数 `static factorial_impl` だけで行う。失敗時は 0 を返して `*out` を変更しない（第8回の出力引数，第12回の `static` 内部関数）。
 
@@ -607,7 +607,7 @@ ok=0 result=99
 
 ---
 
-## 発展1 再帰の呼び出し数
+## 発展1　再帰の呼び出し数（`Fibonacci` / `fibonacci.c`）
 
 **要点**: 1 回の呼び出しから 2 つに分かれる再帰では，総呼び出し回数と最大深さが一致しない。素朴な再帰は同じ値を何度も計算するが，同時にスタックに積まれるのは深さの分だけ。
 
@@ -703,7 +703,7 @@ n must be 0..20          ← 同上
 
 ---
 
-## 発展2 二分木の3つの走査
+## 発展2　二分木の3つの走査（`TreeTraversal` / `tree.c`）
 
 **要点**: `NULL` に来たら何もしないことが基底条件。自分を処理する位置（子の前・間・後）だけで行きがけ・通りがけ・帰りがけ順が決まる。ノード数・高さも「空の木」を基底条件にして左右の結果を組み合わせる。
 
@@ -872,7 +872,7 @@ line calls=21 null=11 maxdepth(incl NULL)=11 real=10
 
 ---
 
-## 発展3 帰りがけ順と解放の順序
+## 発展3　帰りがけ順と解放の順序
 
 **要点**: 個別に `malloc` したノードの木は，子を解放してから自分を解放する帰りがけ順で解放する。先に親を `free` すると，親の `left`・`right` を読めなくなる。
 

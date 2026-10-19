@@ -1,7 +1,7 @@
 # 第4回 演習 解答・解説（制御構造）
 
-- 演習ページ: <https://t-yokoga.github.io/softprac1/ex04.html>（[ソース](https://github.com/t-yokoga/softprac1/blob/main/docs/ex04.md)）
-- 講義ページ: <https://t-yokoga.github.io/softprac1/lec04.html>（例題 [`control.c`](https://github.com/t-yokoga/softprac1/blob/main/docs/sample/04/control.c)）
+- 演習ページ: [ex04](https://t-yokoga.github.io/softprac1/ex04.html)（原稿: [docs/ex04.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex04.md)）・講義: [lec04](https://t-yokoga.github.io/softprac1/lec04.html)（例題: [docs/sample/04/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/04/)）
+- TA 用の資料: [実務の手引き 第4回](../ta-guide/README.md#第4回デバッガで流れを追う制御構造)・デバッグの題材 [BugEvenSum](../debugging/BugEvenSum/README.md)，[BugSkipCount](../debugging/BugSkipCount/README.md)
 - 今回の範囲: `if`・`else if`・`else`，`for`・`while`・`do-while`，`break`・`continue`，`switch`（`case`・`default`）。
   演算は第3回までのもの（`%`，`||`，`+=`，`*=`，`++` など）。
   **使わないもの**: 入力関数（演習ページ「入力関数は使わず，ソース内の初期値を変えて確認します」。`scanf` は第7回），`goto`（講義「この回の課題では使用せず」），待機用の関数。
