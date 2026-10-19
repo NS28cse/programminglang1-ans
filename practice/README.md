@@ -38,13 +38,14 @@ Visual Studio の画面の表記は Visual Studio 2026（英語版）に合わ�
 | **Add > Reference** | 「参照 → 参照の追加」 | 第12回 演習 発展1 | — |
 | **C/C++ > General > Additional Include Directories** | 「C/C++ → 全般 → 追加のインクルード ディレクトリ」 | 第12回 演習 発展1 | — |
 | **C/C++ > General > Treat Warnings As Errors** | — | | — |
-| **C/C++ > General > Enable AddressSanitizer** | — | | 構成プロパティ > C/C++ > 全般 > AddressSanitizer を有効にする |
+| **Configuration Properties > C/C++ > General > Enable AddressSanitizer** | — | | 構成プロパティ > C/C++ > 全般 > AddressSanitizer を有効にする |
 | **Git > Settings** の **Git Global Config** の **User name** / **Email** | — | | Git > 設定 の「Git グローバル構成」の「ユーザー名」/「電子メール」 |
 | **Git > Create Git Repository** → **Other** > **Local** → **Create and Push** | — | | Git > Git リポジトリの作成 →「その他」>「ローカル」→「作成とプッシュ」 |
 | **Git Changes**（ウィンドウ） / **Commit All** / **Undo Changes** | — | | Git の変更 /「すべてコミット」/「変更を元に戻す」 |
 | **Git > View Branch History** / **Revert** | — | | Git > ブランチ履歴の表示 /「元に戻す」（文書によっては「復元」） |
 
 授業資料の表記は docs/*.md，日本語版の画面の表記は Microsoft Learn 日本語版（learn.microsoft.com/ja-jp）による。— は確かめられなかったもの。学生の画面で確かめる。
+日本語ではよく似た名前になるが，**Undo Changes** は commit していない変更を捨てる操作，**Revert** は commit を打ち消す commit を新しく作る操作である。
 
 VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run and Debug** ビューの **VARIABLES**・**WATCH**・**CALL STACK**，Git は **Source Control** ビュー（Ctrl+Shift+G）で同じことを見せる。
 
@@ -104,9 +105,9 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 - 「期待する表示が出たら，値を変える前に commit しておきましょう。戻すのが 1 回の操作で済みます」
 - 「どの行を変えたかは，**Git Changes** の差分で確かめてから戻しましょう」
 
-**見せ方（3 分。初回だけ。課題を終えた学生に限る）**（授業では未習。初めて見せる）
+**見せ方（初回は 5 分程度。2 回目からは手順 2〜4 だけで 2 分。課題を終えた学生に限る）**（授業では未習。初めて見せる）
 0. **Git > Settings** の **Git Global Config** で **User name**・**Email** を確かめる（未設定なら入力）。
-1. `Rectangle` のソリューションを開いたまま **Git > Create Git Repository** を選ぶ。**Create a Git repository** ダイアログの **Other** で **Local** を選び，**Initialize a local Git repository** のローカルのパスを作業場所の `PL1` のフォルダにして **Create and Push** を押す（ボタン名は Create and Push だが，**Local** ならどこにもプッシュされない）。`PL1` 全体が 1 つのリポジトリになり，他の課題の `.sln` を開いても同じリポジトリが使われる。
+1. `Rectangle` のソリューションを開いたまま **Git > Create Git Repository** を選ぶ。**Create a Git repository** ダイアログの **Other** で **Local** を選び，**Initialize a local Git repository** のパスの欄を作業場所の `PL1` のフォルダにして **Create and Push** を押す（ボタン名は Create and Push だが，**Local** ならどこにもプッシュされない）。`PL1` 全体が 1 つのリポジトリになり，他の課題の `.sln` を開いても同じリポジトリが使われる。
 2. `Rectangle` が期待する 3 行を出したら，**View > Git Changes** でメッセージ（例: `week02 Rectangle: 期待する表示`）を書いて **Commit All**。
 3. `width = 6;` を `width = 0;` に変えて保存し，ビルド・実行する。**Git Changes** のファイルをダブルクリックすると，変えた 1 行が前（左）と今（右）で並ぶ。
 4. ファイルを右クリックして **Undo Changes** → ソースが commit した状態に戻る。ビルドし直して元の 3 行が出ることを確かめる。
@@ -426,7 +427,7 @@ if (fp == NULL) {
 - 「失敗の模擬を 1 にして，`allocation failed` の後でメンバに触れていないか，ステップ実行で確かめましょう」
 
 **見せ方（3 分）**
-1. `NewPoint` のコピー（このリポジトリでは `NewPointFail`）で，演習ページの `point_allocate` を `new_point` の前に追加し，`new_point` の `malloc(sizeof *p)` を `point_allocate(sizeof *p)` に置き換え，`simulate_failure` を 1 にしてビルドする（正常版の `NewPoint` はそのまま残す）。
+1. `NewPoint` のコピー（このリポジトリでは，この手順 1 を済ませた版が `NewPointFail`）で，演習ページの `point_allocate` を `new_point` の前に追加し，`new_point` の `malloc(sizeof *p)` を `point_allocate(sizeof *p)` に置き換え，`simulate_failure` を 1 にしてビルドする（正常版の `NewPoint` はそのまま残す）。
 2. `Point *p = new_point(3.0, 4.0);` の行で F9，F5，F11 で `new_point` に入る。`point_allocate` が `NULL` を返し，`return NULL;` へ進んでメンバへの代入を通らないことを見せる。
 3. `main` に戻ったら **Locals** で `p` が `0x0000000000000000` であることを確かめ，F10 で `fprintf` から `return 1;` へ進む（`p->x` を表示する `printf` は通らない）。
 4. コピーの `simulate_failure` を 0 に戻すと正常出力になることを確かめ（このリポジトリでは `NewPointFail` の variant `simulate_failure_0` の版），正常版の `NewPoint` もビルド・実行する（演習ページのチェックリスト）。TA が見せるときは，リポジトリの `NewPointFail` の本体を書き換えず，自分用のコピーで行う。
@@ -558,7 +559,7 @@ int main(void)
 
 **最初に 1 回**
 1. **Git > Settings** を開き，**Git Global Config** の **User name** と **Email** を確かめる（未設定なら入力。commit に記録される名前で，公開しないので自分が分かる値でよい）。
-2. 課題のソリューションを開いたまま **Git > Create Git Repository** を選ぶ。**Create a Git repository** ダイアログの **Other** で **Local** を選び，**Initialize a local Git repository** のローカルのパスを作業場所の `PL1` のフォルダにして **Create and Push** を押す（**Local** ならどこにもプッシュされない）。
+2. 課題のソリューションを開いたまま **Git > Create Git Repository** を選ぶ。**Create a Git repository** ダイアログの **Other** で **Local** を選び，**Initialize a local Git repository** のパスの欄を作業場所の `PL1` のフォルダにして **Create and Push** を押す（**Local** ならどこにもプッシュされない）。
    **.gitignore template** を Visual Studio 用のままにすると，`x64` や `.vs` などのビルドの生成物は履歴に入らない。
    （VS 2022 ではこの選択肢が **Local only**，ボタンが **Create**。）
 3. 以後は各課題の `.sln` を開けば，`PL1` のリポジトリが使われる。
@@ -586,6 +587,7 @@ AddressSanitizer は Edit and Continue（`/ZI`）・`/RTC`（実行時チェッ�
 - **C/C++ > General > Debug Information Format** を **Program Database (/Zi)**
 - **C/C++ > Code Generation > Basic Runtime Checks** を **Default**
 - **Linker > General > Enable Incremental Linking** を **No (/INCREMENTAL:NO)**
+設定はプロパティ ページ上部の **Configuration** が **Debug** であることを確かめてから変え，試した後は 4 つとも元に戻す（または試す用のプロジェクトのコピーで行う）。提出する課題は授業の設定のままにする。
 見つかるのは実行した経路の誤りだけなので，境界の値のテストと組み合わせて使う。
 
 ### AI のコーディング支援を使う場合
