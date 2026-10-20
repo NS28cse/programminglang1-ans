@@ -3,7 +3,8 @@
 - 演習ページ: [ex13](https://t-yokoga.github.io/softprac1/ex13.html)（原稿: [docs/ex13.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex13.md)）・講義: [lec13](https://t-yokoga.github.io/softprac1/lec13.html)（例題: [docs/sample/13/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/13/)）
 
 この回は「確保できたら使う」だけでなく，**誰が初期化し，誰が解放し，失敗したら何を残すか**を追跡する回です。
-リーク・二重解放・解放後の使用は実行しても気付きにくいので，AddressSanitizer・LeakSanitizer（[コマンドでビルド](../README.md#1-コマンドでビルドする)するときに `-fsanitize=address,undefined -g` を付ける。LeakSanitizer は Linux）や valgrind で確かめると分かりやすくなります。
+リーク・二重解放・解放後の使用は実行しても気付きにくいので，AddressSanitizer・LeakSanitizer（Linux・macOS の gcc／clang で[コマンドでビルド](../README.md#1-コマンドでビルドする)するときに `-fsanitize=address,undefined -g` を付ける。LeakSanitizer は Linux だけ）や valgrind（Linux）で確かめると分かりやすくなります。
+Visual Studio では，プロジェクトの **Properties > Configuration Properties > C/C++ > General > Enable Address Sanitizer** で AddressSanitizer だけを使えます（リークは検出しません）。
 
 ## プロジェクト一覧
 
@@ -54,10 +55,10 @@ Windows（Visual Studio，x64）でも Linux x64 でも表示は同じです（`
 
 ### 準備（起動引数の設定）
 
-- Visual Studio（プロジェクト方式）: **Solution Explorer** でプロジェクトを右クリック → **Properties** → **Configuration Properties > Debugging** の **Command Arguments** に `5` だけを入力します。**実行ファイル名（`Dynamic.exe`）は含めません**（`argv[0]` は自動で渡される）。
+- Visual Studio（プロジェクト方式）: プロジェクトの **Properties > Configuration Properties > Debugging > Command Arguments** に `5` だけを入力します。**実行ファイル名（`Dynamic.exe`）は含めません**（`argv[0]` は自動で渡される）。
   ダイアログ上部の **Configuration** と **Platform** を，実際に実行する構成（ツールバーの **Solution Configurations** の `Debug` と **Solution Platforms** の `x64`）に合わせてから設定します。
 - よくある誤り: `Release` や `Win32` の構成に引数を設定し，`Debug | x64` で実行しています。その構成には引数がないので，`argc` が 1 になり `usage: Dynamic count (1..1000)` と表示して終了コード 1 で終わります。プログラムの誤りではなく設定の誤りです。
-- このリポジトリを使う場合も引数は `5` です。[コマンドでビルド](../README.md#1-コマンドでビルドする)したときは `./a.out 5`（Windows は `.\a.exe 5`）のように実行ファイルの後に書き，[Visual Studio でフォルダーを開く](../README.md#3-visual-studio-でフォルダーを開く)方式では **Debug > Debug and Launch Settings for \<プロジェクト\>** で `"args": [ "5" ]` を足し，[VS Code](../README.md#4-vs-code-で使うwindows--macos--linux) では `cmake.debugConfig` の `args` に `"5"` を書きます。別の値で試すときは，この引数を書き換えます。
+- ほかの方式でも引数は `5` です（方式ごとの渡し方は[ルートの README](../README.md#使い方)）。別の値で試すときは，この引数を書き換えます。
 - 予測: `5` なら `n=5 sum=15 mean=3.0`。0，-1，1001，`abc` などは**確保の前に**診断を出して終了し，合計は表示されません。
 
 ### 解答コード
@@ -149,7 +150,7 @@ reversed: 5 4 3 2 1
 | 999999999999999999999999 | `count must be 1..1000`（stderr），終了コード 1 | `strtol` が `LONG_MAX` を返し `errno == ERANGE` |
 | 指定なし，5 6 | `usage: Dynamic count (1..1000)`（stderr），終了コード 1 | `argc != 2`。引数の不足・過剰 |
 
-- どのエラーも「何も表示されずに落ちた」のではなく，**診断を出して `return 1` で意図的に終了**しています。終了コードは Visual Studio の **Output** ウィンドウ（`The program '[12345] Dynamic.exe' has exited with code 1 (0x1).`）で確認できます。
+- どのエラーも「何も表示されずに落ちた」のではなく，**診断を出して `return 1` で意図的に終了**しています。Visual Studio では，Ctrl+F5 で実行したときはコンソールの最後の `...\Dynamic.exe (process 12345) exited with code 1 (0x1).`，F5 で実行したときは **Output** ウィンドウの `The program '[12345] Dynamic.exe' has exited with code 1 (0x1).` で終了コードを確認できます（プロセス番号は実行ごとに変わります）。
 - `strtol` は先頭の空白と `+` を受け付けるので，`+5` は 5 として受理されます。これは講義の説明どおりの仕様です。
 - 空白 1 文字だけの引数も，空引数 `""` と同じく数字がないので拒否されます。
 - `long` は Windows（MSVC）では 32 ビット，Linux x64 では 64 ビットです。たとえば `3000000000` は Windows では `ERANGE`，Linux では「1000 より大きい」で拒否されます。経路は違っても結果（拒否）は同じです。
@@ -182,7 +183,7 @@ reversed: 5 4 3 2 1
 | 3 回目 | 2 | 3 | 6 |
 | （判定） | 3 | — | `i < n` が偽なので終了 |
 
-ループ内に `printf("i=%zu values[i]=%d sum=%lld\n", i, values[i], sum);` を差し込んだ版を `n=3` で実行した結果です。
+初期化と集計のループの `sum += values[i];` の直後に `printf("i=%zu values[i]=%d sum=%lld\n", i, values[i], sum);` を差し込んだ版を `n=3` で実行した結果です。
 
 ```text
 > Dynamic 3   （printf を差し込んだ版）
@@ -338,7 +339,8 @@ copy: 5 4 3 2 1
 - `int *copy = values;` は**ポインタ値のコピー**で，領域は 1 つのままです。`copy` を通して逆順にすると `values` から見ても逆順になり，さらに両方を `free` すると二重解放になります。
 - 要素をコピーするには**別の領域を確保**し，要素を 1 つずつ代入します。所有する領域が 2 つになるので，解放も 2 回（それぞれ 1 回ずつ）必要です。
 - `copy` の確保に失敗した経路では，すでに確保済みの `values` を解放してから終了します（この経路のリークが最もよくある誤り）。
-  この経路は，`copy = malloc(n * sizeof *copy);` を `copy = NULL;` に書き換えた版（課題3の失敗模擬と同じ考え方）で確かめられます。`free(values)` を忘れると，LeakSanitizer が `20 byte(s) leaked` と報告します（`n=5` の場合）。
+  この経路は，`copy = malloc(n * sizeof *copy);` を `copy = NULL;` に書き換えた版（課題3の失敗模擬と同じ考え方）で確かめられます。`free(values)` を忘れると，valgrind（`--leak-check=full`）が `definitely lost: 20 bytes in 1 blocks` と報告します（`n=5` の場合）。
+  LeakSanitizer は，`main` の局所変数 `values` に残ったポインタを到達可能とみなして報告しないことがあります（GCC 13 で確かめると，`-fsanitize=address,undefined -g` では報告されず，`-fsanitize=address -g` や，`-O1` を加えた `-fsanitize=address,undefined -g -O1` なら `20 byte(s) leaked` と報告されます）。
   ```text
   > DynamicCopy 5   （copy = NULL; に書き換えて copy の確保失敗を模擬した版）
   n=5 sum=15 mean=3.0
@@ -463,7 +465,7 @@ x=3.0 y=4.0
 - `simulate_failure=1` では `point_allocate` が `NULL` を返し，`new_point` は**メンバに触れずに** `NULL` を返し，`main` は `allocation failed` を出して `return 1` します。`p->x` を読む `printf` には到達しません。
 - ステップ実行での確認: `Point *p = new_point(3.0, 4.0);` の行にブレークポイントを置き，F11（**Step Into**）で `new_point` へ入ると，`point_allocate` が `NULL` を返して `return NULL;` に進み，`*p = ...` の行が実行されないことが分かります。戻った後の `if (p == NULL)` で `p` が `0x0000000000000000` で，次に `fprintf` → `return 1` へ進み，`printf("x=...")` の行は通りません。
 - `point_allocate` は `errno` を設定しません。この試験で確かめているのは「`NULL` を見て失敗を判定し，安全に終了できること」であり，本物の `malloc` のメモリ不足や OS の診断を再現したわけではありません。
-- `const int simulate_failure = 1; if (simulate_failure)` は演習ページのコードどおりです。`point_allocate`・`try_resize` とも，MSVC `/W4 /WX`（Release を含む）で C4127（条件式が定数）・C4702（到達できないコード）によってビルドが止まることはありません。
+- `const int simulate_failure = 1; if (simulate_failure)` は演習ページのコードどおりです。`point_allocate`・`try_resize` とも，MSVC `/W4` で C4127（条件式が定数）・C4702（到達できないコード）の警告は出ません。
 
 ### 戻り方を比較する
 
@@ -554,7 +556,7 @@ a = NULL;
 | `p = malloc(3 * sizeof *p); p = NULL;` | 確保した領域を指す唯一のポインタを上書きしたため，その領域へ到達・解放する手段がなくなる（メモリリーク）。`p = NULL` は解放の代わりにならない | `p = malloc(...)`→`NULL` 検査→使用→`free(p);`→`p = NULL;` の順にする |
 | `p = realloc(p, bytes);` | `realloc` が失敗すると `NULL` が返り，それを `p` に代入すると元の領域（失敗時もまだ有効）を指す手段を失う（リーク）。元のデータも使えなくなる | `int *next = realloc(p, bytes); if (next == NULL) { /* p は有効。free(p) などの後始末 */ } else { p = next; }`。事前に `bytes` が正で積があふれないことを検査する（発展1） |
 | `free(buffer); free(buffer->data);` | 本体を先に解放したので，`buffer->data` を読むのは**解放後の使用**。読めたとしても正しい値の保証はなく，`data` の配列もリークしうる | 内側から外側へ: `free(buffer->data); free(buffer); buffer = NULL;`（講義 7.1 の解放順） |
-| `malloc(n * sizeof p)` | `sizeof p` は**ポインタ変数 `p` 自身**の大きさ（x64 で 8，x86 で 4）で，要素の大きさではない。`int *p` なら 2 倍の過大確保で誤りが隠れ，`Point *p`（16 バイト）や x86 の `double *p` では必要量より小さくなり範囲外アクセスになる | `n > SIZE_MAX / sizeof *p` を検査してから `malloc(n * sizeof *p)` |
+| `malloc(n * sizeof p)` | `sizeof p` は**ポインタ変数 `p` 自身**の大きさ（x64 で 8，x86 で 4）で，要素の大きさではない。x64 では `int *p` なら 2 倍の過大確保で誤りが隠れ，`Point *p`（16 バイト）や x86 の `double *p` では必要量より小さくなり範囲外アクセスになる | `n > SIZE_MAX / sizeof *p` を検査してから `malloc(n * sizeof *p)` |
 
 ### 所有者を図にする
 
@@ -911,7 +913,7 @@ ok=0 out=99.0
 4. **`&x` を渡す理由**: `vector_destroy(Vector **p)` は呼び出し元の**ポインタ変数 `x` 自身のアドレス**を受け取り，`free(*p)` の後 `*p = NULL;` で `x` を `NULL` に書き換えます。
    `void vector_destroy(Vector *p)` のように `x` の値を渡すと，関数の中の `p` は `x` のコピーなので，`p = NULL;` としても呼び出し元の `x` は古いアドレスのまま残ります。
 5. **解放後に `NULL` になること**: Visual Studio では `return status;` にブレークポイントを置き，**Watch 1** ウィンドウで `x`，`y`，`result` がすべて `0x0000000000000000` になっていることを確認します（`x->v` などメンバの参照はしない）。
-   `return status;` の前に `vector_destroy(&x);` をもう一度呼ぶ文と，3 つのポインタがすべて `NULL` なら `x=NULL y=NULL result=NULL` を表示する `if` 文を差し込んだ版では，次のように表示されます。
+   `return status;` の前に `vector_destroy(&x);` をもう一度呼ぶ文と，3 つのポインタがすべて `NULL` なら `x=NULL y=NULL result=NULL` を，そうでなければ `some pointer is not NULL` を表示する `if` 文を差し込んだ版では，次のように表示されます。
    ```text
    > DynamicVector   （vector_destroy(&x); と if 文を差し込んだ版）
    result=5.0 8.0
@@ -923,6 +925,7 @@ ok=0 out=99.0
 
 [DynamicVectorFail/vector.c](DynamicVectorFail/vector.c) は `vector.c` のコピーで，`vector_create` より前に演習ページの `vector_allocate` を置き，`vector_create` の `malloc` だけを置き換えたものです。
 `vector_main.c` と `vector.h` は `../DynamicVector` のものを使うので，[コマンドでビルド](../README.md#1-コマンドでビルドする)するときは次のようにします（フォルダーを開く方式では [CMakeLists.txt](DynamicVectorFail/CMakeLists.txt) が同じ組み合わせでビルドします）。
+[空のプロジェクト](../README.md#2-授業と同じ空のプロジェクトで使うvisual-studio)で試すときは，`DynamicVectorFail/vector.c` と `DynamicVector/vector_main.c`・`vector.h` を同じプロジェクトフォルダへコピーしてから **Add > Existing Item** で追加します。
 
 ```sh
 cd week13/DynamicVectorFail
@@ -962,7 +965,7 @@ allocation failed
 | 2 | `x` だけ（2 回目の `y` の確保で失敗） | `cleanup` で `result`，`y` は `NULL` なので何もせず，`x` を解放。終了コード 1 |
 | 3 | `x` と `y`（3 回目，`vector_axpy` 内の `vector_create` で失敗） | `vector_axpy` が `NULL` を返し `cleanup` へ。`result` は `NULL`，`y` と `x` を解放。終了コード 1 |
 
-確認方法: `-fsanitize=address,undefined -g` を付けてビルドし，AddressSanitizer／LeakSanitizer を有効にして実行すると，どの版でもリーク・二重解放は報告されません。valgrind で確保と解放の回数を数えると，次のように予測と一致します。
+確認方法: Linux・macOS の gcc／clang で[コマンドでビルド](../README.md#1-コマンドでビルドする)するときに `-fsanitize=address,undefined -g` を付け（LeakSanitizer は Linux だけ），AddressSanitizer／LeakSanitizer を有効にして実行すると，どの版でもリーク・二重解放は報告されません。valgrind で確保と解放の回数を数えると，次のように予測と一致します。
 
 | `fail_on_call` | valgrind の `total heap usage` | 内訳 |
 | --- | --- | --- |
@@ -972,6 +975,10 @@ allocation failed
 | 3 | 2 allocs, 2 frees | `x` と `y` |
 
 すべて `All heap blocks were freed -- no leaks are possible` です（Linux x64 の valgrind）。
+
+デバッガで見る場所: `fail_on_call = 2` では 1 回目の確保（`x`）が成功し，2 回目の確保（`y`）で `vector_allocate` が `NULL` を返して `cleanup` へ進みます。
+`cleanup:` の `vector_destroy(&result);` の行にブレークポイントを置くと，**Watch 1** で `x` は有効なアドレス，`y` と `result` は `NULL` です。
+F11 で `vector_destroy` に入って `*p` を見ると，`&result` と `&y` を渡した 2 回は `*p` が `NULL` で `free(NULL)`（何もしない），`&x` を渡した 3 回目だけ `*p` が有効なアドレスで，これが本当の解放になります（解放した後の `x->v` などはウォッチに入れません）。
 
 `goto cleanup;` は複数の失敗箇所から後始末へ進む用途に限っています。所有ポインタを最初に `NULL` にしてあり，`free(NULL)` は安全なので，「どこまで作れたか」で分岐しなくても同じ後始末で済みます。
 
