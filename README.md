@@ -17,7 +17,7 @@
 | `ta-results` | `ta` のすべてのテストを実際に実行した結果（標準出力・標準エラー出力・終了コード・作られたファイル）を `results/` に加えたもの。学生の出力と比べるときに使います | TA |
 | `practice` | 解答を雛形（空の `main`）に置き換え，入力ファイルと自動テスト（期待する出力）だけを残したもの。解答を見ずに課題を解き，学生と同じ手順と難しさを体験するときに使います | TA |
 
-解答（`weekNN/` のソース・データファイル）と各回の README は，3 つのブランチで同じ内容です。
+解答（`weekNN/` のソース・データファイル）と各回の README は，`main`・`ta`・`ta-results` で同じ内容です（`practice` だけはソースが雛形です）。
 保守は `ta` ブランチで行い（テストと CI で確かめるため），解答と解説の変更を `main` に反映します（手順と規約は `ta` ブランチの `CONTRIBUTING.md`）。
 
 ## 各回の解答
@@ -143,13 +143,13 @@ cmd /c "a.exe < input.txt"               # cmd の < を使う場合
   {
     "type": "default",
     "project": "CMakeLists.txt",
-    "projectTarget": "ReadText.exe (week10\\ReadText\\ReadText.exe)",
-    "name": "ReadText.exe (week10\\ReadText\\ReadText.exe)",
+    "projectTarget": "ReadText.exe (bin\\week10\\ReadText\\ReadText.exe)",
+    "name": "ReadText.exe (bin\\week10\\ReadText\\ReadText.exe)",
     "args": [ "input.txt" ]
   }
   ```
 
-- `input.txt` を書き換えたときは，次のビルドでコピーし直されます。
+- プロジェクトフォルダのデータファイルを書き換えたり足したりしたときは，次のビルドでコピーし直されます（実行ファイルのフォルダで直接書き換えた同名のファイルは上書きされます）。プログラムが書き出したファイルは実行ファイルのフォルダに残り，プロジェクトフォルダには戻りません。
 
 ### 4. VS Code で使う（Windows / macOS / Linux）
 
@@ -162,10 +162,13 @@ cmd /c "a.exe < input.txt"               # cmd の < を使う場合
 
 - 実行ファイルとデータファイルの場所，作業ディレクトリは 3 と同じです（ビルド先は `build/`）。
 - 引数を使う課題は，**File > Preferences > Settings** の **Workspace** タブで `cmake.debugConfig` を検索し，**Edit in settings.json** で次のように書きます（`.vscode/settings.json` に保存されます。リポジトリには含めません）。
+  `console` は，デバッグ実行でもキーボードから入力できるようにする設定です（入力を読む課題で使う）。
 
   ```json
-  { "cmake.debugConfig": { "args": [ "input.txt" ] } }
+  { "cmake.debugConfig": { "args": [ "input.txt" ], "console": "integratedTerminal" } }
   ```
+
+  この `args` はどのプロジェクトを実行しても渡されるので，その課題が終わったら消します。
 
 - リダイレクト（`<`）を使う課題（第7回）は，**Terminal > New Terminal** で 1 の方法を使います。
 
