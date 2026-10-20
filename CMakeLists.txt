@@ -67,10 +67,12 @@ function(softprac_add_program name)
     RUNTIME_OUTPUT_DIRECTORY "${out_dir}$<0:>"
     VS_DEBUGGER_WORKING_DIRECTORY "${SOFTPRAC_PROJECT_DIR}"
     FOLDER "${SOFTPRAC_WEEK}")
-  file(GLOB data_files LIST_DIRECTORIES false "${SOFTPRAC_PROJECT_DIR}/*")
+  # CONFIGURE_DEPENDS: プロジェクトフォルダにデータファイルを足すと，次のビルドで構成し直してコピーする
+  # （コンパイラを直接使って作った a.out・*.exe・*.obj などはコピーしない）
+  file(GLOB data_files LIST_DIRECTORIES false CONFIGURE_DEPENDS "${SOFTPRAC_PROJECT_DIR}/*")
   foreach(f IN LISTS data_files)
     get_filename_component(fname "${f}" NAME)
-    if(NOT fname MATCHES "(\\.c|\\.h|^CMakeLists\\.txt|^README.*|^run\\.args)$")
+    if(NOT fname MATCHES "(\\.c|\\.h|^CMakeLists\\.txt|^README.*|^run\\.args|^a\\.out|\\.exe|\\.obj|\\.o|\\.pdb|\\.ilk)$")
       configure_file("${f}" "${out_dir}/${fname}" COPYONLY)
     endif()
   endforeach()

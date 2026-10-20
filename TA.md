@@ -34,7 +34,7 @@
 | --- | --- | --- | ---: | --- |
 | [第1回](week01/README.md) | プログラミングの基礎 | Broken，House，Message，Version，Welcome | 11 | [ex01](https://t-yokoga.github.io/softprac1/ex01.html) |
 | [第2回](week02/README.md) | 変数 | Exchange，Observe，Profile，Rectangle，Temperature | 21 | [ex02](https://t-yokoga.github.io/softprac1/ex02.html) |
-| [第3回](week03/README.md) | 演算子 | Conditions，Flags，Leap，TimeParts，Update | 40 | [ex03](https://t-yokoga.github.io/softprac1/ex03.html) |
+| [第3回](week03/README.md) | 演算子 | Conditions，Flags，Leap，TimeParts，Update | 43 | [ex03](https://t-yokoga.github.io/softprac1/ex03.html) |
 | [第4回](week04/README.md) | 制御構造 | EvenSum，Fee，Powers，Table，YearGroup | 127 | [ex04](https://t-yokoga.github.io/softprac1/ex04.html) |
 | [第5回](week05/README.md) | 配列と関数 | Array3D，ColumnSum，Functions，Maximum，SumMean，ValueCopy，Warmup05 | 37 | [ex05](https://t-yokoga.github.io/softprac1/ex05.html) |
 | [第6回](week06/README.md) | 文字列 | AsciiTable，Average，CharCode，CompareJoin，CopyCapacity，Length，Lower | 40 | [ex06](https://t-yokoga.github.io/softprac1/ex06.html) |
@@ -47,7 +47,7 @@
 | [第13回](week13/README.md) | メモリ管理 | Dynamic，DynamicCopy，DynamicVector，DynamicVectorFail，GrowArray，GrowArrayFail，NewPoint，NewPointFail，SharedCount，StorageCount | 66 | [ex13](https://t-yokoga.github.io/softprac1/ex13.html) |
 | [第14回](week14/README.md) | 再帰 | CheckedFactorial，Factorial，Fibonacci，GcdLoop，Trace，TreeTraversal | 63 | [ex14](https://t-yokoga.github.io/softprac1/ex14.html) |
 | [デバッグの題材](debugging/README.md) | バグ入りのプログラム（TA 用） | 17 題 | 45 | |
-| | | **合計** | **842** | |
+| | | **合計** | **845** | |
 <!-- WEEK-TABLE:END -->
 
 テスト数は `tests/` と `variants/tests/` の期待値の数です。この表は `python3 tools/update_generated.py` で作り直します（手で書き換えません）。

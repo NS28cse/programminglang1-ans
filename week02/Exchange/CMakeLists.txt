@@ -44,7 +44,7 @@ softprac_add_variant(Exchange exchange.c two_statements_a_5_b_5
 # 採点のポイントの「代入の順序の誤り」: temp = a; の後に b = a; としてしまい，b の元の値を失う版
 softprac_add_variant(Exchange exchange.c wrong_order
   "${exchange_desc}"
-  "// 誤りの例: temp = a; b = a; a = temp; の順にした版（b の元の値 20 を失い a=10 b=10 になる）"
+  "// 誤りの例: int temp = a; b = a; a = temp; の順にした版（b の元の値 20 を失い a=10 b=10 になる）"
   [[    a = b;
     b = temp;]]
   [[    b = a;                          // 誤り: b の元の値 20 がここで失われる

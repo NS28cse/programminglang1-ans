@@ -53,7 +53,7 @@ softprac_add_variant(ValueCopy valuecopy.c add_z
 
 softprac_add_variant(ValueCopy valuecopy.c scope_blocks
   "// 演習ページのプログラムそのもの。increment に x を渡し，main の x と戻り値 y を表示する。\n// 仮引数 x は呼び出しごとに作られる別の局所変数なので，main の x は 10 のまま。"
-  "// main の本体をスコープの読解の 2 つのブロックに書き換えた版（123 と 345）。\n// 2 つの a は別々のブロックの別の局所変数（increment はこの版では呼ばない）。"
+  "// main の int x = 10; から printf までをスコープの読解の 2 つのブロックに書き換えた版（123 と 345）。\n// 2 つの a は別々のブロックの別の局所変数（increment はこの版では呼ばない）。"
   "    int x = 10;
 ${body}"
   [=[    {
