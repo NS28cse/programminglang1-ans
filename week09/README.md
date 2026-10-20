@@ -7,9 +7,9 @@
 | 課題 | プロジェクト | ソース |
 | --- | --- | --- |
 | 課題1（見つからない場合・同点・失敗時・二重ポインタの代入） | `FindMax` | [double_pointer.c](FindMax/double_pointer.c)（講義の例題そのもの） |
-| 課題1（値を返す版と場所を返す版） | `ReturnMaximum` | [return_maximum.c](ReturnMaximum/return_maximum.c) |
+| 課題1（値を返す版と場所を返す版） | `ReturnMaximum` | [return_maximum.c](ReturnMaximum/return_maximum.c)，別解 [versions/max_index.c](ReturnMaximum/versions/max_index.c) |
 | 課題2 表示順を変更する | `Names` | [names.c](Names/names.c)，関数へ分ける前の形 [versions/names_direct.c](Names/versions/names_direct.c) |
-| 課題3 行ごとの平均 | `MatrixMean` | [matrix.c](MatrixMean/matrix.c) |
+| 課題3 行ごとの平均 | `MatrixMean` | [matrix.c](MatrixMean/matrix.c)，別解 [versions/flat_means.c](MatrixMean/versions/flat_means.c) |
 | 課題4 二次元配列の行を交換する | `SwapRows` | [swap_rows.c](SwapRows/swap_rows.c) |
 | 発展1 長さが異なる行を扱う | `RaggedRows` | [ragged_rows.c](RaggedRows/ragged_rows.c)，例 [versions/animal.c](RaggedRows/versions/animal.c)・[versions/letters.c](RaggedRows/versions/letters.c) |
 | 発展2 型の説明 | `ArrayTypes`（※） | [array_types.c](ArrayTypes/array_types.c) |
@@ -23,7 +23,7 @@
 
 - 演習ページに「今回の入力はソース中の初期値です．数値や添字を変更するたびに再ビルドします」とあるので，プログラムは入力を読みません。
 - `FindMax` のソースは講義の例題そのものです。`ReturnMaximum` と `RaggedRows` は演習ページの「期待する表示」と 1 文字も違わない出力です。ほかのプロジェクトのソースは演習ページの指示どおりに作成しました（`MatrixMean` は講義の例題 `matrix.c` をもとにしています）。
-  演習ページの「`n` を 0 にする」「配列を変える」「断片を追加する」などの書き換えは，書き換え方と実行結果を課題ごとに示します。関数へ分ける前の形や，演習ページの別の小さな例（`dog`/`cat` など）は `versions/` に置いています。
+  演習ページの「`n` を 0 にする」「配列を変える」「断片を追加する」などの書き換えは，書き換え方と実行結果を課題ごとに示します。関数へ分ける前の形や，演習ページの別の小さな例（`dog`/`cat` など），考え方の違う別解（課題1・課題3の「別解」の節）は `versions/` に置いています。
 - 範囲外アクセスになる書き換え（`n=4`，`rows=3`，長さを交換しない行の交換，`int **` への変換など）は演習ページの指示どおり実行せず，型と図で説明しています。
 - 表示する内容に処理系依存の値を含めていないので，Windows（MSVC，x64）でも同じ表示になります。可変長配列（VLA）は使っていません（MSVC は非対応）。
 - `int *rows[] = {row0, row1};`，`char *editable[] = {city0, city1};`，`char *letters[] = {&first, &second};` のように自動変数のアドレスで配列を初期化する書き方は C99 以降の標準 C で，どれも演習ページ・講義の断片どおりです。MSVC（C17）でも警告なしでビルドできます。C17 を指定しない古い設定では C4204（非定数の集成体初期化）・C4221（自動変数のアドレスでの初期化）が出ることがあります。
@@ -273,6 +273,45 @@ pp → p → y        *pp = &y;  は1段たどった p の中身（アドレス�
 ```
 
 `*pp = &y;` は整数をコピーしていません。`p` に保存されたアドレスを変えています。`pp` は最初から最後まで `p` を指したままです。
+
+### 別解
+
+**最大要素の場所を添字で返す**（[ReturnMaximum/versions/max_index.c](ReturnMaximum/versions/max_index.c)）
+
+- 考え方: 「場所」をアドレスではなく添字で表します。`max_pointer` の代わりに，最大要素の添字を返し，`n<=0` なら有効な添字にない -1 を返す `max_index` を使います。
+  配列と添字だけで書けるので，ポインタを返す関数に慣れていない学生が最初に思い付きやすい形です。`max_value` と `main` の流れは本体と同じで，表示も同じ `before=12 12`・`after=12 99` です。
+
+  ```c
+  int max_index(const int a[], int n)
+  {
+      if (n <= 0) { return -1; }
+      int best = 0;
+      for (int i = 1; i < n; ++i) {
+          if (a[i] > a[best]) { best = i; }
+      }
+      return best;
+  }
+  ```
+
+  ```c
+      int index = max_index(a, 3);  // 最大要素の添字（ここでは 1）
+      if (index >= 0) {
+          printf("before=%d %d\n", saved, a[index]);
+          a[index] = 99;            // 配列 a が変わる。saved は変わらない
+          printf("after=%d %d\n", saved, a[index]);
+      }
+  ```
+
+- 本体との比べ方:
+  - 比較の回数（`n`−1 回）と，結果を持つ変数（`int` 1 個かポインタ 1 個か）は同じです。同点で先頭を選ぶのも同じです（`>` で比べるため）。
+  - 添字は配列の名前と組にして `a[index]` と書いたときだけ要素を表します。どの配列の添字かは呼び出し側が覚えておく必要があり，別の配列に使っても型では防げません。
+    ポインタ `found` はそれ 1 つで要素を指し，`*found` だけで読み書きできます。
+  - 失敗の表し方は，約束で決めた -1 か `NULL` かの違いです。どちらも使う前に検査が要ります（`a[-1]` も `NULL` の間接参照も未定義動作）。
+  - `max_index` は配列を書き換えないので `const int a[]` で受け取れます。`max_pointer` は呼び出し元が書き換えられる場所を返すので `int a[]` で受け取ります
+    （`const int a[]` にすると返す型も `const int *` になり，`*found = 99;` はできなくなります）。
+- どちらを勧めるか: 演習ページは `max_pointer`（`n<=0` なら `NULL`）を作って値を返す版と比べる課題なので，本体の形を求めます。
+  添字で書いてきた場合は処理として正しいと認めたうえで，ポインタ版も書かせ，「`saved` はコピー，`a[index]` と `*found` は配列の要素そのもの」という同じ説明ができるかを見ます。
+  `a[index]` を使う前に `index >= 0` を確かめているかも見ます。
 
 ### 採点のポイント・よくある誤り（課題1）
 
@@ -654,6 +693,43 @@ overall mean: undefined
 - この例の全体平均は (1+2+3+4+5+6) / 6 = 21 / 6 = **3.5**。行平均 2.0 と 5.0 の平均 (2.0+5.0)/2 = 3.5 とも一致しますが，それは**どの行も要素数が 3 で同じ**だからです。行の長さが違うと一致しません（発展1で 3.0 と 3.25 になる例）。
 - `overall_mean` は `rows>=1` を条件にし，`double` で合計して `sum / ((double)rows * COLS)` を求めます。`rows=0` では要素がなく平均が定義できないので，0 で割る前に失敗（戻り値 0）とし，呼び出し側が `undefined` と表示します（`find_max` と同じく，成功・失敗を戻り値，結果を出力引数で返す形）。
 - 行平均を表示する `print_means` は `rows=0` なら「何も表示しない」で済みますが，平均値を**返す**関数は何かの値を返さなければならないので，空入力の扱い（失敗を返す，前提条件にする）を仕様として決める必要があります。0.0 を返すと「平均が 0」と区別できません。
+
+### 別解
+
+**一次元の配列に行の順に並べ，列数も引数で渡す**（[MatrixMean/versions/flat_means.c](MatrixMean/versions/flat_means.c)）
+
+- 考え方: 講義「一次元の保存形式との比較」のとおり，最初から一次元の配列を用意し，行 `r`・列 `c` の要素を添字 `r * cols + c` で読みます。列数は型ではなく引数 `cols` で渡します。
+  表示は本体と同じ `row0 mean=2.00`・`row1 mean=5.00` です。
+
+  ```c
+  void print_means(const int a[], int rows, int cols)
+  {
+      for (int r = 0; r < rows; ++r) {
+          int total = 0;
+          for (int c = 0; c < cols; ++c) {
+              total += a[r * cols + c];  // 行 r の先頭は r * cols 番目
+          }
+          double mean = (double)total / cols;
+          printf("row%d mean=%.2f\n", r, mean);
+      }
+  }
+  ```
+
+  ```c
+      int flat[ROWS * COLS] = {1, 2, 3, 4, 5, 6};  // 1 行目が flat[0]〜flat[2]，2 行目が flat[3]〜flat[5]
+      print_means(flat, ROWS, COLS);
+  ```
+
+- 本体との比べ方:
+  - 加算の回数（6 回）・割り算の回数（2 回）・メモリ（`int` 6 個）は同じです。並び方もメモリ上では同じで，違うのは型と添字の計算です。
+  - 列数: 本体は仮引数の型 `int (*a)[COLS]` に列数 3 が入っているので，3 列の配列しか渡せません（4 列の配列を渡すと，型が違うという警告（GCC 14 以降はエラー）になります）。
+    一次元版は `cols` を実行時の値として渡せるので，可変長配列を使わずに同じ関数で 2 列や 4 列の行列も扱えます。
+  - 誤りやすさ: 本体の `a[r][c]` は行の幅をコンパイラが計算します。一次元版は `r * cols + c` を自分で書くので，`r * rows + c` や `c * cols + r` と書き違えても，型が `const int []` のためコンパイラは気付きません。
+    配列に `rows * cols` 個以上の要素があることも呼び出し側の条件です。
+  - 二次元配列 `int a[2][3]` を `&a[0][0]` で `int *` として渡して `a[r * COLS + c]` と読む書き方とは別物です（講義が避ける書き方。最初の行の範囲を越えて読む）。一次元版は最初から一次元の配列 `flat` を宣言しています。
+- どちらを勧めるか: この課題は二次元配列を関数に渡し，仮引数を `int (*a)[COLS]` にして確かめる課題なので，本体の形を求めます。
+  一次元版を出してきた場合は処理として正しいと認めたうえで，二次元配列の版も書かせます。列数が実行時に決まる行列を扱うときに一次元版が使える，という比較の説明に使えます。
+  `&a[0][0]` を `int *` で渡していたら，別解ではなく範囲を越える読み方として指摘します。
 
 ### 採点のポイント・よくある誤り（課題3）
 

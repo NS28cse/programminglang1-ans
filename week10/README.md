@@ -9,8 +9,8 @@
 
 | 課題 | 内容 | プロジェクト | ソース | 実行に使う引数 | データファイル |
 | --- | --- | --- | --- | --- | --- |
-| 1 | 1 文字ずつ読んで表示 | `ReadText` | [read_text.c](ReadText/read_text.c) | `input.txt` | [input.txt](ReadText/input.txt) |
-| 1 | 行の長さ | `LineLengths` | [line_lengths.c](LineLengths/line_lengths.c) | `input.txt` | [input.txt](LineLengths/input.txt) |
+| 1 | 1 文字ずつ読んで表示 | `ReadText` | [read_text.c](ReadText/read_text.c)，別解 [versions/read_lines.c](ReadText/versions/read_lines.c) | `input.txt` | [input.txt](ReadText/input.txt) |
+| 1 | 行の長さ | `LineLengths` | [line_lengths.c](LineLengths/line_lengths.c)，別解 [versions/count_chars.c](LineLengths/versions/count_chars.c) | `input.txt` | [input.txt](LineLengths/input.txt) |
 | 2 | 数値引数の検査（講義の `parse_number.c`） | `ParseNumber` | [parse_number.c](ParseNumber/parse_number.c) | `42` | なし |
 | 2 | 引数を表示して文字列を探す | `Arguments` | [arguments.c](Arguments/arguments.c) | `nagano ishikawa` | なし |
 | 3 | バイト列を保存（講義の `binary.c`） | `Binary` | [binary.c](Binary/binary.c) | なし | なし（`bytes.bin` は実行時に作る） |
@@ -18,7 +18,7 @@
 | 4 | テキストを書く（モード `w`） | `WriteText` | [write_text.c](WriteText/write_text.c) | なし | なし（`scores.txt` は実行時に作る） |
 | 発展1 | 数値をテキスト・バイナリで往復 | `NumberFormats` | [number_formats.c](NumberFormats/number_formats.c) | なし | なし（`numbers.txt`・`numbers.bin` は実行時に作る） |
 | 発展2 | 二乗の一覧を書く | `WriteSquares` | [write_squares.c](WriteSquares/write_squares.c) | `4 squares.txt` | なし（`squares.txt` は実行時に作る） |
-| 発展2 | 一覧を検査して値を探す | `CheckValue` | [check_value.c](CheckValue/check_value.c) | `squares.txt 9` | [squares.txt](CheckValue/squares.txt)（`WriteSquares 4` の出力のコピー） |
+| 発展2 | 一覧を検査して値を探す | `CheckValue` | [check_value.c](CheckValue/check_value.c)，別解 [versions/store_values.c](CheckValue/versions/store_values.c) | `squares.txt 9` | [squares.txt](CheckValue/squares.txt)（`WriteSquares 4` の出力のコピー） |
 
 引数の与え方は下の[実行のしかた](#実行のしかたコマンド引数と作業ディレクトリ)を参照。書き換えて試す方法は [ルートの README](../README.md#ソースを書き換えて試す) を参照。
 
@@ -38,6 +38,7 @@
   | `WriteText` | `mode_a`，`mode_wx` | モードだけを `a` へ変える，表の `wx` |
   | `NumberFormats` | `precision_0125` | `data[0]` を 0.125，最後の 2 行の表示を `%.3f` にする |
 
+- 考え方の違う解き方は `versions/` に別解として置き，課題ごとの「別解」の節で本体と比べる（`ReadText`・`LineLengths`・`CheckValue`）。別解も本体と同じ引数・入力で同じ表示になる。
 - `ByteOrder` は演習ページの「講義の `unsigned short` の観察用断片を別の `main` で実行します」に対応する。演習ページにプロジェクト名がないので，
   解答で名前を付けた（全回で重複しない名前）。学生のプロジェクト名は自由でよい。
 - プログラムが書き出すファイル（`bytes.bin`・`scores.txt`・`numbers.txt`・`numbers.bin`・`squares.txt`）はリポジトリに置いていない（実行時に作業ディレクトリにできる。書かれる内容はそれぞれの節に示した）。
@@ -173,6 +174,31 @@ usage: ReadText filename
 
 うまくいかないときは `input.txt` に戻し，「内容」「名前」「作業ディレクトリ」を 1 つずつ変えて原因を切り分けさせる。
 
+### 別解
+
+**`fgets` で配列へまとめて読み，`fputs` でそのまま表示する**（[ReadText/versions/read_lines.c](ReadText/versions/read_lines.c)）
+
+- 考え方: 1 文字ずつではなく，`fgets` で配列（`char line[256]`）へ最大 255 バイトずつ読み，`fputs` で読んだとおりに書きます。引数の検査・エラー処理・表示は本体と同じです。
+
+  ```c
+      char line[256];  // 1 行がこれより長くても，残りは次の fgets で読む
+      int failed = 0;
+      while (fgets(line, sizeof line, fp) != NULL) {
+          // fgets は改行も配列に残すので，fputs（改行を足さない）でそのまま書く
+          if (fputs(line, stdout) == EOF) { failed = 1; break; }
+      }
+  ```
+
+- 本体との比べ方:
+  - 関数を呼ぶ回数: 本体は 1 バイトごとに `fgetc` と `putchar` を 1 回ずつ呼びます（`input.txt` の 11 バイトなら `fgetc` 12 回（最後の `EOF` を含む）と `putchar` 11 回）。
+    別解は 1 行ごとに 1 回ずつです（`fgets` 3 回（2 行と，終わりの `NULL`）と `fputs` 2 回）。どちらの入出力にもバッファがあるので，この大きさのファイルで速さの違いは分かりません。
+  - メモリ: 本体は `int` 1 個，別解は `char` 256 個の配列です。
+  - 長い行: 255 バイトより長い行は何回かの `fgets` に分かれますが，読んだ順に続けて書くので表示は同じです。「`fgets` 1 回 = 1 行」と考えて行を数えると誤ります（行を扱うのは `LineLengths`）。
+  - 空ファイル・最後に改行のない行・存在しないファイル・引数の誤りは，本体と同じ表示・終了コードになります（`fgets` は改行のない最後の行も返し，`NULL` の後で `ferror` を調べる）。
+  - 途中に `NUL` バイトを含むファイルだけは違います。`fputs` は文字列の終端と見なした `NUL` の手前までしか書かないので，その行の残りが表示されません。本体の `fgetc`/`putchar` は `NUL` もそのまま書きます（テキストを表示する課題なので対象外の入力）。
+- どちらを勧めるか: どちらも正しい解です。講義の例題として本体を基本にします。行単位で書いてきたら，容量を `sizeof line` で渡しているか，
+  改行を足さない `fputs` を使っているか（`puts` だと改行が 2 重になる），`printf(line)` のように読んだ内容を書式に渡していないか（`%` を含む行で誤動作する）を見ます。
+
 ### 採点のポイント・よくある誤り
 
 - `input.txt` を `.vcxproj` のフォルダ以外（`x64\Debug\` やソリューションのフォルダなど）に置いた，または **Working Directory** を変えた → `fopen: No such file or directory`。
@@ -237,6 +263,45 @@ $ LineLengths empty.txt
 **説明すること**: `strlen(line)` から常に 1 を引くと，最後の行に改行がない `ABC` は `strlen` が 3 なので 2 になってしまう（最後の `C` を改行と誤って除く）。
 `fgets` が改行を配列に入れるのは「改行まで読めたとき」だけで，ファイルの最後の行や容量で切れた行には改行がない。
 そこで `line[length - 1] == '\n'` を確かめ，改行を実際に読み取ったときだけ 1 バイト除く（`length > 0` も先に調べて `line[-1]` を読まない）。
+
+### 別解
+
+**`fgetc` で 1 文字ずつ数え，行を配列に保存しない**（[LineLengths/versions/count_chars.c](LineLengths/versions/count_chars.c)）
+
+- 考え方: 読んだ文字を数えるだけにします。改行を読んだらそれまでの長さを表示して 0 に戻し，32 文字目を読んだら `line too long` で終了します。
+  ファイルの終わりで数えかけの文字があれば（`length > 0`），改行のない最後の行として表示します。表示・エラーの文面・終了コードは本体と同じです。
+
+  ```c
+      int ch;
+      int length = 0;   // 今の行でここまでに読んだ文字数（改行は含めない）
+      int failed = 0;
+      while ((ch = fgetc(fp)) != EOF) {
+          if (ch == '\n') {
+              if (printf("%d\n", length) < 0) { failed = 1; break; }
+              length = 0;
+          } else if (length == MAX_LENGTH) {
+              fprintf(stderr, "line too long\n");   // 改行の前に 32 文字目が来た
+              failed = 1;
+              break;
+          } else {
+              ++length;
+          }
+      }
+      // 最後の行に改行がないとき（length > 0）も 1 行として表示する。空ファイルは何も表示しない
+      if (!failed && !ferror(fp) && length > 0) {
+          if (printf("%d\n", length) < 0) { failed = 1; }
+      }
+  ```
+
+- 本体との比べ方:
+  - メモリ: 本体は `char` 32 個の配列，別解は `int` 1 個です。上限 31 は配列の容量ではなく `length == MAX_LENGTH` の比較で決まります。
+  - 特別な場合の数: 本体は「改行が配列に入ったか」と「容量ちょうどで改行が入らなかったか（もう 1 文字読む）」を区別します。別解では 31 文字の行に特別な処理がなく，改行か `EOF` が来れば 31 と表示します。
+    代わりに，ループの後で「最後の行に改行がない」場合を処理します。`length > 0` の判定を忘れると改行のない `ABC` が表示されず，`length >= 0` にすると改行で終わるファイルや空ファイルで余分な `0` を表示します。
+  - 関数を呼ぶ回数: 本体は 1 行（31 バイトまで）ごとに `fgets` 1 回，別解は 1 文字ごとに `fgetc` 1 回です（どちらも入力はバッファから読むので，この大きさでは速さの違いは分かりません）。
+  - 同じになること: 32 文字の行を 2 行として数えない，空行は 0，空ファイルは何も表示しない，Linux/macOS で CRLF のファイルを読むと `\r` も数える（`ABC` が 4）。
+    違うのは `NUL` を含む行（本体は `strlen` が `NUL` の手前で止まり，別解は `NUL` も 1 文字と数える）だけで，これは講義の例の対象外の入力です。
+- どちらを勧めるか: 長さを数えるだけなら別解のほうが特別な場合が少なく，誤りにくい形です。ただし課題は講義の `line_lengths.c` で `fgets` が改行を残すこと（説明すること）を確かめるものなので，本体を基本にします。
+  別解の形で書いてきたら，改行のない `ABC` だけのファイル・空ファイル・31 文字と 32 文字を表のとおり確かめたかを見ます。行の内容を後で数値に変換するなど，文字列として使うときは配列に保存する本体の形が必要です（発展2 の `CheckValue`）。
 
 ### 採点のポイント・よくある誤り
 
@@ -774,6 +839,54 @@ Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 �
 
 `read_value` が失敗したときは，その呼び出しで得られなかった値を読まない（`*value` は書き換えず，呼び出し側もすぐ失敗として終わる）。
 検索だけなら 1 個ずつ比較すれば足りるので，値全体を配列に保存していない。
+
+### 別解
+
+**値を全部配列に保存してから探す**（[CheckValue/versions/store_values.c](CheckValue/versions/store_values.c)）
+
+- 考え方: 演習ページの「固定長配列に保存する方法」です。`read_values` がファイル全体を検査しながら値を `long values[MAX_COUNT]` へ集め，形式が正しいと分かってから `contains` が配列の中を探します。
+  `parse_long`・`read_value`・`report_line_error` は本体と同じで，表示・エラーの文面・終了コードもすべて本体と同じです。
+
+  ```c
+      long values[MAX_COUNT];   // ヘッダの個数は 0〜100 と検査するので，100 個分あれば足りる
+      long count = 0;
+      int ok = read_values(fp, values, &count);
+      ...
+      printf("%s\n", contains(values, count, target) ? "found" : "not found");
+  ```
+
+  ```c
+      long n;
+      int result = read_value(fp, MAX_COUNT, &n);   // n が 0〜100 なので values の範囲内に収まる
+      ...
+      for (long i = 0; i < n; ++i) {
+          result = read_value(fp, MAX_VALUE, &values[i]);
+          ...
+      }
+  ```
+
+  ```c
+  int contains(const long values[], long count, long target)
+  {
+      for (long i = 0; i < count; ++i) {
+          if (values[i] == target) {
+              return 1;   // 検査は済んでいるので，見つけたらすぐ返してよい
+          }
+      }
+      return 0;
+  }
+  ```
+
+- 本体との比べ方:
+  - メモリ: 本体は値 1 個（`long` 1 個），別解は 100 個分の配列です（Windows x64 では `long` が 4 バイトなので 400 バイト，Linux x64 では 8 バイトなので 800 バイト）。
+    個数の上限がずっと大きい形式では固定長の配列が足りなくなります（第13回の動的メモリ確保が要る）。
+  - 読む回数: どちらもファイルを 1 回だけ読みます。比べる回数は本体が `N` 回，別解は見つかった所までで，最大 `N` 回です。
+  - 誤りやすさ: 本体は「見つけても `return` しない」をループの中で守る必要があります。別解は検査が終わってから探すので，見つけてすぐ返してよく，
+    見つけた後の行が壊れている場合（`4`・`0`・`1`・`abc`・`9` で 1 を探す）も自然に `found` を表示しません。
+  - 新しく要ること: 配列の容量の確認です。ヘッダの `N` を 0〜100 と検査してから `values[i]` に書くので範囲内に収まります（確認問題 7）。`N` の検査を省くと `values[100]` 以降へ書く範囲外アクセスになります。
+  - 保存した値は何回も検索するときに使い回せます。ただしこの形式は値の順番を約束していない（`5`・`6` も `9`・`4` も受け付ける）ので，昇順を前提に途中で探索を打ち切る・二分探索するのは誤りです。
+- どちらを勧めるか: 1 回だけ探すなら，配列の要らない本体を勧めます（演習ページも配列に保存しない形）。別解の形で書いてきたら正しい解として認め，
+  `N` を検査する前に配列へ書いていないか，配列の大きさを `N` の上限から決めているか，形式の検査が終わる前に `found` を表示していないかを見ます。
 
 ### 採点のポイント・よくある誤り
 

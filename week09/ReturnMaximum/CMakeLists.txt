@@ -2,6 +2,7 @@
 #   negative    … 配列を {-7, -12, -4} にした版
 #   pointer_n0  … 場所を返す版だけ n を 0 にした版（何も表示しない）
 #   best_zero   … {-7, -12, -4} で，max_value の最大候補を 0 から始めた（誤った）版
+#   max_index   … 別解: 最大要素の場所を添字で返す版（versions/max_index.c をそのままビルド。出力は本体と同じ）
 # 各版は先頭コメントの 2 行目を版の説明に置き換え，書き換えた行のコメントも合わせる（置換前の文字列は行全体）
 softprac_add_program(ReturnMaximum return_maximum.c)
 
@@ -24,3 +25,5 @@ softprac_add_variant(ReturnMaximum return_maximum.c best_zero
   "${init}" "${init_negative}"
   "    int best = a[0];  // 0 からではなく先頭要素から始める（全要素が負でも正しい）"
   "    int best = 0;  // 誤りの例: 全要素が負だと配列にない 0 を返す")
+
+softprac_add_variant(ReturnMaximum versions/max_index.c max_index)

@@ -5,6 +5,7 @@
 #   array_param           … 仮引数を int a[][COLS] と書いた版（出力が本体と同じことを確かめるケース）
 #   sizeof_check          … main で sizeof の式を確認する版（バイト数は処理系依存なので式との比較と商を表示）
 #   overall / overall_rows0 … 全体平均を返す関数を追加した版（rows=2 と rows=0）
+#   flat_means            … 別解: 一次元の配列に行の順に並べ，列数も引数で渡す版（versions/flat_means.c をそのままビルド）
 # 各版は先頭コメントの 2 行目を版の説明に置き換え，書き換えた行のコメントも合わせる（置換前の文字列は行全体）
 softprac_add_program(MatrixMean matrix.c)
 
@@ -96,3 +97,5 @@ softprac_add_variant(MatrixMean matrix.c overall_rows0
   "// 全体平均を返す関数 overall_mean を追加し，rows=0 で呼ぶ版。\n// 要素がなく平均が定義できないので overall_mean は 0 を返し，undefined と表示する。"
   "${main_line}" "${overall_func}"
   "${return_line}" "${overall_call_0}")
+
+softprac_add_variant(MatrixMean versions/flat_means.c flat_means)
