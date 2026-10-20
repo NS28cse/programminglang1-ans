@@ -120,6 +120,33 @@ jobs:
         # windows-msvc-preset と同じ（debugging/ の題材は存在だけを確かめる）
         run: python3 tools/check_launch.py out/build/gcc-debug
 
+  # main と practice の形で確かめる: ta の解答を main の最小の CMakeLists.txt でビルドし（-Werror），
+  # practice の雛形に main の解答を重ねるとテストがすべて通ること（tools/export_main.py・make_practice.py）
+  main-and-practice:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          path: _main
+      - name: Build the answers with main's minimal CMakeLists.txt (-Werror)
+        run: |
+          if [ -f _main/cmake/RunTest.cmake ]; then echo "main はまだ分ける前の構成なので確かめない"; exit 0; fi
+          python3 tools/export_main.py _main
+          cmake -S _main -B _build-main -DCMAKE_C_FLAGS=-Werror
+          cmake --build _build-main -j 4
+      - name: Practice stubs + main's answers pass every test
+        run: |
+          if [ -f _main/cmake/RunTest.cmake ]; then exit 0; fi
+          cp -a _main _practice
+          python3 tools/make_practice.py _practice
+          ( cd _practice && find week* -name '*.c' -o -name '*.h' ) | while read -r f; do cp "_main/$f" "_practice/$f"; done
+          cmake -S _practice -B _build-practice -DCMAKE_C_FLAGS=-Werror
+          cmake --build _build-practice -j 4
+          ctest --test-dir _build-practice -j 4 --timeout 60 --output-on-failure
+
   # ビルドしない検査: ファイル名，生成物が最新か（tools/update_generated.py --check），文書のリンク（tools/check_docs.py）
   repository-checks:
     runs-on: ubuntu-latest

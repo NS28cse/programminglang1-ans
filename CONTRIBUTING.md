@@ -265,6 +265,7 @@ python3 tools/check_docs.py         # 文書のリンクとアンカー，デバ
 | `windows-mingw` | MSYS2 UCRT64 の gcc（VS Code + MinGW）。Visual Studio の構成の一覧に MinGW が出ないよう，プリセットを使わず CMake のオプションで指定する |
 | `linux` | GCC・Clang × Debug・Release。`-Werror`，AddressSanitizer/UBSan |
 | `macos` | Apple Clang。プリセット `gcc-debug`。IDE の起動構成で全プロジェクトを起動する（`debugging/` は起動せず，実行ファイルの存在だけを確かめる） |
+| `main-and-practice` | ta の解答を `tools/export_main.py` で main に写して main の最小の `CMakeLists.txt` で `-Werror` ビルドし，`tools/make_practice.py` で作った practice に main の解答を重ねてテストがすべて通ること（main が分ける前の構成の間は確かめない） |
 | `repository-checks` | Windows で使えないファイル名，生成物が最新か（`update_generated.py --check`），文書のリンクと題材の一覧（`check_docs.py`） |
 
 - 全ジョブに時間制限があり，同じブランチに新しい push が来ると古い実行は取り消される。
