@@ -10,13 +10,13 @@
 
 | 課題 | プロジェクト | ソース | データファイル |
 | --- | --- | --- | --- |
-| 1 複写 | `Echo` | [`echo.c`](Echo/echo.c)（講義の例題） | [`input.txt`](Echo/input.txt) |
-| 1 小文字化フィルタ | `LowerInput` | [`lower_input.c`](LowerInput/lower_input.c) | [`input.txt`](LowerInput/input.txt)，[`ab.txt`](LowerInput/ab.txt)（課題4の入力ファイル） |
-| 2 英字数 | `LetterCount` | [`letter_count.c`](LetterCount/letter_count.c) | [`input.txt`](LetterCount/input.txt) |
-| 2 バイト数 | `ByteCount` | [`byte_count.c`](ByteCount/byte_count.c)（演習ページのコード） | [`input.txt`](ByteCount/input.txt) |
-| 3 行の容量 | `LineInput` | [`line.c`](LineInput/line.c)（講義の例題） | [`input.txt`](LineInput/input.txt) |
+| 1 複写 | `Echo` | [`echo.c`](Echo/echo.c)（講義の例題） | [`input.txt`](Echo/input.txt)（`abc` と `XYZ` の 2 行） |
+| 1 小文字化フィルタ | `LowerInput` | [`lower_input.c`](LowerInput/lower_input.c) | [`input.txt`](LowerInput/input.txt)（`Hello C17!` と `AZaz09` の 2 行），[`ab.txt`](LowerInput/ab.txt)（課題4の入力ファイル。`AB` の 1 行） |
+| 2 英字数 | `LetterCount` | [`letter_count.c`](LetterCount/letter_count.c)（別解: [`versions/letter_count_line.c`](LetterCount/versions/letter_count_line.c)） | [`input.txt`](LetterCount/input.txt)（`abc 12!` の 1 行） |
+| 2 バイト数 | `ByteCount` | [`byte_count.c`](ByteCount/byte_count.c)（演習ページのコード） | [`input.txt`](ByteCount/input.txt)（`ab` と `C` の 2 行） |
+| 3 行の容量 | `LineInput` | [`line.c`](LineInput/line.c)（講義の例題） | [`input.txt`](LineInput/input.txt)（`Hello` の 1 行） |
 | 4 書式 | `Formats` | [`formats.c`](Formats/formats.c)（演習ページのコード） | なし（入力を待たない） |
-| 発展 タイピング | `Typing` | [`typing.c`](Typing/typing.c) | [`input.txt`](Typing/input.txt) |
+| 発展 タイピング | `Typing` | [`typing.c`](Typing/typing.c)（別解: [`versions/typing_bounded.c`](Typing/versions/typing_bounded.c)） | [`input.txt`](Typing/input.txt)（`thiS is a Pen` の 1 行） |
 
 - 演習ページはソース名を指定していないため，講義の例題（`echo.c`，`line.c`）はその名前を使い，ほかはプロジェクト名を小文字・`_` 区切りにしました。
 - 演習ページの「一時的に置き換える」「`line[8]`へ変更する」「`n`を123456へ変更する」などの**実験用の変更**は，フォルダのソース（本体）には入れていません。
@@ -40,33 +40,30 @@ Visual Studio では，入力するのはエディタではなく Ctrl+F5 で開
 ### リダイレクト・パイプ（任意。授業の範囲外の確認用）
 
 演習ページは「シェル操作は行わない」としていますが，TA が動作確認する場合や，興味のある学生に聞かれた場合のために使い方をまとめます。
-実行ファイルの場所は，学生の Visual Studio プロジェクトなら **Output** ウィンドウ（**Show output from: Build**）に表示される `...\x64\Debug\Echo.exe` です。
-このリポジトリでは，[ルートの README の方法 1](../README.md#1-コマンドでビルドする) のとおりプロジェクトフォルダ（`week07\Echo` など。`input.txt` がある）でコンパイルして
-`./a.out < input.txt`（PowerShell では `Get-Content input.txt | .\a.exe`）と実行するか，
-CMake でビルドした実行ファイルのフォルダ（Visual Studio でフォルダーを開いた場合は `out\build\x64-Debug\bin\week07\Echo\`。`input.txt` などのデータファイルもコピーされている）で実行します。
-以下は実行ファイルのあるフォルダで実行する例です。方法 1 でコンパイルした場合は実行ファイル名を `a.exe` に読み替え，2 つのプログラムをつなぐ例では，もう一方の実行ファイルを相対パスで指定します（CMake でビルドした場合は `..\ByteCount\ByteCount.exe` など）。
+実行ファイルの場所と作業フォルダは[ルートの README の使い方](../README.md#使い方)のとおりです（CMake でビルドした場合は `bin\week07\<プロジェクト名>\` に `input.txt` などのデータファイルもコピーされます）。
+以下はその実行ファイルのフォルダで実行する例です。2 つのプログラムをつなぐ例では，もう一方の実行ファイルを相対パスで指定します。
 
 **cmd（コマンドプロンプト）**: 記号の意味は講義の表どおりです。
 
 ```bat
-rem input.txt を標準入力へ接続（キー入力も Ctrl+Z も不要）
+rem （bin\week07\Echo\ で）input.txt を標準入力へ接続（キー入力も Ctrl+Z も不要）
 Echo.exe < input.txt
-rem 結果を out.txt へ（既存の内容は上書き）
+rem （以下 4 行は bin\week07\LowerInput\ で）結果を out.txt へ（既存の内容は上書き）
 LowerInput.exe < input.txt > out.txt
 rem out.txt の末尾へ追記
 LowerInput.exe < input.txt >> out.txt
-rem LowerInput の stdout を ByteCount の stdin へ
-LowerInput.exe < input.txt | ByteCount.exe
-rem stderr だけを err.txt へ（stdout は画面のまま）
+rem LowerInput の stdout を ByteCount の stdin へ（ByteCount.exe は隣のフォルダにある）
+LowerInput.exe < input.txt | ..\ByteCount\ByteCount.exe
+rem （bin\week07\LineInput\ で）stderr だけを err.txt へ（stdout は画面のまま）
 LineInput.exe < input.txt 2> err.txt
 ```
 
-**PowerShell**（VS Code の既定のターミナル）: `<` は使えません（英語版では `The '<' operator is reserved for future use.`，日本語版では「`<` 演算子は将来使用するために予約されています」というエラーになる）。
+**PowerShell**（VS Code の既定のターミナル）: `<` は使えません（予約された演算子としてエラーになる）。
 
 ```powershell
-Get-Content input.txt | .\Echo.exe                      # 入力ファイルを標準入力へ（行ごとに送られる）
-.\LowerInput.exe < input.txt                            # ← PowerShell ではエラー
-cmd /c "LowerInput.exe < input.txt | ByteCount.exe"     # バイト数を正確に確かめたいときは cmd に任せる
+Get-Content input.txt | .\Echo.exe                                  # （bin\week07\Echo\ で）入力ファイルを標準入力へ（行ごとに送られる）
+.\LowerInput.exe < input.txt                                        # ← PowerShell ではエラー
+cmd /c "LowerInput.exe < input.txt | ..\ByteCount\ByteCount.exe"    # （bin\week07\LowerInput\ で）バイト数を正確に確かめたいときは cmd に任せる
 ```
 
 PowerShell には次の違いがあるため，**バイト数を比べる実験は cmd で行う**よう案内してください。
@@ -282,7 +279,7 @@ azaz09
 
 #### 誤りの例の版（`Echo` の `no_parens`・`char_ch`）
 
-どちらも警告が出る書き方です（警告をエラーにする設定ではビルドが止まる）。警告を確かめたうえで実行すると，誤りの動作を確かめられます。
+`no_parens` はどのコンパイラでも警告が出る書き方です（GCC/Clang `-Wparentheses`，MSVC C4706）。`char_ch` は MSVC だけが C4244（`int` から `char` への変換）を出し，GCC/Clang は `char` が符号付きなら警告を出しません。警告をエラーにする設定では，警告が出るとビルドが止まります。警告を確かめたうえで実行すると，誤りの動作を確かめられます。
 
 | 版 | 書き換えた行 | 入力 | 標準出力 | ビルド時の警告 |
 | --- | --- | --- | --- | --- |
@@ -292,7 +289,7 @@ azaz09
 `char` が符号付きか符号なしかは処理系定義です（MSVC と x86/x64 の GCC・Clang は符号付き，Linux の ARM などは符号なし）。
 表の `char_ch` の結果は符号付きの場合です。GCC/Clang では `-fsigned-char` を付けてビルドすると環境によらず符号付きになります（MSVC の `char` は既定で符号付き）。
 0xFF のバイトは，macOS / Linux なら `printf 'ab\377cd\n' | ./a.out` のように与えられます。
-符号なしの環境では 0xFF でも `EOF` でも止まらず無限ループになります（`-funsigned-char` を付けると，GCC は `ch != EOF` に `-Wtype-limits`（比較が常に真）の警告を出す）。
+符号なしの環境では 0xFF でも `EOF` でも止まらず無限ループになります（`-funsigned-char` を付けると，`ch != EOF` に GCC は `-Wtype-limits`，Clang は `-Wtautological-constant-out-of-range-compare`（どちらも比較が常に真）の警告を出す）。
 
 ---
 
@@ -373,6 +370,44 @@ CR LF のファイルをリダイレクトした場合だけ，Windows は改行
 | 何を数えるか | **最初の 1 行**に含まれる ASCII 英字（`A`〜`Z`，`a`〜`z`）の個数。数字・空白・記号・改行は数えない | **`EOF` までに読み取ったすべてのバイト**の個数。改行も空白も 1 として数える（単語数・見た目の文字数・ファイルサイズではない） |
 | いつ表示するか | 改行を読んだとき，または改行の前に `EOF` になったとき（Enter で表示される） | `EOF` になったときだけ（Enter では表示されない。強制停止すると表示されない） |
 | 停止条件 | `ch == '\n' \|\| ch == EOF` | `getchar() == EOF` |
+
+### 別解
+
+#### 1 行を配列へ読み込んでから数える（[`LetterCount/versions/letter_count_line.c`](LetterCount/versions/letter_count_line.c)）
+
+**考え方**: 課題3 の `fgets` で 1 行を配列に保存してから，配列の先頭から改行（改行なしで入力が終わったときは終端）まで英字を数えます。
+「1 行を読む」と「数える」を 2 段階に分ける形で，第6回の文字列配列の処理に慣れていると思い付きやすい解き方です。
+
+```c
+    char line[1002]; // 入力は 1 行 1000 バイト以内。本文 1000 バイト＋改行＋終端まで入る容量にする
+    int count = 0;
+    // 1 文字も読めずに入力が終了したときは NULL。行がないので 0 個として表示する
+    if (fgets(line, sizeof line, stdin) != NULL) {
+        // 改行が入っていればそこで，改行なしで入力が終了したなら終端で止める
+        for (size_t i = 0; line[i] != '\n' && line[i] != '\0'; ++i) {
+            if ((line[i] >= 'A' && line[i] <= 'Z') || (line[i] >= 'a' && line[i] <= 'z')) {
+                ++count;
+            }
+        }
+    }
+```
+
+実行結果は「英字の範囲と停止条件を確かめる」の表のすべての入力で本体と同じです（`abc 12!` で 3，空行で 0，`EOF` だけで 0，英字 999 個と Enter で 999，`ab` Enter `cdef` Enter で 2 など）。
+`fgets` も最初の改行までしか読まないので，2 行目は読みません。
+
+**本体との比べ方**:
+
+| 観点 | 本体（`getchar` で 1 文字ずつ数える） | 別解（`fgets` で 1 行を配列へ読んでから数える） |
+| --- | --- | --- |
+| 使う記憶 | `ch` と `count` だけ（配列なし） | さらに `char` 1002 要素（1002 バイト）の配列 |
+| 入力をたどる回数 | 1 回（`getchar` を本文の長さ＋1 回呼びながら数える） | 2 回（`fgets` が 1 行を配列へ写し，`for` が配列をたどる。`abc 12!` と Enter なら 8 バイト写して `for` を 7 回まわす） |
+| 1 行の長さ | 上限なし（何バイトの行でも最後まで数える） | 配列の容量で決まる。上限の 1000 バイトから容量を決める必要があり，それより長い行は先頭の 1001 バイトしか数えない |
+| 止める条件 | `getchar` の値で `EOF` と改行を調べる | `fgets` の戻り値で `NULL` を，配列の中で改行と終端を調べる（改行なしで終わった行には改行が入っていない） |
+
+**どちらを勧めるか**: **本体の 1 文字ずつ数える形を勧めます。** 英字かどうかはその 1 文字だけで決まるので，小文字化フィルタと同じく入力を配列に保存する必要がありません（課題1 の「配列へ全入力を保存しなくてよい理由」と同じ）。
+配列を使うと，容量を上限から正しく決めること，`fgets` の成功を確かめてから配列を読むこと（確認問題5），改行と終端の両方で止めることが新たに必要になります。
+学生がこの形で書いてきたときは，これらが満たされていれば誤りにはしません。容量が足りないと黙って数え漏れるので，容量の決め方を必ず確かめます
+（`char line[100];` に変えて英字 999 個と Enter を与えると，先頭の 99 バイトだけを数えて `99` と表示し，エラーにはならない）。
 
 ### 採点のポイント・よくある誤り（課題2）
 
@@ -697,13 +732,47 @@ score=13        ← プログラムの出力
 このプログラムは対話用なので `Model: ...` と `Input: ` を `stdout` に出しています。得点だけを別のプログラムへパイプで渡すと，`B` には案内の文字列も届いてしまいます（課題4の問5 と同じ）。
 得点だけを渡したいなら，案内を `fprintf(stderr, ...)` に変える，案内を出さないモードを設ける，などで**データ（得点）と案内の出力先を分ける**必要があります。
 
+### 別解
+
+#### お手本の文字数だけ読んで採点する（[`Typing/versions/typing_bounded.c`](Typing/versions/typing_bounded.c)）
+
+**考え方**: 14 文字目以降は加点しないので，13 文字を読んだら残りを読む必要はありません。
+繰り返しの条件の**先頭**に `position < length` を置き，お手本の位置の数だけ繰り返します。範囲の確認が繰り返しの条件に入るので，本体の中ではいつでも `target[position]` を読めます。
+
+```c
+    // 左から順に評価する。position が 13 になったら getchar を呼ばずに終わる（14 文字目以降は読まない）
+    while (position < length && (ch = getchar()) != EOF && ch != '\n') {
+        // 条件で範囲を確かめた後なので，target[position] は必ずお手本の文字
+        if (lower(ch) == lower(target[position])) {
+            ++score;
+        }
+        ++position;
+    }
+```
+
+`&&` は左から評価し，左側が偽ならそれより右を評価しないので，`position` が 13 になった時点で `getchar` は呼ばれません。
+実行結果は「段階ごとの確認」の表のすべての入力で本体と同じです（`This is a pen!` で 13，`Thi is a pen` で 3，`This is a penThis is a pen` で 13，本文 1000 バイトの行で 13 など）。
+
+**本体との比べ方**:
+
+| 観点 | 本体（改行まで読む） | 別解（13 文字で読み終える） |
+| --- | --- | --- |
+| `getchar` を呼ぶ回数 | 1 行の長さ＋1 回（改行または `EOF` まで）。本文 1000 バイトの行と Enter では 1001 回 | 最大 13 回。13 文字以上の行はちょうど 13 回（`This is a pen` と Enter でも改行は読まない）。13 文字未満の行は本体と同じ |
+| 範囲の確認の場所 | 本体の `if` の `&&` の左（14 文字目以降も 1 文字ごとに調べてから比較を省く） | 繰り返しの条件の一番左（`getchar` より先。本体には範囲の確認がない） |
+| 読み残し | 改行まで読み切るので，残るのは次の行から | 13 文字を超えた行は，14 文字目以降と改行が入力に残る |
+
+**どちらを勧めるか**: どちらも正解で，演習では本体の形を基本にします（演習ページのヒントどおり，入力するたびに `position` を進め，範囲内かを調べてからお手本を読む形）。
+別解は読む量が少なく，繰り返しの間は `position` が必ず 13 未満なので配列の外を読む余地がない，誤りにくい形です。
+ただし読み残しが出るので，採点の後にさらに入力を読むように広げる（もう一度採点するなど）ときは，課題3 の `line.c` と同じく改行まで読み捨てる処理が必要になります。このプログラムは採点の直後に終わるので，読み残しは結果に影響しません。
+学生がこの形で書いてきたときは正解とし，`position < length` を `getchar` より左に置いた理由と，読み残しが出ることを説明できるかを確かめます。
+
 ### 採点のポイント・よくある誤り（発展）
 
 - `target[position]` を範囲の確認より前に読んでいないか（`target[position] == ch && position < length` の順）→ 14 文字目以降で配列の外を読みます。`&&` の左側に範囲確認を置きます。
 - 一致しなかったときに `position` を進め忘れていないか（`++position;` を `if` の中に入れる）→ 一致した文字だけで位置が進む別の仕様になり，`Txxxxxxxxxp` が 1，`Thi is a pen` が 5 になります（完全一致の `This is a pen` は 13 のままなので，完全一致だけでは誤りに気付けない）。
 - `score` と `position` を 1 つの変数で兼用していないか。
 - 小文字化を `getchar` の直後（`EOF` の判定前）に行う，または `char` で受けた値に行っていないか。
-- 改行も 1 文字として比較・加点していないか（`This is a pen` Enter が 13 を超える，または 14 文字目扱いになる）。
+- 改行で読み終えているか（条件の `ch != '\n'` を省いて `EOF` まで読む誤り）→ Enter を押しても `score=` が表示されずに入力を待ち続け，改行も 1 文字として位置を進めるので，2 行目以降は 14 文字目以降として扱われ加点されません（`This is a pen` を 2 行与えても `score=13`。範囲の確認 `position < length` もないと配列の外を読む）。
 - お手本の長さ 13 を数値で直接書き，お手本を変えたときに追従できない形になっていないか（`strlen` か `sizeof target - 1` を使う）。
 
 ---

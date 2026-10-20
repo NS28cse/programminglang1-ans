@@ -32,8 +32,9 @@ unsigned long long factorial_loop(unsigned int n)
 
 int main(void)
 {
-    unsigned int list[] = {0, 1, 5, 20};
-    for (int i = 0; i < 4; ++i) {
+    enum { COUNT = 4 };                /* 測定する n の個数（list の要素数） */
+    unsigned int list[COUNT] = {0, 1, 5, 20};
+    for (int i = 0; i < COUNT; ++i) {
         Stats stats = {0, 0};          /* 測定ごとに {0, 0} から始める */
         unsigned long long r = factorial(list[i], 1, &stats);
         printf("n=%u result=%llu calls=%llu depth=%u\n", list[i], r, stats.calls, stats.max_depth);

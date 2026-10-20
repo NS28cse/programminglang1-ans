@@ -13,7 +13,7 @@
 | 課題4 | `VectorCalc` | [vector_main.c](VectorCalc/vector_main.c)，[vector.c](VectorCalc/vector.c)，[matrix.c](VectorCalc/matrix.c)，[vector.h](VectorCalc/vector.h)，[matrix.h](VectorCalc/matrix.h) |
 | 発展1（ライブラリ側） | `CalcLib` | [calc.c](CalcLib/calc.c)，[calc.h](CalcLib/calc.h)，[CMakeLists.txt](CalcLib/CMakeLists.txt) |
 | 発展1（アプリ側） | `CalcApp` | [main.c](CalcApp/main.c)，[CMakeLists.txt](CalcApp/CMakeLists.txt) |
-| 発展2 | `SortModule` | [sort_main.c](SortModule/sort_main.c)，[intlib.c](SortModule/intlib.c)，[intlib.h](SortModule/intlib.h)（実行に使う引数: `5`） |
+| 発展2 | `SortModule` | [sort_main.c](SortModule/sort_main.c)，[intlib.c](SortModule/intlib.c)，[intlib.h](SortModule/intlib.h)（実行に使う引数: `5`）。別解: [versions/intlib_insertion.c](SortModule/versions/intlib_insertion.c)（挿入ソート） |
 | 発展3 | `LibraryCheck` | [library_check.c](LibraryCheck/library_check.c) |
 | 課題3・4 のエラー版 | `_BuildErrors`（ビルドしない） | [split/](_BuildErrors/split/)（課題1 の講義どおりの 3 ファイルと，エラーの 3 版），[noguard/](_BuildErrors/noguard/)（ガードを外した `vector.h` と組み合わせる一式），[noinclude/](_BuildErrors/noinclude/)（`#include "vector.h"` を外した `matrix.h` と，それだけを読む `vector_main.c`） |
 
@@ -103,7 +103,7 @@ Rebuild started at 10:17...
 ========== Rebuild completed at 10:17 and took 01.456 seconds ==========
 ```
 
-CMake（Ninja）で同じ操作をした場合（`$B` はビルドフォルダ）:
+CMake（Ninja）で同じ操作をした場合（`$B` はビルドフォルダ。オブジェクトファイルの置き場所やログの行は CMake の構成によって変わるので，ログは例）:
 
 ```text
 $ touch week12/SplitCalc/calc.c && cmake --build $B --target SplitCalc     ← calc.c だけ更新
@@ -137,7 +137,7 @@ Visual Studio の **Rebuild**（プロジェクトを右クリックした場合
   `calc.c` をプロジェクトの **Source Files** に追加しないと，課題3のようにリンクエラー（`LNK2019`）になる。
 - **`.obj` と `.exe` は同じものか**: 違う。`.obj`（オブジェクト）は 1 つの翻訳単位をコンパイルした機械語と名前・未解決の参照の情報で，単独では実行できない。
   `.exe` はリンカが `main.obj`・`calc.obj` と標準ライブラリを結び付けて参照をすべて解決した実行ファイル。Visual Studio の既定では `.obj` は `<プロジェクトフォルダ>\x64\Debug\`（例 `SplitCalc\x64\Debug\main.obj`），`.exe` は `<ソリューションフォルダ>\x64\Debug\`（例 `SplitCalc.exe`）にできる
-  （このリポジトリの CMake では `CMakeFiles/SplitCalc.dir/week12/SplitCalc/calc.c.o`・`main.c.o` と `bin/week12/SplitCalc/SplitCalc`）。
+  （このリポジトリの CMake では，例えば `CMakeFiles/SplitCalc.dir/week12/SplitCalc/calc.c.o`・`main.c.o` と `bin/week12/SplitCalc/SplitCalc`。オブジェクトファイルの置き場所は CMake の構成によって変わる）。
 - **`main.c` と `calc.c` を別々の実行アプリ用プロジェクトにしてよいか**: いけない。プロジェクト＝1 つの実行ファイルなので，`calc.c` だけのプロジェクトは `main` がなくリンクに失敗し（`LNK2019`（未解決の外部シンボル `main`）／`LNK1120`），
   `main.c` だけのプロジェクトは `add` の定義がなく `LNK2019` になる。同じプロジェクトに入れるか，発展1のように `calc.c` を**静的ライブラリ**のプロジェクトにして参照する。
 
@@ -250,6 +250,7 @@ calc_divide(6.0, 2.0): ok=1 q=3.0
 ### `calc.c` をビルドから除外した場合（**Excluded From Build**）
 
 **Solution Explorer** で `calc.c` を右クリック → **Properties** の **Configuration Properties > General** で **Excluded From Build** を **Yes** にして **Rebuild** すると，`main.c` のコンパイルは成功し，**リンク**で失敗する。
+設定の前に，**Properties** ダイアログ上部の **Configuration** と **Platform** を実行中の構成（ツールバーの `Debug` と `x64`）に合わせる（別の構成に設定すると，実行中の構成では除外されない）。
 
 MSVC（x64）の診断（`LNK2019` は未解決の外部シンボル，`LNK1120` はその件数のまとめ）:
 
@@ -276,7 +277,7 @@ collect2: error: ld returned 1 exit status
 ```
 
 `gcc -c main.c` だけなら `main.o` は正常にできる（コンパイルは成功している）。**Excluded From Build** を **No** に戻して **Rebuild** すると成功し，元の 4 行に戻る。
-ビルド失敗時に `There were build errors. Would you like to continue and run the last successful build?` と出ても **No** を選び，**実行しない**（古い `.exe` を動かしても修正の確認にならない）。
+ビルド失敗時に **There were build errors. Would you like to continue and run the last successful build?** と出ても **No** を選び，**実行しない**（古い `.exe` を動かしても修正の確認にならない）。
 
 ### エラーの比較（表の解答）
 
@@ -483,7 +484,7 @@ MSVC では C2371（`Vector` の再定義。基本型が異なる）などのコ
 タグのない構造体は書くたびに**別の型**になるので，2 回目の `typedef` は「別の型に同じ名前を付ける」ことになる。関数のプロトタイプだけなら同じ宣言の繰り返しは許されるが，構造体の定義が重なるとエラーになる（講義 3.2）。
 確認後はガードの 3 行を戻し，ビルドが成功して元の出力に戻ることを確認する。
 
-前処理後の内容（講義 4.2 の `/P`。GCC では `gcc -E`）で `} Vector;` を数えると，ガードありは 1 回，ガードなしは 2 回だった。
+前処理後の内容（講義 4.2 の `/P`。`vector_main.c` の **Properties** の **C/C++ > Preprocessor > Preprocess to a File** を **Yes (/P)** にする。GCC では `gcc -E`）で `} Vector;` を数えると，ガードありは 1 回，ガードなしは 2 回だった。
 ガードありの `vector_main.c` も前処理後は GCC の `-E` で 48 行（元は 16 行）に増える（ヘッダの展開と，元の行位置を表す行のため。標準ヘッダを読むファイルではさらに大きく増える）。`/P` の設定は必ず戻して **Rebuild** させる（`/P` のままでは `.obj` が作られない）。
 
 ### ヘッダの独立性を確認する（直接の `#include "vector.h"` を外す）
@@ -593,7 +594,7 @@ MSVC では C2061（識別子 `Vector` の位置の構文エラー）などの�
 | `CalcApp` を **Set as Startup Project** | **Startup Item** で `CalcApp.exe` を選ぶ |
 
 - フォルダ名順では `CalcApp` が `CalcLib` より先に読まれるが，`target_link_libraries` のターゲット名はすべての `CMakeLists.txt` を読み終えてから解決されるので，そのまま参照できる。
-- ライブラリは MSVC では `CalcLib.lib`，GCC/Clang では `libCalcLib.a` として `<ビルドフォルダ>/projects/week12/CalcLib/` にできる（他の環境の `.a` が Windows の `.lib` に当たる）。中身は `calc.c` のオブジェクト 1 つで，`add`・`multiply`・`subtract` の定義を持つ（`ar t` → `calc.c.o`，`nm` → `T add`・`T multiply`・`T subtract`）。
+- ライブラリは MSVC では `CalcLib.lib`，GCC/Clang では `libCalcLib.a` として，Ninja（Visual Studio でフォルダーを開いた場合を含む）では `<ビルドフォルダ>/projects/week12/CalcLib/` にできる（他の環境の `.a` が Windows の `.lib` に当たる）。中身は `calc.c` のオブジェクト 1 つで，`add`・`multiply`・`subtract` の定義を持つ（`ar t` → `calc.c.o`，`nm` → `T add`・`T multiply`・`T subtract`）。
 
 コマンドでビルドする場合（[ルートの README の方法 1](../README.md#1-コマンドでビルドする)）は，先に `CalcLib` で静的ライブラリを作り，`CalcApp` ではヘッダの検索先（`-I`・`/I`。**Additional Include Directories** に当たる）とリンクするライブラリを指定する:
 
@@ -614,10 +615,12 @@ cl /std:c17 /W4 /utf-8 /c calc.c                    # calc.obj を作る
 lib calc.obj /OUT:CalcLib.lib                       # 静的ライブラリ CalcLib.lib にまとめる
 cd ..\CalcApp
 cl /std:c17 /W4 /utf-8 /I..\CalcLib main.c ..\CalcLib\CalcLib.lib /Fe:a.exe
+# 検索先とファイル名を分けて指定する形（/link より後はリンカへのオプション）
+cl /std:c17 /W4 /utf-8 /I..\CalcLib main.c /Fe:a.exe /link /LIBPATH:..\CalcLib CalcLib.lib
 .\a.exe
 ```
 
-`-L../CalcLib` はライブラリの検索先（**Additional Library Directories**），`-lCalcLib` はリンクする `libCalcLib.a`（**Additional Dependencies**）に当たる。`calc.c` を変えたときは，`calc.o` と `libCalcLib.a` を作り直してから `CalcApp` をリンクし直す。
+`-L../CalcLib` はライブラリの検索先（**Additional Library Directories**），`-lCalcLib` はリンクする `libCalcLib.a`（**Additional Dependencies**）に当たる。`cl` の 2 つ目の形では `/LIBPATH:..\CalcLib` が **Additional Library Directories**，`CalcLib.lib` が **Additional Dependencies** に当たる。`calc.c` を変えたときは，`calc.o` と `libCalcLib.a` を作り直してから `CalcApp` をリンクし直す。
 
 実行結果（`CalcApp`）:
 
@@ -639,7 +642,7 @@ subtract=3.0
 | 3. `CalcApp` の呼び出しをコンパイルする | `main.c` を 1. の宣言でコンパイルし，`subtract` への未解決の参照を持つ `main.obj` を作る | 宣言と呼び出しの型が合わないとここでエラー |
 | 4. `CalcApp` を更新後の `.lib` とリンクする | `main.obj` と新しい `CalcLib.lib` の `subtract` を結び付けて `CalcApp.exe` を作る | 古い `.lib` とリンクすると `LNK2019`。静的ライブラリの更新は再リンクして初めて `.exe` に入る |
 
-プロジェクト参照が正しければ，`CalcApp` のビルドで 2 → 3 → 4 の順に必要な作業が行われる。CMake（Ninja）での記録（`$B` はビルドフォルダ）:
+プロジェクト参照が正しければ，`CalcApp` のビルドで 2 → 3 → 4 の順に必要な作業が行われる。CMake（Ninja）での記録（`$B` はビルドフォルダ。オブジェクトファイルの置き場所やログの行は CMake の構成によって変わるので，ログは例）:
 
 ```text
 $ touch week12/CalcLib/calc.c && cmake --build $B --target CalcApp      ← 実装だけを変更
@@ -798,12 +801,67 @@ badcmp.c:6:28: runtime error: signed integer overflow: 2147483647 - -2147483648 
 - **`intlib.h` に `compare_int` の宣言を置かないのはなぜか**: `compare_int` は `qsort` に渡すための**実装の都合**で，利用者（`sort_main.c`）が直接呼ぶ操作ではないから。`static` にして `intlib.c` の翻訳単位の中だけの名前にすれば，
   他のファイルの同名関数と衝突せず（`LNK2005` にならない），比較方法を変えても公開する使い方（`sort_ints`）は変わらない。ヘッダに宣言すると `static` と矛盾し，利用者に不要な名前を見せることになる。
 - **`sort_main.c` が `qsort` の使い方を知らなくてもよいのはなぜか**: `sort_ints(int a[], size_t n)` という「配列と個数を渡せば昇順になる」契約だけを公開し，`qsort` の引数（要素サイズ・比較関数）や `stdlib.h` の扱いを `intlib.c` に閉じ込めたから。
-  並べ替えの方法を自作の挿入ソートなどに変えても `sort_main.c` は修正不要。
+  並べ替えの方法を自作の挿入ソートなどに変えても `sort_main.c` は修正不要（次の「別解」）。
 - **型の宣言・数値の検査・エラー表示はどこにあるか**: 公開する型・定数・関数の宣言（`INTLIB_CAPACITY`，`size_t` のための `stddef.h`，`parse_count`・`sort_ints` のプロトタイプ）は `intlib.h`。
   数値の検査（`strtol`・`end`・`errno`・0〜8 の範囲）は `intlib.c` の `parse_count`。引数の個数の検査と，エラーの表示（`stderr` への `fprintf`，終了コード 1）は `sort_main.c`。
   `parse_count` は表示をせず成功・失敗だけを返すので，表示の方法（言語・出力先）を決めるのは呼び出し側になる。
 - **固定配列の容量と有効な個数 `N` は同じものか**: 違う。容量 `INTLIB_CAPACITY`（8）は配列の要素数でコンパイル時に決まり，`N` は実行時に引数で決まる「使う要素の個数」（0〜8）。
   `N ≤ 容量` を `parse_count` で保証してから `sort_ints(data, n)` に `n` を渡すので，範囲外にはアクセスしない。`sizeof` で求まるのは容量であって `N` ではない。
+
+### 別解
+
+#### `qsort` を使わず，挿入ソートで並べ替える（[SortModule/versions/intlib_insertion.c](SortModule/versions/intlib_insertion.c)）
+
+**考え方**: 先頭から「並べ終わった部分」を 1 要素ずつ広げる。`a[0]`〜`a[k-1]` が昇順のとき，次の `a[k]` を取り出し（`key`），それより大きい要素を 1 つずつ後ろへずらして空いた位置に入れる。
+比較関数もコールバックも使わず，`int` の値を `>` で直接比べる。`intlib.h`（公開する宣言）と `parse_count` は本体と同じで，差し込む処理だけを `static` の関数 `insert_at` にして `intlib.c` の中に隠す。
+
+```c
+static void insert_at(int a[], size_t k)
+{
+    int key = a[k];
+    size_t j = k;
+    while (j > 0 && a[j - 1] > key) {  /* key より大きい要素を 1 つ後ろへずらす．等しい要素は越えない */
+        a[j] = a[j - 1];
+        --j;
+    }
+    a[j] = key;
+}
+
+void sort_ints(int a[], size_t n)
+{
+    for (size_t k = 1; k < n; ++k) {  /* n が 0・1 なら何もしない */
+        insert_at(a, k);
+    }
+}
+```
+
+`intlib.c` の代わりにこのファイルをプロジェクトに入れてビルドする（Visual Studio では `intlib.c` を **Excluded From Build** にして `versions/intlib_insertion.c` を **Source Files** に追加する。`sort_main.c` と `intlib.h` は変えない）。
+表の引数（`5`・`0`・`1`・`8`・拒否する 8 種類と `+5`・`" 5"`・`-0`・`08`・`"5 "`）はすべて本体と同じ表示・終了コードになり，`INT_MAX`・`INT_MIN` に変えた `data` の `N=2` も `-2147483648 2147483647` になる。
+
+```text
+$ SortModule 5
+-2 0 3 7 7
+$ SortModule 8
+-8 -2 0 1 3 7 7 9
+```
+
+`N=8`（`{7, -2, 7, 0, 3, 9, -8, 1}`）で `a[j - 1] > key` を評価する回数は 20 回，要素をずらす代入は 15 回。
+
+**本体との比べ方**:
+
+| 観点 | 本体（`qsort` と `compare_int`） | 別解（挿入ソート） |
+| --- | --- | --- |
+| 比較の回数（`N=8`） | 処理系が決める（Linux x64 の glibc 2.39 では `compare_int` の呼び出しが 16 回） | 20 回。最悪（逆順）でも N(N−1)/2 = 28 回 |
+| 要素数が増えたとき | 規格は方法を決めていないが，多くの処理系で N log N に比例する程度で済む | 最悪で N² に比例する（容量 8 のこの課題では差は問題にならない） |
+| メモリ | 作業領域は処理系が決める | `key` と添字 `j` だけ（配列の中で並べ替える） |
+| 書く量・誤りやすさ | 呼び出しは 1 行。`const void *` から `const int *` への変換，関数名を渡すこと，差を返さないこと（`INT_MAX`・`INT_MIN`）に注意が要る | ループは自分で書く。`j > 0` を先に調べないと `a[-1]` を読む，`>=` にすると等しい 7 の順が入れ替わる（値の表示は同じ）。値を直接比べるので差のオーバーフローは起きない |
+| 公開する使い方 | `sort_ints(int a[], size_t n)` | 同じ（`sort_main.c` は 1 文字も変えずに組み合わせられる） |
+
+**どちらを勧めるか**: **本体の `qsort` を勧める。** この課題で学ぶのは，標準ライブラリの `qsort` に比較関数を名前で渡すこと（コールバック）と，その比較関数を `static` にして `intlib.c` に隠すことである。
+挿入ソートは並べ替えの手順が目に見えて直感的で，比較関数の型変換やオーバーフローの落とし穴もないが，要素数が増えると遅く，ループの境界を自分で正しく書く必要がある。
+一方で，この別解は「`intlib.c` の中身を入れ替えても `sort_main.c` を直さなくてよい」というモジュールに分ける利点を実際に確かめる教材になる。
+学生がこの形で書いてきたときは，昇順・重複（7 が 2 つ）・`N=0`・`N=1` が正しく，補助の関数を `static` にしてヘッダに出していなければ誤りにはしない。
+ただし `qsort` の比較関数とコールバックの説明（設計を説明する項目，`INT_MAX`・`INT_MIN` で差を返すと危険な理由）は課題の一部なので，そこに答えているかを別に確かめる。
 
 ### 採点のポイント・よくある誤り
 
@@ -863,6 +921,7 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 1. **`NDEBUG` を定義する**: `#define _CRT_SECURE_NO_WARNINGS` の次（`#include <assert.h>` より前）に `#define NDEBUG` を置いてビルドすると，表示は上と**まったく同じ 5 行**で，終了コードも 0 になる
    （さらに `assert(bytes[3] == 'c');` を**わざと偽になる** `assert(bytes[3] == 'x');` に変えても異常終了しないので，`assert` が無効になっていると分かる）。前処理後を見ると 2 つの `assert(...)` は `((void) (0));` に置き換わっており，式は評価されない。
    一方，`strcpy`・`memcpy`・`srand`・`rand` は `assert` の外にあるので同じように実行される。`#include <assert.h>` の後で定義しても効かない（マクロは取り込んだ時点の定義で決まる）。Visual Studio では Release 構成が既定で `NDEBUG` を定義する。
+   Release 構成で試すとコマンドラインの `NDEBUG` の定義と重なって，MSVC では C4005（マクロの再定義），GCC では `"NDEBUG" redefined`，Clang では `-Wmacro-redefined` の警告が出るので，この観察は Debug 構成で行う（Release 構成では `#define NDEBUG` がなくても `assert` は無効）。
 2. **`assert` の式にコピーや `rand` を入れない理由**: `NDEBUG` を定義した構成（Release など）では `assert` の式自体が評価されないので，`assert(strcpy(text, src) != NULL)` や `assert(rand() >= 0)` と書くと，
    その構成ではコピーも乱数の生成も行われず，プログラムの動作が変わる（乱数の系列もずれる）。`assert` は「ここでは必ず成り立つはず」という開発中の前提の確認であり，入力検査や必要な処理は `if` と通常の文で書く。
    参考: `int n = 9; assert(n >= 0 && n <= 8);` だけのプログラムで試すと，前提が崩れて ``af: af.c:5: main: Assertion `n >= 0 && n <= 8' failed.`` を出して異常終了（Linux では終了コード 134），`NDEBUG` ありでは何も起きずに続行した。

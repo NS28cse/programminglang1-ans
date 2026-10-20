@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "usage: ReadText filename\n");
         return 1;
     }
-    /* 相対パスは作業ディレクトリ（$(ProjectDir)）が基準 */
+    /* 相対パスはソースの場所ではなく作業ディレクトリが基準（授業の設定では $(ProjectDir)） */
     FILE *fp = fopen(argv[1], "r");
     if (fp == NULL) {
         perror("fopen");

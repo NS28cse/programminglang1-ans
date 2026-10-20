@@ -49,7 +49,7 @@ int main(void)
 }
 ```
 
-`printf` 1 回で 2 行を表示する方法でもよい（出力は同じ）。
+2 つの `printf` の行を次の 1 行に置き換えて，`printf` 1 回で 2 行を表示してもよい（出力は同じ）。
 
 ```c
     printf("Welcome to Programming Languages 1.\nI can build and run a C program.\n");
@@ -100,7 +100,7 @@ I can build and run a C program.
     printf("Progress: 100%%\n");        // 最後の行の末尾にも改行を入れる
 ```
 
-空行は `printf("My first C program\n\n");` のように 1 行目に `\n` を 2 つ続けてもよい（出力は本体と同じ）。
+空行は，1 行目を `printf("My first C program\n\n");` に変え，`printf("\n");` の行を削除して作ってもよい（出力は本体と同じ）。
 
 **実行結果**
 
@@ -360,7 +360,7 @@ eadd5aea45dd00af3b40772bee154bb2d55a8f621582cec57efc817e4981dd23  Version
   - `printf("/____\n");` → `\` が消えて `/____` と表示される（警告なし。ビルドは成功する）。
   - `printf(" /  \ \n");` のように `\` の後に空白 → 未定義のエスケープシーケンス。MSVC は C4129（認識できないエスケープシーケンス。`\` を無視して空白を表示），GCC は `warning: unknown escape sequence: '\040'`，Clang は `warning: unknown escape sequence '\ '`。
   - `printf("/____\");` → `\"` で文字列が閉じず，コンパイルエラー（MSVC: C2001，GCC: `missing terminating " character`）。
-- `/` はエスケープ不要。`\/` と書くと MSVC は C4129 の警告を出す。
+- `/` はエスケープ不要。`\/` と書くと MSVC は C4129，GCC・Clang は `unknown escape sequence` の警告を出す。
 - 間違えた版を実行すると次のようになる（1 行目を `"  /\\n"`，3 行目を `"/____\n"` とした場合）。ビルドが成功しても表示が正しいとは限らない例（確認問題 6）。
 
   ```text
