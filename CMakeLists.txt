@@ -65,14 +65,15 @@ function(softprac_add_program name)
   set(out_dir "${CMAKE_BINARY_DIR}/bin/${SOFTPRAC_WEEK}/${name}")
   set_target_properties(${name} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${out_dir}$<0:>"
-    VS_DEBUGGER_WORKING_DIRECTORY "${SOFTPRAC_PROJECT_DIR}"
+    VS_DEBUGGER_WORKING_DIRECTORY "${out_dir}"
     FOLDER "${SOFTPRAC_WEEK}")
   # CONFIGURE_DEPENDS: プロジェクトフォルダにデータファイルを足すと，次のビルドで構成し直してコピーする
-  # （コンパイラを直接使って作った a.out・*.exe・*.obj などはコピーしない）
+  # （ソース・設定と，コンパイラを直接使って作った a.out・*.exe など，第10回のプログラムが書き出すファイルはコピーしない）
   file(GLOB data_files LIST_DIRECTORIES false CONFIGURE_DEPENDS "${SOFTPRAC_PROJECT_DIR}/*")
   foreach(f IN LISTS data_files)
     get_filename_component(fname "${f}" NAME)
-    if(NOT fname MATCHES "(\\.c|\\.h|^CMakeLists\\.txt|^README.*|^run\\.args|^a\\.out|\\.exe|\\.obj|\\.o|\\.pdb|\\.ilk)$")
+    if(NOT fname MATCHES "(\\.c|\\.h|^CMakeLists\\.txt|^README.*|^run\\.args|^a\\.out|\\.exe|\\.obj|\\.o|\\.pdb|\\.ilk)$"
+       AND NOT f MATCHES "/week10/(WriteSquares/squares.*\\.txt|WriteText/scores\\.txt|NumberFormats/numbers\\..*|Binary/bytes\\.bin)$")
       configure_file("${f}" "${out_dir}/${fname}" COPYONLY)
     endif()
   endforeach()

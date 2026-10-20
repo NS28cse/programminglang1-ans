@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """practice ブランチ（解答を雛形に置き換え，テストで自己採点しながら課題を解く練習用）の中身を作る。
 
-    git worktree add ../practice-work main             # main の作業ツリーを用意する（practice は main から作る）
+    git fetch origin
+    git worktree add ../practice-work origin/main --detach   # main の内容の作業ツリーを用意する（practice は main から作る）
     python3 tools/make_practice.py ../practice-work    # 作業ツリーを practice の中身に書き換える
 
 作業ツリー（main の内容）を次のように書き換える:
   - weekNN/<プロジェクト>/ の .c・.h を雛形にする（main を持つ .c は空の main だけ，ほかは課題名のコメントだけ）。
     ファイル名・データファイル（input.txt など）・フォルダの構成はそのまま残す
   - versions/（比較用の解答）と，名前が _ で始まるフォルダ（エラーを含む版。演習ページにある）を除く
-  - ta の tests/（入力と期待する出力）を写す。書き換えた版（variants/）は，雛形では置換の対象がないので写さない
+  - ta の tests/（入力と期待する出力）を写す。書き換えた版（variants/）は，雛形では置換の対象がないので写さない。
+    標準エラー出力の期待値（<ケース>.err）は，演習ページで文面が決まっていないものもあるので写さない（終了コードは比べる）
   - 各回の README.md を，課題とプロジェクト・作るファイル・引数・テスト数の表だけにする（解答と解説は除く）
   - ルートの README.md を練習の手順にし（main の README の「使い方」「よくあるトラブル」を含める），
     CMakeLists.txt に tests/ のテストの登録を加え，cmake/RunTest.cmake と .gitattributes を写す
@@ -20,10 +22,19 @@ import subprocess
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from projects import ROOT, count_tests, project_dirs, read_lines, week_dirs  # noqa: E402
+from projects import ROOT, project_dirs, read_lines, week_dirs  # noqa: E402
 
 BOM = "﻿"
 EXCLUDE_TOP = {".git"}
+
+
+def count_tests(project: pathlib.Path):
+    """practice で登録されるテストの数（tests/*.out だけ。variants/ は写さない）。"""
+    return len(list(project.glob("tests/*.out")))
+
+
+def sources(project: pathlib.Path):
+    return sorted(f.name for f in project.iterdir() if f.suffix in (".c", ".h"))
 
 
 def title_of(src: pathlib.Path):
@@ -140,13 +151,15 @@ ROOT_README = """# programminglang1-ans（practice ブランチ）
    git switch -c practice-<名前> origin/practice
    ```
 
+   `practice` はテストが変わると作り直されます（履歴が置き換わるので `git pull` では更新できません）。新しいテストで続けるときは `git fetch` してから `git rebase --onto origin/practice <前の practice のコミット>` で自分のコミットを載せ替えます。
+
 2. その回の README（[各回の課題](#各回の課題)）で，課題とプロジェクト・作るファイルを確かめます。
 3. 演習ページを読み，プロジェクトフォルダの雛形に解答を書きます。ファイルの名前と分け方は演習ページの指定どおりにしてあります。
 4. ビルドして実行し，[テストで確かめます](#テストで確かめる)。
 5. 終わったら commit し，`main` の解答と比べます。
 
    ```sh
-   git diff origin/main -- week05/Functions/   # 自分の解答と main の解答の違い
+   git diff origin/main -- 'week05/Functions/*.c' 'week05/Functions/*.h'   # 自分の解答と main の解答の違い
    ```
 
 ## 各回の課題
@@ -167,13 +180,15 @@ ROOT_README = """# programminglang1-ans（practice ブランチ）
 | VS Code | **Testing** ビュー，または **Command Palette** の **CMake: Run Tests** |
 
 - 失敗したテストは，期待する出力と実際の出力を並べて表示します（`--output-on-failure`）。
-- 雛形のままでは，そのプロジェクトのテストはすべて失敗します。全部が通れば，演習ページの表示例どおりに書けています。
+- 雛形のままでは，そのプロジェクトのテストはほとんど失敗します（入力が空の場合など，何も表示しないのが正しいケースだけは雛形でも通ります）。全部が通れば，演習ページの表示例どおりに書けています。
+- 標準エラー出力（エラーメッセージ）の文面は比べません（終了コードは比べます）。メッセージは `main` の解答と見比べます。
+- 関数だけを書くファイル（`main` を持たない `.c`）は，空のままだと「空の翻訳単位」の警告が出ます（MSVC は C4206）。中身を書けば消えます。
 - 空のプロジェクトやコマンドで作った実行ファイルは，入力を与えて出力をファイルに保存し，`diff`（Windows は `fc`）で `tests/<ケース>.out` と比べます。
 
   ```sh
   cd week07/Echo
   gcc -std=c17 -Wall -Wextra -Wpedantic *.c -o a.out -lm
-  ./a.out < tests/basic.in | diff - tests/basic.out   # 何も表示されなければ一致
+  ./a.out < tests/two_lines.in | diff - tests/two_lines.out   # 何も表示されなければ一致
   ```
 
 """
@@ -193,6 +208,19 @@ def main():
         print(f"[NG] {dest} は main の作業ツリーではない")
         return 2
 
+    # 雛形にするのは作り直す先（main）のソース。ta とプロジェクト・ソースの集合が違えば（ta が main より先に進んでいるなど），
+    # 解答が残ったり途中で壊れたりしないよう，書き換える前に止める
+    mismatch = []
+    for week in week_dirs():
+        ta_set = {(p.name, s) for p in project_dirs(week) for s in sources(p)}
+        dweek = dest / week.name
+        dest_set = {(p.name, s) for p in project_dirs(dweek) for s in sources(p)} if dweek.is_dir() else set()
+        mismatch += [f"{week.name}/{p}/{s}: ta だけ" for p, s in sorted(ta_set - dest_set)]
+        mismatch += [f"{week.name}/{p}/{s}: main だけ" for p, s in sorted(dest_set - ta_set)]
+    if mismatch:
+        print("[NG] ta と main でソースの集合が違う（先に main へ反映する）:\n" + "\n".join(mismatch))
+        return 2
+
     readmes, week_rows = {}, ["| 回 | テーマ | プロジェクト | テスト数 |", "| --- | --- | --- | ---: |"]
     for week in week_dirs():
         n = int(week.name[4:])
@@ -209,12 +237,11 @@ def main():
         for p in project_dirs(week):
             dp = dweek / p.name
             shutil.rmtree(dp / "versions", ignore_errors=True)
-            for src in p.iterdir():
-                if src.suffix in (".c", ".h"):
-                    (dp / src.name).write_bytes(stub(src, n).encode("utf-8"))
+            for name in sources(dp):
+                (dp / name).write_bytes(stub(dp / name, n).encode("utf-8"))
             shutil.rmtree(dp / "tests", ignore_errors=True)
             if (p / "tests").is_dir():
-                shutil.copytree(p / "tests", dp / "tests")
+                shutil.copytree(p / "tests", dp / "tests", ignore=shutil.ignore_patterns("*.err"))
         (dweek / "README.md").write_bytes(readmes[week.name].encode("utf-8"))
 
     # ルートの README: 練習の手順 + main の README の「使い方」「よくあるトラブル」
@@ -222,6 +249,10 @@ def main():
     usage = main_readme[main_readme.index("## 使い方"):]
     usage = usage.replace("それぞれの回の README のコマンドでビルドします。",
                           "`main` ブランチのそれぞれの回の README のコマンドでビルドします（CMake を使う方法 3・4 ならそのままビルドできます）。")
+    # practice にない versions/ と，README の書き換え方を前提にした節は除く
+    usage = "\n".join(l for l in usage.split("\n") if "versions/" not in l)
+    start = usage.index("### ソースを書き換えて試す")
+    usage = usage[:start] + usage[usage.index("## よくあるトラブル"):]
     text = ROOT_README.replace("{week_table}", "\n".join(week_rows)) + usage
     (dest / "README.md").write_bytes(text.encode("utf-8"))
 

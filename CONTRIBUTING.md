@@ -22,23 +22,28 @@
 - `main` と `ta` で内容が違うのは，ルートの `CMakeLists.txt`（`ta` はテスト・variant・CI 用のオプション・`debugging/` を加えたもの）と `.gitignore`，`week12/CalcLib`・`week12/CalcApp`・`week13/DynamicVectorFail` の `CMakeLists.txt`（`ta` は variant を加えたもの）だけ。
   実行ファイルの場所（`<ビルド先>/bin/weekNN/<名前>/`）とデータファイルのコピーは両方のルートの `CMakeLists.txt` で同じにする（各回の README がこの場所を書いている）。
 
-`main` への反映の手順:
+`main` への反映の手順（ta の変更を commit してから）:
 
 ```sh
-git worktree add ../main-sync main                  # 初回だけ（以後は cd ../main-sync && git pull）
+git fetch origin
+git worktree add ../main-sync origin/main --detach  # 初回だけ（以後は cd ../main-sync && git switch --detach origin/main）
 python3 tools/export_main.py ../main-sync           # 解答・解説を写す（--check を付けると違いの表示だけ）
 cd ../main-sync && git switch -c <作業ブランチ>
-cmake -S . -B /tmp/build-main && cmake --build /tmp/build-main   # main の最小の CMakeLists.txt で警告なくビルドできること
-git commit -a && git push -u origin <作業ブランチ>   # main への PR を出す。マージされたら ta で git merge main する
+cmake -S . -B /tmp/build-main -DCMAKE_C_FLAGS=-Werror && cmake --build /tmp/build-main   # main の最小の CMakeLists.txt で警告なくビルドできること
+git add -A && git commit && git push -u origin <作業ブランチ>   # main への PR を出す（merge commit でマージする）。マージされたら ta で git merge origin/main する
 ```
 
-`practice` の作り直しの手順（`main` の新しい内容から作り，`practice` の先に積む）:
+`practice` の作り直しの手順（`main` の新しい内容から作り直し，`practice` を force push で置き換える）:
 
 ```sh
+git fetch origin
 git worktree add ../practice-work origin/main --detach
-python3 tools/make_practice.py ../practice-work     # 雛形・tests/・課題の表・テストの登録を作る
-cd ../practice-work && git add -A && git commit -m "practice: 解答を雛形にする（main <コミット>）"
+python3 tools/make_practice.py ../practice-work     # 雛形・tests/・課題の表・テストの登録を作る（ta と main でソースの集合が違えば止まる）
+cd ../practice-work
+cmake -S . -B /tmp/build-practice && cmake --build /tmp/build-practice && ctest --test-dir /tmp/build-practice   # 構成・ビルドでき，テストが登録されること（雛形なので多くは失敗する）
+git add -A && git commit -m "practice: 解答を雛形にする（main <コミット>）"
 git push --force origin HEAD:practice               # practice は main の 1 コミット先として作り直す
+cd - && git worktree remove ../practice-work
 ```
 
 - `ta` に `main` をマージしておく（`git merge main`）と，`ta` が `main` を含む形が保たれる。内容は同じなので衝突はしない。`ta` を `main` にマージしてはいけない（TA 用のファイルが `main` に入る）。

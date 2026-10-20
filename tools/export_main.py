@@ -56,6 +56,12 @@ def main():
         print(f"[NG] {dest} は main の作業ツリーではない")
         return 2
 
+    # 写すのは commit 済みの内容だけにする（作業ツリーに未 commit の変更があれば止める）
+    dirty = subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain", "--", "README.md", "week*"],
+                           capture_output=True, text=True, check=True).stdout.strip()
+    if dirty:
+        print("[NG] ta の作業ツリーの README.md・weekNN/ に commit していない変更がある。commit してから写す:\n" + dirty)
+        return 2
     src_files = {p for p in tracked(ROOT) if shared(p)}
     dest_files = {p for p in tracked(dest) if shared(p) and p not in MAIN_CMAKE}
     changed = []

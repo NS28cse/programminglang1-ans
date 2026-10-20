@@ -108,9 +108,17 @@ def heading_text(raw: str):
     """見出しの Markdown を表示される文字列に近づける（リンク・コード・強調・HTML タグを外す）。"""
     t = re.sub(r"!\[([^\]]*)\]\([^)]*\)", r"\1", raw)
     t = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", t)
-    t = re.sub(r"(`+)(.+?)\1", lambda m: m.group(2).strip(), t)
+    # コードスパンの中身は強調の記号として扱わない（GitHub は `_BuildErrors` の _ を残す）ので，退避してから強調を外す
+    codes = []
+
+    def keep(m):
+        codes.append(m.group(2).strip())
+        return f"\0{len(codes) - 1}\0"
+
+    t = re.sub(r"(`+)(.+?)\1", keep, t)
     t = re.sub(r"<[^>]+>", "", t)
     t = re.sub(r"(\*+|(?<!\w)_+|_+(?!\w))", "", t)
+    t = re.sub(r"\0(\d+)\0", lambda m: codes[int(m.group(1))], t)
     return t.strip()
 
 
