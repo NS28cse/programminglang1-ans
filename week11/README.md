@@ -1,24 +1,23 @@
 # 第11回 演習 解答・解説（構造体）
 
 - 演習ページ: [ex11](https://t-yokoga.github.io/softprac1/ex11.html)（原稿: [docs/ex11.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex11.md)）・講義: [lec11](https://t-yokoga.github.io/softprac1/lec11.html)（例題: [docs/sample/11/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/11/)）
-- TA 用の資料: [実務の手引き 第11回](../ta-guide/README.md#第11回コードレビュー読み合いで見つける構造体)・デバッグの題材 [BugStudentNames](../debugging/BugStudentNames/README.md)
 
 ## プロジェクト一覧
 
-| 課題 | プロジェクト | ソース | テスト数 |
-| --- | --- | --- | ---: |
-| 課題1 値とポインタの違い | `PointMove` | [structs.c](PointMove/structs.c) | 8 |
-| 課題2 点数の平均 | `Students` | [students.c](Students/students.c) | 10 |
-| 課題3 長方形を表す | `Rect` | [rect.c](Rect/rect.c) | 8 |
-| 課題4 配列メンバとポインタメンバ | `CopyMembers` | [copy_members.c](CopyMembers/copy_members.c) | 2 |
-| 発展1 初期化と構造体を返す関数 | `PointInit` | [point_init.c](PointInit/point_init.c) | 3 |
-| 発展2 長方形の正規化と包含判定 | `RectContains` | [rect_contains.c](RectContains/rect_contains.c) | 16 |
-| 発展3 構造体のサイズ | `StructLayout` | [struct_layout.c](StructLayout/struct_layout.c) | 2 |
+| 課題 | プロジェクト | ソース |
+| --- | --- | --- |
+| 課題1 値とポインタの違い | `PointMove` | [structs.c](PointMove/structs.c) |
+| 課題2 点数の平均 | `Students` | [students.c](Students/students.c) |
+| 課題3 長方形を表す | `Rect` | [rect.c](Rect/rect.c) |
+| 課題4 配列メンバとポインタメンバ | `CopyMembers` | [copy_members.c](CopyMembers/copy_members.c) |
+| 発展1 初期化と構造体を返す関数 | `PointInit` | [point_init.c](PointInit/point_init.c) |
+| 発展2 長方形の正規化と包含判定 | `RectContains` | [rect_contains.c](RectContains/rect_contains.c) |
+| 発展3 構造体のサイズ | `StructLayout` | [struct_layout.c](StructLayout/struct_layout.c) |
 
 - ソース名を演習ページが指定しているのは課題1の `structs.c`（講義の例）だけなので，他はプロジェクト名を小文字・下線区切りにした名前にした。
 - 課題3は演習ページにプロジェクト名の指定がないため `Rect` とした（第2回の `Rectangle` とは別名）。
 - 講義のとおり入力は使わず，すべて `int main(void)` とソース中の初期値で動く。各フォルダのソースは演習ページ・講義の期待する表示を出す（課題1は配布コードのまま。発展1はタグ付き `typedef` で定義した版で，表示はタグなしの版と同じ）。課題3は期待する表示の指定がないため，「名前もメンバにする」まで反映した版にした。
-- 確認用・比較用のプログラム（課題2の `same_student`，発展1のタグなし `typedef`，発展3のメンバの順序を変えた `Record`）は `<プロジェクト>/versions/` に置いている。書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
+- 確認用・比較用のプログラム（課題2の `same_student`，発展1のタグなし `typedef`，発展3のメンバの順序を変えた `Record`）は `<プロジェクト>/versions/` に置いている。書き換えて試す方法は [ルートの README](../README.md#ソースを書き換えて試す) を参照。
 - 座標は有限な −1000〜1000，点数は 0〜100，人数は 1〜3 の範囲でだけ書き換える（`n=4`・`n=0` などの範囲外は実験しない）。
 
 ---
@@ -58,7 +57,7 @@ Aki Mki
 | `move_in_place`で`a`を変更した後 | 4 | 1 | 4 | 1 |
 
 1 行目の出力（`a=(1.0, 2.0) b=(4.0, 1.0)`）が 2 行目，2 行目の出力（`a=(4.0, 1.0)`）が 3 行目に当たる。
-最後に `b.x = 100.0;` を追加して `a` と `b` を表示した版（テスト `variant_b_x_100`）の実行結果:
+最後に `b.x = 100.0;` を追加して `a` と `b` を表示した版の実行結果:
 
 ```c
 move_in_place(&a, 3.0, -1.0);
@@ -79,7 +78,7 @@ Aki Mki
 ### 3つの呼び出し方を比較する
 
 `a` を (1, 2) で初期化した直後に，それぞれ 1 つだけ呼んで `printf("a=(%.1f, %.1f)\n", a.x, a.y);` で確認した（`b` の宣言・表示は削除）。
-例えば 2 行目（テスト `variant_call_assign`）の `main` の前半は次のようになる。
+例えば 2 行目の `main` の前半は次のようになる。
 
 ```c
 int main(void)
@@ -95,11 +94,11 @@ a=(4.0, 1.0)
 Aki Mki
 ```
 
-| 呼び出し方 | 実行後の`a`（実際の表示） | 理由 | テスト |
-| --- | --- | --- | --- |
-| `moved(a, 3.0, -1.0);` | (1, 2)（`a=(1.0, 2.0)`） | 関数内で変わったのはコピーの `p` だけで，戻り値を受け取っていない | `variant_call_discard` |
-| `a = moved(a, 3.0, -1.0);` | (4, 1)（`a=(4.0, 1.0)`） | 関数はコピーを変更して返し，呼び出し側がその結果を`a`へ代入した | `variant_call_assign` |
-| `move_in_place(&a, 3.0, -1.0);` | (4, 1)（`a=(4.0, 1.0)`） | `a`のアドレスを渡し，関数がその先の`a`本体を変更した | `variant_call_in_place` |
+| 呼び出し方 | 実行後の`a`（実際の表示） | 理由 |
+| --- | --- | --- |
+| `moved(a, 3.0, -1.0);` | (1, 2)（`a=(1.0, 2.0)`） | 関数内で変わったのはコピーの `p` だけで，戻り値を受け取っていない |
+| `a = moved(a, 3.0, -1.0);` | (4, 1)（`a=(4.0, 1.0)`） | 関数はコピーを変更して返し，呼び出し側がその結果を`a`へ代入した |
+| `move_in_place(&a, 3.0, -1.0);` | (4, 1)（`a=(4.0, 1.0)`） | `a`のアドレスを渡し，関数がその先の`a`本体を変更した |
 
 1 行目は GCC/MSVC とも警告が出ない（戻り値を捨てること自体は文法上正しい）。「呼んだのに変わらない」誤りは警告に頼らず読んで見つける必要がある。
 
@@ -107,11 +106,11 @@ Aki Mki
 
 `moved(a, 3.0, -1.0)` と `move_in_place(&a, 3.0, -1.0)` の 2 か所を同じ移動量に書き換えた（例: `moved(a, 0.0, 0.0)` と `move_in_place(&a, 0.0, 0.0)`）。
 
-| `dx`，`dy` | 初期値(1, 2)からの移動結果 | 実際の表示（1・2 行目） | テスト |
-| --- | --- | --- | --- |
-| 0，0 | (1, 2) | `a=(1.0, 2.0) b=(1.0, 2.0)` / `a=(1.0, 2.0)` | `variant_move_0_0` |
-| −1，−2 | (0, 0) | `a=(1.0, 2.0) b=(0.0, 0.0)` / `a=(0.0, 0.0)` | `variant_move_m1_m2` |
-| 2，3 | (3, 5) | `a=(1.0, 2.0) b=(3.0, 5.0)` / `a=(3.0, 5.0)` | `variant_move_2_3` |
+| `dx`，`dy` | 初期値(1, 2)からの移動結果 | 実際の表示（1・2 行目） |
+| --- | --- | --- |
+| 0，0 | (1, 2) | `a=(1.0, 2.0) b=(1.0, 2.0)` / `a=(1.0, 2.0)` |
+| −1，−2 | (0, 0) | `a=(1.0, 2.0) b=(0.0, 0.0)` / `a=(0.0, 0.0)` |
+| 2，3 | (3, 5) | `a=(1.0, 2.0) b=(3.0, 5.0)` / `a=(3.0, 5.0)` |
 
 ```text
 （0，0 の版）
@@ -201,13 +200,13 @@ average after swap=80.0
 
 ### 変更条件と期待する出力（表）
 
-| 変更条件 | 期待する出力 | テスト |
-| --- | --- | --- |
-| 元の点数，`n=1` | `average=80.0`（Aki だけ: 80/1） | `variant_n_1`（`int n = 1;`） |
-| 元の点数，`n=2` | `average=75.0`（(80+70)/2） | `variant_n_2`（`int n = 2;`） |
-| 全員0，`n=3` | `average=0.0` | `variant_all_0` |
-| 全員100，`n=3` | `average=100.0`（合計 300 でも `int` で十分表せる） | `variant_all_100` |
-| 80，70，91，`n=3` | `average=80.3`（241/3 = 80.333… を `%.1f` で表示） | `variant_scores_80_70_91` |
+| 変更条件 | 期待する出力 |
+| --- | --- |
+| 元の点数，`n=1` | `average=80.0`（Aki だけ: 80/1） |
+| 元の点数，`n=2` | `average=75.0`（(80+70)/2） |
+| 全員0，`n=3` | `average=0.0` |
+| 全員100，`n=3` | `average=100.0`（合計 300 でも `int` で十分表せる） |
+| 80，70，91，`n=3` | `average=80.3`（241/3 = 80.333… を `%.1f` で表示） |
 
 実際の実行結果（1 行目が平均）:
 
@@ -247,7 +246,7 @@ average after swap=80.3
 `n=1` の交換後の平均が 90.0 なのは，交換後の先頭 1 人が Mio（90）だからで，`n` 人分という約束どおりの動作である。
 
 **80，70，91 が要注意**: `return sum / n;` と整数どうしで割ると 241/3 = 80 になり，`double` に変換されて `80.0` と表示される（警告も出ない）。
-点数を 80，70，91 にし，`(double)sum / n` を `sum / n` に書き換えた版（テスト `variant_int_division`）の実行結果:
+点数を 80，70，91 にし，`(double)sum / n` を `sum / n` に書き換えた版の実行結果:
 
 ```text
 average=80.0
@@ -264,7 +263,7 @@ average after swap=80.0
 ### 名前と点数を一緒に交換する
 
 構造体全体の代入で `name`（16 要素の配列）と `score` が一緒にコピーされる。交換の 3 行を `int temp = a[0].score;`，`a[0].score = a[2].score;`，`a[2].score = temp;` に書き換えて `score` だけを交換すると，
-次のように名前と点数の対応が壊れる（テスト `variant_score_only_swap`）:
+次のように名前と点数の対応が壊れる:
 
 ```text
 average=80.0
@@ -279,7 +278,7 @@ average after swap=80.0
 ### 名前を比較する
 
 演習ページの条件を関数 `same_student` にし，交換前の 1 人目のコピー `first` と交換後の `a[0]`・`a[2]` を比べる確認用のプログラムを
-[Students/versions/same_student.c](Students/versions/same_student.c) に置いた（テスト `variant_same_student`）。
+[Students/versions/same_student.c](Students/versions/same_student.c) に置いた。
 
 ```c
 #include <string.h>
@@ -314,7 +313,7 @@ same as first: a[0]=0 a[2]=1
 
 交換前の `a[0]`（Aki 80）のコピー `first` は，交換後の `a[2]` と名前・点数とも一致するので 1，`a[0]`（Mio 90）とは一致しないので 0。
 `first` と `a[2]` は別の保存場所（`name` のアドレスも別）だが，**内容**を `strcmp` で比べているので 1 になる。
-同じプログラムで交換を `score` だけの 3 行に書き換えた版（テスト `variant_same_student_score_only_swap`）では次のようになり，Aki 80 と一致する学生がいなくなる。
+同じプログラムで交換を `score` だけの 3 行に書き換えた版では次のようになり，Aki 80 と一致する学生がいなくなる。
 
 ```text
 Aki 90
@@ -394,12 +393,12 @@ renamed=other
 
 ### 面積の境界を確認する（表）
 
-| `lower` | `upper` | 幅 | 高さ | 面積 | 実際の表示（2 行目） | テスト |
-| --- | --- | ---: | ---: | ---: | --- | --- |
-| (1, 2) | (5, 5) | 4 | 3 | 12 | `width=4.0 height=3.0 area=12.0` | `basic` |
-| (1, 2) | (1, 5) | 0 | 3 | 0 | `width=0.0 height=3.0 area=0.0` | `variant_zero_width` |
-| (1, 2) | (5, 2) | 4 | 0 | 0 | `width=4.0 height=0.0 area=0.0` | `variant_zero_height` |
-| (−2, −1) | (1, 3) | 3 | 4 | 12 | `width=3.0 height=4.0 area=12.0` | `variant_negative_coords` |
+| `lower` | `upper` | 幅 | 高さ | 面積 | 実際の表示（2 行目） |
+| --- | --- | ---: | ---: | ---: | --- |
+| (1, 2) | (5, 5) | 4 | 3 | 12 | `width=4.0 height=3.0 area=12.0` |
+| (1, 2) | (1, 5) | 0 | 3 | 0 | `width=0.0 height=3.0 area=0.0` |
+| (1, 2) | (5, 2) | 4 | 0 | 0 | `width=4.0 height=0.0 area=0.0` |
+| (−2, −1) | (1, 3) | 3 | 4 | 12 | `width=3.0 height=4.0 area=12.0` |
 
 ```text
 （lower=(−2, −1)，upper=(1, 3) の版）
@@ -411,7 +410,7 @@ renamed=other
 
 幅 0・高さ 0 でも面積は 0（負にはならない）。座標が負でも，差 `upper - lower` が 0 以上なら正しい面積になる。
 
-前提を守らない例（初期値を書き換えた版。テスト `variant_reversed_both`・`variant_reversed_y`）:
+前提を守らない例（初期値を書き換えた版）:
 
 ```text
 （lower=(5, 5)，upper=(1, 2) の版）
@@ -433,8 +432,8 @@ renamed=other
 `char name[21]` は ASCII で 20 文字と終端を保存できる。構造体全体の代入（`Rect s = r;`）では `name` もコピーされるが，配列メンバ単独への代入（`r.name = "other";`）はできない。
 これは「構造体型には代入の規則がある」「配列型には代入がない」という別々の規則による。更新するときは容量を確かめて 1 文字ずつ（終端まで）コピーする（第8回）。
 
-`set_name` の容量の境界: 20 文字の `"abcdefghijklmnopqrst"` は入り `renamed=abcdefghijklmnopqrst`（`variant_name_20`），
-21 文字の `"abcdefghijklmnopqrstu"` は終端が入らないので何も変えずに `name too long` を `stderr` へ出し，終了コード 1（`variant_name_21`）。
+`set_name` の容量の境界: 20 文字の `"abcdefghijklmnopqrst"` は入り `renamed=abcdefghijklmnopqrst`，
+21 文字の `"abcdefghijklmnopqrstu"` は終端が入らないので何も変えずに `name too long` を `stderr` へ出し，終了コード 1。
 
 ### 採点のポイント・よくある誤り
 
@@ -493,7 +492,7 @@ p2 [アドレス] -------> buffer [ H o g e \0 ]    ← p2 のアドレスは変
 
 ### 全体を別の文字列へ変える場合
 
-演習ページの断片で `a1.text[0] = 'H';` を置き換え，同様のコピーを `p1.text[0] = 'H';` の代わりに `buffer` へ行った版（テスト `variant_replace_fuga`）:
+演習ページの断片で `a1.text[0] = 'H';` を置き換え，同様のコピーを `p1.text[0] = 'H';` の代わりに `buffer` へ行った版:
 
 ```c
 const char replacement[] = "fuga";
@@ -514,7 +513,7 @@ redirect=fuga fuga same=0
 
 3 行目は `p1`（`other`）も `p2`（`buffer`）も `fuga` で内容は同じだが，指す配列が違うので `same=0` になる。`==` がアドレスの比較であることがよく分かる。
 
-アドレスも表示した版（アドレスは実行ごとに変わる。Linux x64 / GCC での実行例）。結果が決まる 3 行（`array=`・`pointer=`・`redirect=`）は `variant_replace_fuga` と同じである。
+アドレスも表示した版（アドレスは実行ごとに変わる。Linux x64 / GCC での実行例）。結果が決まる 3 行（`array=`・`pointer=`・`redirect=`）は上の版と同じである。
 
 ```c
 #include <stdio.h>
@@ -615,7 +614,7 @@ assigned=-1.0 4.0
 - `add_point` の中で `a` を変更して返しても，それはコピーなので `main` の `a` は (10, 2) のまま。結果 (13, 7) は戻り値として `result` に入る。
   関数内のローカルな `Point` を値として `return` するのは問題ない（ローカル変数の**アドレス**を返すこととは違う）。
 - `struct point b` を `Point` 型の仮引数へ渡してもエラーも警告も出ない → `struct point` と `Point` は同じ型である（GCC・Clang の `-Wall -Wextra -Wpedantic` でも警告は出ない）。
-- 演習ページの最初の形（タグなしの `typedef`，変数はすべて `Point`）は [PointInit/versions/point_untagged.c](PointInit/versions/point_untagged.c) で，同じ 3 行を表示する（テスト `variant_untagged`）。`point_init.c` との違いは次の 2 か所だけである。
+- 演習ページの最初の形（タグなしの `typedef`，変数はすべて `Point`）は [PointInit/versions/point_untagged.c](PointInit/versions/point_untagged.c) で，同じ 3 行を表示する。`point_init.c` との違いは次の 2 か所だけである。
 
 ```c
 typedef struct {             // point_init.c: typedef struct point {
@@ -628,7 +627,7 @@ typedef struct {             // point_init.c: typedef struct point {
 
 ### 宣言順と指定順を比較する
 
-`Point a = {.y = 2.0, .x = 10.0};` を `Point a = {2.0, 10.0};` に書き換えた版（テスト `variant_positional`）の実行結果:
+`Point a = {.y = 2.0, .x = 10.0};` を `Point a = {2.0, 10.0};` に書き換えた版の実行結果:
 
 ```text
 a=2.0 10.0 result=5.0 15.0
@@ -679,7 +678,7 @@ assigned=-1.0 4.0
 
 解答: [RectContains/rect_contains.c](RectContains/rect_contains.c)（`normalized` と `contains` は講義のコードどおり）
 
-初期値は正規化の表の 3 行目の交差した組合せ (1, 4)，(3, 1) と点 (2, 2)。表の他の行は `.lower`・`.upper`・`Point p` の初期値を書き換えた版で確かめる（各行のテスト名を表に示す）。
+初期値は正規化の表の 3 行目の交差した組合せ (1, 4)，(3, 1) と点 (2, 2)。表の他の行は `.lower`・`.upper`・`Point p` の初期値を書き換えた版で確かめる。
 
 ### 実行結果（演習ページの期待する表示と一致）
 
@@ -694,22 +693,22 @@ inside=1 original=1.0 4.0
 
 ### 座標の順序を独立にそろえる（表）
 
-| 入力の2点 | 正規化後の`lower` | 正規化後の`upper` | 実際の 1 行目 | テスト |
-| --- | --- | --- | --- | --- |
-| (1, 1)，(3, 4) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` | `variant_order_1_1_3_4` |
-| (3, 4)，(1, 1) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` | `variant_order_3_4_1_1` |
-| (1, 4)，(3, 1) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` | `basic`（初期値） |
-| (3, 1)，(1, 4) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` | `variant_order_3_1_1_4` |
+| 入力の2点 | 正規化後の`lower` | 正規化後の`upper` | 実際の 1 行目 |
+| --- | --- | --- | --- |
+| (1, 1)，(3, 4) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` |
+| (3, 4)，(1, 1) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` |
+| (1, 4)，(3, 1) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` |
+| (3, 1)，(1, 4) | (1, 1) | (3, 4) | `sample lower=1.0 1.0 upper=3.0 4.0` |
 
 2 行目の `original` はそれぞれ `1.0 1.0`，`3.0 4.0`，`1.0 4.0`，`3.0 1.0`（入力のまま）。
 
 2 点を一括で交換するだけの版（`normalized` の `x` の交換を `result.lower = r.upper;`・`result.upper = r.lower;` に変え，`y` の判定を削除）と比べた。
 
-| 入力の2点 | 一括交換の版の表示 | テスト |
-| --- | --- | --- |
-| (3, 4)，(1, 1) | `sample lower=1.0 1.0 upper=3.0 4.0` / `inside=1 original=3.0 4.0`（偶然正しい） | `variant_swap_only_3_4_1_1` |
-| (1, 4)，(3, 1) | `sample lower=1.0 4.0 upper=3.0 1.0` / `inside=0 original=1.0 4.0` | `variant_swap_only_1_4_3_1` |
-| (3, 1)，(1, 4) | `sample lower=1.0 4.0 upper=3.0 1.0` / `inside=0 original=3.0 1.0` | `variant_swap_only_3_1_1_4` |
+| 入力の2点 | 一括交換の版の表示 |
+| --- | --- |
+| (3, 4)，(1, 1) | `sample lower=1.0 1.0 upper=3.0 4.0` / `inside=1 original=3.0 4.0`（偶然正しい） |
+| (1, 4)，(3, 1) | `sample lower=1.0 4.0 upper=3.0 1.0` / `inside=0 original=1.0 4.0` |
+| (3, 1)，(1, 4) | `sample lower=1.0 4.0 upper=3.0 1.0` / `inside=0 original=3.0 1.0` |
 
 一括交換では 3 行目・4 行目の `y` が逆のまま残る。各軸を独立に比べればよく，`x` を交換した後の値を使って `y` を判定する必要はない。
 
@@ -722,7 +721,7 @@ inside=1 original=1.0 4.0
 | `name` | `Rect result = r;` で配列ごとコピーした値（座標の並べ替えでは触らない） |
 
 未初期化の `Rect` に座標だけ書き込むと `name` が不定のまま返り，表示すると未定義動作になる。
-名前の保持を確かめるため `.name = "test_rect"` に変えた版（テスト `variant_name_test_rect`）の実行結果:
+名前の保持を確かめるため `.name = "test_rect"` に変えた版の実行結果:
 
 ```text
 test_rect lower=1.0 1.0 upper=3.0 4.0
@@ -733,15 +732,15 @@ inside=1 original=1.0 4.0
 
 `lower=(1, 1)`，`upper=(3, 4)` へ正規化した長方形（初期値の 2 点）で，`Point p = {2.0, 2.0};` の初期値を書き換えた。
 
-| 点 | 結果 | 理由 | テスト |
-| --- | ---: | --- | --- |
-| (2, 2) | 1 | 内側 | `basic`（初期値） |
-| (1, 1) | 1 | 下限を含む | `variant_point_1_1` |
-| (1, 3) | 1 | `x`が下限でも`y`が範囲内 | `variant_point_1_3` |
-| (3, 2) | 0 | `x`の上限を含まない | `variant_point_3_2` |
-| (2, 4) | 0 | `y`の上限を含まない | `variant_point_2_4` |
-| (0, 2) | 0 | `x`が下限より小さい | `variant_point_0_2` |
-| (2, 5) | 0 | `y`が上限より大きい | `variant_point_2_5` |
+| 点 | 結果 | 理由 |
+| --- | ---: | --- |
+| (2, 2) | 1 | 内側 |
+| (1, 1) | 1 | 下限を含む |
+| (1, 3) | 1 | `x`が下限でも`y`が範囲内 |
+| (3, 2) | 0 | `x`の上限を含まない |
+| (2, 4) | 0 | `y`の上限を含まない |
+| (0, 2) | 0 | `x`が下限より小さい |
+| (2, 5) | 0 | `y`が上限より大きい |
 
 ```text
 （p=(3, 2) の版）
@@ -749,7 +748,7 @@ sample lower=1.0 1.0 upper=3.0 4.0
 inside=0 original=1.0 4.0
 ```
 
-幅 0 の長方形 `lower=(1, 1)`，`upper=(1, 4)` で `p=(1, 2)` は 0（`p.x >= 1` と `p.x < 1` を同時に満たせない。テスト `variant_zero_width`）:
+幅 0 の長方形 `lower=(1, 1)`，`upper=(1, 4)` で `p=(1, 2)` は 0（`p.x >= 1` と `p.x < 1` を同時に満たせない）:
 
 ```text
 （lower=(1, 1)，upper=(1, 4)，p=(1, 2) の版）
@@ -758,7 +757,7 @@ inside=0 original=1.0 1.0
 ```
 
 半開区間にすると，隣り合う長方形（例: x が [1, 3) と [3, 5)）の境界上の点をちょうど一方だけに数えられる。境界を含めたい（閉じた図形）なら仕様を変えて `<=` にするが，まず仕様を決めてから比較演算子を選ぶ。
-上限側の 2 つの `<` を `<=` に変えた版では (3, 2) が `inside=1` になる（テスト `variant_closed_3_2`）。この課題の仕様では誤りである。
+上限側の 2 つの `<` を `<=` に変えた版では (3, 2) が `inside=1` になる。この課題の仕様では誤りである。
 
 ### 採点のポイント・よくある誤り
 
@@ -806,7 +805,7 @@ size=12 tag=0 count=4 flag=8
 - `flag` の後の 3 バイト（末尾のパディング）: `Record` を配列にしたとき，次の要素の `count` も 4 の倍数の位置に来るよう，全体のサイズを 4 の倍数にするため。
 - メンバの合計 6 バイトに対し，隙間が 6 バイトある。
 
-比較として，メンバの順序を `tag`，`flag`，`count` にした型を [StructLayout/versions/record_reordered.c](StructLayout/versions/record_reordered.c) に置いた（テスト `variant_record_reordered`）。
+比較として，メンバの順序を `tag`，`flag`，`count` にした型を [StructLayout/versions/record_reordered.c](StructLayout/versions/record_reordered.c) に置いた。
 
 ```c
 typedef struct {
@@ -872,6 +871,6 @@ size=8 tag=0 flag=1 count=4
 
 | 項目 | 確認できる課題・方法 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 移動量 0，0（`variant_move_0_0`）／課題2 `n=1`・全員 0・全員 100・割り切れない 80，70，91／課題3 幅 0・高さ 0・負の座標・名前 20 文字と 21 文字／発展2 下限 (1, 1)・上限 (3, 2)，(2, 4)・外側・幅 0 の長方形。いずれも初期値を書き換えた版のテスト（`variant_…`）がある。範囲外（`n=0`・`n=4` など）は未定義動作・0 除算になるので実行しない |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 移動量 0，0／課題2 `n=1`・全員 0・全員 100・割り切れない 80，70，91／課題3 幅 0・高さ 0・負の座標・名前 20 文字と 21 文字／発展2 下限 (1, 1)・上限 (3, 2)，(2, 4)・外側・幅 0 の長方形。いずれも初期値を書き換えて実行した結果を載せている。範囲外（`n=0`・`n=4` など）は未定義動作・0 除算になるので実行しない |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトを GCC/Clang の `-Wall -Wextra -Wpedantic` と MSVC `/W4` で警告の出ない書き方にしている。課題3・発展1・課題2 の「書けない式」はエラーの診断を表に示した。`%zu` と `size_t`（発展3），平均の整数除算（課題2，警告が出ない誤り）も説明できるか確認する |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の箱と矢印の図（`p` 自体と `p` が指す `Point`），課題2 の `a[1].name[0]` の型の表，課題3 の `r.lower.x` と `r->lower.x` の違い，課題4 の配列メンバ・ポインタメンバの図，発展2 の `result` の各メンバの値の出どころ，発展3 の配置図 |

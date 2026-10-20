@@ -1,22 +1,21 @@
 # 第12回 演習 解答・解説（コンパイル：分割コンパイルとライブラリ）
 
 - 演習ページ: [ex12](https://t-yokoga.github.io/softprac1/ex12.html)（原稿: [docs/ex12.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex12.md)）・講義: [lec12](https://t-yokoga.github.io/softprac1/lec12.html)（例題: [docs/sample/12/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/12/)）
-- TA 用の資料: [実務の手引き 第12回](../ta-guide/README.md#第12回コンパイルとリンクを分けて考えるコンパイル)・デバッグの題材 [BugSharedCounter](../debugging/BugSharedCounter/README.md)
 - 今回の範囲: 前処理・コンパイル・リンク，翻訳単位，宣言と定義，ヘッダ（インクルードガード `PL1_..._H`），1 プロジェクトに複数の `.c`，
   静的ライブラリ（`.lib`）と動的ライブラリ（`.dll`），ファイルスコープの `static`／`extern`，標準ライブラリ（`math.h`・`ctype.h`・`float.h`・`limits.h`・
   `string.h`・`assert.h`・`stdlib.h` の `strtol`・`qsort`・`rand`・`srand`）。第10回のコマンドライン引数と `strtol` による検査，第8回のポインタで結果を返す関数も使う。
 
 ## プロジェクト一覧
 
-| 課題 | プロジェクト | ソース | テスト数 |
-| --- | --- | --- | ---: |
-| 課題1〜3 | `SplitCalc` | [main.c](SplitCalc/main.c)，[calc.c](SplitCalc/calc.c)，[calc.h](SplitCalc/calc.h)，[CMakeLists.txt](SplitCalc/CMakeLists.txt) | 7 |
-| 課題4 | `VectorCalc` | [vector_main.c](VectorCalc/vector_main.c)，[vector.c](VectorCalc/vector.c)，[matrix.c](VectorCalc/matrix.c)，[vector.h](VectorCalc/vector.h)，[matrix.h](VectorCalc/matrix.h)，[CMakeLists.txt](VectorCalc/CMakeLists.txt) | 5 |
-| 発展1（ライブラリ側） | `CalcLib` | [calc.c](CalcLib/calc.c)，[calc.h](CalcLib/calc.h)，[CMakeLists.txt](CalcLib/CMakeLists.txt) | ― |
-| 発展1（アプリ側） | `CalcApp` | [main.c](CalcApp/main.c)，[CMakeLists.txt](CalcApp/CMakeLists.txt) | 2 |
-| 発展2 | `SortModule` | [sort_main.c](SortModule/sort_main.c)，[intlib.c](SortModule/intlib.c)，[intlib.h](SortModule/intlib.h)，[CMakeLists.txt](SortModule/CMakeLists.txt)，[run.args](SortModule/run.args)（`5`） | 18 |
-| 発展3 | `LibraryCheck` | [library_check.c](LibraryCheck/library_check.c)，[CMakeLists.txt](LibraryCheck/CMakeLists.txt) | 2 |
-| 課題3・4 のエラー版 | `_BuildErrors`（ビルドしない） | [split/](_BuildErrors/split/)（課題1 の講義どおりの 3 ファイルと，エラーの 3 版），[noguard/](_BuildErrors/noguard/)（ガードを外した `vector.h` と組み合わせる一式），[noinclude/](_BuildErrors/noinclude/)（`#include "vector.h"` を外した `matrix.h` と，それだけを読む `vector_main.c`） | ― |
+| 課題 | プロジェクト | ソース |
+| --- | --- | --- |
+| 課題1〜3 | `SplitCalc` | [main.c](SplitCalc/main.c)，[calc.c](SplitCalc/calc.c)，[calc.h](SplitCalc/calc.h) |
+| 課題4 | `VectorCalc` | [vector_main.c](VectorCalc/vector_main.c)，[vector.c](VectorCalc/vector.c)，[matrix.c](VectorCalc/matrix.c)，[vector.h](VectorCalc/vector.h)，[matrix.h](VectorCalc/matrix.h) |
+| 発展1（ライブラリ側） | `CalcLib` | [calc.c](CalcLib/calc.c)，[calc.h](CalcLib/calc.h)，[CMakeLists.txt](CalcLib/CMakeLists.txt) |
+| 発展1（アプリ側） | `CalcApp` | [main.c](CalcApp/main.c)，[CMakeLists.txt](CalcApp/CMakeLists.txt) |
+| 発展2 | `SortModule` | [sort_main.c](SortModule/sort_main.c)，[intlib.c](SortModule/intlib.c)，[intlib.h](SortModule/intlib.h)（実行に使う引数: `5`） |
+| 発展3 | `LibraryCheck` | [library_check.c](LibraryCheck/library_check.c) |
+| 課題3・4 のエラー版 | `_BuildErrors`（ビルドしない） | [split/](_BuildErrors/split/)（課題1 の講義どおりの 3 ファイルと，エラーの 3 版），[noguard/](_BuildErrors/noguard/)（ガードを外した `vector.h` と組み合わせる一式），[noinclude/](_BuildErrors/noinclude/)（`#include "vector.h"` を外した `matrix.h` と，それだけを読む `vector_main.c`） |
 
 - フォルダ名＝Visual Studio のプロジェクト名＝実行ファイル名。フォルダ内の `.c` はすべて 1 つの実行ファイルにリンクされる（Visual Studio で **Source Files** に登録したのと同じ）。
   `main` を持つのは `SplitCalc/main.c`・`VectorCalc/vector_main.c`・`CalcApp/main.c`・`SortModule/sort_main.c`・`LibraryCheck/library_check.c` の各 1 つだけ。
@@ -24,7 +23,7 @@
   課題1 の講義どおりの 3 ファイル（加算・乗算だけ）は [_BuildErrors/split/](_BuildErrors/split/) にある。
 - `CalcLib` と `CalcApp` は同じ名前の `calc.h`・`calc.c`・`main.c` を `SplitCalc` とは別のフォルダに持つ（演習の「元の `SplitCalc` は残し，別のソリューションで試す」に合わせた）。
 - `CalcApp` の `CMakeLists.txt` は，`CalcLib` の参照（`target_link_libraries`）と追加のインクルード ディレクトリ（`target_include_directories`）を設定する（発展1）。
-- 書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
+- 書き換えて試す方法は [ルートの README](../README.md#ソースを書き換えて試す) を参照。
 
 ---
 
@@ -53,7 +52,7 @@ double multiply(double a, double b);     return a + b;                   {
 `main.c` だけを見ると，`add` は `double` 2 つを受け取り `double` を返す（`calc.h` の宣言から分かる）。名前から 1.5＋2.0＝3.5，1.5×2.0＝3.0 と予測し，`%.1f` なので小数 1 桁で表示される。
 実装を見なくても型は分かるが，**値が正しいかは実装次第**であり，「名前どおりの計算をしている」というのは予測であることに注意させる。
 
-実行結果（予測どおり。`main.c` を講義どおりにし，`calc.h`・`calc.c` は課題2 の形のままにした版。テスト `variant_lecture`）:
+実行結果（予測どおり。`main.c` を講義どおりにし，`calc.h`・`calc.c` は課題2 の形のままにした版）:
 
 ```text
 add=3.5
@@ -104,27 +103,27 @@ Rebuild started at 10:17...
 ========== Rebuild completed at 10:17 and took 01.456 seconds ==========
 ```
 
-CMake（Ninja）で同じ操作をした場合（各コマンドの最初に出る `[0/2] Re-checking globbed directories...` の行は省略。`--clean-first` では消去の後にもう一度出るが，それも省略）:
+CMake（Ninja）で同じ操作をした場合（`$B` はビルドフォルダ）:
 
 ```text
 $ touch week12/SplitCalc/calc.c && cmake --build $B --target SplitCalc     ← calc.c だけ更新
-[1/2] Building C object projects/week12/SplitCalc/CMakeFiles/SplitCalc.dir/calc.c.o
-[2/2] Linking C executable bin/week12/SplitCalc
+[1/2] Building C object CMakeFiles/SplitCalc.dir/week12/SplitCalc/calc.c.o
+[2/2] Linking C executable bin/week12/SplitCalc/SplitCalc
 $ cmake --build $B --target SplitCalc                                      ← 何も変えずにビルド
 ninja: no work to do.
 $ cmake --build $B --target SplitCalc --clean-first                        ← リビルド
 [1/1] Cleaning all built files...
-Cleaning... 57 files.
-[1/3] Building C object projects/week12/SplitCalc/CMakeFiles/SplitCalc.dir/calc.c.o
-[2/3] Building C object projects/week12/SplitCalc/CMakeFiles/SplitCalc.dir/main.c.o
-[3/3] Linking C executable bin/week12/SplitCalc
+Cleaning... 191 files.
+[1/3] Building C object CMakeFiles/SplitCalc.dir/week12/SplitCalc/calc.c.o
+[2/3] Building C object CMakeFiles/SplitCalc.dir/week12/SplitCalc/main.c.o
+[3/3] Linking C executable bin/week12/SplitCalc/SplitCalc
 $ touch week12/SplitCalc/calc.h && cmake --build $B --target SplitCalc     ← （参考）ヘッダを更新
-[1/3] Building C object projects/week12/SplitCalc/CMakeFiles/SplitCalc.dir/calc.c.o
-[2/3] Building C object projects/week12/SplitCalc/CMakeFiles/SplitCalc.dir/main.c.o
-[3/3] Linking C executable bin/week12/SplitCalc
+[1/3] Building C object CMakeFiles/SplitCalc.dir/week12/SplitCalc/calc.c.o
+[2/3] Building C object CMakeFiles/SplitCalc.dir/week12/SplitCalc/main.c.o
+[3/3] Linking C executable bin/week12/SplitCalc/SplitCalc
 ```
 
-`--clean-first` は，CMake（Ninja）では指定したターゲットだけでなく**ビルドフォルダのすべての生成物を消してから**作り直す（上の `Cleaning... 57 files.` は week12 の全プロジェクトの分）。
+`--clean-first` は，CMake（Ninja）では指定したターゲットだけでなく**ビルドフォルダのすべての生成物を消してから**作り直す（上の `Cleaning... 191 files.` はリポジトリの全プロジェクトの分）。
 Visual Studio の **Rebuild**（プロジェクトを右クリックした場合はそのプロジェクトだけ）より範囲が広いが，`SplitCalc` についての動き（全 `.c` を再コンパイルしてリンク）は同じ。
 
 観察の要点: `calc.c` だけが新しくなると**`calc.c` の再コンパイルとリンク**だけが行われ，`main.c` はコンパイルされない（`main.obj` は前のものを使う）。
@@ -138,7 +137,7 @@ Visual Studio の **Rebuild**（プロジェクトを右クリックした場合
   `calc.c` をプロジェクトの **Source Files** に追加しないと，課題3のようにリンクエラー（`LNK2019`）になる。
 - **`.obj` と `.exe` は同じものか**: 違う。`.obj`（オブジェクト）は 1 つの翻訳単位をコンパイルした機械語と名前・未解決の参照の情報で，単独では実行できない。
   `.exe` はリンカが `main.obj`・`calc.obj` と標準ライブラリを結び付けて参照をすべて解決した実行ファイル。Visual Studio の既定では `.obj` は `<プロジェクトフォルダ>\x64\Debug\`（例 `SplitCalc\x64\Debug\main.obj`），`.exe` は `<ソリューションフォルダ>\x64\Debug\`（例 `SplitCalc.exe`）にできる
-  （このリポジトリの CMake では `projects/week12/SplitCalc/CMakeFiles/SplitCalc.dir/calc.c.o`・`main.c.o` と `bin/week12/SplitCalc`）。
+  （このリポジトリの CMake では `CMakeFiles/SplitCalc.dir/week12/SplitCalc/calc.c.o`・`main.c.o` と `bin/week12/SplitCalc/SplitCalc`）。
 - **`main.c` と `calc.c` を別々の実行アプリ用プロジェクトにしてよいか**: いけない。プロジェクト＝1 つの実行ファイルなので，`calc.c` だけのプロジェクトは `main` がなくリンクに失敗し（`LNK2019`（未解決の外部シンボル `main`）／`LNK1120`），
   `main.c` だけのプロジェクトは `add` の定義がなく `LNK2019` になる。同じプロジェクトに入れるか，発展1のように `calc.c` を**静的ライブラリ**のプロジェクトにして参照する。
 
@@ -205,13 +204,13 @@ calc_divide(6.0, 2.0): ok=1 q=3.0
 
 検証表の残りの行は，呼び出しの引数（`subtract(5.0, 2.0)`，または `calc_divide(6.0, 2.0, &q)` と表示の `"calc_divide(6.0, 2.0): "` の組）を書き換えて確かめる。各版で変わる行（他の行は上と同じ）:
 
-| テスト | 書き換え | 実際の表示（変わった行） |
-| --- | --- | --- |
-| `variant_sub_0_0` | `subtract(0.0, 0.0)` | `subtract=0.0` |
-| `variant_sub_2_5` | `subtract(2.0, 5.0)` | `subtract=-3.0` |
-| `variant_div_m6_2` | `calc_divide(-6.0, 2.0, &q)` | `calc_divide(-6.0, 2.0): ok=1 q=-3.0` |
-| `variant_div_0_2` | `calc_divide(0.0, 2.0, &q)` | `calc_divide(0.0, 2.0): ok=1 q=0.0` |
-| `variant_div_6_0` | `calc_divide(6.0, 0.0, &q)` | `calc_divide(6.0, 0.0): ok=0 q=99.0`（失敗。`q` は初期値のまま） |
+| 書き換え | 実際の表示（変わった行） |
+| --- | --- |
+| `subtract(0.0, 0.0)` | `subtract=0.0` |
+| `subtract(2.0, 5.0)` | `subtract=-3.0` |
+| `calc_divide(-6.0, 2.0, &q)` | `calc_divide(-6.0, 2.0): ok=1 q=-3.0` |
+| `calc_divide(0.0, 2.0, &q)` | `calc_divide(0.0, 2.0): ok=1 q=0.0` |
+| `calc_divide(6.0, 0.0, &q)` | `calc_divide(6.0, 0.0): ok=0 q=99.0`（失敗。`q` は初期値のまま） |
 
 ### 検証表（解答）
 
@@ -390,7 +389,7 @@ GCC で試すと `add=3.5` と表示されたが，これは呼び出し側が `
 **要点**: 構造体の型（`Vector`・`Matrix`）を含むモジュールの分割。`matrix.h` は `Vector` を使うので**自分で `vector.h` を読む**。
 `vector_main.c` には `vector.h` が 2 経路で入るが，インクルードガードで同じ翻訳単位に 2 回展開されるのを防ぐ。
 
-ソースは講義 7 の 5 ファイルそのまま（先頭にコメントだけ追加）。手順3〜5 は演習ページどおり `vector_main.c` を書き換えて確かめる（テスト `variant_identity`・`variant_alpha0`・`variant_unchanged`）。
+ソースは講義 7 の 5 ファイルそのまま（先頭にコメントだけ追加）。手順3〜5 は演習ページどおり `vector_main.c` を書き換えて確かめる。
 ソースとして登録するのは `vector_main.c`・`vector.c`・`matrix.c` の 3 つで，`SplitCalc` の `main.c` は入れない（入れると `main` が 2 つで `LNK2005`）。
 
 ### 手順1　手計算
@@ -489,7 +488,7 @@ MSVC では C2371（`Vector` の再定義。基本型が異なる）などのコ
 
 ### ヘッダの独立性を確認する（直接の `#include "vector.h"` を外す）
 
-予測と結果: **ビルドは成功し，出力も変わらない**（講義の 4 行がそのまま出る。テスト `variant_no_direct_include`）。
+予測と結果: **ビルドは成功し，出力も変わらない**（講義の 4 行がそのまま出る）。
 `matrix.h` が自分で `#include "vector.h"` しているので，`matrix.h` を読めば `Vector`・`axpy`・`print_vector` の宣言もそろう。
 
 逆に `matrix.h` の `#include "vector.h"` を外し，`vector_main.c` も `matrix.h` だけを読むと，`matrix.h` の時点で `Vector` が未定義になる。
@@ -591,10 +590,34 @@ MSVC では C2061（識別子 `Vector` の位置の構文エラー）などの�
 | `CalcApp` に `main.c` だけを入れる | [CalcApp/CMakeLists.txt](CalcApp/CMakeLists.txt) の `softprac_add_program(CalcApp main.c)` |
 | **Add > Reference** で `CalcLib` | `target_link_libraries(CalcApp PRIVATE CalcLib)`（ビルド順もこれで決まる） |
 | **Additional Include Directories** に `CalcLib` のフォルダ | `target_include_directories(CalcApp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../CalcLib")` |
-| `CalcApp` を **Set as Startup Project** | **Startup Item**（`.vs/launch.vs.json`）で `week12 CalcApp` を選ぶ |
+| `CalcApp` を **Set as Startup Project** | **Startup Item** で `CalcApp.exe` を選ぶ |
 
 - フォルダ名順では `CalcApp` が `CalcLib` より先に読まれるが，`target_link_libraries` のターゲット名はすべての `CMakeLists.txt` を読み終えてから解決されるので，そのまま参照できる。
-- ライブラリは MSVC では `CalcLib.lib`，GCC/Clang では `libCalcLib.a` として `<ビルドフォルダ>/lib/week12/` にできる（他の環境の `.a` が Windows の `.lib` に当たる）。中身は `calc.c` のオブジェクト 1 つで，`add`・`multiply`・`subtract` の定義を持つ（`ar t` → `calc.c.o`，`nm` → `T add`・`T multiply`・`T subtract`）。
+- ライブラリは MSVC では `CalcLib.lib`，GCC/Clang では `libCalcLib.a` として `<ビルドフォルダ>/projects/week12/CalcLib/` にできる（他の環境の `.a` が Windows の `.lib` に当たる）。中身は `calc.c` のオブジェクト 1 つで，`add`・`multiply`・`subtract` の定義を持つ（`ar t` → `calc.c.o`，`nm` → `T add`・`T multiply`・`T subtract`）。
+
+コマンドでビルドする場合（[ルートの README の方法 1](../README.md#1-コマンドでビルドする)）は，先に `CalcLib` で静的ライブラリを作り，`CalcApp` ではヘッダの検索先（`-I`・`/I`。**Additional Include Directories** に当たる）とリンクするライブラリを指定する:
+
+```sh
+# macOS / Linux（gcc の代わりに clang でもよい）
+cd week12/CalcLib
+gcc -std=c17 -Wall -Wextra -Wpedantic -c calc.c     # calc.o を作る
+ar rcs libCalcLib.a calc.o                          # 静的ライブラリ libCalcLib.a にまとめる
+cd ../CalcApp
+gcc -std=c17 -Wall -Wextra -Wpedantic -I../CalcLib main.c -L../CalcLib -lCalcLib -o a.out
+./a.out
+```
+
+```powershell
+# Windows: Developer PowerShell for VS で
+cd week12\CalcLib
+cl /std:c17 /W4 /utf-8 /c calc.c                    # calc.obj を作る
+lib calc.obj /OUT:CalcLib.lib                       # 静的ライブラリ CalcLib.lib にまとめる
+cd ..\CalcApp
+cl /std:c17 /W4 /utf-8 /I..\CalcLib main.c ..\CalcLib\CalcLib.lib /Fe:a.exe
+.\a.exe
+```
+
+`-L../CalcLib` はライブラリの検索先（**Additional Library Directories**），`-lCalcLib` はリンクする `libCalcLib.a`（**Additional Dependencies**）に当たる。`calc.c` を変えたときは，`calc.o` と `libCalcLib.a` を作り直してから `CalcApp` をリンクし直す。
 
 実行結果（`CalcApp`）:
 
@@ -605,7 +628,7 @@ subtract=3.0
 ```
 
 まず講義の加算・乗算だけの 3 ファイルで試すと，`add=3.5`・`multiply=3.0` の 2 行（課題1と同じ）。`subtract` を追加した後が上の 3 行。
-講義の 2 関数だけの版は，`subtract` の呼び出しを除いた版で確かめられる（テスト `variant_lecture`）。
+講義の 2 関数だけの版は，`main.c` から `subtract` の呼び出し（`printf("subtract=%.1f\n", subtract(5.0, 2.0));` の行）を除いて確かめられる。
 
 ### 更新の伝わり方（4 つの作業）
 
@@ -616,22 +639,21 @@ subtract=3.0
 | 3. `CalcApp` の呼び出しをコンパイルする | `main.c` を 1. の宣言でコンパイルし，`subtract` への未解決の参照を持つ `main.obj` を作る | 宣言と呼び出しの型が合わないとここでエラー |
 | 4. `CalcApp` を更新後の `.lib` とリンクする | `main.obj` と新しい `CalcLib.lib` の `subtract` を結び付けて `CalcApp.exe` を作る | 古い `.lib` とリンクすると `LNK2019`。静的ライブラリの更新は再リンクして初めて `.exe` に入る |
 
-プロジェクト参照が正しければ，`CalcApp` のビルドで 2 → 3 → 4 の順に必要な作業が行われる。CMake（Ninja）での記録
-（各コマンドの最初の `[0/2] Re-checking globbed directories...` と，`main.c` を更新したときに出る CMake の再構成の行（`[1/2] Re-running CMake...` から `-- Build files have been written to: ...` までの 4 行と，その後にもう一度出る `[0/2] Re-checking globbed directories...`）は省略）:
+プロジェクト参照が正しければ，`CalcApp` のビルドで 2 → 3 → 4 の順に必要な作業が行われる。CMake（Ninja）での記録（`$B` はビルドフォルダ）:
 
 ```text
 $ touch week12/CalcLib/calc.c && cmake --build $B --target CalcApp      ← 実装だけを変更
 [1/3] Building C object projects/week12/CalcLib/CMakeFiles/CalcLib.dir/calc.c.o
-[2/3] Linking C static library lib/week12/libCalcLib.a
-[3/3] Linking C executable bin/week12/CalcApp
+[2/3] Linking C static library projects/week12/CalcLib/libCalcLib.a
+[3/3] Linking C executable bin/week12/CalcApp/CalcApp
 $ touch week12/CalcApp/main.c && cmake --build $B --target CalcApp      ← 利用側だけを変更
 [1/2] Building C object projects/week12/CalcApp/CMakeFiles/CalcApp.dir/main.c.o
-[2/2] Linking C executable bin/week12/CalcApp
+[2/2] Linking C executable bin/week12/CalcApp/CalcApp
 $ touch week12/CalcLib/calc.h && cmake --build $B --target CalcApp      ← （参考）公開する宣言を変更
 [1/4] Building C object projects/week12/CalcLib/CMakeFiles/CalcLib.dir/calc.c.o
 [2/4] Building C object projects/week12/CalcApp/CMakeFiles/CalcApp.dir/main.c.o
-[3/4] Linking C static library lib/week12/libCalcLib.a
-[4/4] Linking C executable bin/week12/CalcApp
+[3/4] Linking C static library projects/week12/CalcLib/libCalcLib.a
+[4/4] Linking C executable bin/week12/CalcApp/CalcApp
 ```
 
 実装だけの変更では `main.c` は再コンパイルされないが，`.lib` が新しくなったので `CalcApp` は**再リンク**される。`calc.h` を変えると，それを読む `calc.c`（ライブラリ側）と `main.c`（利用側）の両方が再コンパイルされる。
@@ -711,7 +733,7 @@ void sort_ints(int a[], size_t n)
 ### 引数を設定して検証する（表の解答）
 
 Visual Studio では `SortModule` の **Properties** の **Configuration Properties > Debugging > Command Arguments** に設定する（設定の対象が実行する構成・プラットフォームと一致しているか確認）。
-このリポジトリでは [run.args](SortModule/run.args)（`5`）が Visual Studio の起動構成の引数になる。エラーの表示は `stderr`，終了コードは 1。
+コマンドでは `./a.out 5` のように実行ファイルの後に並べる（他の方法は [ルートの README の使い方](../README.md#使い方)）。エラーの表示は `stderr`，終了コードは 1。
 
 | コマンド引数 | 期待する結果（実際の表示） |
 | --- | --- |
@@ -742,14 +764,11 @@ Visual Studio では `SortModule` の **Properties** の **Configuration Propert
 ```
 
 `strtol` の性質により，`+5`・`" 5"`（先頭の空白）・`-0`・`08` は受け付け（`+5`・`" 5"` は `-2 0 3 7 7`，`-0` は空行，`08` は 10 進の 8 として全 8 個），`"5 "`（末尾の空白）は拒否する
-（第10回の `ParseNumber` と同じ方針。基数 10 を指定しているので `08` を 8 進とは解釈しない。テスト `plus5`・`leading_space`・`minus_zero`・`leading_zero`・`trailing_space`）。
-
-表のすべての行は [SortModule/tests/](SortModule/tests/) のケースになっている: `n5`・`n0`・`n1`・`n8`・`no_args`・`empty_string`（`.args` は空行 1 行＝空文字列の引数 1 つ）・`abc`・`trailing_x`（`3x`）・`minus1`・`n9`・`huge`・`two_args`（`3 4`）と，`plus5`・`leading_space`・`minus_zero`・`leading_zero`・`trailing_space`。
-エラーのケースは標準エラー出力と終了コードも比べる。
+（第10回の `ParseNumber` と同じ方針。基数 10 を指定しているので `08` を 8 進とは解釈しない）。
 
 ### `INT_MAX`・`INT_MIN` で試す
 
-`data` の先頭 2 つを `INT_MAX`，`INT_MIN` に変え，`#include <limits.h>` を追加して `N=2` で実行した（テスト `variant_limits`）:
+`data` の先頭 2 つを `INT_MAX`，`INT_MIN` に変え，`#include <limits.h>` を追加して `N=2` で実行した:
 
 ```c
 #include <limits.h>
@@ -842,7 +861,7 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 ### 追加の観察
 
 1. **`NDEBUG` を定義する**: `#define _CRT_SECURE_NO_WARNINGS` の次（`#include <assert.h>` より前）に `#define NDEBUG` を置いてビルドすると，表示は上と**まったく同じ 5 行**で，終了コードも 0 になる
-   （テスト `variant_ndebug`。この版では `assert(bytes[3] == 'c');` を**わざと偽になる** `assert(bytes[3] == 'x');` にも変えてあり，それでも異常終了しないので `assert` が無効になっていると分かる）。前処理後を見ると 2 つの `assert(...)` は `((void) (0));` に置き換わっており，式は評価されない。
+   （さらに `assert(bytes[3] == 'c');` を**わざと偽になる** `assert(bytes[3] == 'x');` に変えても異常終了しないので，`assert` が無効になっていると分かる）。前処理後を見ると 2 つの `assert(...)` は `((void) (0));` に置き換わっており，式は評価されない。
    一方，`strcpy`・`memcpy`・`srand`・`rand` は `assert` の外にあるので同じように実行される。`#include <assert.h>` の後で定義しても効かない（マクロは取り込んだ時点の定義で決まる）。Visual Studio では Release 構成が既定で `NDEBUG` を定義する。
 2. **`assert` の式にコピーや `rand` を入れない理由**: `NDEBUG` を定義した構成（Release など）では `assert` の式自体が評価されないので，`assert(strcpy(text, src) != NULL)` や `assert(rand() >= 0)` と書くと，
    その構成ではコピーも乱数の生成も行われず，プログラムの動作が変わる（乱数の系列もずれる）。`assert` は「ここでは必ず成り立つはず」という開発中の前提の確認であり，入力検査や必要な処理は `if` と通常の文で書く。
@@ -953,7 +972,7 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題2 の検証表（`subtract` の 0−0・2−5，`calc_divide` の 0÷2・6÷0）と課題4 の単位行列・`alpha`=0 は書き換えた版のテスト（`variant_sub_0_0` など，`variant_identity`・`variant_alpha0`），発展2 の `N` = 0・1・8，−1・9・巨大な数・`""`・`3x`・`3 4` は `SortModule/tests/` の引数のケース，`INT_MAX`/`INT_MIN` は `variant_limits` |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題2 の検証表（`subtract` の 0−0・2−5，`calc_divide` の 0÷2・6÷0）と課題4 の単位行列・`alpha`=0 は `main.c`・`vector_main.c` を書き換えて実行，発展2 の `N` = 0・1・8，−1・9・巨大な数・`""`・`3x`・`3 4` は引数を変えて実行，`INT_MAX`/`INT_MIN` は `data` を書き換えて `N=2` で実行 |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトを GCC/Clang の `-Wall -Wextra -Wpedantic` と MSVC `/W4` で警告の出ない書き方にしている。課題3 の記録 2 で `C4244`（`double` → `int`），課題2 の `C4013`（暗黙の宣言）の原因を説明 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の考察（宣言 → コンパイル → リンク），課題4 の `Vector`・`Matrix` と値渡し，発展2 の `size_t`・`const void *`・`long` から `int` への変換 |
 | 1 つの実行アプリに `main` が 1 つだけあり，必要な `.c` がすべてビルド対象になっている | `SplitCalc`（`main.c`＋`calc.c`），`VectorCalc`（3 つの `.c`），`SortModule`（2 つの `.c`），`CalcApp`（`main.c`＋`CalcLib` の参照）。課題3 の除外・重複の実験 |
@@ -965,6 +984,7 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 
 ## 補足：引数とエラー版の試し方
 
-- `SortModule` を別の引数で試すときは，Visual Studio（**File > Open > Folder**）では **Debug > Debug and Launch Settings for SortModule** の `args` を書き換える（既定の引数を変えるときだけ [run.args](SortModule/run.args)。ルートの README の [Visual Studio で使う](../README.md#visual-studio-で使うwindows)）。
-  VS Code では「開いている課題を引数つきで実行」の `args` を書き換える。空文字列の引数は Visual Studio の **Command Arguments** では `""` と入力する。
+- `SortModule` を別の引数で試すときは，コマンドでは `./a.out 0`（Windows は `.\a.exe 0`）のように実行ファイルの後に書き，授業と同じ空のプロジェクトでは **Command Arguments**，
+  Visual Studio でフォルダーを開いた場合は **Debug > Debug and Launch Settings for SortModule** の `"args"`，VS Code では `cmake.debugConfig` の `args` に書く（[ルートの README の使い方](../README.md#使い方)）。
+  空文字列の引数は Visual Studio の **Command Arguments** では `""` と入力する。
 - `_BuildErrors/` のエラー版を GCC で再現するには，`_BuildErrors/split/` で課題3 の「GCC の診断」のコマンドを，`_BuildErrors/` で `gcc -std=c17 -c noguard/vector_main.c` と `gcc -std=c17 -c noinclude/vector_main.c` を実行する。

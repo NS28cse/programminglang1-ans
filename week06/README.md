@@ -1,24 +1,22 @@
 # 第6回 演習 解答・解説（文字列）
 
 - 演習ページ: [ex06](https://t-yokoga.github.io/softprac1/ex06.html)（原稿: [docs/ex06.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex06.md)）・講義: [lec06](https://t-yokoga.github.io/softprac1/lec06.html)（例題: [docs/sample/06/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/06/)）
-- TA 用の資料: [実務の手引き 第6回](../ta-guide/README.md#第6回容量と範囲外書き込み文字列)・デバッグの題材 [BugDigitSum](../debugging/BugDigitSum/README.md)，[BugAnswerCheck](../debugging/BugAnswerCheck/README.md)
 
 この回の文字列はすべてソース内の固定値で，キーボード入力・コマンドライン引数は使いません（演習ページの指定）。
 使う文法・関数は第6回までの範囲（`char` 配列，終端文字，`strlen`・`strcmp`，キャスト，第5回までの関数・配列・`for`/`while`/`if`）だけです。
-`strcpy`・`strcat` は講義と同じく実行課題では使わず，容量を確かめたループでコピー・連結します（そのため本体のソースには `_CRT_SECURE_NO_WARNINGS` が必要なものはありません。`strcat` を使う参考の版 `variant_strcat` だけ，先頭に書いています）。
+`strcpy`・`strcat` は講義と同じく実行課題では使わず，容量を確かめたループでコピー・連結します（そのため本体のソースには `_CRT_SECURE_NO_WARNINGS` が必要なものはありません。`strcat` を使う参考の版（課題4 の「`strcat` で書く場合」）だけ，先頭に書いています）。
 
 ## プロジェクト一覧
 
-| 課題 | プロジェクト | ソース | テスト |
-| --- | --- | --- | ---: |
-| ウォームアップ：文字と数値 | `CharCode` | [char_code.c](CharCode/char_code.c) | 4 |
-| 課題1 長さを数える | `Length` | [length.c](Length/length.c) | 2 |
-| 課題2 ASCIIの小文字へ変換 | `Lower` | [lower.c](Lower/lower.c) | 11 |
-| 課題2 補足：ASCIIの印字可能な範囲 | `AsciiTable` | [ascii_table.c](AsciiTable/ascii_table.c) | 1 |
-| 課題3 変換する順序 | `Average` | [average.c](Average/average.c)，[versions/average_first.c](Average/versions/average_first.c)，[versions/sign_compare.c](Average/versions/sign_compare.c) | 8 |
-| 課題4 比較してから連結する | `CompareJoin` | [compare_join.c](CompareJoin/compare_join.c) | 11 |
-| 発展 容量の境界 | `CopyCapacity` | [strings.c](CopyCapacity/strings.c) | 3 |
-| 合計 | | | **40** |
+| 課題 | プロジェクト | ソース |
+| --- | --- | --- |
+| ウォームアップ：文字と数値 | `CharCode` | [char_code.c](CharCode/char_code.c) |
+| 課題1 長さを数える | `Length` | [length.c](Length/length.c) |
+| 課題2 ASCIIの小文字へ変換 | `Lower` | [lower.c](Lower/lower.c) |
+| 課題2 補足：ASCIIの印字可能な範囲 | `AsciiTable` | [ascii_table.c](AsciiTable/ascii_table.c) |
+| 課題3 変換する順序 | `Average` | [average.c](Average/average.c)，[versions/average_first.c](Average/versions/average_first.c)，[versions/sign_compare.c](Average/versions/sign_compare.c) |
+| 課題4 比較してから連結する | `CompareJoin` | [compare_join.c](CompareJoin/compare_join.c) |
+| 発展 容量の境界 | `CopyCapacity` | [strings.c](CopyCapacity/strings.c) |
 
 - `Length`・`Lower`・`Average`・`CompareJoin` は演習ページの指定どおりのプロジェクト名です。演習ページはソース名を指定していないので，
   他の回（`TimeParts` → `time_parts.c` など）にならってプロジェクト名を小文字・`_` 区切りにしました。
@@ -26,7 +24,7 @@
   発展は講義の `strings.c` を書き換える課題なので，ソース名は `strings.c` のままです。
 - フォルダのソース（本体）は演習ページの期待する表示を出す版です。`Lower` は関数 `lower` を使う版で，表示は最初の版と同じです。`Average` は期待する表示が付いた「完全なプログラム」，`CopyCapacity` は講義の `strings.c` そのものです。
   途中の版・値を変えた版のコードは各課題の節に載せています。`Average` の最初の版と符号の異なる比較の確認用は，別ソース [Average/versions/average_first.c](Average/versions/average_first.c)・[Average/versions/sign_compare.c](Average/versions/sign_compare.c) です。
-- 書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
+- 書き換えて試す方法は [ルートの README](../README.md#ソースを書き換えて試す) を参照。
 
 ## 準備　配列を書き出して「容量・長さ・終端の添字」を記録する
 
@@ -70,7 +68,7 @@ digit=3
 last=d
 ```
 
-`c` を変えた結果（テスト `variant_c_0`・`variant_c_9`・`variant_c_A`）:
+`c` を変えた結果:
 
 | `c` | 実行結果 | 説明 |
 | --- | --- | --- |
@@ -151,7 +149,7 @@ spaces=2 3 0
 
 - `char text[10] = "abc";` は `length=3 capacity=10`。`sizeof text` は配列全体の 10 バイト，`my_length` は終端までの 3 文字です。
 - `text[1] = '\0';` の後は `text=a length=1 capacity=10`。添字 1 が最初の終端になるので表示も長さも `a` だけになりますが，配列の大きさは変わらないので容量は 10 のままです。添字 2 の `'c'` も配列には残っています。
-- `char text[] = {'a', 'b', 'c', '\0', 'd', 'e'};` に変えた版（テスト `variant_mixed`。`char text[10] = "abc";` の行だけを置き換え）の実行結果は次のとおりで，`my_length` は 3 です。
+- `char text[] = {'a', 'b', 'c', '\0', 'd', 'e'};` に変えた版（`char text[10] = "abc";` の行だけを置き換え）の実行結果は次のとおりで，`my_length` は 3 です。
 
   ```text
   length("")=0
@@ -215,7 +213,7 @@ char lower(char c)
     printf("%s\n", text);
 ```
 
-最初の版（ループの中に `if` を書く版。テスト `variant_inline_if`）。演習ページの指示で，この `if` 全体を `text[i] = lower(text[i]);` に置き換えたのが本体です。
+最初の版（ループの中に `if` を書く版）。演習ページの指示で，この `if` 全体を `text[i] = lower(text[i]);` に置き換えたのが本体です。
 
 ```c
 #include <stddef.h>
@@ -243,7 +241,7 @@ hello c17!
 
 ### 変更する文字・しない文字を区別する（表の記入）
 
-最初の版と本体（関数 `lower` を使う版）の両方で，初期値を変えて実行した結果です（本体はテスト `basic`・`variant_empty` など，最初の版はテスト `variant_inline_if`・`variant_inline_if_empty` など）。
+最初の版と本体（関数 `lower` を使う版）の両方で，初期値を変えて実行した結果です。
 
 | 初期値 | 期待する表示 | 注目点 |
 | --- | --- | --- |
@@ -340,7 +338,7 @@ int main(void)
 }
 ```
 
-このコードは [Average/versions/average_first.c](Average/versions/average_first.c) です（テスト `variant_first`。`total` を −7 に変えた版は `variant_first_total_minus7`）。
+このコードは [Average/versions/average_first.c](Average/versions/average_first.c) です（`total` を −7 に変えた版は，`int total = 7` を `int total = -7` に書き換えたもの）。
 
 予測: 1 行目は整数除算の後に変換するので 3.0，2 行目は先に `double` にするので 3.5，3 行目は 0 方向への切り捨てで −3（`total` が −7 なら −3.0 / −3.5 / −3）。実行結果も予測どおりです。
 
@@ -403,7 +401,7 @@ int large = 300;
 unsigned char small = (unsigned char)large;
 ```
 
-と，300 をいったん `int` の変数に入れてから変換しています。値の変換規則も結果（44）も同じです。演習ページのとおりに `(unsigned char)300` と書いた版（テスト `variant_page_literal`）も同じ 4 行を表示します。
+と，300 をいったん `int` の変数に入れてから変換しています。値の変換規則も結果（44）も同じです。演習ページのとおりに `(unsigned char)300` と書いた版も同じ 4 行を表示します。
 学生が演習ページのとおりに書いて C4310 が出た場合は減点せず，「意図した切り詰めなので警告の意味を説明できればよい」とします（チェックリストの「警告を確認し，原因を説明」）。
 
 **`saved` は元に戻るが `small` は戻らない理由**: `int` は `char` のすべての値を表せるので，`char` → `int` の変換では情報が失われず，`char` へ戻すと同じ `'A'`（65）になります。
@@ -421,13 +419,13 @@ unsigned char small = (unsigned char)large;
 | `long long square = i * i;` | 右辺が `int` 同士の掛け算のまま。MSVC の 32 ビット `int` では 2500000000 が範囲を超え，**符号付き整数のオーバーフロー＝未定義動作**。代入先が `long long` でも右辺の計算は先に `int` で終わっている |
 | `long long square = (long long)(i * i);` | 括弧の中の `i * i` を `int` で計算した後に変換するので，同じく未定義動作。キャストの位置が遅すぎて解決しない |
 
-`i` を 100 に変えると，どの形でも 10000 は `int` の範囲内なので正しい結果になります。本体を `int i = 100` に変えた 3 つの版の結果です（どれも `square=10000`）。
+`i` を 100 に変えると，どの形でも 10000 は `int` の範囲内なので正しい結果になります。本体の `int i = 50000;` を `int i = 100;` に変え，積の書き方を次の 3 通りにして実行した結果です（どれも `square=10000`）。
 
-| テスト | 積の書き方（`i = 100`） | `square` |
-| --- | --- | ---: |
-| `variant_i_100` | `(long long)i * i`（本体の形のまま） | 10000 |
-| `variant_i_100_no_cast` | `i * i` | 10000 |
-| `variant_i_100_late_cast` | `(long long)(i * i)` | 10000 |
+| 積の書き方（`i = 100`） | `square` |
+| --- | ---: |
+| `(long long)i * i`（本体の形のまま） | 10000 |
+| `i * i` | 10000 |
+| `(long long)(i * i)` | 10000 |
 
 しかし「小さい値で正しく動いた」ことは「大きな入力でも安全」の根拠になりません。値の範囲が広がり得るなら，計算する型を先に広げる形にしておきます。
 
@@ -439,7 +437,7 @@ unsigned char small = (unsigned char)large;
 2. 符号なし整数への変換は「最大値＋1 を法とする値」なので，32 ビット `unsigned int` では −10 が 2^32 − 10 = **4294967286** になります。
 3. 比較は `4294967286u < 10u` となり偽（0）です。
 
-この比較を確かめるプログラム [Average/versions/sign_compare.c](Average/versions/sign_compare.c)（テスト `variant_sign_compare`）:
+この比較を確かめるプログラム [Average/versions/sign_compare.c](Average/versions/sign_compare.c):
 
 ```c
 // 第6回 課題3 符号の異なる比較（Average / versions/sign_compare.c）
@@ -532,7 +530,7 @@ ASCII では最初の文字 `h`（104）が `f`（102）より後なので `afte
 
 ### 容量の境界を確認する（表）
 
-`text` の容量だけを変えて実行した結果（テスト `variant_capacity_9`・`variant_capacity_8`）:
+`text` の容量だけを変えて（`char text[10]` を `char text[9]`・`char text[8]` に書き換えて）実行した結果:
 
 | 容量 | 連結できるか | 最後の文字列 | `strlen` |
 | ---: | --- | --- | ---: |
@@ -548,16 +546,16 @@ ASCII では最初の文字 `h`（104）が `f`（102）より後なので `afte
 | 5（下限） | 4 | 4 | 1 | 偽 | `after` / `not enough space` / `text=hoge length=4 capacity=5` |
 
 容量 8 は 8 文字の `hogefuga` 自体は入りますが，終端を書く場所がないので連結しません。書き込みを始める前に判定しているので，元の `hoge` がそのまま保たれます。
-容量 5 は演習ページの下限（`hoge` と終端がちょうど入る）で，追加の確認としてテストしています（`suffix` が `""` なら残り 1 バイトに終端だけが入るので連結でき，`hoge` のまま。テスト `variant_capacity_5_suffix_empty`）。
+容量 5 は演習ページの下限（`hoge` と終端がちょうど入る）で，追加で確かめた結果です（さらに `suffix` を `""` に変えると残り 1 バイトに終端だけが入るので連結でき，`hoge` のまま）。
 
 ### 比較の条件を変える（容量 10）
 
-| `suffix` | 1 行目 | 連結後 | 理由 | テスト |
-| --- | --- | --- | --- | --- |
-| `"fuga"` | `after` | `text=hogefuga length=8 capacity=10` | 最初の文字 `h` > `f` | `basic` |
-| `"hoge"` | `equal` | `text=hogehoge length=8 capacity=10` | 4 文字と終端まですべて同じ | `variant_suffix_hoge` |
-| `"z"` | `before` | `text=hogez length=5 capacity=10` | 最初の文字 `h` < `z`。`hoge` の方が長くても前 | `variant_suffix_z` |
-| `""` | `after` | `text=hoge length=4 capacity=10` | 添字 0 で `h` と終端（0）を比べ，`h` の方が大きい。追加は終端だけ | `variant_suffix_empty` |
+| `suffix` | 1 行目 | 連結後 | 理由 |
+| --- | --- | --- | --- |
+| `"fuga"` | `after` | `text=hogefuga length=8 capacity=10` | 最初の文字 `h` > `f` |
+| `"hoge"` | `equal` | `text=hogehoge length=8 capacity=10` | 4 文字と終端まですべて同じ |
+| `"z"` | `before` | `text=hogez length=5 capacity=10` | 最初の文字 `h` < `z`。`hoge` の方が長くても前 |
+| `""` | `after` | `text=hoge length=4 capacity=10` | 添字 0 で `h` と終端（0）を比べ，`h` の方が大きい。追加は終端だけ |
 
 参考: `strcmp` の戻り値そのものを表示するコード（値は処理系で変わります）:
 
@@ -593,7 +591,7 @@ Linux x64（GCC 13.3，glibc 2.39，`-O0`）での実行結果:
 - **`i <= added` の等号が必要な理由**: `suffix` の添字 0〜`added − 1` が文字で，添字 `added` が終端です。`i < added` だと 4 文字だけを移して終端を書かないので，連結後の `text` は終端を持つとは限りません。
   `<=` にすることで `i == added` のときに `suffix[added]`（`'\0'`）を `text[used + added]` へ移し，新しい末尾に終端を置きます。
   この課題では `text[10] = "hoge"` の残りの要素が初期化で 0 になっているため，`i < added` でもたまたま正しく表示されます。
-  `i <= added` を `i < added` に変えた版（テスト `variant_loop_lt`）も `after` / `text=hogefuga length=8 capacity=10` と本体と同じ表示になり，**出力のテストでは検出できない誤り**です。
+  `i <= added` を `i < added` に変えた版も `after` / `text=hogefuga length=8 capacity=10` と本体と同じ表示になり，**出力を比べるだけでは検出できない誤り**です。
   前に長い文字列が入っていた配列では残っていた文字が表示されるので，誤りに気付きにくい点に注意します。
 - **配列容量が連結後も変わらない理由**: 配列の大きさは宣言 `char text[10]` で決まり，実行中に変わりません。連結は既にある要素（添字 4〜8）の値を書き換えるだけです。
   変わるのは最初の終端の位置（4 → 8）なので `strlen` は 4 → 8 になりますが，`sizeof text` は 10 のままです。容量が足りないときに配列が自動で大きくなることもありません。
@@ -618,8 +616,8 @@ Visual Studio では `strcat` に C4996 が出るため，ファイルの先頭�
     }
 ```
 
-本体をこのように書き換えた版（テスト `variant_strcat`。容量 8 では `variant_strcat_capacity_8`）も，本体・`variant_capacity_8` と同じ表示になります
-（`after` / `text=hogefuga length=8 capacity=10`，および `after` / `not enough space` / `text=hoge length=4 capacity=8`）。
+本体をこのように書き換えた版も，容量 10・8 のどちらでも本体と同じ表示になります
+（容量 10 は `after` / `text=hogefuga length=8 capacity=10`，容量 8 は `after` / `not enough space` / `text=hoge length=4 capacity=8`）。
 
 **採点のポイント・よくある誤り**
 
@@ -628,7 +626,7 @@ Visual Studio では `strcat` に C4996 が出るため，ファイルの先頭�
 - 容量の条件の差 1 の誤り: `added <= sizeof text - used` だと容量 8 で 9 バイト目（`text[8]`）に書き込む範囲外アクセスになります（AddressSanitizer で検出できる。容量 8 のケースで必ず確認させる）。
   `used + added < sizeof text` は正しく，`used + added <= sizeof text` は誤りです。
 - 判定より前に書き込みを始めていないか（容量 8 で `hoge` が保たれない）。容量不足のときに何も表示しない・途中まで書くのは仕様違反。
-- `i < added` にして終端を書き忘れていないか。この初期値では表示が本体と同じになり出力では見分けられないので，コードを読んで確認します（テスト `variant_loop_lt`）。
+- `i < added` にして終端を書き忘れていないか。この初期値では表示が本体と同じになり出力では見分けられないので，コードを読んで確認します。
 - `int used = strlen(text);` は x64 の MSVC /W4 で **C4267**（`size_t` から `int`），`for (int i = 0; i <= added; ++i)` は **C4018**。型を `size_t` にそろえるのが正しい直し方で，キャストで警告を消すだけの修正は避けます。
 - `strcpy`/`strcat` を `_CRT_SECURE_NO_WARNINGS` なしで使い C4996 が出ていないか。容量を確認せずに `strcat` していないか。
 - 表の「容量 9」を「入らない」と判断していないか（`hogefuga` の 8 文字＋終端 1＝9 バイトでぴったり入る）。
@@ -641,7 +639,7 @@ Visual Studio では `strcat` に C4996 が出るため，ファイルの先頭�
 
 解答: [CopyCapacity/strings.c](CopyCapacity/strings.c) は講義の `strings.c` そのもの（本体）です。演習ページの変更は `char copy[16]` → `char copy[4]`，`char copy[3]` だけで，条件式は残します。
 
-予測と実行結果（容量 16 は本体のテスト `basic`，4・3 はテスト `variant_capacity_4`・`variant_capacity_3`）:
+予測と実行結果（容量 16 は本体，4・3 は `char copy[16]` を `char copy[4]`・`char copy[3]` に書き換えた版）:
 
 | `copy` の容量 | `length < sizeof copy` | コピー | 1 行目 | 2 行目 | 3 行目 | 4 行目 |
 | ---: | --- | --- | --- | --- | --- | --- |
@@ -713,7 +711,7 @@ mean=3.5
 | 項目 | どこで確認できるか |
 | --- | --- |
 | 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の `""`（本体 0 回），課題2 の `""`・`"AZaz09"`・`"@AZ["`，課題4 の容量 10/9/8（と下限 5），`suffix` の `""`，発展の容量 4/3 |
-| 警告を確認し，原因を説明・修正した | 全プロジェクトを GCC/Clang の `-Wall -Wextra -Wpedantic` と MSVC `/W4` で警告の出ない書き方にしている（わざと警告を示す `page_literal`・`sign_compare` 版だけはその警告を版ごとに抑止）。課題3 の C4310（`(unsigned char)300`）と `-Wsign-compare`・C4018/C4389（符号の異なる比較。テスト `variant_sign_compare`），課題1・4 の C4267/C4018（`size_t` と `int`），課題2 の C4244（`int` → `char`），C4996（`strcat`） |
+| 警告を確認し，原因を説明・修正した | 全プロジェクトを GCC/Clang の `-Wall -Wextra -Wpedantic` と MSVC `/W4` で警告の出ない書き方にしている（わざと警告を示す `(unsigned char)300` の版と `versions/sign_compare.c` は除く）。課題3 の C4310（`(unsigned char)300`）と `-Wsign-compare`・C4018/C4389（符号の異なる比較。`versions/sign_compare.c`），課題1・4 の C4267/C4018（`size_t` と `int`），課題2 の C4244（`int` → `char`），C4996（`strcat`） |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の `n` の追跡表，課題3 の「右辺の計算 → 代入」の 2 段階，課題4 の `used`・`added`・残り容量の表 |
 | 終端文字を含む必要容量と，表示上の文字列長を区別できる | 準備の配列表，課題1 の最小容量の表と `length`/`capacity`，確認問題 1・2・3・5 |
 | コピー・連結は書き込む前に容量を確認している | 課題4 の `added < sizeof text - used`（容量 8 で `hoge` が保たれる），発展の `length < sizeof copy`（容量 3 でコピーしない） |

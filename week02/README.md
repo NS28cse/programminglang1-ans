@@ -1,21 +1,20 @@
 # 第2回 演習 解答・解説（変数）
 
 - 演習ページ: [ex02](https://t-yokoga.github.io/softprac1/ex02.html)（原稿: [docs/ex02.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex02.md)）・講義: [lec02](https://t-yokoga.github.io/softprac1/lec02.html)（例題: [docs/sample/02/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/02/)）
-- TA 用の資料: [実務の手引き 第2回](../ta-guide/README.md#第2回バージョン管理を始める変数)
 
 この回は**キーボード入力・条件分岐・繰り返しを使わない**回である。解答も `printf` と変数の宣言・初期化・代入・`sizeof`・`&` だけで書いている。
 
 ## プロジェクト一覧
 
-| 課題 | 内容 | プロジェクト | ソース | テスト数 |
-| --- | --- | --- | --- | ---: |
-| 1 | 長方形の面積と再計算 | `Rectangle` | [rectangle.c](Rectangle/rectangle.c) | 3 |
-| 2 | 型と表示の対応 | `Profile` | [profile.c](Profile/profile.c) | 5 |
-| 3 | 値のコピーと交換 | `Exchange` | [exchange.c](Exchange/exchange.c) | 7 |
-| 4 | 値・サイズ・場所の観察 | `Observe` | [observe.c](Observe/observe.c) | 0 |
-| 5 | 発展：小数を使った計算 | `Temperature` | [temperature.c](Temperature/temperature.c) | 6 |
+| 課題 | 内容 | プロジェクト | ソース |
+| --- | --- | --- | --- |
+| 1 | 長方形の面積と再計算 | `Rectangle` | [rectangle.c](Rectangle/rectangle.c) |
+| 2 | 型と表示の対応 | `Profile` | [profile.c](Profile/profile.c) |
+| 3 | 値のコピーと交換 | `Exchange` | [exchange.c](Exchange/exchange.c) |
+| 4 | 値・サイズ・場所の観察 | `Observe` | [observe.c](Observe/observe.c) |
+| 5 | 発展：小数を使った計算 | `Temperature` | [temperature.c](Temperature/temperature.c) |
 
-書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
+書き換えて試す方法は [ルートの README](../README.md#ソースを書き換えて試す) を参照。
 
 ### 準備：講義の `variables.c`
 
@@ -78,7 +77,7 @@ after recalculation=42
 
 ### 値を変えて確かめる（`width = 6;` の 6 を 0，1 に変える）
 
-最初の `int width = 4;` は変えないので，1・2 行目は常に 28 である。変わるのは 3 行目だけ（テスト `variant_width_0`・`variant_width_1`）。
+最初の `int width = 4;` は変えないので，1・2 行目は常に 28 である。変わるのは 3 行目だけ。
 
 | 途中の代入 | 1 行目 | 2 行目 | 3 行目 |
 | --- | --- | --- | --- |
@@ -146,12 +145,12 @@ total=376.50
 
 ### 表示方法を変えてみる
 
-| 手順 | 書き換え | 実行結果 | テスト |
-| --- | --- | --- | --- |
-| 1・2 | `price` の `%.2f` だけを `%f` へ | `count=3 price=125.500000 grade=B`<br>`total=376.50` | `variant_price_f` |
-| 3 | 続けて `count` を 0 へ（`%f` のまま） | `count=0 price=125.500000 grade=B`<br>`total=0.00` | `variant_price_f_count_0` |
-| （参考） | 書式は元のまま `count` だけ 0 へ | `count=0 price=125.50 grade=B`<br>`total=0.00` | `variant_count_0` |
-| 4 | 最初の設定へ戻す | `count=3 price=125.50 grade=B`<br>`total=376.50` | `basic` |
+| 手順 | 書き換え | 実行結果 |
+| --- | --- | --- |
+| 1・2 | `price` の `%.2f` だけを `%f` へ | `count=3 price=125.500000 grade=B`<br>`total=376.50` |
+| 3 | 続けて `count` を 0 へ（`%f` のまま） | `count=0 price=125.500000 grade=B`<br>`total=0.00` |
+| （参考） | 書式は元のまま `count` だけ 0 へ | `count=0 price=125.50 grade=B`<br>`total=0.00` |
+| 4 | 最初の設定へ戻す | `count=3 price=125.50 grade=B`<br>`total=376.50` |
 
 手順 1 の実行結果（`%f` は小数点以下 6 桁）:
 
@@ -183,7 +182,7 @@ total=0.00
 ### 採点のポイント・よくある誤り
 
 - **`grade` を `"B"` で初期化**: `"B"` は文字列（第6回）で `char` 1 文字ではない。MSVC は C4047（`char` と `char [2]` で間接参照のレベルが異なる），GCC 13 は `warning: initialization of 'char' from 'char *' makes integer from pointer without a cast [-Wint-conversion]`，Clang 18 はエラー。`'B'` が正しい。
-- **`total` を `int` にする**: `int total = count * price;` は 376 に切り捨てられ（MSVC `/W4` では C4244（`double` から `int` への変換でデータが失われる可能性）），`%d` で `total=376` と表示される（テスト `variant_int_total`。`double total` を `int total` に，`total` の書式を `%d` にした版）。GCC/Clang の `-Wall -Wextra -Wpedantic` では警告が出ないので，GCC で確認した学生は気付きにくい。
+- **`total` を `int` にする**: `int total = count * price;` は 376 に切り捨てられ（MSVC `/W4` では C4244（`double` から `int` への変換でデータが失われる可能性）），`%d` で `total=376` と表示される（`double total` を `int total` に，`total` の書式を `%d` に書き換えて実行した結果）。GCC/Clang の `-Wall -Wextra -Wpedantic` では警告が出ないので，GCC で確認した学生は気付きにくい。
 - **計算済みの文字列を書く**: `printf("total=376.50\n");` は不可（課題文で禁止）。
 - `price` に `%f` のまま提出（`price=125.500000`），`%c` ではなく `%s` や `%d` で `grade` を表示，などの書式の誤り。
 - 手順 4（元に戻す）を忘れて `%f` や `count = 0` のまま提出していないか。
@@ -233,7 +232,7 @@ after: a=20 b=10
 | `a = b;` | 20 | 20 | 10 |
 | `b = temp;` | 20 | 10 | 10 |
 
-2 文だけの版（比較用。本体の `temp` を使う 3 行と最後の `after:` の行の代わりに，次の 4 行を書く。テスト `variant_two_statements`）:
+2 文だけの版（比較用。本体の `temp` を使う 3 行と最後の `after:` の行の代わりに，次の 4 行を書く）:
 
 ```c
     int a = 10;
@@ -257,11 +256,11 @@ after b = a;  a=20 b=20
 
 ### 別の値でも確認する
 
-| 初期値 | `temp` を使った版（解答） | 2 文だけの版 | テスト（解答 / 2 文だけ） |
-| --- | --- | --- | --- |
-| `a = 10`, `b = 20` | `after: a=20 b=10` | `a=20 b=20` | `basic` / `variant_two_statements` |
-| `a = -3`, `b = 8` | `after: a=8 b=-3` | `a=8 b=8` | `variant_a_m3_b_8` / `variant_two_statements_a_m3_b_8` |
-| `a = 5`, `b = 5` | `after: a=5 b=5` | `a=5 b=5` | `variant_a_5_b_5` / `variant_two_statements_a_5_b_5` |
+| 初期値 | `temp` を使った版（解答） | 2 文だけの版 |
+| --- | --- | --- |
+| `a = 10`, `b = 20` | `after: a=20 b=10` | `a=20 b=20` |
+| `a = -3`, `b = 8` | `after: a=8 b=-3` | `a=8 b=8` |
+| `a = 5`, `b = 5` | `after: a=5 b=5` | `a=5 b=5` |
 
 `temp` を使った版の実行結果（`a = -3`, `b = 8`）:
 
@@ -277,7 +276,7 @@ before: a=5 b=5
 after: a=5 b=5
 ```
 
-2 文だけの版の実行結果（上の比較用コードの初期値を変えたもの。テスト `variant_two_statements_a_m3_b_8`・`variant_two_statements_a_5_b_5`）:
+2 文だけの版の実行結果（上の比較用コードの初期値を変えたもの）:
 
 ```text
 before: a=-3 b=8
@@ -301,7 +300,7 @@ after b = a;  a=5 b=5
 
 - **表示だけ入れ替える**: 交換せずに `printf("after: a=%d b=%d\n", b, a);` と引数を逆にした提出は，どの初期値でも表示が一致してしまう。出力ではなくコードで交換しているかを確認する。
 - **`printf("after: a=20 b=10\n");` と直接書く**: 初期値を −3, 8 に変えると誤りが分かる。
-- **代入の順序の誤り**: `temp = a; b = a; a = temp;` は交換にならない。2 文目の `b = a;` で `b` の元の値 20 を失い（`temp` に保存したのは `a` の 10），最後は a=10, b=10 になる（テスト `variant_wrong_order`。表示は `before: a=10 b=20` / `after: a=10 b=10`）。保存した値を戻す先（`b = temp;`）と，先に上書きする変数（`a = b;`）の順を確認する。
+- **代入の順序の誤り**: `temp = a; b = a; a = temp;` は交換にならない。2 文目の `b = a;` で `b` の元の値 20 を失い（`temp` に保存したのは `a` の 10），最後は a=10, b=10 になる（表示は `before: a=10 b=20` / `after: a=10 b=10`）。保存した値を戻す先（`b = temp;`）と，先に上書きする変数（`a = b;`）の順を確認する。
 - **足し算・引き算による交換**（`a = a + b; b = a - b; a = a - b;`）は今回の意図（値の上書きと一時変数）から外れ，`int` の範囲を超えると未定義動作になり得るので勧めない。
 - 「記録すること」で，2 文の版の結果（20/20）を実際に書けているか，等しい値（5, 5）では違いが分からないことに気付いているかを見る。
 
@@ -356,7 +355,7 @@ sizeof(long long)=8
 sizeof(double)=8
 ```
 
-同じ実行の中では `&value` は変わらず，起動し直すと別のアドレスになっている（アドレス空間配置のランダム化のため）。ここに載せた `&value` は sanitizer なしでビルドしたときの値である。AddressSanitizer 付き（`-DSOFTPRAC_SANITIZE=ON`）でビルドすると，変数が別の領域に置かれ，`0x7f3c77700020` のような `0x7f...` で始まる値になる（実行ごとに変わる）。
+同じ実行の中では `&value` は変わらず，起動し直すと別のアドレスになっている（アドレス空間配置のランダム化のため）。ここに載せた `&value` は sanitizer なしでビルドしたときの値である。AddressSanitizer 付き（`-fsanitize=address,undefined -g` を付けてコマンドでビルド）でビルドすると，変数が別の領域に置かれ，`0x7f3c77700020` のような `0x7f...` で始まる値になる（実行ごとに変わる）。
 
 Windows x64（Visual Studio，MSVC）では次の形になる（アドレスの数字は実行ごとに変わる。`%p` は `0x` なしの 16 桁の大文字 16 進数）。**`sizeof(long)` が 4** になる点が Linux と違う。
 
@@ -443,18 +442,18 @@ Celsius=25.0 Fahrenheit=77.0
 
 ### 値を変えて確かめる
 
-| `celsius` の初期値 | 実行結果 | テスト |
-| --- | --- | --- |
-| 25.0（本体） | `Celsius=25.0 Fahrenheit=77.0` | `basic` |
-| 0.0 | `Celsius=0.0 Fahrenheit=32.0` | `variant_celsius_0` |
-| 100.0 | `Celsius=100.0 Fahrenheit=212.0` | `variant_celsius_100` |
-| -40.0 | `Celsius=-40.0 Fahrenheit=-40.0` | `variant_celsius_m40` |
+| `celsius` の初期値 | 実行結果 |
+| --- | --- |
+| 25.0（本体） | `Celsius=25.0 Fahrenheit=77.0` |
+| 0.0 | `Celsius=0.0 Fahrenheit=32.0` |
+| 100.0 | `Celsius=100.0 Fahrenheit=212.0` |
+| -40.0 | `Celsius=-40.0 Fahrenheit=-40.0` |
 
 いずれも演習ページの 32.0，212.0，−40.0 と一致する（−40 度は摂氏と華氏が等しくなる温度）。
 
 ### 計算後に `celsius` を変更した場合
 
-`fahrenheit` は計算した時点の値を保存しているだけなので，`celsius` を変えただけでは更新されない。確認用のコード（本体の表示の行の後に，コメントを含む 5 行を追加する。テスト `variant_change_after`）:
+`fahrenheit` は計算した時点の値を保存しているだけなので，`celsius` を変えただけでは更新されない。確認用のコード（本体の表示の行の後に，コメントを含む 5 行を追加する）:
 
 ```c
     double celsius = 25.0;
@@ -479,7 +478,7 @@ Celsius=100.0 Fahrenheit=212.0
 ### 採点のポイント・よくある誤り
 
 - **`fahrenheit = 77.0;` と直接書く**: 初期値を 0.0 に変えても 77.0 のままになる。式で計算しているかを見る。
-- **整数の割り算**: `9 / 5 * celsius + 32` と書くと，先に `9 / 5` が整数どうしの割り算で 1 になり，25.0 で `Celsius=25.0 Fahrenheit=57.0` と表示される（テスト `variant_int_division`。本体の式を `9 / 5 * celsius + 32` に書き換えた版）。課題の式の順（`celsius * 9.0 / 5.0`）なら先に `double` の掛け算になる。整数の割り算の規則は第3回，型変換は第6回で扱う。
+- **整数の割り算**: `9 / 5 * celsius + 32` と書くと，先に `9 / 5` が整数どうしの割り算で 1 になり，25.0 で `Celsius=25.0 Fahrenheit=57.0` と表示される（本体の式を `9 / 5 * celsius + 32` に書き換えて実行した結果）。課題の式の順（`celsius * 9.0 / 5.0`）なら先に `double` の掛け算になる。整数の割り算の規則は第3回，型変換は第6回で扱う。
 - **書式**: `%f` のままだと `Celsius=25.000000 Fahrenheit=77.000000` になる。`%.1f` を使う。`%d` で `double` を渡すのは未定義動作（MSVC は C4477，GCC は `-Wformat` の警告）。
 - **型**: `int celsius` にすると小数を扱えない。両方 `double` で保存するよう指定されている。
 - 表示の大文字小文字（`Celsius`，`Fahrenheit`）と空白 1 つを確認する。

@@ -1,27 +1,25 @@
 # 第8回 演習 解答・解説（ポインタ1）
 
 - 演習ページ: [ex08](https://t-yokoga.github.io/softprac1/ex08.html)（原稿: [docs/ex08.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex08.md)）・講義: [lec08](https://t-yokoga.github.io/softprac1/lec08.html)（例題: [docs/sample/08/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/08/)）
-- TA 用の資料: [実務の手引き 第8回](../ta-guide/README.md#第8回step-into-とウォッチでポインタを見るポインタ1)・デバッグの題材 [BugCopyText](../debugging/BugCopyText/README.md)
 
 ## プロジェクト一覧
 
-| 課題 | 内容 | プロジェクト | ソース | テスト |
-| --- | --- | --- | --- | ---: |
-| 1 | ポインタと`swap` | `Swap` | [`pointers.c`](Swap/pointers.c) | 9 |
-| 2 | 最小値・最大値の出力 | `MinMax` | [`min_max.c`](MinMax/min_max.c) | 8 |
-| 3 | 文字列のコピー | `CopyText` | [`copy_text.c`](CopyText/copy_text.c) | 3 |
-| 4 | 配列・文字列の走査 | `PointerWalk` | [`pointer_walk.c`](PointerWalk/pointer_walk.c) | 11 |
-| 発展 | 数の分解とポインタの戻り値 | `Decompose` | [`decompose.c`](Decompose/decompose.c) | 12 |
-| | | | 合計 | **43** |
+| 課題 | 内容 | プロジェクト | ソース |
+| --- | --- | --- | --- |
+| 1 | ポインタと`swap` | `Swap` | [`pointers.c`](Swap/pointers.c) |
+| 2 | 最小値・最大値の出力 | `MinMax` | [`min_max.c`](MinMax/min_max.c) |
+| 3 | 文字列のコピー | `CopyText` | [`copy_text.c`](CopyText/copy_text.c) |
+| 4 | 配列・文字列の走査 | `PointerWalk` | [`pointer_walk.c`](PointerWalk/pointer_walk.c) |
+| 発展 | 数の分解とポインタの戻り値 | `Decompose` | [`decompose.c`](Decompose/decompose.c) |
 
 共通の方針:
 
 - どのプログラムも入力を受け取りません（コマンドライン引数は第10回の内容なので使わない）。
   フォルダのソース（本体）は演習ページの期待する表示を出す版です。期待する表示が配布コードのものなら本体は配布コードのまま（`Swap` の `pointers.c`），
-  期待する表示がある `PointerWalk`（3 行）・`Decompose`（1 行）は本体がその表示**だけ**を出し，`tests/basic.out` で 1 文字ずつ検査します。
+  期待する表示がある `PointerWalk`（3 行）・`Decompose`（1 行）は本体がその表示**だけ**を出します。
   期待する表示がない課題（`MinMax`・`CopyText`）は指示を反映した版です。
 - 検証表の値・境界の値・途中の版・誤りの例（`a = b` の swap，値引数の版など）は，学生と同じ書き換えをした版として各課題の節に載せています。
-  README の「書き換え版 `xxx`」は，テスト `variant_xxx` の版です。書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
+  README の「書き換え版 `xxx`」は，各課題の表に書いた書き換えをした版の呼び名です。書き換えて試す方法は [ルートの README](../README.md#ソースを書き換えて試す) を参照。
 - アドレスは実行ごとに変わるので，プログラムでは表示せず，`p == &x` のような比較（1 か 0）で「どの変数を指すか」を表示します。
   アドレスを表示する版は README に載せ，実行例は「実行ごとに変わる」と明記しました。
 - ソース名は，演習ページが指定する `pointers.c`（課題1「講義の`pointers.c`を実行し」）以外は指定がないため，これまでの回の慣例どおりプロジェクト名を小文字・`_` 区切りにしました。
@@ -142,7 +140,7 @@ c at
 ### アドレスも表示して確かめる（README のみの版）
 
 演習ページの指示どおり `p`，`&x` は `(void *)` に変換して `%p`，`x`，`*p` は `%d` で表示し，`&p` も表示した版です。
-アドレスは実行ごとに変わるのでテストにはせず，プロジェクトのソースにも入れていません。
+アドレスは実行ごとに変わるので，プロジェクトのソースには入れていません。
 
 ```c
 #include <stdio.h>
@@ -338,7 +336,7 @@ void min_max(const int *a, int n, int *low, int *high)
 | `trace` | `*high = a[0];` の後とループ本体の最後に `printf("read %d: *low=%d *high=%d\n", ...)` を入れる | 候補の変化の追跡表 |
 | `single_5` / `same_3` / `all_negative` / `five_elements` | `data` を検証表の配列にし，呼び出しの `n` も 1，3，3，5 に合わせる | 検証表 |
 | `same_address` | `min_max(data, 4, &low, &low)` | 同じアドレスを渡すと壊れる（説明すること） |
-| `overlap` | `min_max(data, 4, &data[1], &high)` | 入力の要素を出力先にすると壊れる（説明すること） |
+| `overlap` | `min_max(data, 4, &data[1], &high)` にし，`data[1]` を最小値として配列も表示する | 入力の要素を出力先にすると壊れる（説明すること） |
 
 ### 実行結果
 
@@ -616,7 +614,7 @@ distance=2 before=1 equal=0
 length=3
 ```
 
-演習ページの期待する表示と一致します。小問は次の書き換え版でテストしています。
+演習ページの期待する表示と一致します。小問は次の書き換え版で確かめます。
 
 | 書き換え版 | 書き換え | 表示（変わる行） |
 | --- | --- | --- |
@@ -828,7 +826,7 @@ whole=3 fraction=0.14
 - `long` は Windows（MSVC）では 32 ビット，Linux x64 では 64 ビットですが，−100〜100 なのでどちらでも範囲内です。表示は `%ld`。
 - `*fraction = x - *whole;` では `long` の値が `double` に変換されてから引き算されます（通常の算術型変換）。
 
-**値引数にした場合，呼び出し元の値が変わらない理由**（書き換え版 `value_args`。IDE で試すときは本体の `decompose` と呼び出しをこのコードのように書き換えます）:
+**値引数にした場合，呼び出し元の値が変わらない理由**（書き換え版 `value_args`。本体の `decompose` と呼び出しをこのコードのように書き換えます）:
 
 ```c
 void decompose(double x, long whole, double fraction)
@@ -859,7 +857,7 @@ whole=0 fraction=0.00
 
 ### 小さい値の場所を返す（`min_pointer`）
 
-書き換え版 `min_pointer_9_3` の `main`（演習のコードそのもの。IDE で試すときは，本体の `main` の中身をこのコードに置き換えます）:
+書き換え版 `min_pointer_9_3` の `main`（演習のコードそのもの。本体の `main` の中身をこのコードに置き換えます）:
 
 ```c
 int main(void)
@@ -986,7 +984,7 @@ MSVC:  warning C4172: returning address of local variable or temporary: local
 
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の同じ値（`y_5`，`both_8`）／課題2 の {5}（`n=1`），{3, 3, 3}，全部が負の {-8, -2, -5}／課題3 の容量ちょうど（`out[4]` と `"cat"`），1 不足（`out[3]`），空文字列（`out[1]` と `""`），不足時に変更なし（`"old"`）／課題4 の `""`，`q = a + 1`／発展の 0.0，5.0，−100，100，−0.5，同じ値の `min_pointer`。すべて本体と書き換え版のテストがある |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の同じ値（`y_5`，`both_8`）／課題2 の {5}（`n=1`），{3, 3, 3}，全部が負の {-8, -2, -5}／課題3 の容量ちょうど（`out[4]` と `"cat"`），1 不足（`out[3]`），空文字列（`out[1]` と `""`），不足時に変更なし（`"old"`）／課題4 の `""`，`q = a + 1`／発展の 0.0，5.0，−100，100，−0.5，同じ値の `min_pointer` |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトと書き換え版が GCC・Clang の `-Wall -Wextra -Wpedantic` と MSVC `/W4` で警告 0（MSVC の C4456（前の局所宣言を隠す）を避けるため，課題1の実験は別ソースに分けた）。警告・エラーの例: `swap_double(a[1], a[4])`（課題1），`low = a[i]`（課題2），`a++`（課題4），関数の仮引数の `sizeof`（課題4），値引数版の `-Wunused-but-set-parameter`，局所変数のアドレスを返す関数（発展） |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1 の状態表，課題2 の追跡表，課題3 の短い表記の「代入・判定・更新」，課題4 の `ptrdiff_t`／`size_t`／`const char *` |
 | ポインタの矢印と，指す先の値を分けて追跡した | 課題1 の図・状態表（`trace`，`y_5`，`both_8`）・ポインタのコピーの表（`copy_pointer` の `p_is_a`，`p_is_b`），発展の `points_to_y` |

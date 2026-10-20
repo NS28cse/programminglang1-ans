@@ -1,33 +1,32 @@
 # 第13回 演習 解答・解説（メモリ管理）
 
 - 演習ページ: [ex13](https://t-yokoga.github.io/softprac1/ex13.html)（原稿: [docs/ex13.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex13.md)）・講義: [lec13](https://t-yokoga.github.io/softprac1/lec13.html)（例題: [docs/sample/13/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/13/)）
-- TA 用の資料: [実務の手引き 第13回](../ta-guide/README.md#第13回所有者と失敗経路メモリ管理)・デバッグの題材 [BugMallocSize](../debugging/BugMallocSize/README.md)，[BugBackupScores](../debugging/BugBackupScores/README.md)
 
 この回は「確保できたら使う」だけでなく，**誰が初期化し，誰が解放し，失敗したら何を残すか**を追跡する回です。
-リーク・二重解放・解放後の使用は実行しても気付きにくいので，AddressSanitizer・LeakSanitizer（Linux で `-DSOFTPRAC_SANITIZE=ON` を付けてビルド）や valgrind で確かめると分かりやすくなります。
+リーク・二重解放・解放後の使用は実行しても気付きにくいので，AddressSanitizer・LeakSanitizer（[コマンドでビルド](../README.md#1-コマンドでビルドする)するときに `-fsanitize=address,undefined -g` を付ける。LeakSanitizer は Linux）や valgrind で確かめると分かりやすくなります。
 
 ## プロジェクト一覧
 
-| 課題 | プロジェクト | ソース | テスト |
-| --- | --- | --- | --- |
-| 課題1・課題2 | `Dynamic` | [dynamic.c](Dynamic/dynamic.c) | 21 |
-| 課題2「追加：独立したコピー」 | `DynamicCopy` | [dynamic.c](DynamicCopy/dynamic.c) | 16 |
-| 課題3 | `NewPoint` | [new_point.c](NewPoint/new_point.c)，[versions/return_styles.c](NewPoint/versions/return_styles.c) | 5 |
-| 課題3「失敗を模擬する」 | `NewPointFail` | [new_point.c](NewPointFail/new_point.c) | 2 |
-| 課題4 | （実行しない。この README で解答） | — | — |
-| 発展1 | `GrowArray` | [grow_array.c](GrowArray/grow_array.c) | 9 |
-| 発展1「`realloc`の失敗を模擬する」 | `GrowArrayFail` | [grow_array.c](GrowArrayFail/grow_array.c) | 3 |
-| 発展2 | `StorageCount` | [count.c](StorageCount/count.c) | 3 |
-| 発展2「共有変数の宣言」 | `SharedCount` | [counter.h](SharedCount/counter.h)，[counter.c](SharedCount/counter.c)，[main.c](SharedCount/main.c) | 1 |
-| 発展2 変更1（リンクエラー） | `_SharedCountNoDef`（ビルドしない） | [counter.c](_SharedCountNoDef/counter.c) ほか | — |
-| 発展2 変更2（リンクエラー） | `_SharedCountDupDef`（ビルドしない） | [main.c](_SharedCountDupDef/main.c) ほか | — |
-| 発展3 | `DynamicVector` | [vector.h](DynamicVector/vector.h)，[vector.c](DynamicVector/vector.c)，[vector_main.c](DynamicVector/vector_main.c) | 2 |
-| 発展3「途中で失敗した場合」 | `DynamicVectorFail` | [vector.c](DynamicVectorFail/vector.c)（`vector_main.c`・`vector.h` は `DynamicVector` のもの） | 4 |
+| 課題 | プロジェクト | ソース |
+| --- | --- | --- |
+| 課題1・課題2 | `Dynamic` | [dynamic.c](Dynamic/dynamic.c)（引数: `5`） |
+| 課題2「追加：独立したコピー」 | `DynamicCopy` | [dynamic.c](DynamicCopy/dynamic.c)（引数: `5`） |
+| 課題3 | `NewPoint` | [new_point.c](NewPoint/new_point.c)，[versions/return_styles.c](NewPoint/versions/return_styles.c) |
+| 課題3「失敗を模擬する」 | `NewPointFail` | [new_point.c](NewPointFail/new_point.c) |
+| 課題4 | （実行しない。この README で解答） | — |
+| 発展1 | `GrowArray` | [grow_array.c](GrowArray/grow_array.c) |
+| 発展1「`realloc`の失敗を模擬する」 | `GrowArrayFail` | [grow_array.c](GrowArrayFail/grow_array.c) |
+| 発展2 | `StorageCount` | [count.c](StorageCount/count.c) |
+| 発展2「共有変数の宣言」 | `SharedCount` | [counter.h](SharedCount/counter.h)，[counter.c](SharedCount/counter.c)，[main.c](SharedCount/main.c) |
+| 発展2 変更1（リンクエラー） | `_SharedCountNoDef`（ビルドしない） | [counter.c](_SharedCountNoDef/counter.c) ほか |
+| 発展2 変更2（リンクエラー） | `_SharedCountDupDef`（ビルドしない） | [main.c](_SharedCountDupDef/main.c) ほか |
+| 発展3 | `DynamicVector` | [vector.h](DynamicVector/vector.h)，[vector.c](DynamicVector/vector.c)，[vector_main.c](DynamicVector/vector_main.c) |
+| 発展3「途中で失敗した場合」 | `DynamicVectorFail` | [vector.c](DynamicVectorFail/vector.c)（`vector_main.c`・`vector.h` は `DynamicVector` のもの），[CMakeLists.txt](DynamicVectorFail/CMakeLists.txt) |
 
 ### 本体と失敗を模擬する版
 
 各フォルダのソース（本体）は，演習ページの期待する表示を出す版です。表示が変わらない断片（6 つの役割のコメント，複合リテラル）と，演習ページが正常版に「追加します」と指示する断片（課題2の逆順，発展3の `vector_get(result, 2, &out)`。どちらも表示が 1 行増える）は本体に含めています。
-値を変えて試す版と，確認のために `printf` を差し込む版は，各節にテスト名（`variant_<名前>`）を添えて示します。書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
+値を変えて試す版と，確認のために `printf` を差し込む版は，各節に書き換え方と実行結果を示します。書き換えて試す方法は [ルートの README](../README.md#ソースを書き換えて試す) を参照。
 
 演習ページは「正常版を残した別プロジェクトかコピーで行い，完了したら試験設定を戻す」と指示しています。そのため次のように分けています。
 
@@ -36,11 +35,12 @@
   `DynamicVectorFail` は書き換える `vector.c` だけを持ち，`vector_main.c` と `vector.h` は `../DynamicVector` のものを使います。学生は 3 ファイルをコピーした別プロジェクトを作り，その中の `vector.c` だけを書き換えます。
 - 演習ページがコマンドライン引数を使うのは課題1（`Dynamic`）だけです。発展1の `GrowArray` も演習ページどおり `old_n = 3`，`new_n = 5` を `main` の中に書き，境界の表の組は値を書き換えて確かめます。
 
-Visual Studio で 1 つのプロジェクトだけを使う場合は，学生と同じく `simulate_failure` や `fail_on_call` の値を書き換えて 1 回ずつビルド・実行し直せば同じ結果になります。
+`simulate_failure` や `fail_on_call` を別の値にした結果は，学生と同じく値を書き換えて 1 回ずつビルド・実行し直して確かめます。
 
 ### 実行結果の表記
 
 `>` の行がコマンド（引数）で，標準出力と標準エラー出力をコンソールに表示される順に並べ，最後に終了コードを書いています。
+`> Dynamic 5` はプロジェクト `Dynamic` を引数 `5` で実行すること（コマンドでビルドした場合は `./a.out 5`）を表し，ソースを書き換えた版は書き換えた内容を `>` の行の `（ ）` に添えています。
 Windows（Visual Studio，x64）でも Linux x64 でも表示は同じです（`%zu` などは VS2015 以降の UCRT で使えます）。環境で変わる値は各所に注記しています。
 
 ---
@@ -57,7 +57,7 @@ Windows（Visual Studio，x64）でも Linux x64 でも表示は同じです（`
 - Visual Studio（プロジェクト方式）: **Solution Explorer** でプロジェクトを右クリック → **Properties** → **Configuration Properties > Debugging** の **Command Arguments** に `5` だけを入力します。**実行ファイル名（`Dynamic.exe`）は含めません**（`argv[0]` は自動で渡される）。
   ダイアログ上部の **Configuration** と **Platform** を，実際に実行する構成（ツールバーの **Solution Configurations** の `Debug` と **Solution Platforms** の `x64`）に合わせてから設定します。
 - よくある誤り: `Release` や `Win32` の構成に引数を設定し，`Debug | x64` で実行しています。その構成には引数がないので，`argc` が 1 になり `usage: Dynamic count (1..1000)` と表示して終了コード 1 で終わります。プログラムの誤りではなく設定の誤りです。
-- このリポジトリ（CMake。Visual Studio では **File > Open > Folder** で開く方式）では，[Dynamic/run.args](Dynamic/run.args) の `5` が既定の引数になります（Visual Studio は `.vs/launch.vs.json`）。別の値で試すときは，起動構成の `args`（Visual Studio は `.vs/launch.vs.json`，VS Code は `.vscode/launch.json` の「引数つきで実行」）を書き換えます。
+- このリポジトリを使う場合も引数は `5` です。[コマンドでビルド](../README.md#1-コマンドでビルドする)したときは `./a.out 5`（Windows は `.\a.exe 5`）のように実行ファイルの後に書き，[Visual Studio でフォルダーを開く](../README.md#3-visual-studio-でフォルダーを開く)方式では **Debug > Debug and Launch Settings for \<プロジェクト\>** で `"args": [ "5" ]` を足し，[VS Code](../README.md#4-vs-code-で使うwindows--macos--linux) では `cmake.debugConfig` の `args` に `"5"` を書きます。別の値で試すときは，この引数を書き換えます。
 - 予測: `5` なら `n=5 sum=15 mean=3.0`。0，-1，1001，`abc` などは**確保の前に**診断を出して終了し，合計は表示されません。
 
 ### 解答コード
@@ -150,8 +150,8 @@ reversed: 5 4 3 2 1
 | 指定なし，5 6 | `usage: Dynamic count (1..1000)`（stderr），終了コード 1 | `argc != 2`。引数の不足・過剰 |
 
 - どのエラーも「何も表示されずに落ちた」のではなく，**診断を出して `return 1` で意図的に終了**しています。終了コードは Visual Studio の **Output** ウィンドウ（`The program '[12345] Dynamic.exe' has exited with code 1 (0x1).`）で確認できます。
-- `strtol` は先頭の空白と `+` を受け付けるので，`+5` は 5 として受理されます（テスト `plus_sign`）。これは講義の説明どおりの仕様です。
-- 空白 1 文字だけの引数（テスト `blank_space`）も，空引数 `""`（テスト `empty_arg`）と同じく数字がないので拒否されます。
+- `strtol` は先頭の空白と `+` を受け付けるので，`+5` は 5 として受理されます。これは講義の説明どおりの仕様です。
+- 空白 1 文字だけの引数も，空引数 `""` と同じく数字がないので拒否されます。
 - `long` は Windows（MSVC）では 32 ビット，Linux x64 では 64 ビットです。たとえば `3000000000` は Windows では `ERANGE`，Linux では「1000 より大きい」で拒否されます。経路は違っても結果（拒否）は同じです。
 
 ### 確保量を説明する
@@ -182,10 +182,10 @@ reversed: 5 4 3 2 1
 | 3 回目 | 2 | 3 | 6 |
 | （判定） | 3 | — | `i < n` が偽なので終了 |
 
-ループ内に `printf("i=%zu values[i]=%d sum=%lld\n", i, values[i], sum);` を差し込んだ版（テスト `variant_trace--n3`）を `n=3` で実行した結果です。
+ループ内に `printf("i=%zu values[i]=%d sum=%lld\n", i, values[i], sum);` を差し込んだ版を `n=3` で実行した結果です。
 
 ```text
-> Dynamic_trace 3
+> Dynamic 3   （printf を差し込んだ版）
 i=0 values[i]=1 sum=1
 i=1 values[i]=2 sum=3
 i=2 values[i]=3 sum=6
@@ -193,7 +193,7 @@ n=3 sum=6 mean=2.0
 reversed: 3 2 1
 ```
 
-本体を `3` で実行した結果（`n=3 sum=6 mean=2.0`，`reversed: 3 2 1`）はテスト `three_3` です。
+本体を `3` で実行すると `n=3 sum=6 mean=2.0`，`reversed: 3 2 1` と表示されます。
 
 ```text
 values ─→ [  1  ][  2  ][  3  ] │ ここから先は確保していない
@@ -263,14 +263,14 @@ reversed: 5 4 3 2 1
 | 2 | (0, 1) | `2 1` |
 | 5 | (0, 4)，(1, 3)（中央の 2 は交換しない） | `5 4 3 2 1` |
 
-交換のたびに組を表示する行 `printf("swap values[%zu] <-> values[%zu]\n", i, n - 1 - i);` を差し込んだ版（テスト `variant_swap_pairs--n1`・`--n2`・`--n5`）の結果です。`n=1` では交換の行が出ません。
+交換のたびに組を表示する行 `printf("swap values[%zu] <-> values[%zu]\n", i, n - 1 - i);` を差し込んだ版の結果です。`n=1` では交換の行が出ません。
 
 ```text
-> Dynamic_swap_pairs 2
+> Dynamic 2   （交換の組を表示する行を差し込んだ版）
 n=2 sum=3 mean=1.5
 swap values[0] <-> values[1]
 reversed: 2 1
-> Dynamic_swap_pairs 5
+> Dynamic 5   （同上）
 n=5 sum=15 mean=3.0
 swap values[0] <-> values[4]
 swap values[1] <-> values[3]
@@ -284,9 +284,9 @@ reversed: 5 4 3 2 1
 
 - **`n/2` が整数の除算であること**: 小数点以下が切り捨てられるので，`n=5` なら 2 回，`n=1` なら 0 回になります。奇数個のときは中央を除いた組の数と一致し，偶数個のときはちょうど半分です。どちらの場合も「組の数 = 交換の回数」になります。
 - **全要素について交換すると元に戻る理由**: `i < n` にすると，前半で (0,4)，(1,3) を交換した後，後半で (3,1)，(4,0) をもう一度交換し，各組を 2 回入れ替えることになります（中央は自分自身と交換）。2 回の交換で元に戻るので，結果は元の順序です。
-  `i < n / 2` を `i < n` に書き換えた版（テスト `variant_swap_all`）を実行すると，元の順序になります。
+  `i < n / 2` を `i < n` に書き換えた版を実行すると，元の順序になります。
   ```text
-  > Dynamic_swap_all 5   （i < n / 2 を i < n に書き換えた版）
+  > Dynamic 5   （i < n / 2 を i < n に書き換えた版）
   n=5 sum=15 mean=3.0
   reversed: 1 2 3 4 5
   ```
@@ -338,9 +338,9 @@ copy: 5 4 3 2 1
 - `int *copy = values;` は**ポインタ値のコピー**で，領域は 1 つのままです。`copy` を通して逆順にすると `values` から見ても逆順になり，さらに両方を `free` すると二重解放になります。
 - 要素をコピーするには**別の領域を確保**し，要素を 1 つずつ代入します。所有する領域が 2 つになるので，解放も 2 回（それぞれ 1 回ずつ）必要です。
 - `copy` の確保に失敗した経路では，すでに確保済みの `values` を解放してから終了します（この経路のリークが最もよくある誤り）。
-  この経路は，`copy = malloc(n * sizeof *copy);` を `copy = NULL;` に書き換えた版（テスト `variant_copy_alloc_fail`。課題3の失敗模擬と同じ考え方）で確かめられます。`free(values)` を忘れると，LeakSanitizer が `20 byte(s) leaked` と報告します（`n=5` の場合）。
+  この経路は，`copy = malloc(n * sizeof *copy);` を `copy = NULL;` に書き換えた版（課題3の失敗模擬と同じ考え方）で確かめられます。`free(values)` を忘れると，LeakSanitizer が `20 byte(s) leaked` と報告します（`n=5` の場合）。
   ```text
-  > DynamicCopy_copy_alloc_fail 5   （copy の確保失敗を模擬した版）
+  > DynamicCopy 5   （copy = NULL; に書き換えて copy の確保失敗を模擬した版）
   n=5 sum=15 mean=3.0
   allocation failed
   （終了コード 1）
@@ -428,14 +428,14 @@ int main(void)
     p->y = y;
 ```
 
-2 文の版（テスト `variant_two_statements`）の結果も `x=3.0 y=4.0` で，同じ出力です。`*p = (Point){.x = x, .y = y};` は，複合リテラルで作った `Point` の値を確保済みの本体 `*p` へ構造体ごと代入します。一時的な値のアドレスを返しているわけではありません。`NULL` 判定は複合リテラルの前に残します（`NULL` の `*p` へ代入すると未定義動作）。
+2 文の版の結果も `x=3.0 y=4.0` で，同じ出力です。`*p = (Point){.x = x, .y = y};` は，複合リテラルで作った `Point` の値を確保済みの本体 `*p` へ構造体ごと代入します。一時的な値のアドレスを返しているわけではありません。`NULL` 判定は複合リテラルの前に残します（`NULL` の `*p` へ代入すると未定義動作）。
 
-値を変えた版（テスト `variant_point_0_0`，`variant_point_m2_5`）:
+`main` の `new_point(3.0, 4.0)` の値を変えた版:
 
 ```text
-> NewPoint_point_0_0   （new_point(0.0, 0.0) に書き換えた版）
+> NewPoint   （new_point(0.0, 0.0) に書き換えた版）
 x=0.0 y=0.0
-> NewPoint_point_m2_5   （new_point(-2.0, 5.0) に書き換えた版）
+> NewPoint   （new_point(-2.0, 5.0) に書き換えた版）
 x=-2.0 y=5.0
 ```
 
@@ -455,7 +455,7 @@ x=-2.0 y=5.0
 > NewPointFail   （simulate_failure = 1）
 allocation failed
 （終了コード 1）
-> NewPointFail_simulate_failure_0   （simulate_failure = 0 に戻した版）
+> NewPointFail   （simulate_failure = 0 に戻した版）
 x=3.0 y=4.0
 （終了コード 0）
 ```
@@ -467,7 +467,7 @@ x=3.0 y=4.0
 
 ### 戻り方を比較する
 
-3 つの方法を 1 つのプログラム [NewPoint/versions/return_styles.c](NewPoint/versions/return_styles.c) にまとめて比べます（テスト `variant_return_styles`）。
+3 つの方法を 1 つのプログラム [NewPoint/versions/return_styles.c](NewPoint/versions/return_styles.c) にまとめて比べます。
 
 ```c
 // (a) 値として返す：本体は呼び出し元の変数にコピーされる。失敗はなく，解放も不要
@@ -642,7 +642,7 @@ main:       free(p); p = NULL;  ──→ 寿命が終わる
 
 ### 実行結果と境界の表
 
-本体（3→5）と，`old_n`・`new_n` を書き換えた版（`GrowArray_<名前>`。テスト `variant_<名前>`）の実行結果です。
+本体（3→5）と，`main` の先頭の `old_n`・`new_n` を書き換えた版の実行結果です。
 
 ```text
 > GrowArray   （old_n = 3，new_n = 5）
@@ -650,30 +650,30 @@ calloc: 0 0 0
 before: 1 2 3
 after: 1 2 3 4 5
 （終了コード 0）
-> GrowArray_same_3_to_3   （old_n = 3，new_n = 3）
+> GrowArray   （old_n = 3，new_n = 3 に書き換えた版）
 calloc: 0 0 0
 before: 1 2 3
 after: 1 2 3
 （終了コード 0）
-> GrowArray_shrink_3_to_1   （old_n = 3，new_n = 1）
+> GrowArray   （old_n = 3，new_n = 1 に書き換えた版）
 calloc: 0 0 0
 before: 1 2 3
 after: 1
 （終了コード 0）
-> GrowArray_grow_1_to_4   （old_n = 1，new_n = 4）
+> GrowArray   （old_n = 1，new_n = 4 に書き換えた版）
 calloc: 0
 before: 1
 after: 1 2 3 4
 （終了コード 0）
-> GrowArray_new_zero_3_to_0   （old_n = 3，new_n = 0）
+> GrowArray   （old_n = 3，new_n = 0 に書き換えた版）
 calloc: 0 0 0
 before: 1 2 3
 new_n must be 1..1000
 （終了コード 1）
-> GrowArray_old_zero_0_to_5   （old_n = 0，new_n = 5）
+> GrowArray   （old_n = 0，new_n = 5 に書き換えた版）
 old_n must be 1..1000
 （終了コード 1）
-> GrowArray_new_over_3_to_1001   （old_n = 3，new_n = 1001）
+> GrowArray   （old_n = 3，new_n = 1001 に書き換えた版）
 calloc: 0 0 0
 before: 1 2 3
 new_n must be 1..1000
@@ -690,7 +690,7 @@ new_n must be 1..1000
 | 0 | 5 | 最初の確保前にエラー終了 | `old_n must be 1..1000`，終了コード 1。何も表示・確保しない |
 | 3 | 1001 | 上限違反で，元の領域を解放して終了 | `new_n must be 1..1000`，終了コード 1。`free(p)` してから終了 |
 
-表にない組として，`old_n = 1，new_n = 1000`（上限まで拡張。テスト `variant_grow_1_to_1000`）と `old_n = 1001，new_n = 5`（old_n の上限違反で calloc の前に終了。テスト `variant_old_over_1001_to_5`）もあります。
+表にない組として，`old_n = 1，new_n = 1000`（上限まで拡張し，`after:` に 1〜1000 を表示）と `old_n = 1001，new_n = 5`（old_n の上限違反で calloc の前に `old_n must be 1..1000` を出して終了）も試せます。
 `new_n = 0` と `new_n = 1001` の経路で `free(p)` を忘れると，LeakSanitizer がリークを報告します。
 
 **`realloc` 後の `p[3]` の違い**
@@ -722,7 +722,7 @@ before: 1 2 3
 reallocation failed
 p[0]=1
 （終了コード 1）
-> GrowArrayFail_simulate_failure_0   （simulate_failure = 0 に戻した版）
+> GrowArrayFail   （simulate_failure = 0 に戻した版）
 calloc: 0 0 0
 before: 1 2 3
 after: 1 2 3 4 5
@@ -730,7 +730,7 @@ after: 1 2 3 4 5
 ```
 
 - 課題3の `point_allocate` は「最初から何も確保できない」失敗でしたが，`realloc` の失敗では**元の領域が残っています**。`p` を上書きしていないので，`p[0]` は 1 のまま読め，`free(p)` で解放できます。
-- 縮小（`new_n = 1`）の再確保が失敗する版（テスト `variant_shrink_fail_3_to_1`）でも同じく `p[0]=1` を表示して終了します。
+- `new_n = 5` を `new_n = 1` に書き換えて縮小の再確保を失敗させても，同じく `p[0]=1` を表示して終了します。
 - `GrowArrayFail` を valgrind で実行すると，`total heap usage: 2 allocs, 2 frees`（`calloc` と標準出力のバッファ），`All heap blocks were freed -- no leaks are possible` と表示されます（Linux x64）。
 - もし `p = realloc(p, ...)` と書いていたら，失敗時に `p` が `NULL` になり，元の 3 要素はリークし，`p[0]` を読むと `NULL` の参照になります。
 - `p[0]` を読むのは再確保が**失敗した経路だけ**です。成功した経路で古いポインタ（ここでは `next` に持ち替える前の値）を使うのは誤りです。
@@ -772,7 +772,7 @@ after: 1 2 3 4 5
 | `int count = 0;` | `1`，`1`，`1` | 自動記憶域。呼ぶたびに新しく作られ 0 で初期化，関数から戻ると寿命が終わる |
 | `static int count;`の後に文として`count = 0;` | `1`，`1`，`1` | 値は保持されるが，`count = 0;` は**文（代入）**なので呼ぶたびに実行され，毎回 0 に戻る |
 
-2 行目は `static` を外した版（テスト `variant_auto_count`），3 行目は次のように書き換えた版（テスト `variant_static_assign`）です。
+2 行目は `static` を外した版，3 行目は次のように書き換えた版です。
 
 ```c
 static int next_count(void)
@@ -785,11 +785,11 @@ static int next_count(void)
 ```
 
 ```text
-> StorageCount_auto_count   （int count = 0; に書き換えた版）
+> StorageCount   （int count = 0; に書き換えた版）
 1
 1
 1
-> StorageCount_static_assign   （static int count; の後に count = 0; を書いた版）
+> StorageCount   （static int count; の後に count = 0; を書いた版）
 1
 1
 1
@@ -911,9 +911,9 @@ ok=0 out=99.0
 4. **`&x` を渡す理由**: `vector_destroy(Vector **p)` は呼び出し元の**ポインタ変数 `x` 自身のアドレス**を受け取り，`free(*p)` の後 `*p = NULL;` で `x` を `NULL` に書き換えます。
    `void vector_destroy(Vector *p)` のように `x` の値を渡すと，関数の中の `p` は `x` のコピーなので，`p = NULL;` としても呼び出し元の `x` は古いアドレスのまま残ります。
 5. **解放後に `NULL` になること**: Visual Studio では `return status;` にブレークポイントを置き，**Watch 1** ウィンドウで `x`，`y`，`result` がすべて `0x0000000000000000` になっていることを確認します（`x->v` などメンバの参照はしない）。
-   `return status;` の前に `vector_destroy(&x);` をもう一度呼ぶ文と，3 つのポインタがすべて `NULL` なら `x=NULL y=NULL result=NULL` を表示する `if` 文を差し込んだ版（テスト `variant_destroy_again`）では，次のように表示されます。
+   `return status;` の前に `vector_destroy(&x);` をもう一度呼ぶ文と，3 つのポインタがすべて `NULL` なら `x=NULL y=NULL result=NULL` を表示する `if` 文を差し込んだ版では，次のように表示されます。
    ```text
-   > DynamicVector_destroy_again
+   > DynamicVector   （vector_destroy(&x); と if 文を差し込んだ版）
    result=5.0 8.0
    ok=0 out=99.0
    x=NULL y=NULL result=NULL
@@ -922,20 +922,35 @@ ok=0 out=99.0
 ### 途中で失敗した場合（`DynamicVectorFail`）
 
 [DynamicVectorFail/vector.c](DynamicVectorFail/vector.c) は `vector.c` のコピーで，`vector_create` より前に演習ページの `vector_allocate` を置き，`vector_create` の `malloc` だけを置き換えたものです。
-`fail_on_call = 2`（演習ページの値）の版が `DynamicVectorFail` で，0，1，3 は値を書き換えた版（テスト `variant_fail_on_call_0` など）です。どれも新しく起動するので，`static int calls` は 0 から数え直します。
+`vector_main.c` と `vector.h` は `../DynamicVector` のものを使うので，[コマンドでビルド](../README.md#1-コマンドでビルドする)するときは次のようにします（フォルダーを開く方式では [CMakeLists.txt](DynamicVectorFail/CMakeLists.txt) が同じ組み合わせでビルドします）。
+
+```sh
+cd week13/DynamicVectorFail
+gcc -std=c17 -Wall -Wextra -Wpedantic -I../DynamicVector vector.c ../DynamicVector/vector_main.c -o a.out
+./a.out
+```
+
+```powershell
+# Developer PowerShell for VS で
+cd week13\DynamicVectorFail
+cl /std:c17 /W4 /utf-8 /I..\DynamicVector vector.c ..\DynamicVector\vector_main.c /Fe:a.exe
+.\a.exe
+```
+
+`fail_on_call = 2`（演習ページの値）の版が `DynamicVectorFail` です。`vector.c` の `fail_on_call` を 0，1，3 に書き換えると，それぞれ次のようになります。どれも新しく起動するので，`static int calls` は 0 から数え直します。
 
 ```text
-> DynamicVectorFail_fail_on_call_0   （fail_on_call = 0）
+> DynamicVectorFail   （fail_on_call を 0 に書き換えた版）
 result=5.0 8.0
 ok=0 out=99.0
 （終了コード 0）
-> DynamicVectorFail_fail_on_call_1   （fail_on_call = 1）
+> DynamicVectorFail   （fail_on_call を 1 に書き換えた版）
 allocation failed
 （終了コード 1）
-> DynamicVectorFail   （fail_on_call = 2）
+> DynamicVectorFail   （fail_on_call = 2。演習ページの値）
 allocation failed
 （終了コード 1）
-> DynamicVectorFail_fail_on_call_3   （fail_on_call = 3）
+> DynamicVectorFail   （fail_on_call を 3 に書き換えた版）
 allocation failed
 （終了コード 1）
 ```
@@ -947,7 +962,7 @@ allocation failed
 | 2 | `x` だけ（2 回目の `y` の確保で失敗） | `cleanup` で `result`，`y` は `NULL` なので何もせず，`x` を解放。終了コード 1 |
 | 3 | `x` と `y`（3 回目，`vector_axpy` 内の `vector_create` で失敗） | `vector_axpy` が `NULL` を返し `cleanup` へ。`result` は `NULL`，`y` と `x` を解放。終了コード 1 |
 
-確認方法: AddressSanitizer／LeakSanitizer を有効にして実行すると，どの版でもリーク・二重解放は報告されません。valgrind で確保と解放の回数を数えると，次のように予測と一致します。
+確認方法: `-fsanitize=address,undefined -g` を付けてビルドし，AddressSanitizer／LeakSanitizer を有効にして実行すると，どの版でもリーク・二重解放は報告されません。valgrind で確保と解放の回数を数えると，次のように予測と一致します。
 
 | `fail_on_call` | valgrind の `total heap usage` | 内訳 |
 | --- | --- | --- |
@@ -969,7 +984,7 @@ allocation failed
 
 ### 二重ポインタの意味
 
-すべての後始末の後に `vector_destroy(&x);` をもう一度呼んでも，`x` はすでに `NULL` なので `free(NULL)` となり何も起きません（上の `destroy_again` の版は実際に 2 回目を呼んでおり，AddressSanitizer も二重解放を報告しません）。
+すべての後始末の後に `vector_destroy(&x);` をもう一度呼んでも，`x` はすでに `NULL` なので `free(NULL)` となり何も起きません（上の「解放後に `NULL` になること」で差し込んだ版は実際に 2 回目を呼んでおり，AddressSanitizer も二重解放を報告しません）。
 しかし，このAPIは**すべての二重解放を防ぐ魔法ではありません**。
 
 ```c
@@ -1058,10 +1073,10 @@ void vector_destroy(Vector **p)
 
 | 項目 | どこで確認できるか |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1の検証表（1，1000，0，-1，1001，`abc`，`3x`，`""`，`ERANGE`，引数の不足・過剰），課題2の 1・2・5，発展1の境界の表（`old_n`・`new_n` の 7 組と上限の組）。いずれもテストがある |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1の検証表（1，1000，0，-1，1001，`abc`，`3x`，`""`，`ERANGE`，引数の不足・過剰），課題2の 1・2・5，発展1の境界の表（`old_n`・`new_n` の 7 組と上限の組） |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC・Clang の `-Wall -Wextra -Wpedantic` と MSVC `/W4` で警告 0（`(double)sum / (double)n` の明示的な変換，`(size_t)count` の範囲確認後の変換，`%zu`）。複合リテラルの左辺の誤り（C2440）は課題3，`vector_destroy(x)` の型の誤り（C4047）は発展3 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1の 6 つの役割のコメントと追跡表（`size_t`，`long`，`long long`，`int *`），課題3の寿命の表，発展3の生成・解放の対応表 |
-| 確保した各領域の所有者を1つに決め，途中失敗の経路でも解放した | 課題4の所有者の図，`DynamicCopy` の `copy` 確保失敗時の `free(values)`（テスト `variant_copy_alloc_fail`），`GrowArray` の `new_n = 0`／`1001`，`GrowArrayFail` の再確保失敗，`DynamicVectorFail` の `fail_on_call` 表。どの経路も LeakSanitizer がリークを報告せず，`fail_on_call` と `GrowArrayFail` は valgrind の確保・解放の回数も一致する |
+| 確保した各領域の所有者を1つに決め，途中失敗の経路でも解放した | 課題4の所有者の図，`DynamicCopy` の `copy` 確保失敗時の `free(values)`，`GrowArray` の `new_n = 0`／`1001`，`GrowArrayFail` の再確保失敗，`DynamicVectorFail` の `fail_on_call` 表。どの経路も LeakSanitizer がリークを報告せず，`fail_on_call` と `GrowArrayFail` は valgrind の確保・解放の回数も一致する |
 | ポインタの`sizeof`と要素の`sizeof`を区別し，積を計算する前に検査した | 課題1「確保量を説明する」（`sizeof *values=4`，`sizeof values=8`），`n > SIZE_MAX / sizeof *values`，発展1の `new_n > SIZE_MAX / sizeof *p`，課題4の `malloc(n * sizeof p)` |
 | `realloc`成功後には古い参照を使わず，追加部分を初期化した | 発展1の `p = next;` と `for (i = old_n; i < new_n; ++i)`，`p[3]` の説明，確認問題4 |
 | 未初期化領域の読み取り，解放後の使用，巨大な確保実験を行っていない | `malloc` の領域は代入してから読む（課題1の (5)），`calloc` の 0 だけを表示，`free` 後は `NULL` を代入。失敗は試験用関数で模擬し，巨大な確保はしない。AddressSanitizer で解放後の使用・範囲外アクセスが報告されない |

@@ -1,19 +1,18 @@
 # 第14回 演習 解答・解説（再帰）
 
 - 演習ページ: [ex14](https://t-yokoga.github.io/softprac1/ex14.html)（原稿: [docs/ex14.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex14.md)）・講義: [lec14](https://t-yokoga.github.io/softprac1/lec14.html)（例題: [docs/sample/14/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/14/)）
-- TA 用の資料: [実務の手引き 第14回](../ta-guide/README.md#第14回推測せずに計測する再帰)・デバッグの題材 [BugFactorial](../debugging/BugFactorial/README.md)，[BugFactorialOverflow](../debugging/BugFactorialOverflow/README.md)
 
 ## プロジェクト一覧
 
-| 課題 | プロジェクト | ソース | テスト |
-| --- | --- | --- | --- |
-| 課題1 階乗の境界 | `Factorial` | [recursion.c](Factorial/recursion.c) | 15 |
-| 課題2 再帰の復帰順 | `Trace` | [trace.c](Trace/trace.c) | 10 |
-| 課題3 互除法を反復へ書き換える | `GcdLoop` | [gcd_loop.c](GcdLoop/gcd_loop.c) | 12 |
-| 課題4 再帰の入口を安全にする | `CheckedFactorial` | [checked_factorial.c](CheckedFactorial/checked_factorial.c) | 7 |
-| 発展1 再帰の呼び出し数 | `Fibonacci` | [fibonacci.c](Fibonacci/fibonacci.c) | 11 |
-| 発展2 二分木の3つの走査 | `TreeTraversal` | [tree.c](TreeTraversal/tree.c) | 8 |
-| 発展3 帰りがけ順と解放の順序 | （プロジェクトなし） | 参考コード [TreeTraversal/versions/destroy_tree.c](TreeTraversal/versions/destroy_tree.c) | — |
+| 課題 | プロジェクト | ソース |
+| --- | --- | --- |
+| 課題1 階乗の境界 | `Factorial` | [recursion.c](Factorial/recursion.c) |
+| 課題2 再帰の復帰順 | `Trace` | [trace.c](Trace/trace.c) |
+| 課題3 互除法を反復へ書き換える | `GcdLoop` | [gcd_loop.c](GcdLoop/gcd_loop.c) |
+| 課題4 再帰の入口を安全にする | `CheckedFactorial` | [checked_factorial.c](CheckedFactorial/checked_factorial.c) |
+| 発展1 再帰の呼び出し数 | `Fibonacci` | [fibonacci.c](Fibonacci/fibonacci.c) |
+| 発展2 二分木の3つの走査 | `TreeTraversal` | [tree.c](TreeTraversal/tree.c) |
+| 発展3 帰りがけ順と解放の順序 | （プロジェクトなし） | 参考コード [TreeTraversal/versions/destroy_tree.c](TreeTraversal/versions/destroy_tree.c) |
 
 ファイル名を指定しているのは `recursion.c`・`trace.c`・`fibonacci.c`・`tree.c` だけなので，課題3・4 のソース名（`gcd_loop.c`・`checked_factorial.c`）は内容から付けた。
 発展3 は「完成した動的な木の構築プログラムは要求しません」とあるので，プロジェクトは作らず，参考コードを `TreeTraversal/versions/` に置いた。
@@ -26,8 +25,8 @@
 Visual Studio では書き換えて保存し，Ctrl+Shift+B でビルドしてから Ctrl+F5 で実行する。ビルドに失敗したときに古い実行ファイルの結果を読まないように，**Output** ウィンドウで `========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========` を確かめる。
 
 フォルダのソースは演習ページ・講義の値（`Factorial` は `n = 5`，`Trace` は `n = 3`，`GcdLoop` は `a = 48`・`b = 18`，`CheckedFactorial` は `n = 5`，`Fibonacci` は `input = 4`，`TreeTraversal` は `preorder(&nodes[0])` と講義の接続）のままにしている。
-以下の実行結果に添えた `n_21` などは，その書き換えをした版のテスト名（`variant_n_21` など）である。呼び出し回数・深さを数える確認用のプログラムと発展3 の参考コードは `versions/` に置いている。
-書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
+呼び出し回数・深さを数える確認用のプログラムと発展3 の参考コードは `versions/` に置いている。
+書き換えて試す方法は [ルートの README](../README.md#ソースを書き換えて試す) を参照。
 
 ### 何が小さくなるから止まるのか（全課題のまとめ）
 
@@ -78,7 +77,7 @@ unsigned long long factorial_loop(unsigned int n)
 | 1 | 0 | 1 | 1 × 1 = **1** |
 | 0 | 呼ばない | なし（子を呼ばない） | **1**（基底条件） |
 
-`main` の `n` を 3 に変えて実行した結果（`n_3`）:
+`main` の `n` を 3 に変えて実行した結果:
 
 ```text
 3! = 6
@@ -91,12 +90,12 @@ recursive=6 loop=6 equal=1
 `main` の `unsigned int n = 5;` を 0，1，20，21 に書き換えて実行した結果:
 
 ```text
-n = 0（n_0）
+n = 0
 0! = 1
 gcd=6
 recursive=1 loop=1 equal=1
 
-n = 1（n_1）
+n = 1
 1! = 1
 gcd=6
 recursive=1 loop=1 equal=1
@@ -106,17 +105,17 @@ n = 5（配布どおり。本体）
 gcd=6
 recursive=120 loop=120 equal=1
 
-n = 10（n_10）
+n = 10
 10! = 3628800
 gcd=6
 recursive=3628800 loop=3628800 equal=1
 
-n = 20（n_20）
+n = 20
 20! = 2432902008176640000
 gcd=6
 recursive=2432902008176640000 loop=2432902008176640000 equal=1
 
-n = 21（n_21）
+n = 21
 n must be 0..20          ← 標準エラー出力。標準出力には何も出ず，終了コード 1
 ```
 
@@ -130,7 +129,7 @@ n must be 0..20          ← 標準エラー出力。標準出力には何も出
 
 - 呼び出し回数・最大深さは 1 本道の再帰なので，どちらも `n + 1`（`factorial(n)` 〜 `factorial(0)`）。分岐しないので回数と深さが一致する（発展1 の `fib` とは違う）。
 - 表は「1 回の `factorial(n)` の計算」についての値である。解答の `main` は比較の断片でもう一度 `factorial(n)` を呼ぶので，**プログラム全体では `factorial` が 2(n+1) 回**呼ばれる（n=5 で 12 回）。最大深さは各回とも n+1 で変わらない。
-- 回数と深さは解答コードでは表示しない。確認用の [Factorial/versions/factorial_count.c](Factorial/versions/factorial_count.c)（`factorial(n, depth, &stats)` の形で，深さの引数と，回数・最大深さを記録する `Stats` へのポインタを加えたもの。発展1 の `fibonacci.c` と同じ `Stats` 構造体で，測定ごとに `Stats stats = {0, 0};` から始める。テスト `variant_count`）で数えると次のとおり:
+- 回数と深さは解答コードでは表示しない。確認用の [Factorial/versions/factorial_count.c](Factorial/versions/factorial_count.c)（`factorial(n, depth, &stats)` の形で，深さの引数と，回数・最大深さを記録する `Stats` へのポインタを加えたもの。発展1 の `fibonacci.c` と同じ `Stats` 構造体で，測定ごとに `Stats stats = {0, 0};` から始める）で数えると次のとおり:
 
 ```text
 n=0 result=1 calls=1 depth=1
@@ -153,13 +152,13 @@ n=20 result=2432902008176640000 calls=21 depth=21
 
 ### 小問
 
-1. **基底値を0にしたら，他の`n`の計算はどうなるか。** → すべての `n` で 0 になる。どの `n` の計算も最後は `factorial(0)` の値に掛け算を重ねるだけなので，出発点が 0 だと積は常に 0。0! = 1 は「0 のときだけの特別扱い」ではなく，積を組み立てる出発点（乗法の単位元）である。`if (n == 0) { return 0; }` に書き換えた版（`base_0`，n=5）の結果:
+1. **基底値を0にしたら，他の`n`の計算はどうなるか。** → すべての `n` で 0 になる。どの `n` の計算も最後は `factorial(0)` の値に掛け算を重ねるだけなので，出発点が 0 だと積は常に 0。0! = 1 は「0 のときだけの特別扱い」ではなく，積を組み立てる出発点（乗法の単位元）である。`if (n == 0) { return 0; }` に書き換えた版（n=5）の結果:
    ```text
    5! = 0
    gcd=6
    recursive=0 loop=120 equal=0
    ```
-   反復版（`result = 1` から始まる）とは一致しなくなる。同じ書き換えに加えて `n` を 0〜4 と 20 に変えた版（`base_0_n0`〜`base_0_n4`，`base_0_n20`）でも，
+   反復版（`result = 1` から始まる）とは一致しなくなる。同じ書き換えに加えて `n` を 0〜4 と 20 に変えた版でも，
    `0! = 0`，`1! = 0`，`2! = 0`，`3! = 0`，`4! = 0`，`20! = 0` とすべて 0 になった（反復版はそれぞれ `loop=1`，`1`，`2`，`6`，`24`，`2432902008176640000`）。
    理由: どの `n` でも再帰は `factorial(0)` まで進み，最後に `factorial(0)` の 0 を掛けて戻るので，復帰の途中で何を掛けても 0 のままになる。
 2. **`n`を減らさず`factorial(n)`を呼ぶと，なぜ止まらないか。** → 呼び出し先の `n` が自分と同じなので，`n == 0` 以外から始めると基底条件に一歩も近づかない。同じ状態の呼び出しが無限に続き，実際にはスタックの限界を超えて異常終了する（実行はしない）。基底条件を書くだけでなく「呼ぶたびに小さくなる量」が必要。
@@ -200,19 +199,19 @@ sum=3
 `main` の `int n = 3;` を書き換えて実行した結果:
 
 ```text
-n = 0（n_0）
+n = 0
 enter 0
 leave 0: 0
 sum=0
 
-n = 1（n_1）
+n = 1
 enter 1
 enter 0
 leave 0: 0
 leave 1: 1
 sum=1
 
-n = 2（n_2）
+n = 2
 （上の「表示順を完全に書き出す」と同じ 7 行）
 
 n = 3（配布どおり。本体）
@@ -226,7 +225,7 @@ leave 2: 3
 leave 3: 6
 sum=6
 
-n = 100（n_100）
+n = 100
 enter 100
 enter 99
 （中略: enter 98 〜 enter 1）
@@ -239,10 +238,10 @@ leave 99: 4950
 leave 100: 5050
 sum=5050
 
-n = -1（n_minus1）
+n = -1
 n must be 0..100          ← 標準エラー出力。終了コード 1。enter は 1 行も出ない
 
-n = 101（n_101）
+n = 101
 n must be 0..100          ← 同上
 ```
 
@@ -285,7 +284,7 @@ main
 
 ### 出力位置を変える
 
-**(1) `enter` の表示だけを `n==0` の判定の後へ移した版**（別コピーで実行。`main` は講義と同じ `n = 3`。`enter_after_check`）
+**(1) `enter` の表示だけを `n==0` の判定の後へ移した版**（別コピーで実行。`main` は講義と同じ `n = 3`）
 
 ```c
 int sum_to(int n)
@@ -312,9 +311,9 @@ leave 3: 6
 sum=6
 ```
 
-予測どおり `enter 0` だけが消える。`sum_to(0)` は基底条件で `return` するので，判定の後の `enter` に到達しない。`n=0` で実行すると（`enter_after_check_n0`）`leave 0: 0` と `sum=0` の 2 行だけになり，「関数に入った」ことが表示から分からなくなる。結果の値（6）は変わらない。
+予測どおり `enter 0` だけが消える。`sum_to(0)` は基底条件で `return` するので，判定の後の `enter` に到達しない。`n=0` で実行すると `leave 0: 0` と `sum=0` の 2 行だけになり，「関数に入った」ことが表示から分からなくなる。結果の値（6）は変わらない。
 
-**(2) `leave` の表示を再帰呼び出しより前へ移す案**（`result` はまだ計算されていないので `n` だけを表示する。`leave_before_call`）
+**(2) `leave` の表示を再帰呼び出しより前へ移す案**（`result` はまだ計算されていないので `n` だけを表示する）
 
 ```c
 int sum_to(int n)
@@ -415,19 +414,19 @@ unsigned int gcd_loop(unsigned int a, unsigned int b)
 ```text
 a = 48, b = 18（演習ページの最初の組。本体）
 gcd(48, 18): loop=6 recursive=6 equal=1
-a = 18, b = 48（a18_b48）
+a = 18, b = 48
 gcd(18, 48): loop=6 recursive=6 equal=1
-a = 7, b = 0（a7_b0）
+a = 7, b = 0
 gcd(7, 0): loop=7 recursive=7 equal=1
-a = 0, b = 7（a0_b7）
+a = 0, b = 7
 gcd(0, 7): loop=7 recursive=7 equal=1
-a = 7, b = 7（a7_b7）
+a = 7, b = 7
 gcd(7, 7): loop=7 recursive=7 equal=1
-a = 13, b = 8（a13_b8）
+a = 13, b = 8
 gcd(13, 8): loop=1 recursive=1 equal=1
-a = 100, b = 25（a100_b25）
+a = 100, b = 25
 gcd(100, 25): loop=25 recursive=25 equal=1
-a = 0, b = 0（a0_b0）
+a = 0, b = 0
 a and b must not both be zero          ← 標準エラー出力。終了コード 1
 ```
 
@@ -462,7 +461,7 @@ a and b must not both be zero          ← 標準エラー出力。終了コー�
 | 3 回目 | 12 | 6 | 0 | (6, 0) |
 | 終了 | 6 | 0 | （計算しない: `b != 0` が偽） | `a = 6` を返す |
 
-`gcd_loop` の `remainder` を求めた直後に `printf("loop: a=%u b=%u remainder=%u\n", a, b, remainder);` を 1 行挿入した版（`trace_48_18`）で各回の値を表示した:
+`gcd_loop` の `remainder` を求めた直後に `printf("loop: a=%u b=%u remainder=%u\n", a, b, remainder);` を 1 行挿入した版で各回の値を表示した:
 
 ```text
 loop: a=48 b=18 remainder=12
@@ -475,7 +474,7 @@ gcd(48, 18): loop=6 recursive=6 equal=1
 
 再帰版の呼び出し `gcd(48,18)` → `gcd(18,12)` → `gcd(12,6)` → `gcd(6,0)` の引数の列と，ループの各回の `(a, b)` が一致する。`gcd` は末尾再帰（戻った後に処理がない）なので，引数を更新して先頭へ戻るだけの `while` に素直に書き換えられる。
 
-余りを保存する前に `a` を上書きした誤りの版（`overwrite_first`。`b = a % b;` の `a` は元の `b` なので，常に `b % b = 0`）:
+余りを保存する前に `a` を上書きした誤りの版（`b = a % b;` の `a` は元の `b` なので，常に `b % b = 0`）:
 
 ```c
 /* 誤った反復版: 余りを保存する前に a を上書きする */
@@ -492,11 +491,11 @@ unsigned int gcd_loop(unsigned int a, unsigned int b)
 同じ書き換えで `main` の `a`・`b` を変えた結果（再帰版との比較で誤りが分かる）:
 
 ```text
-a = 48, b = 18（overwrite_first）
+a = 48, b = 18
 gcd(48, 18): loop=18 recursive=6 equal=0
-a = 13, b = 8（overwrite_first_a13_b8）
+a = 13, b = 8
 gcd(13, 8): loop=8 recursive=1 equal=0
-a = 7, b = 0（overwrite_first_a7_b0）
+a = 7, b = 0
 gcd(7, 0): loop=7 recursive=7 equal=1
 ```
 
@@ -548,21 +547,21 @@ int factorial_checked(int n, unsigned long long *out)
 `main` の `int n = 5;` を書き換えて実行した結果:
 
 ```text
-n = 0（n_0）
+n = 0
 ok=1 result=1
-n = 1（n_1）
+n = 1
 ok=1 result=1
 n = 5（演習ページの最初の組。本体）
 ok=1 result=120
-n = 20（n_20）
+n = 20
 ok=1 result=2432902008176640000
-n = -1（n_minus1）
+n = -1
 ok=0 result=99
-n = 21（n_21）
+n = 21
 ok=0 result=99
 ```
 
-`factorial_checked(n, &result)` を `factorial_checked(n, NULL)` に書き換えた版（`null_out`，n = 5）:
+`factorial_checked(n, &result)` を `factorial_checked(n, NULL)` に書き換えた版（n = 5）:
 
 ```text
 ok=0 result=99
@@ -577,7 +576,7 @@ ok=0 result=99
 | −1 | 0 | 99（変更されない） |
 | 21 | 0 | 99（変更されない） |
 
-- `out` に `NULL` を渡すと，`n` が正しくても 0 を返し，`result` は 99 のまま（`null_out`）。
+- `out` に `NULL` を渡すと，`n` が正しくても 0 を返し，`result` は 99 のまま。
 - 失敗時の 99 は計算結果ではなく，呼び出し前に入れた目印がそのまま残っているだけ。`ok` を確かめてから `result` を使うことが契約の一部。
 - この `main` は失敗を観察する断片なので，`ok=0` でも終了コードは 0（断片どおり）。実際のプログラムでは `ok` が 0 なら `result` を使わずにエラー処理をする。
 - `NULL` 以外の無効なアドレス（解放済みの領域など）は検査できない。`NULL` 以外の `out` は有効な `unsigned long long` を指すことを呼び出し側が保証する。
@@ -637,25 +636,25 @@ ok=0 result=99
 `main` の `int input = 4;` を書き換えて実行した結果:
 
 ```text
-input = 0（n_0）
+input = 0
 fib=0 calls=1 depth=1 loop=0
-input = 1（n_1）
+input = 1
 fib=1 calls=1 depth=1 loop=1
-input = 2（n_2）
+input = 2
 fib=1 calls=3 depth=2 loop=1
-input = 3（n_3）
+input = 3
 fib=2 calls=5 depth=3 loop=2
 input = 4（配布どおり。本体）
 fib=3 calls=9 depth=4 loop=3
-input = 5（n_5）
+input = 5
 fib=5 calls=15 depth=5 loop=5
-input = 10（n_10）
+input = 10
 fib=55 calls=177 depth=10 loop=55
-input = 20（n_20）
+input = 20
 fib=6765 calls=21891 depth=20 loop=6765
-input = -1（n_minus1）
+input = -1
 n must be 0..20          ← 標準エラー出力。終了コード 1
-input = 21（n_21）
+input = 21
 n must be 0..20          ← 同上
 ```
 
@@ -679,7 +678,7 @@ n must be 0..20          ← 同上
 ### 計測結果の読み方
 
 1. **最初の呼び出しも数えるので，`n=0`で`calls`は0にならない。** → `fib` の先頭で `++stats->calls` してから基底条件を判定するので，`n=0` でも `calls=1`，`depth=1`（表の 1 行目）。`main` は数えない。
-2. **`stats`を初期化せずに再び`fib`を呼べば，`calls`は加算され続ける。** → `stats` は `main` の 1 つの変数をポインタで共有しているので，前の測定の値に足される。解答の `main` で `unsigned long long result = fib(n, 1, &stats);` の直後に `result = fib(n, 1, &stats);` を（初期化し直さずに）加えた版（`no_reset`）の結果:
+2. **`stats`を初期化せずに再び`fib`を呼べば，`calls`は加算され続ける。** → `stats` は `main` の 1 つの変数をポインタで共有しているので，前の測定の値に足される。解答の `main` で `unsigned long long result = fib(n, 1, &stats);` の直後に `result = fib(n, 1, &stats);` を（初期化し直さずに）加えた版の結果:
    ```text
    fib=3 calls=18 depth=4 loop=3
    ```
@@ -757,16 +756,16 @@ height: all=4 nodes[3]=1 null=0
 
 ### 小さい木で基底条件を確認する
 
-演習の指示どおり，`main` の `preorder(&nodes[0]);` の引数だけを `NULL`，`&nodes[3]`，`&nodes[2]`，`&nodes[6]` に変えて実行した（`start_null`，`start_nodes3`，`start_nodes2`，`start_nodes6`）。変わるのは `pre:` の行だけで，他の行は本体と同じ。
+演習の指示どおり，`main` の `preorder(&nodes[0]);` の引数だけを `NULL`，`&nodes[3]`，`&nodes[2]`，`&nodes[6]` に変えて実行した。変わるのは `pre:` の行だけで，他の行は本体と同じ。
 
 ```text
-preorder(NULL);（start_null）
+preorder(NULL);
 pre:
-preorder(&nodes[3]);（start_nodes3）
+preorder(&nodes[3]);
 pre: 4
-preorder(&nodes[2]);（start_nodes2）
+preorder(&nodes[2]);
 pre: 3 4 5
-preorder(&nodes[6]);（start_nodes6）
+preorder(&nodes[6]);
 pre: 7 8 9 10
 ```
 
@@ -817,7 +816,7 @@ size_t tree_height(const Node *p)
 
 ### 木の形を変える（右へ一直線の木）
 
-演習の手順どおり，ノードをつなぐ代入文（5 行）をすべて外し，次のループだけを置いた版（`line`）で確かめる。最後のノード（`nodes[9]`）の `right` は `NULL` のままで，循環は作らない。演習ページの「確認後は元の接続に戻します」のとおり，`tree.c` は元の接続のまま。
+演習の手順どおり，ノードをつなぐ代入文（5 行）をすべて外し，次のループだけを置いた版で確かめる。最後のノード（`nodes[9]`）の `right` は `NULL` のままで，循環は作らない。演習ページの「確認後は元の接続に戻します」のとおり，`tree.c` は元の接続のまま。
 
 ```c
     /* 右へ一直線の 10 ノードの木（nodes[9].right は NULL のまま） */
@@ -833,7 +832,7 @@ size_t tree_height(const Node *p)
 - 通りがけ順 `1 2 3 4 5 6 7 8 9 10`（左がすべて `NULL` なので，自分 → 右になり行きがけ順と同じ）。
 - 帰りがけ順 `10 9 8 7 6 5 4 3 2 1`（右の部分木をすべて処理してから自分を表示するので逆順）。
 
-実行結果（`line`）:
+実行結果:
 
 ```text
 pre: 1 2 3 4 5 6 7 8 9 10
@@ -845,7 +844,7 @@ height: all=10 nodes[3]=7 null=0
 
 予測と一致した。一直線の木では `nodes[3]`（値 4）はもう葉ではなく，4〜10 の 7 ノードからなる部分木の根なので，ノード数・高さとも 7 になる。
 
-元の木と一直線の木の比較（確認用の [TreeTraversal/versions/traversal_depth.c](TreeTraversal/versions/traversal_depth.c) で，行きがけ順の 1 回の走査の呼び出し回数と深さを数えた。テスト `variant_depth`）:
+元の木と一直線の木の比較（確認用の [TreeTraversal/versions/traversal_depth.c](TreeTraversal/versions/traversal_depth.c) で，行きがけ順の 1 回の走査の呼び出し回数と深さを数えた）:
 
 | 比較 | 元の木 | 一直線の木 |
 | --- | --- | --- |
@@ -880,8 +879,8 @@ line calls=21 null=11 maxdepth(incl NULL)=11 real=10
 
 ### 参考: 動的な木を作って解放する（プロジェクトには含めない）
 
-演習は構築プログラムを要求していないが，TA の説明用に，講義の木と同じ形を個別の `malloc` で作り，`destroy_tree` で解放する例を [TreeTraversal/versions/destroy_tree.c](TreeTraversal/versions/destroy_tree.c) に置いた（テスト `variant_destroy`）。
-`destroy_tree(root);` を消すと，LeakSanitizer が `240 byte(s) leaked in 10 allocation(s)` とリークを報告する。解放の順序を見るために `destroy_tree` に表示を 1 行加えている。
+演習は構築プログラムを要求していないが，TA の説明用に，講義の木と同じ形を個別の `malloc` で作り，`destroy_tree` で解放する例を [TreeTraversal/versions/destroy_tree.c](TreeTraversal/versions/destroy_tree.c) に置いた。
+Linux で `-fsanitize=address,undefined -g` を付けて[コマンドでビルド](../README.md#1-コマンドでビルドする)し，`destroy_tree(root);` を消して実行すると，LeakSanitizer が `240 byte(s) leaked in 10 allocation(s)` とリークを報告する。解放の順序を見るために `destroy_tree` に表示を 1 行加えている。
 
 ```c
 /* 前提：共有・循環がなく，各ノードが個別にmallocされている */
@@ -937,7 +936,7 @@ free: 4 5 3 6 2 9 8 10 7 1
 
 | 項目 | 確認できる課題・内容 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の 0・1・20・21，課題2 の 0・100・−1・101，課題3 の (7,0)・(0,7)・(0,0)，課題4 の 0・20・−1・21・`NULL`，発展1 の 0・1・20・−1・21，発展2 の `NULL`・葉・一直線の木。いずれも `main` の初期値や `preorder` の呼び出しの引数を書き換えた版のテストがある |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | 課題1 の 0・1・20・21，課題2 の 0・100・−1・101，課題3 の (7,0)・(0,7)・(0,0)，課題4 の 0・20・−1・21・`NULL`，発展1 の 0・1・20・−1・21，発展2 の `NULL`・葉・一直線の木。いずれも `main` の初期値や `preorder` の呼び出しの引数を書き換えて実行した結果を載せている |
 | 警告を確認し，原因を説明・修正した | 全プロジェクトが GCC・Clang の `-Wall -Wextra -Wpedantic` と MSVC `/W4` で警告 0。レビュー問題 1・4 でコンパイラが出す警告（`-Winfinite-recursion`，`-Wsequence-point`，MSVC の C4717）と，課題2 の宣言前の `result`（MSVC の C2065）・未初期化の `result`（MSVC の C4700）を説明 |
 | 自分の言葉で，処理の流れと使った型を説明できる | 課題1（`unsigned long long` と `%llu`，`unsigned int` と `%u`），課題2（`int` で 5050），課題4（入口の `int` と内部の `unsigned int`），発展2（`size_t` と `%zu`） |
 | 基底条件と，呼び出すたびに小さくなる量を説明できる | 冒頭の[まとめの表](#何が小さくなるから止まるのか全課題のまとめ)，課題1 小問 2，課題4 レビュー問題 1〜4 |
