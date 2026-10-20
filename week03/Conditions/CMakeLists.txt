@@ -40,6 +40,6 @@ foreach(pair IN ITEMS "minus1|-1" "75|75" "101|101")
   # わざと書く誤りの式なので，それに対する警告だけを止める
   target_compile_options(Conditions_chained_${name} PRIVATE
     $<$<C_COMPILER_ID:GNU>:-Wno-parentheses -Wno-bool-compare>
-    $<$<C_COMPILER_ID:Clang,AppleClang>:-Wno-tautological-constant-out-of-range-compare>
+    $<$<C_COMPILER_ID:Clang,AppleClang>:-Wno-tautological-constant-out-of-range-compare -Wno-parentheses>
     $<$<C_COMPILER_ID:MSVC>:/wd4804>)
 endforeach()
