@@ -1,5 +1,6 @@
 # 第4回 課題1 Fee: 本体（age = 17）と，演習ページの表の age（-1, 0, 5, 6, 18）に変えた版，
-# 条件の順序を入れ替えた版・別々の if にした版（表の 6 つの age），誤りの例，確認問題1・2 の確認用のコード（versions/）。
+# 条件の順序を入れ替えた版・別々の if にした版・別解の両端で書く版（versions/fee_ranges.c）（表の 6 つの age），誤りの例，
+# 確認問題1・2 の確認用のコード（versions/）。
 # ケース名の m1 は age = -1。各版は先頭コメントの 2 行目（fee_head）を版の説明にする
 softprac_add_program(Fee fee.c)
 
@@ -106,6 +107,16 @@ fee_variant(lt_5_age_5 5
   [=[    } else if (age < 5) {       // 誤り: 5 を含まない（0〜4 歳だけ）
         printf("0\n");
     } else if (age <= 17) {     // 5〜17 歳（5 歳もここに入ってしまう）]=])
+
+# 別解: 各区分を下限と上限の両方で書き，別々の if にした版（条件が重ならないので 1 つだけが真になる）を表の 6 つの age で
+set(ranges_head "// どの条件も前の条件の結果に頼らないので，別々の if でも，並べる順番を変えても，真になるのは 1 つだけ．")
+softprac_add_variant(Fee versions/fee_ranges.c ranges_age_17)
+foreach(age m1 0 5 6 18)
+  string(REPLACE "m" "-" value "${age}")
+  softprac_add_variant(Fee versions/fee_ranges.c ranges_age_${age}
+    "age = 17" "age = ${value}"
+    "${ranges_head}" "// age を ${value} に書き換えた版．どの条件も前の条件の結果に頼らないので，真になるのは 1 つだけ．")
+endforeach()
 
 # 確認問題1: if (3) は真の経路へ進む（0 以外はすべて真）
 softprac_add_variant(Fee versions/if_three.c if_three)

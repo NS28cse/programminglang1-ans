@@ -1,4 +1,5 @@
-# 第4回 課題3 Table: 本体（3 行 3 列）と，3 行 4 列の版，改行の位置を変えた版，誤りの例，回数を数える版，確認問題6 の break の版。
+# 第4回 課題3 Table: 本体（3 行 3 列）と，3 行 4 列の版，改行の位置を変えた版，誤りの例，回数を数える版，確認問題6 の break の版，
+# 別解の 1 列目を分ける版（versions/table_first_col.c）。
 # 各版は先頭コメントの 2 行目（table_head）を版の説明にする
 softprac_add_program(Table table.c)
 
@@ -114,3 +115,10 @@ softprac_add_variant(Table table.c break_first_cols_4
   "            printf(\"%2d\", row * col);           // この版では break の後なので実行されない\n            if (col < 4) {                      // この版では break の後なので実行されない\n"
   "    return 0;"
   "    printf(\"outer body=%d inner body=%d\\n\", outer_body, inner_body);\n    return 0;")
+
+# 別解: 1 列目を内側のループの前に表示し，2 列目から区切りを前に付ける版（3 行 3 列と，内側の上限だけを 4 にした 3 行 4 列）
+softprac_add_variant(Table versions/table_first_col.c first_col)
+softprac_add_variant(Table versions/table_first_col.c first_col_cols_4
+  "col <= 3" "col <= 4"
+  "// 「最後の列か」を調べる if がなくなり，列の数は内側の for の上限 1 か所だけで決まる．"
+  "// 内側の for の上限 col <= 3 だけを 4 に変えた版（3 行 4 列の掛け算表を表示する）．")

@@ -1,5 +1,6 @@
 # 第4回 課題2 EvenSum: 本体（for 版，n = 10）と比較用の while 版・2 ずつ増やす版（versions/）を，演習ページの n（0, 1, 2, 10, 100）と
-# 「値を追跡する」の n = 4 で。誤りの例，回数を数える版，確認問題3 の for（versions/three_times.c）も。各版は先頭コメントの 2 行目を版の説明にする
+# 「値を追跡する」の n = 4 で。別解の式で求める版（versions/even_sum_formula.c），誤りの例，回数を数える版，確認問題3 の for（versions/three_times.c）も。
+# 各版は先頭コメントの 2 行目を版の説明にする
 softprac_add_program(EvenSum even_sum.c)
 
 set(for_head "// 1 から n までの偶数の合計を for 文で求める．n は 0〜100 の固定値．")
@@ -35,6 +36,15 @@ foreach(n 0 1 2 100)
   softprac_add_variant(EvenSum versions/even_sum_step2.c step2_n_${n}
     "n = 10" "n = ${n}"
     "${step2_head}" "// n を ${n} に書き換えた版．i は偶数だけを通るので，偶奇判定の if は不要．")
+endforeach()
+
+# 別解: ループを使わず m * (m + 1)（m = n / 2）で求める版を，演習ページの n と「値を追跡する」の n = 4 で
+set(formula_head "// 1 から n までの偶数は 2, 4, …, 2m（m = n / 2 個）なので，合計は 2 × (1 + 2 + … + m) = m × (m + 1)．")
+softprac_add_variant(EvenSum versions/even_sum_formula.c formula_n_10)
+foreach(n 0 1 2 4 100)
+  softprac_add_variant(EvenSum versions/even_sum_formula.c formula_n_${n}
+    "n = 10" "n = ${n}"
+    "${formula_head}" "// n を ${n} に書き換えた版．偶数は 2, 4, …, 2m（m = n / 2 個）なので，合計は m × (m + 1)．")
 endforeach()
 
 # 誤りの例: 本体の先頭で毎回 sum = 0 に戻す版（最後の反復で加えた分しか残らない）
