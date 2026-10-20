@@ -51,4 +51,4 @@ softprac_add_variant(CompareJoin compare_join.c strcat
 softprac_add_variant(CompareJoin compare_join.c strcat_capacity_8
                      "${strcat_title_old}" "${strcat_title_new}" "${strcat_include_old}" "${strcat_include_new}"
                      "${strcat_loop_old}" "${strcat_loop_new}" "char text[10]" "char text[8]"
-                     [[strcat で行う]] [[strcat で行う版で，text の容量を 8 に変えた版]])
+                     [[strcat で行う]] [[strcat で行い，text の容量を 8 に変えた版]])
