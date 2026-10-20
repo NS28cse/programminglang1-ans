@@ -12,3 +12,6 @@ softprac_add_variant(DynamicCopy dynamic.c copy_alloc_fail
     copy = malloc(n * sizeof *copy);]=]
   [=[    // 試験用：copy の確保失敗を模擬する（実際には確保しない）
     copy = NULL;]=])
+
+# 別解：逆順に読みながらコピーする版（versions/）。本体と同じ n=1，2，5，1000 で
+softprac_add_variant(DynamicCopy versions/reverse_copy.c reverse_copy)

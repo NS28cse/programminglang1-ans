@@ -17,3 +17,7 @@ softprac_add_variant(DynamicVector vector_main.c destroy_again
         printf("some pointer is not NULL\n");
     }
     return status;]=])
+
+# 別解：goto と cleanup を使わず，失敗した場所ごとに作成済みのものを解放して return する版（versions/）。
+# 正常時の表示は本体と同じ。途中で失敗した経路は DynamicVectorFail の試験用 vector.c と組み合わせてテストする
+softprac_add_variant(DynamicVector versions/early_return.c early_return)

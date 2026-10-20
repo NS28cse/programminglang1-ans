@@ -11,7 +11,7 @@
 | 課題3 互除法を反復へ書き換える | `GcdLoop` | [gcd_loop.c](GcdLoop/gcd_loop.c) |
 | 課題4 再帰の入口を安全にする | `CheckedFactorial` | [checked_factorial.c](CheckedFactorial/checked_factorial.c) |
 | 発展1 再帰の呼び出し数 | `Fibonacci` | [fibonacci.c](Fibonacci/fibonacci.c) |
-| 発展2 二分木の3つの走査 | `TreeTraversal` | [tree.c](TreeTraversal/tree.c) |
+| 発展2 二分木の3つの走査 | `TreeTraversal` | [tree.c](TreeTraversal/tree.c)<br>別解: [versions/walk_count.c](TreeTraversal/versions/walk_count.c) |
 | 発展3 帰りがけ順と解放の順序 | （プロジェクトなし） | 参考コード [TreeTraversal/versions/destroy_tree.c](TreeTraversal/versions/destroy_tree.c) |
 
 ファイル名を指定しているのは `recursion.c`・`trace.c`・`fibonacci.c`・`tree.c` だけなので，課題3・4 のソース名（`gcd_loop.c`・`checked_factorial.c`）は内容から付けた。
@@ -25,7 +25,7 @@
 書き換えたら保存してビルドし，ビルドに失敗したときは古い実行ファイルを動かさない（手順は[ルートの README](../README.md#ソースを書き換えて試す)）。
 
 フォルダのソースは演習ページ・講義の値（`Factorial` は `n = 5`，`Trace` は `n = 3`，`GcdLoop` は `a = 48`・`b = 18`，`CheckedFactorial` は `n = 5`，`Fibonacci` は `input = 4`，`TreeTraversal` は `preorder(&nodes[0])` と講義の接続）のままにしている。
-呼び出し回数・深さを数える確認用のプログラムと発展3 の参考コードは `versions/` に置いている。
+呼び出し回数・深さを数える確認用のプログラム，発展2 の別解，発展3 の参考コードは `versions/` に置いている。
 書き換えて試す方法は [ルートの README](../README.md#ソースを書き換えて試す) を参照。
 
 ### 何が小さくなるから止まるのか（全課題のまとめ）
@@ -860,6 +860,68 @@ line calls=21 null=11 maxdepth(incl NULL)=11 real=10
 ```
 
 仕事量（表示回数・呼び出し回数）はノード数 N だけで決まり形によらないが，最大深さは高さ h で決まり，片側に偏った木では h = N になる。ノード数が同じでも深い再帰になり得る。
+
+### 別解
+
+**たどりながら記録を更新して数える**: [TreeTraversal/versions/walk_count.c](TreeTraversal/versions/walk_count.c)
+
+**考え方**: 部分木の答え（左右の個数，左右の高さ）を戻り値で受け取って組み合わせる代わりに，`preorder` と同じ順に木をたどりながら，ポインタで渡した 1 つの記録を更新する。
+ノード数は `preorder` の `printf` を `++*count` に置き換えた形，高さは発展1 の `fib` と同じく深さ `depth` を引数で渡し，実ノードに来るたびに最大値を更新する形（高さ = 最も深い実ノードの深さ）。
+公開する関数の形（`size_t node_count(const Node *p)`，`size_t tree_height(const Node *p)`）は本体と同じで，実際にたどるのは内部の `static` 関数である。
+
+```c
+static void count_walk(const Node *p, size_t *count)
+{
+    if (p == NULL) { return; }
+    ++*count;
+    count_walk(p->left, count);
+    count_walk(p->right, count);
+}
+
+size_t node_count(const Node *p)
+{
+    size_t count = 0;                  /* 呼ぶたびに 0 から数え直す */
+    count_walk(p, &count);
+    return count;
+}
+
+/* depth は p の深さ（根が 1）。実ノードに来るたびに，それまでの最大値 *max と比べて更新する */
+static void height_walk(const Node *p, size_t depth, size_t *max)
+{
+    if (p == NULL) { return; }
+    if (depth > *max) {
+        *max = depth;
+    }
+    height_walk(p->left, depth + 1, max);
+    height_walk(p->right, depth + 1, max);
+}
+
+size_t tree_height(const Node *p)
+{
+    size_t max = 0;                    /* 空の木では一度も更新されず 0 のまま */
+    height_walk(p, 1, &max);
+    return max;
+}
+```
+
+実行結果は本体と同じ 5 行（`count: all=10 nodes[3]=1 null=0`，`height: all=4 nodes[3]=1 null=0`）。ノードの接続を右へ一直線の木に変えた版でも，上の「木の形を変える」の実行結果と同じく `count: all=10 nodes[3]=7 null=0`，`height: all=10 nodes[3]=7 null=0` になる。
+数え方は確認用の `traversal_depth.c` と同じで，その出力の `calls − null`（21 − 11 = 10）がノード数，`real`（4）が高さに当たる。
+
+**本体との比べ方**:
+
+| 観点 | 本体（戻り値を組み合わせる） | 別解（たどりながら記録を更新する） |
+| --- | --- | --- |
+| 1 回の `node_count`（または `tree_height`）の呼び出し回数 | 21（実ノード 10 + `NULL` 11） | 21（同じ。各ノードを 1 回ずつ訪ねる） |
+| 最大深さ（`NULL` の呼び出しを含む） | 5 | 5（同じ） |
+| 関数の数 | 2（それぞれが自分を再帰呼び出しする） | 4（公開する 2 つと，たどる `static` の 2 つ） |
+| 状態 | 持たない（同じ部分木なら同じ値を返すだけ） | 呼び出しごとに 0 から始める記録（`count`，`max`）を作り，ポインタで共有する |
+| 定義との対応 | 演習ページの「空の木は 0，自分がいるなら 1＋左の個数＋右の個数」と，「左右の高さの大きい方 + 1」をそのまま式にしている | 「表示する代わりに数える」「最も深い実ノードの深さを覚える」という見方 |
+| 誤りやすい所 | `1 + left + right` を高さに使う，`max` を取らない | 記録を 0 に戻さない，`depth` を 0 から始めて高さが 1 小さくなる |
+
+**どちらを勧めるか**: **本体を勧める。** 仕事量は同じで，本体は「部分木の答えを組み合わせて全体の答えを作る」という再帰の考え方（講義 1「小さい問題に分ける」）をそのまま書いた形であり，状態を持たないので部分木ごとに独立に確かめられる。
+別解は，発展1 の `Stats` や走査の表示から考えると思い付きやすく，正しく書けていれば正解とする。学生がこの形で書いてきたら，`node_count` を呼ぶたびに記録を 0 から始めているかを確かめる。
+記録を `static` 変数や大域変数にして呼び出しのたびに 0 に戻さないと，発展1 の「`stats` を初期化せずに再び `fib` を呼ぶ」と同じく前の値に足される。本体の `main` のように 1 つの `printf` の引数で 3 回呼ぶと，C では引数を評価する順序が決まっていないので，どの値がずれるかも処理系によって変わる。
+全体・葉・`NULL` の 3 つを別々に検証した記録があるか，`tree_height(NULL)` が 0，葉が 1 になっているかも見る。
 
 ### 採点のポイント・よくある誤り
 

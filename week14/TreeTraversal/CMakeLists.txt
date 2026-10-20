@@ -43,3 +43,24 @@ softprac_add_variant(TreeTraversal versions/traversal_depth.c depth)
 
 # 発展3 の参考: 個別に malloc した木を destroy_tree で帰りがけ順に解放する（LeakSanitizer でリークがないことも確かめる）
 softprac_add_variant(TreeTraversal versions/destroy_tree.c destroy)
+
+# 発展2 の別解：たどりながらポインタで渡した記録を更新して node_count と tree_height を求める版（versions/）。
+# 本体と同じ講義の木と，「木の形を変える」と同じ右へ一直線の木で
+softprac_add_variant(TreeTraversal versions/walk_count.c walk_count)
+softprac_add_variant(TreeTraversal versions/walk_count.c walk_count_line
+  [=[ * 部分木の結果を戻り値で組み合わせる代わりに，行きがけ順にたどりながら，ポインタで渡した 1 つの記録を]=]
+  [=[ * ノードをつなぐ代入文を外し，右へ一直線の 10 ノードの木にした版（「木の形を変える」）。
+ * 部分木の結果を戻り値で組み合わせる代わりに，行きがけ順にたどりながら，ポインタで渡した 1 つの記録を]=]
+  [=[    nodes[0].left = &nodes[1];  nodes[0].right = &nodes[6];
+    nodes[1].left = &nodes[2];  nodes[1].right = &nodes[5];
+    nodes[2].left = &nodes[3];  nodes[2].right = &nodes[4];
+    nodes[6].left = &nodes[7];  nodes[6].right = &nodes[9];
+    nodes[7].left = &nodes[8];
+]=]
+  [=[    /* 右へ一直線の 10 ノードの木（nodes[9].right は NULL のまま） */
+    for (int i = 0; i < 9; ++i) {
+        nodes[i].right = &nodes[i + 1];
+    }
+]=]
+  "/* 全体（nodes[0]）・葉（nodes[3]）・NULL で検証する */"
+  "/* 一直線の木では nodes[3]（値 4）は葉ではなく，4〜10 の部分木の根 */")

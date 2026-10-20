@@ -10,8 +10,8 @@ Visual Studio では，プロジェクトの **Properties > Configuration Proper
 
 | 課題 | プロジェクト | ソース |
 | --- | --- | --- |
-| 課題1・課題2 | `Dynamic` | [dynamic.c](Dynamic/dynamic.c)（引数: `5`） |
-| 課題2「追加：独立したコピー」 | `DynamicCopy` | [dynamic.c](DynamicCopy/dynamic.c)（引数: `5`） |
+| 課題1・課題2 | `Dynamic` | [dynamic.c](Dynamic/dynamic.c)（引数: `5`）<br>別解: [versions/reverse_pointers.c](Dynamic/versions/reverse_pointers.c) |
+| 課題2「追加：独立したコピー」 | `DynamicCopy` | [dynamic.c](DynamicCopy/dynamic.c)（引数: `5`）<br>別解: [versions/reverse_copy.c](DynamicCopy/versions/reverse_copy.c) |
 | 課題3 | `NewPoint` | [new_point.c](NewPoint/new_point.c)，[versions/return_styles.c](NewPoint/versions/return_styles.c) |
 | 課題3「失敗を模擬する」 | `NewPointFail` | [new_point.c](NewPointFail/new_point.c) |
 | 課題4 | （実行しない。この README で解答） | — |
@@ -21,7 +21,7 @@ Visual Studio では，プロジェクトの **Properties > Configuration Proper
 | 発展2「共有変数の宣言」 | `SharedCount` | [counter.h](SharedCount/counter.h)，[counter.c](SharedCount/counter.c)，[main.c](SharedCount/main.c) |
 | 発展2 変更1（リンクエラー） | `_SharedCountNoDef`（ビルドしない） | [counter.c](_SharedCountNoDef/counter.c) ほか |
 | 発展2 変更2（リンクエラー） | `_SharedCountDupDef`（ビルドしない） | [main.c](_SharedCountDupDef/main.c) ほか |
-| 発展3 | `DynamicVector` | [vector.h](DynamicVector/vector.h)，[vector.c](DynamicVector/vector.c)，[vector_main.c](DynamicVector/vector_main.c) |
+| 発展3 | `DynamicVector` | [vector.h](DynamicVector/vector.h)，[vector.c](DynamicVector/vector.c)，[vector_main.c](DynamicVector/vector_main.c)<br>別解: [versions/early_return.c](DynamicVector/versions/early_return.c) |
 | 発展3「途中で失敗した場合」 | `DynamicVectorFail` | [vector.c](DynamicVectorFail/vector.c)（`vector_main.c`・`vector.h` は `DynamicVector` のもの），[CMakeLists.txt](DynamicVectorFail/CMakeLists.txt) |
 
 ### 本体と失敗を模擬する版
@@ -348,6 +348,86 @@ copy: 5 4 3 2 1
   （終了コード 1）
   ```
 - `copy` も同じ `int` の `n` 要素なので，`n > SIZE_MAX / sizeof *values` の検査がそのまま `copy` のバイト数にも有効です（演習ページの「サイズ検査はすでに済んでいる」）。
+
+### 別解
+
+#### 両端を指す 2 つのポインタを内側へ進めて交換する（[Dynamic/versions/reverse_pointers.c](Dynamic/versions/reverse_pointers.c)）
+
+**考え方**: 交換する組の数を `n/2` と数えてから回すのではなく，先頭を指す `left` と最後の要素を指す `right` を 1 つずつ内側へ進め，2 つが出会ったら止めます。組の相手を `n - 1 - i` と計算する必要がなく，「両端から交換して真ん中で止まる」という手順がそのままコードになります。
+
+```c
+    // 課題2：left は先頭，right は最後の要素（n は 1 以上なので values + n - 1 は確保した範囲内）を指す
+    int *left = values;
+    int *right = values + n - 1;
+    while (left < right) {          // 出会ったら終わる（奇数個なら中央で left == right になり，交換しない）
+        int temp = *left;
+        *left = *right;
+        *right = temp;
+        ++left;
+        --right;
+    }
+```
+
+実行結果（本体と同じ。`n` を 3，1000 にしても本体と同じ表示になる）:
+
+```text
+> Dynamic 1   （versions/reverse_pointers.c）
+n=1 sum=1 mean=1.0
+reversed: 1
+> Dynamic 2   （同上）
+n=2 sum=3 mean=1.5
+reversed: 2 1
+> Dynamic 5   （同上）
+n=5 sum=15 mean=3.0
+reversed: 5 4 3 2 1
+```
+
+**本体との比べ方**:
+
+| 観点 | 本体（添字 `i` と `n - 1 - i`） | 別解（ポインタ `left` と `right`） |
+| --- | --- | --- |
+| 交換の回数 | `n/2` 回（`n` = 1，2，5，1000 で 0，1，2，500 回） | 同じ |
+| ループの条件判定 | `n/2 + 1` 回 | 同じ（`left < right` が偽になるまで） |
+| 相手の位置 | 交換ごとに `n - 1 - i` を 2 回計算する | 計算しない（`--right` で 1 つ戻すだけ） |
+| 止まる理由 | 組の数が `n/2`（整数除算）であることを考える | 出会ったら止める。奇数個なら中央で `left == right`，偶数個なら交差して `left > right` になる |
+| 誤りやすい所 | `values[n - i]`（`i = 0` で範囲外），`i < n`（元の順序に戻る） | `right = values + n`（最後の要素の次を指し，範囲外を読み書きする），`left != right`（偶数個では一度も等しくならずに交差し，範囲外へ進み続ける） |
+
+**どちらを勧めるか**: どちらも正しく，交換の回数も同じなので，どちらで書いてきても正解とします。演習ページのヒント（半分まで交換する）と考察（`n/2` の整数除算）にそのまま答えられるのは本体の形です。
+別解は走査に別のポインタを使い，`values` 自身は先頭を指したまま動かさないので，考察の「逆順後も `values` が先頭を指している」や課題4 の `free(values + 1)` の誤りと結び付けて説明できます。
+学生がこの形で書いてきたら，`right` の初期値が `values + n - 1` か，条件が `<` か（`!=` では `n = 2` で範囲外へ進む），`values` 自身を `++` していないかを確かめ，考察の `n/2` の問いにも答えているかを見ます。
+
+#### 逆順に読みながらコピーする（[DynamicCopy/versions/reverse_copy.c](DynamicCopy/versions/reverse_copy.c)）
+
+**考え方**: 追加課題の `copy` は，同じ順にコピーしてから並べ替えなくてもかまいません。`copy` の先頭から順に，`values` を末尾から読んで入れれば，コピーが終わった時点で逆順になっています。
+
+```c
+    // copy の先頭から順に，values を末尾から読んで入れる（values は読むだけなので元の順序のまま残る）
+    for (size_t i = 0; i < n; ++i) {
+        copy[i] = values[n - 1 - i];
+    }
+```
+
+実行結果（本体と同じ。`n` を 1，2，1000 にしても本体と同じ表示になる）:
+
+```text
+> DynamicCopy 5   （versions/reverse_copy.c）
+n=5 sum=15 mean=3.0
+values: 1 2 3 4 5
+copy: 5 4 3 2 1
+```
+
+**本体との比べ方**:
+
+| 観点 | 本体（コピーしてから交換する） | 別解（逆順に読みながらコピーする） |
+| --- | --- | --- |
+| ループ | 2 つ（コピー `n` 回，交換 `n/2` 回） | 1 つ（`n` 回） |
+| `copy` の要素への代入 | `n + 2 × (n/2)` 回（`n = 5` で 9 回，`n = 1000` で 2000 回） | `n` 回（5 回，1000 回） |
+| 作業用の変数 | `temp` | なし |
+| 誤りやすい所 | 課題2 の交換と同じ（`copy[n - i]`，`i < n`） | `values[n - i]`（`i = 0` で範囲外） |
+
+**どちらを勧めるか**: 別解のほうが短く，走査も 1 回で済むので勧めてかまいません。本体は演習ページの文（要素をコピーし，`copy` だけを逆順にする）の手順どおりで，課題2 の交換処理をそのまま使えます。どちらも正解とします。
+学生が別解の形で書いてきたら，本体と同じく `values` が元の順序のまま表示されているか（`values: 1 2 3 4 5`），`copy` の確保に失敗した経路で `values` を解放しているか，最後に両方を解放しているかを確かめます。
+この形は「元の配列を残す」追加課題だから使えるもので，課題2 の本体（同じ領域で並べ替える）でこの形のように新しい配列を確保した提出は，採点のポイントの 1 つ目のとおり指示に合いません。
 
 ### 採点のポイント・よくある誤り
 
@@ -1043,6 +1123,61 @@ void vector_destroy(Vector **p)
 - **生成の途中失敗**: 本体の確保に成功した後で配列の確保に失敗したら，本体を解放してから `NULL` を返します（関数の中で後始末を完結させ，呼び出し元に半端なオブジェクトを渡さない）。
 - **解放順**: 配列 → 本体。本体を先に `free` すると `(*p)->v` を読むことが解放後の使用になり，配列もリークします。`vector_destroy` で `*p` が `NULL` のときに `(*p)->v` を読まないよう検査も必要です。
 - 構造体を代入でコピーすると `v` のアドレスだけがコピーされ，2 つの `Vector` が同じ配列を指すので，両方を `vector_destroy` すると二重解放になります。不透明型にして，コピーが必要なら配列も複製する関数を用意します。
+
+### 別解
+
+**失敗した場所ごとに，作成済みのものを解放して `return` する**: [DynamicVector/versions/early_return.c](DynamicVector/versions/early_return.c)
+
+**考え方**: `goto cleanup;` を使わず，失敗を見つけた場所で「そこまでに作成できたもの」を生成と逆の順に解放してから `return 1;` します。どこで失敗したかによって所有しているものが決まるので，その場で解放できます。変数は作る行で宣言でき，先に `NULL` で初期化しておく必要もありません。
+
+```c
+    Vector *y = vector_create(3.0, 4.0);
+    if (y == NULL) {
+        fputs("allocation failed\n", stderr);
+        vector_destroy(&x);             // 作成済みの x だけを解放する
+        return 1;
+    }
+    Vector *result = vector_axpy(2.0, x, y);
+    if (result == NULL) {
+        fputs("allocation failed\n", stderr);
+        vector_destroy(&y);             // 作成済みの y，x を解放する
+        vector_destroy(&x);
+        return 1;
+    }
+    ...
+    // 正常に終わる経路でも，生成と逆の順に 3 つを解放する
+    vector_destroy(&result);
+    vector_destroy(&y);
+    vector_destroy(&x);
+    return 0;
+```
+
+実行結果: 正常版の `vector.c` と組み合わせると，本体と同じ `result=5.0 8.0`，`ok=0 out=99.0`（終了コード 0）を表示します。
+`DynamicVectorFail` の `vector.c` と組み合わせ，`fail_on_call` を 1，2，3 にすると，どれも `allocation failed`（stderr）を出して終了コード 1 で終わります。
+
+```sh
+cd week13/DynamicVectorFail
+gcc -std=c17 -Wall -Wextra -Wpedantic -I../DynamicVector vector.c ../DynamicVector/versions/early_return.c -o a.out
+./a.out
+```
+
+valgrind の `total heap usage` は `fail_on_call` = 0，1，2，3 で 4，0，1，2 allocs（frees も同じ数）と本体の表と一致し，どれも `All heap blocks were freed -- no leaks are possible` です（Linux x64）。
+
+**本体との比べ方**:
+
+| 観点 | 本体（`goto cleanup;`） | 別解（その場で解放して `return`） |
+| --- | --- | --- |
+| `vector_destroy` を書く回数 | 3 回（`cleanup` の 1 か所） | 9 回（`y` の失敗 1，`result` の失敗 2，取得の失敗 3，正常終了 3） |
+| `return` の数 | 1 | 5 |
+| 実行時の `vector_destroy` の呼び出し | 常に 3 回（未作成のものは `free(NULL)` で何もしない） | 作成できた数だけ（`fail_on_call` = 1，2，3 で 0，1，2 回） |
+| 所有ポインタの宣言 | 先頭で 3 つとも `NULL` にする（`goto` で初期化を飛び越えないよう，`out` と `ok` も先頭で宣言） | 作る行で宣言・初期化する |
+| 生成するものを 1 つ増やしたとき | 先頭の `NULL` の初期化と `cleanup` に 1 行ずつ足す | それより後のすべての失敗経路と正常終了に 1 行ずつ足す |
+| 誤りやすい所 | 所有ポインタの `NULL` の初期化を忘れる（未初期化のポインタを `free` する） | どれか 1 つの経路で解放を書き忘れる（その経路だけのリーク） |
+
+例えば別解の `y` の失敗経路から `vector_destroy(&x);` を消して `fail_on_call = 2` で実行すると，表示は同じ `allocation failed` のままですが，valgrind は `definitely lost: 16 bytes in 1 blocks`，LeakSanitizer（`-fsanitize=address,undefined -g`）は `SUMMARY: AddressSanitizer: 16 byte(s) leaked in 1 allocation(s).` と報告します。表示だけでは気付けないので，失敗の経路ごとに確かめる必要があります。
+
+**どちらを勧めるか**: **本体（講義）の `goto cleanup;` を勧めます。** 講義 8.3 のとおり，解放責任を 1 か所にまとめると，`return` を足したときの解放漏れを防ぎやすくなります。所有するものが 1〜2 個なら別解の形でも読みやすさは変わりませんが，3 個以上や失敗箇所が多い関数では解放の列の重複が増えます。
+学生がこの形で書いてきても誤りにはしません。各失敗経路で「そこまでに作成したものだけ」を解放しているかを読み，`fail_on_call` を 1，2，3 に変えた実行と LeakSanitizer や valgrind で，どの経路もリークしないことを確かめているかを見ます。そのうえで，`goto cleanup;` の形と比べて `vector_destroy` を書く回数の違いを説明できるかを確かめます。
 
 ### 採点のポイント・よくある誤り
 
