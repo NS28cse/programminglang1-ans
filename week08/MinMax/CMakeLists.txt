@@ -57,3 +57,26 @@ softprac_add_variant(MinMax min_max.c overlap
   "${call_and_print}"
   [=[    min_max(data, 4, &data[1], &high);
     printf("overlap: min=%d max=%d data={%d, %d, %d, %d}\n", data[1], high, data[0], data[1], data[2], data[3]);]=])
+
+# 別解: 候補を局所変数に持ち，読み終えてから出力先へ 1 回ずつ書き込む版（置換なし）
+softprac_add_variant(MinMax versions/min_max_local.c local)
+# 別解で上の契約違反の確認と同じ書き換えをした版（出力先へは読み終えてから書くので，入力は壊れない）
+set(local_head " * 走査の間は関数内の lo，hi を更新し，全要素を読み終えてから *low と *high へ書き込む．")
+softprac_add_variant(MinMax versions/min_max_local.c local_same_address
+  "${local_head}" "${local_head}
+ * 関数の前の契約にわざと違反し，low と high へ同じアドレスを渡す確認用の版．
+ * 最後に *high へ書いた最大値が残り，最小値は失われる．"
+  "    int high;
+" ""
+  "${call_and_print}"
+  [=[    min_max(data, 4, &low, &low);
+    printf("same address: low=%d\n", low);]=])
+softprac_add_variant(MinMax versions/min_max_local.c local_overlap
+  "${local_head}" "${local_head}
+ * 関数の前の契約にわざと違反し，入力配列の要素 data[1] を出力先にする確認用の版．
+ * 書き込みは全要素を読み終えた後なので，読む前の入力は上書きされない．"
+  "    int low;   /* min_max が書き込んだ後に初めて読む */
+" ""
+  "${call_and_print}"
+  [=[    min_max(data, 4, &data[1], &high);
+    printf("overlap: min=%d max=%d data={%d, %d, %d, %d}\n", data[1], high, data[0], data[1], data[2], data[3]);]=])

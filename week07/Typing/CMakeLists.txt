@@ -27,3 +27,6 @@ softprac_add_variant(Typing typing.c advance_on_match
             ++position; // （誤り）一致したときだけ位置を進める
         }
 ]=])
+
+# 別解: お手本の文字数（13）だけ読んで採点を終える版（本体と同じ入力で試す。期待値は variants/tests/bounded--<入力>.*）
+softprac_add_variant(Typing versions/typing_bounded.c bounded)
