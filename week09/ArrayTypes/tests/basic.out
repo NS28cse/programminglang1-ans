@@ -1,0 +1,15 @@
+sizeof a == 2 * 3 * sizeof(int): 1
+sizeof rows == 2 * sizeof(int *): 1
+sizeof a[0] == 3 * sizeof(int): 1
+sizeof rows[0] == sizeof(int *): 1
+(row_ptr + 1) - row_ptr = 1, sizeof *row_ptr == 3 * sizeof(int): 1
+(int_ptr + 1) - int_ptr = 1, sizeof *int_ptr == sizeof(int): 1
+sizeof *whole == sizeof a: 1
+sizeof *first_row == 3 * sizeof(int): 1
+sizeof *first_int == sizeof(int): 1
+*qq == a: 1, (*qq)[1][2] = 6
+same start: 1 1 1 1
+&q is not &a: (void *)qq == (void *)whole is 0
+a[1][2]=6 rows[1][2]=6 pp[1][2]=6
+ flat[0]=1 flat[1]=2 flat[2]=3
+ flat[3]=4 flat[4]=5 flat[5]=6

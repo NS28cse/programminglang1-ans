@@ -1,0 +1,34 @@
+name: ta-results
+
+# ta ブランチのすべてのテストを実行し，実際の出力（results/）を加えたコミットを ta-results ブランチに作り直す
+# （tools/collect_results.py。ta-results は毎回 ta の先頭から作り直して force push する）
+on:
+  push:
+    branches: [ta]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  results:
+    if: github.ref == 'refs/heads/ta'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Run all tests and save the actual outputs
+        # テストが失敗しても results/ は作る（不一致は results/README.md に出る）
+        run: python3 tools/collect_results.py --build-dir build || test $? -eq 1
+      - name: Push to ta-results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c ta-results
+          git add -f results
+          git commit -q -m "テストの実行結果（ta ${GITHUB_SHA::7}）"
+          git push --force origin ta-results

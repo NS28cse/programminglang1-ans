@@ -1,0 +1,3 @@
+before: a=-3 b=8
+after a = b;  a=8 b=8
+after b = a;  a=8 b=8
