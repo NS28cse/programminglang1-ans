@@ -13,6 +13,7 @@
 | `main` | 解答（`weekNN/` のソース・データファイル・`versions/`）と各回の README，ルートの README.md と最小の CMakeLists.txt | 解答・解説を直すときは `main` に PR を出す |
 | `ta` | `main` ＋ このファイルの「[`ta` だけにあるもの](#ta-だけにあるもの)」 | `main` を `ta` にマージし，テストや TA 用の資料を足す（`ta` から `main` へはマージしない） |
 | `ta-results` | `ta` ＋ すべてのテストの実際の出力（`results/`） | `ta` へ push すると CI（`.github/workflows/results.yml`）が作り直す。手で commit しない |
+| `practice` | `main` の解答を雛形（空の `main`）にし，`ta` の `tests/` を加えた練習用。解答を見ずに課題を解き，テストで自己採点する | `tools/make_practice.py` で作る。練習は `practice` から切った自分のブランチで行う |
 
 詳しい手順は [CONTRIBUTING.md の「ブランチ」](CONTRIBUTING.md#ブランチ)にあります。
 
@@ -22,6 +23,7 @@
 | --- | --- | --- |
 | TA（授業の準備） | その回の解答と採点のポイントを確かめ，演習中の声かけを用意する | 1. [各回の解答と題材の表](#各回の解答と題材の表)からその回の README（解答・解説・採点のポイント）<br>2. [実務の手引き](ta-guide/README.md)のその回の節<br>3. その回の[デバッグの題材](debugging/README.md)（第4回〜第14回） |
 | TA（採点） | 学生の出力を期待値と比べる | 各プロジェクトの `tests/`（入力と期待値）と，`ta-results` ブランチの `results/`（実際の出力。見方は `results/README.md`） |
+| TA（課題を体験する） | 解答を見ずに課題を解き，学生と同じ手順と難しさを確かめる | `practice` ブランチの README.md（`git switch -c practice-<名前> origin/practice`） |
 | TA（環境の準備） | IDE から引数・作業ディレクトリの設定なしで実行する | [IDE で使う](#ide-で使う) |
 | 保守する人 | 解答・テスト・手引き・題材を追加・修正する | [CONTRIBUTING.md](CONTRIBUTING.md)（ブランチ，規約，テストの形式，仕上げのツール，CI） |
 

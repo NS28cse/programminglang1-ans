@@ -15,6 +15,7 @@
 | `main` | 解答と解説だけ（`README.md`，最小の `CMakeLists.txt`・`.gitignore`，`weekNN/` のソース・データファイル・`versions/`・各回の README，ライブラリなどに要るプロジェクトフォルダの `CMakeLists.txt` 3 つ） | `ta` で確かめた変更を `tools/export_main.py` で写して PR を出す |
 | `ta` | `main` ＋ テスト・書き換えた版・TA 用の資料・IDE の設定・CI・規約とツール | 保守はここで行う（作業ブランチを `ta` から切り，`ta` へ PR を出す） |
 | `ta-results` | `ta` ＋ すべてのテストの実際の出力（`results/`） | `ta` への push で CI（`results.yml`）が作り直して force push する。手で commit しない |
+| `practice` | `main` の解答を雛形にし，`ta` の `tests/` を加えた練習用（各回の README は課題の表だけ） | `main` を更新したりテストを変えたりしたら，下の手順で作り直す。TA の練習は `practice` から切った各自のブランチで行う |
 
 - `README.md` と `weekNN/` の解答・解説（`tests/`・`variants/`・`run.args`・プロジェクトフォルダの `CMakeLists.txt` を除く）は，`main` と `ta` で**同じ内容**にする。
   そのため各回の README には，`ta` だけにあるもの（テスト名・テスト数，実務の手引き・デバッグの題材へのリンク，`run.args`・`.vs/launch.vs.json`・`.vscode/`・プリセット）を書かない（「[各回の README.md](#各回の-readmemd解答解説)」）。
@@ -29,6 +30,15 @@ python3 tools/export_main.py ../main-sync           # 解答・解説を写す�
 cd ../main-sync && git switch -c <作業ブランチ>
 cmake -S . -B /tmp/build-main && cmake --build /tmp/build-main   # main の最小の CMakeLists.txt で警告なくビルドできること
 git commit -a && git push -u origin <作業ブランチ>   # main への PR を出す。マージされたら ta で git merge main する
+```
+
+`practice` の作り直しの手順（`main` の新しい内容から作り，`practice` の先に積む）:
+
+```sh
+git worktree add ../practice-work origin/main --detach
+python3 tools/make_practice.py ../practice-work     # 雛形・tests/・課題の表・テストの登録を作る
+cd ../practice-work && git add -A && git commit -m "practice: 解答を雛形にする（main <コミット>）"
+git push --force origin HEAD:practice               # practice は main の 1 コミット先として作り直す
 ```
 
 - `ta` に `main` をマージしておく（`git merge main`）と，`ta` が `main` を含む形が保たれる。内容は同じなので衝突はしない。`ta` を `main` にマージしてはいけない（TA 用のファイルが `main` に入る）。
@@ -221,6 +231,7 @@ python3 tools/check_docs.py         # 文書のリンクとアンカー，デバ
 | `check_docs.py` | すべての `.md` の相対リンクとアンカーがあること，`debugging/README.md` の一覧と `Bug*` フォルダが一致すること |
 | `check_launch.py` | IDE の起動構成が実際に動くこと（`python3 tools/check_launch.py <ビルド先>`。CI 用。手元でも確かめられる） |
 | `collect_results.py` | すべてのテストを実行し，実際の出力を `results/` に保存して `results/README.md`（環境・結果の一覧）を書く（`ta-results` ブランチの中身。CI 用。手元でも実行できる） |
+| `make_practice.py` | `main` の作業ツリーを `practice` の中身（雛形・`tests/`・課題の表・テストの登録）に書き換える（「[ブランチ](#ブランチ)」） |
 | `export_main.py` | 解答と解説を `main` の作業ツリーへ写す（「[ブランチ](#ブランチ)」） |
 | `projects.py` | プロジェクトの列挙（ルートの `CMakeLists.txt` と同じ規則）を各スクリプトで共有するライブラリ |
 
