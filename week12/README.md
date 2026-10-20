@@ -13,7 +13,7 @@
 | 課題4 | `VectorCalc` | [vector_main.c](VectorCalc/vector_main.c)，[vector.c](VectorCalc/vector.c)，[matrix.c](VectorCalc/matrix.c)，[vector.h](VectorCalc/vector.h)，[matrix.h](VectorCalc/matrix.h) |
 | 発展1（ライブラリ側） | `CalcLib` | [calc.c](CalcLib/calc.c)，[calc.h](CalcLib/calc.h)，[CMakeLists.txt](CalcLib/CMakeLists.txt) |
 | 発展1（アプリ側） | `CalcApp` | [main.c](CalcApp/main.c)，[CMakeLists.txt](CalcApp/CMakeLists.txt) |
-| 発展2 | `SortModule` | [sort_main.c](SortModule/sort_main.c)，[intlib.c](SortModule/intlib.c)，[intlib.h](SortModule/intlib.h)（実行に使う引数: `5`） |
+| 発展2 | `SortModule` | [sort_main.c](SortModule/sort_main.c)，[intlib.c](SortModule/intlib.c)，[intlib.h](SortModule/intlib.h)（実行に使う引数: `5`）。別解: [versions/intlib_insertion.c](SortModule/versions/intlib_insertion.c)（挿入ソート） |
 | 発展3 | `LibraryCheck` | [library_check.c](LibraryCheck/library_check.c) |
 | 課題3・4 のエラー版 | `_BuildErrors`（ビルドしない） | [split/](_BuildErrors/split/)（課題1 の講義どおりの 3 ファイルと，エラーの 3 版），[noguard/](_BuildErrors/noguard/)（ガードを外した `vector.h` と組み合わせる一式），[noinclude/](_BuildErrors/noinclude/)（`#include "vector.h"` を外した `matrix.h` と，それだけを読む `vector_main.c`） |
 
@@ -801,12 +801,67 @@ badcmp.c:6:28: runtime error: signed integer overflow: 2147483647 - -2147483648 
 - **`intlib.h` に `compare_int` の宣言を置かないのはなぜか**: `compare_int` は `qsort` に渡すための**実装の都合**で，利用者（`sort_main.c`）が直接呼ぶ操作ではないから。`static` にして `intlib.c` の翻訳単位の中だけの名前にすれば，
   他のファイルの同名関数と衝突せず（`LNK2005` にならない），比較方法を変えても公開する使い方（`sort_ints`）は変わらない。ヘッダに宣言すると `static` と矛盾し，利用者に不要な名前を見せることになる。
 - **`sort_main.c` が `qsort` の使い方を知らなくてもよいのはなぜか**: `sort_ints(int a[], size_t n)` という「配列と個数を渡せば昇順になる」契約だけを公開し，`qsort` の引数（要素サイズ・比較関数）や `stdlib.h` の扱いを `intlib.c` に閉じ込めたから。
-  並べ替えの方法を自作の挿入ソートなどに変えても `sort_main.c` は修正不要。
+  並べ替えの方法を自作の挿入ソートなどに変えても `sort_main.c` は修正不要（次の「別解」）。
 - **型の宣言・数値の検査・エラー表示はどこにあるか**: 公開する型・定数・関数の宣言（`INTLIB_CAPACITY`，`size_t` のための `stddef.h`，`parse_count`・`sort_ints` のプロトタイプ）は `intlib.h`。
   数値の検査（`strtol`・`end`・`errno`・0〜8 の範囲）は `intlib.c` の `parse_count`。引数の個数の検査と，エラーの表示（`stderr` への `fprintf`，終了コード 1）は `sort_main.c`。
   `parse_count` は表示をせず成功・失敗だけを返すので，表示の方法（言語・出力先）を決めるのは呼び出し側になる。
 - **固定配列の容量と有効な個数 `N` は同じものか**: 違う。容量 `INTLIB_CAPACITY`（8）は配列の要素数でコンパイル時に決まり，`N` は実行時に引数で決まる「使う要素の個数」（0〜8）。
   `N ≤ 容量` を `parse_count` で保証してから `sort_ints(data, n)` に `n` を渡すので，範囲外にはアクセスしない。`sizeof` で求まるのは容量であって `N` ではない。
+
+### 別解
+
+#### `qsort` を使わず，挿入ソートで並べ替える（[SortModule/versions/intlib_insertion.c](SortModule/versions/intlib_insertion.c)）
+
+**考え方**: 先頭から「並べ終わった部分」を 1 要素ずつ広げる。`a[0]`〜`a[k-1]` が昇順のとき，次の `a[k]` を取り出し（`key`），それより大きい要素を 1 つずつ後ろへずらして空いた位置に入れる。
+比較関数もコールバックも使わず，`int` の値を `>` で直接比べる。`intlib.h`（公開する宣言）と `parse_count` は本体と同じで，差し込む処理だけを `static` の関数 `insert_at` にして `intlib.c` の中に隠す。
+
+```c
+static void insert_at(int a[], size_t k)
+{
+    int key = a[k];
+    size_t j = k;
+    while (j > 0 && a[j - 1] > key) {  /* key より大きい要素を 1 つ後ろへずらす．等しい要素は越えない */
+        a[j] = a[j - 1];
+        --j;
+    }
+    a[j] = key;
+}
+
+void sort_ints(int a[], size_t n)
+{
+    for (size_t k = 1; k < n; ++k) {  /* n が 0・1 なら何もしない */
+        insert_at(a, k);
+    }
+}
+```
+
+`intlib.c` の代わりにこのファイルをプロジェクトに入れてビルドする（Visual Studio では `intlib.c` を **Excluded From Build** にして `versions/intlib_insertion.c` を **Source Files** に追加する。`sort_main.c` と `intlib.h` は変えない）。
+表の引数（`5`・`0`・`1`・`8`・拒否する 8 種類と `+5`・`" 5"`・`-0`・`08`・`"5 "`）はすべて本体と同じ表示・終了コードになり，`INT_MAX`・`INT_MIN` に変えた `data` の `N=2` も `-2147483648 2147483647` になる。
+
+```text
+$ SortModule 5
+-2 0 3 7 7
+$ SortModule 8
+-8 -2 0 1 3 7 7 9
+```
+
+`N=8`（`{7, -2, 7, 0, 3, 9, -8, 1}`）で `a[j - 1] > key` を評価する回数は 20 回，要素をずらす代入は 15 回。
+
+**本体との比べ方**:
+
+| 観点 | 本体（`qsort` と `compare_int`） | 別解（挿入ソート） |
+| --- | --- | --- |
+| 比較の回数（`N=8`） | 処理系が決める（Linux x64 の glibc 2.39 では `compare_int` の呼び出しが 16 回） | 20 回。最悪（逆順）でも N(N−1)/2 = 28 回 |
+| 要素数が増えたとき | 規格は方法を決めていないが，多くの処理系で N log N に比例する程度で済む | 最悪で N² に比例する（容量 8 のこの課題では差は問題にならない） |
+| メモリ | 作業領域は処理系が決める | `key` と添字 `j` だけ（配列の中で並べ替える） |
+| 書く量・誤りやすさ | 呼び出しは 1 行。`const void *` から `const int *` への変換，関数名を渡すこと，差を返さないこと（`INT_MAX`・`INT_MIN`）に注意が要る | ループは自分で書く。`j > 0` を先に調べないと `a[-1]` を読む，`>=` にすると等しい 7 の順が入れ替わる（値の表示は同じ）。値を直接比べるので差のオーバーフローは起きない |
+| 公開する使い方 | `sort_ints(int a[], size_t n)` | 同じ（`sort_main.c` は 1 文字も変えずに組み合わせられる） |
+
+**どちらを勧めるか**: **本体の `qsort` を勧める。** この課題で学ぶのは，標準ライブラリの `qsort` に比較関数を名前で渡すこと（コールバック）と，その比較関数を `static` にして `intlib.c` に隠すことである。
+挿入ソートは並べ替えの手順が目に見えて直感的で，比較関数の型変換やオーバーフローの落とし穴もないが，要素数が増えると遅く，ループの境界を自分で正しく書く必要がある。
+一方で，この別解は「`intlib.c` の中身を入れ替えても `sort_main.c` を直さなくてよい」というモジュールに分ける利点を実際に確かめる教材になる。
+学生がこの形で書いてきたときは，昇順・重複（7 が 2 つ）・`N=0`・`N=1` が正しく，補助の関数を `static` にしてヘッダに出していなければ誤りにはしない。
+ただし `qsort` の比較関数とコールバックの説明（設計を説明する項目，`INT_MAX`・`INT_MIN` で差を返すと危険な理由）は課題の一部なので，そこに答えているかを別に確かめる。
 
 ### 採点のポイント・よくある誤り
 
