@@ -22,7 +22,7 @@
 ### 値の変え方（全プロジェクト共通）
 
 演習ページの手順どおり，値は **`main` の初期値を書き換えて**変える（`unsigned int n = 5;` を `unsigned int n = 21;` にするなど）。
-Visual Studio では書き換えて保存し，Ctrl+Shift+B でビルドしてから Ctrl+F5 で実行する。ビルドに失敗したときに古い実行ファイルの結果を読まないように，**Output** ウィンドウで `========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========` を確かめる。
+書き換えたら保存してビルドし，ビルドに失敗したときは古い実行ファイルを動かさない（手順は[ルートの README](../README.md#ソースを書き換えて試す)）。
 
 フォルダのソースは演習ページ・講義の値（`Factorial` は `n = 5`，`Trace` は `n = 3`，`GcdLoop` は `a = 48`・`b = 18`，`CheckedFactorial` は `n = 5`，`Fibonacci` は `input = 4`，`TreeTraversal` は `preorder(&nodes[0])` と講義の接続）のままにしている。
 呼び出し回数・深さを数える確認用のプログラムと発展3 の参考コードは `versions/` に置いている。
@@ -87,7 +87,7 @@ recursive=6 loop=6 equal=1
 
 ### 実行結果を比較する
 
-`main` の `unsigned int n = 5;` を 0，1，20，21 に書き換えて実行した結果:
+`main` の `unsigned int n = 5;` を 0，1，10，20，21 に書き換えて実行した結果（5 は本体，10 は演習ページの表にない参考値）:
 
 ```text
 n = 0
@@ -271,6 +271,7 @@ main
 ### **Call Stack** ウィンドウを見る（Visual Studio，`n=3` から `n=0` まで進んだとき）
 
 ブレークポイントは `sum_to` 内の `if (n == 0)` の行。F5（**Start Debugging**）で開始すると `sum_to(3)` で止まる。ブレークポイントがあるので F5（**Continue**）を押すたびに次の段（`sum_to(2)`，`sum_to(1)`，`sum_to(0)`）で止まり，**Call Stack** に `sum_to` が 1 行ずつ増える（F11（**Step Into**）で 1 行ずつ進めても同じ）。
+**Call Stack** ウィンドウは **Debug > Windows > Call Stack**（講義の「デバッグ → ウィンドウ → 呼び出し履歴」），**Locals** ウィンドウは **Debug > Windows > Locals**（講義の「ローカル変数」）で開く。
 
 | 観察対象 | 記録する内容 |
 | --- | --- |
@@ -880,7 +881,17 @@ line calls=21 null=11 maxdepth(incl NULL)=11 real=10
 ### 参考: 動的な木を作って解放する（プロジェクトには含めない）
 
 演習は構築プログラムを要求していないが，TA の説明用に，講義の木と同じ形を個別の `malloc` で作り，`destroy_tree` で解放する例を [TreeTraversal/versions/destroy_tree.c](TreeTraversal/versions/destroy_tree.c) に置いた。
-Linux で `-fsanitize=address,undefined -g` を付けて[コマンドでビルド](../README.md#1-コマンドでビルドする)し，`destroy_tree(root);` を消して実行すると，LeakSanitizer が `240 byte(s) leaked in 10 allocation(s)` とリークを報告する。解放の順序を見るために `destroy_tree` に表示を 1 行加えている。
+解放の順序を見るために `destroy_tree` に表示を 1 行加えている。
+Linux で解放しないとどうなるかを確かめるには，`week14/TreeTraversal` で `versions/destroy_tree.c` の `main` にある `destroy_tree(root);` の行を消し，`-fsanitize=address,undefined -g` を付けて[コマンドでビルド](../README.md#1-コマンドでビルドする)して実行する。
+
+```sh
+cd week14/TreeTraversal
+# versions/destroy_tree.c の destroy_tree(root); の行を消してから
+gcc -std=c17 -Wall -Wextra -Wpedantic -fsanitize=address,undefined -g versions/destroy_tree.c -o a.out && ./a.out
+git restore versions/destroy_tree.c   # 確かめたら元に戻す
+```
+
+LeakSanitizer が `SUMMARY: AddressSanitizer: 240 byte(s) leaked in 10 allocation(s).` とリークを報告し，終了コードは 1 になる（根の 24 バイトが直接のリーク，残り 9 ノードの 216 バイトが間接のリーク）。
 
 ```c
 /* 前提：共有・循環がなく，各ノードが個別にmallocされている */

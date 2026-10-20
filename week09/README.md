@@ -22,7 +22,7 @@
 ### この回の解答について
 
 - 演習ページに「今回の入力はソース中の初期値です．数値や添字を変更するたびに再ビルドします」とあるので，プログラムは入力を読みません。
-- 各フォルダのソースは配布コード・演習ページの表示どおりです。`FindMax` は講義の例題そのもの，`ReturnMaximum` と `RaggedRows` は演習ページの「期待する表示」と 1 文字も違わない出力です。
+- `FindMax` のソースは講義の例題そのものです。`ReturnMaximum` と `RaggedRows` は演習ページの「期待する表示」と 1 文字も違わない出力です。ほかのプロジェクトのソースは演習ページの指示どおりに作成しました（`MatrixMean` は講義の例題 `matrix.c` をもとにしています）。
   演習ページの「`n` を 0 にする」「配列を変える」「断片を追加する」などの書き換えは，書き換え方と実行結果を課題ごとに示します。関数へ分ける前の形や，演習ページの別の小さな例（`dog`/`cat` など）は `versions/` に置いています。
 - 範囲外アクセスになる書き換え（`n=4`，`rows=3`，長さを交換しない行の交換，`int **` への変換など）は演習ページの指示どおり実行せず，型と図で説明しています。
 - 表示する内容に処理系依存の値を含めていないので，Windows（MSVC，x64）でも同じ表示になります。可変長配列（VLA）は使っていません（MSVC は非対応）。
@@ -44,7 +44,7 @@
 
 | 確かめること | 例題に対する書き換え |
 | --- | --- |
-| 検索範囲（`n=1`・`n=0`・`n=-1`） | `find_max(a, 3, &answer)` の 3 を 1，0，−1 に（`n=1` では `a[0]` の表示も追加） |
+| 検索範囲（`n=1`・`n=0`・`n=-1`） | `find_max(a, 3, &answer)` の 3 を `1`，`0`，`-1` に（`n=1` では `a[0]` の表示も追加） |
 | 同点 | 配列を `{12, 12, 4}` にし，`if` の本体に `printf("first=%d\n", answer == &a[0]);` を追加 |
 | 同点で `>=` にする | 同点の書き換えに加えて，条件 `a[i] > *best` を `a[i] >= *best` に |
 | `*out = &a[0];` にする | `*out = best;` を `*out = &a[0];` に |
@@ -160,7 +160,7 @@ red
 
 ### 説明すること: `*out = best;` を `*out = &a[0];` に変えたら
 
-**コンパイルは警告なしで通りますが，探索結果 `best` を捨てて常に先頭要素 `a[0]` の場所を返す関数になります。** `&a[0]` も `best` も `int *` なので型は合っています（`-Werror` でもビルドできます）。
+**コンパイルは警告なしで通りますが，探索結果 `best` を捨てて常に先頭要素 `a[0]` の場所を返す関数になります。** `&a[0]` も `best` も `int *` なので型は合っています（警告レベル4 でも警告は出ません）。
 実行結果（全文）。最大値 12 ではなく 7 が表示され，99 が代入されるのも `a[0]` なので `a[1]` は 12 のままです。
 
 ```text
@@ -393,7 +393,7 @@ Nagoya
   先頭の `const` は「指す先の文字を書き換えない」という意味で，配列に保存したポインタの交換は禁止しません。
 - `i`，`j` が 0〜2 であることは呼び出し側の条件です（関数は配列の長さを知らないので検査できません）。
 
-参考: 要素が `char *` の配列（`char *names[] = {s0, s1, s2};`）をこの関数に渡すと，`char **` から `const char **` への変換になり，GCC/Clang は警告します。
+参考: 要素が `char *` の配列（`char *names[] = {s0, s1, s2};`）をこの関数に渡すと，`char **` から `const char **` への変換になり，GCC/Clang は警告します（gcc の行は GCC 13 の表示。GCC 14 以降は既定でエラー）。
 
 ```text
 gcc:   warning: passing argument 1 of 'swap_names' from incompatible pointer type [-Wincompatible-pointer-types]
@@ -543,14 +543,13 @@ row1 mean=2.33
 `void print_means(int (*a)[COLS], int rows)` に変えても出力は同じです。`int a[][COLS]` という仮引数はもともと `int (*a)[COLS]` に調整されるので，同じ型を別の書き方で書いただけです。
 
 括弧を落として `int *a[COLS]` にすると，`a` は「`int *` が `COLS` 個の配列」となり，仮引数としては `int **a` に調整されます。
-渡している `a`（`int (*)[3]` に変換される）とは別の型なので，次の診断が出ます（`-Werror` ならエラー）。この形のまま警告を無視して実行してはいけません。
+渡している `a`（`int (*)[3]` に変換される）とは別の型なので，次の診断が出ます（gcc の行は GCC 13 の表示。GCC 14 以降は既定でエラー）。
+MSVC では C4047（間接参照のレベルが異なる）・C4024（仮引数と実引数の型が異なる）の警告です。この形のまま警告を無視して実行してはいけません。
 
 ```text
 gcc:   warning: passing argument 1 of 'print_means' from incompatible pointer type [-Wincompatible-pointer-types]
        note: expected 'int **' but argument is of type 'int (*)[3]'
 clang: warning: incompatible pointer types passing 'int[2][3]' to parameter of type 'int **' [-Wincompatible-pointer-types]
-MSVC:  warning C4047: 'function': 'int **' differs in levels of indirection from 'int (*)[3]'
-       warning C4024: 'print_means': different types for formal and actual parameter 1
 ```
 
 実行すると，関数は `a[r]` の場所に `int *` が保存されていると解釈し，x64 では `int` 2 個分（8 バイト，例えば 1 と 2）をまとめて 1 つのアドレスとして読みます。そのアドレスの先を読むので，範囲外アクセスや異常終了になります（未定義動作）。
@@ -607,19 +606,7 @@ in function: sizeof a=8 sizeof a[0]=12 sizeof a / sizeof a[0]=0
 
 ### 行平均と全体平均
 
-`overall_mean` を追加し `rows=ROWS` で呼んだ版と `rows=0` で呼んだ版の実行結果:
-
-```text
-row0 mean=2.00
-row1 mean=5.00
-overall mean=3.50
-```
-
-```text
-row0 mean=2.00
-row1 mean=5.00
-overall mean: undefined
-```
+本体に次の 2 か所を追加した版です。全体平均を返す関数 `overall_mean` を `main` の前（`print_means` の後）に置きます。
 
 ```c
 // 全要素の平均を *mean へ書いて1を返す。rows<=0 は平均が定義できないので0を返す（*mean は変更しない）
@@ -635,6 +622,33 @@ int overall_mean(int (*a)[COLS], int rows, double *mean)
     *mean = sum / ((double)rows * COLS);
     return 1;
 }
+```
+
+`main` の `print_means(a, ROWS);` の後（`return 0;` の前）に呼び出しを追加します。
+
+```c
+    double mean = 0.0;
+    if (overall_mean(a, ROWS, &mean)) {  // 0 が返ったら mean は使わない
+        printf("overall mean=%.2f\n", mean);
+    } else {
+        printf("overall mean: undefined\n");
+    }
+```
+
+`rows=ROWS` で呼んだ版の実行結果:
+
+```text
+row0 mean=2.00
+row1 mean=5.00
+overall mean=3.50
+```
+
+`overall_mean(a, ROWS, &mean)` の `ROWS` を `0` にした版の実行結果（`print_means` は `ROWS` のまま）:
+
+```text
+row0 mean=2.00
+row1 mean=5.00
+overall mean: undefined
 ```
 
 - この例の全体平均は (1+2+3+4+5+6) / 6 = 21 / 6 = **3.5**。行平均 2.0 と 5.0 の平均 (2.0+5.0)/2 = 3.5 とも一致しますが，それは**どの行も要素数が 3 で同じ**だからです。行の長さが違うと一致しません（発展1で 3.0 と 3.25 になる例）。
@@ -787,12 +801,11 @@ after:
 
 ### 行の代入ができないこと
 
-`names[1] = names[2];` と書くと，配列（行）には代入できないのでコンパイルエラーです。
+`names[1] = names[2];` と書くと，配列（行）には代入できないのでコンパイルエラーです。MSVC では C2106（左辺が左辺値でない）のエラーです。
 
 ```text
 gcc:   error: assignment to expression with array type
 clang: error: array type 'char[9]' is not assignable
-MSVC:  error C2106: '=': left operand must be l-value
 ```
 
 ### 比較すること
@@ -854,7 +867,7 @@ int main(void)
 | 確かめること | 書き換え |
 | --- | --- |
 | 長さも一緒に交換する | 反復処理の前（`int **p = rows;` の直後）に，演習ページの交換の断片（`rows` と `lengths` を一組で交換）を追加 |
-| 全体の平均と行平均の平均 | `p[1][0] = 40;` の前に，全要素の合計・個数と行平均の和を集計して表示する処理を追加 |
+| 全体の平均と行平均の平均 | `p[1][0] = 40;` の直前に，全要素の合計・個数と行平均の和を集計して表示するコード（[全体の平均と行平均の平均](#全体の平均と行平均の平均)に掲載）を追加 |
 | 二重ポインタの別の使い方 | 二重ポインタの別の使い方の 2 つの断片（[versions/animal.c](RaggedRows/versions/animal.c)，[versions/letters.c](RaggedRows/versions/letters.c)。どちらも変数名 `p` を使うので別のプログラムにしている） |
 
 ### 実行結果
@@ -907,7 +920,26 @@ lengths[1] = 3
 
 ### 全体の平均と行平均の平均
 
-全要素の平均と行平均の平均を表示した版の実行結果:
+`p[1][0] = 40;` の直前に次のコードを追加した版です（交換の断片は追加しない）。
+
+```c
+    int total = 0;     // 全要素の和
+    int count = 0;     // 全要素の個数
+    double sum_of_means = 0.0;
+    for (int r = 0; r < 2; ++r) {
+        int sum = 0;
+        for (int c = 0; c < lengths[r]; ++c) {
+            sum += p[r][c];
+        }
+        total += sum;
+        count += lengths[r];
+        sum_of_means += (double)sum / lengths[r];
+    }
+    printf("all elements: %d / %d = %.2f\n", total, count, (double)total / count);
+    printf("mean of row means = %.2f\n", sum_of_means / 2);
+```
+
+実行結果:
 
 ```text
 row0 sum=6
@@ -1020,7 +1052,7 @@ a[1][2]=6 rows[1][2]=6 pp[1][2]=6
 | `&q`（`int (*q)[3] = a;`） | `int (**)[3]` | ポインタ変数 `q` 自身を指す。`&a` とは別物 |
 
 - 実行結果の `same start: 1 1 1 1` は，`void *` に変換して比べた 4 組（`&a` と `&a[0]`，`&a[0]` と `&a[0][0]`，`a + 0` と `a[0] + 0`，`a + 0` と `&a`）がすべて等しいことを示します。4 組がつながっているので，`&a`・`&a[0]`・`&a[0][0]`・`a + 0`・`a[0] + 0` の 5 つはどれも同じ位置（格納領域の先頭）です。しかし型（`+1` で進む単位，`*` で得られるもの）は違います。
-- `(row_ptr + 1) - row_ptr = 1` と `(int_ptr + 1) - int_ptr = 1`: ポインタの差はバイト数ではなく，指す型の要素数です。`row_ptr + 1` は 12 バイト先，`int_ptr + 1` は 4 バイト先ですが，どちらも差は 1 です。
+- `(row_ptr + 1) - row_ptr = 1` と `(int_ptr + 1) - int_ptr = 1`: ポインタの差はバイト数ではなく，指す型の要素数です。`sizeof(int)` が 4 の処理系では `row_ptr + 1` は 12 バイト先，`int_ptr + 1` は 4 バイト先ですが，どちらも差は 1 です。
 - `&q is not &a: ... is 0`: `&q` は `q` という**別の変数の場所**で，配列の場所 `&a` とは違います。`*qq` は `q` で，`*qq == a` は 1（`q` が `a` の先頭行を指している）です。
 
 アドレスを `%p` で表示した参考例（Linux x64 の 1 回の実行。値は実行ごとに変わる）。表示に使ったコード:
@@ -1060,14 +1092,13 @@ sizeof a=24 sizeof a[0]=12 sizeof(int *)=8
 
 先頭の 5 つは同じ値ですが，`+1` すると `a + 1` は 0x0c（12）バイト，`a[0] + 1` は 4 バイト，`&a + 1` は 0x18（24）バイト先になり，型の違いが「1 単位の大きさ」の違いとして現れます。
 
-**`int **` では指せない**: `int **bad = a;` や `int **bad2 = &a;` は型が違うので診断が出ます。
+**`int **` では指せない**: `int **bad = a;` や `int **bad2 = &a;` は型が違うので診断が出ます（gcc の行は GCC 13 の表示。GCC 14 以降は既定でエラー）。MSVC では C4047（間接参照のレベルが異なる）の警告です。
 
 ```text
 gcc:   warning: initialization of 'int **' from incompatible pointer type 'int (*)[3]' [-Wincompatible-pointer-types]
 gcc:   warning: initialization of 'int **' from incompatible pointer type 'int (*)[2][3]' [-Wincompatible-pointer-types]
 clang: warning: incompatible pointer types initializing 'int **' with an expression of type 'int[2][3]' [-Wincompatible-pointer-types]
 clang: warning: incompatible pointer types initializing 'int **' with an expression of type 'int (*)[2][3]' [-Wincompatible-pointer-types]
-MSVC:  warning C4047: 'initializing': 'int **' differs in levels of indirection from 'int (*)[3]'
 ```
 
 `int **` は「その場所に `int *` が保存されている」と解釈する型です。二次元配列の先頭には `int` の 1, 2, 3 … が並んでいるだけで，ポインタは保存されていません。
