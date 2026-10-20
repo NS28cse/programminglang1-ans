@@ -9,7 +9,7 @@
   （エラーで手が止まっている，境界の値を試していない，「動かない」と言っている など）に出会った学生や近くの数人に，1〜3 分で伝える。
 - 演習の課題を終えることを優先する。ここに書いた内容を，課題の要求や採点の基準に加えない（担当教員の指示がある場合を除く）。
 - 各回の節は「テーマと理由 → 声かけ → 見せ方 → 確かめる問い → よくある反応 → 副テーマ → デバッグの補足 → 関連」の順に並べた。「デバッグの補足」（一部の回だけ。任意）は，学生がバグで止まっている場面で 1 つだけ選んで使い，主テーマ・副テーマと同時には使わない。声かけと問いは，そのまま読み上げられる文にしてある。
-- 文法・関数は，その回までに講義で扱ったものだけを前提にする。Visual Studio の操作のうち授業で扱わないもの（第2回の Git，第8回の Step Into・Watch 1・Call Stack など）は，各節に「（授業では未習。初めて見せる）」と書いた。
+- 文法・関数は，その回までに講義で扱ったものだけを前提にする。Visual Studio の操作のうち，その回までに授業で扱っていないもの（第2回の Git，第8回の Step Into・Watch 1・Call Stack など）は，各節に「（授業では未習。初めて見せる）」と書いた。
   授業資料での初出は，ブレークポイント・ステップオーバー・ローカル変数が第4回の講義，ウォッチが第13回の演習，ステップイン・呼び出し履歴が第14回の講義で，Git は授業資料に出てこない。
 - 後半の「どの回でも使う型」（デバッグの進め方・テストケースの表・質問とバグ報告のテンプレート・レビューのチェックリスト・Git の手順・AddressSanitizer・AI 支援の扱い）は，各回の節から参照する。印刷して手元に置くと使いやすい。
 - 各回の解答 README は解答を含むので，学生に画面を見せるときは学生自身のコード・演習ページ・この手引きの断片を使う。
@@ -20,38 +20,44 @@ Visual Studio の画面の表記は Visual Studio 2026（英語版）に合わ�
 
 | この手引きの表記（英語版） | 授業資料の表記 | 授業資料の場所 | 日本語版の画面の表記 |
 | --- | --- | --- | --- |
+| **Create a new project > Empty Project** | 「新しいプロジェクトの作成」→「空のプロジェクト」 | 第1回 講義 3 節 | — |
+| **Add > Existing Item** | 「追加 → 既存の項目」 | 第12回 講義 4.1 節 | — |
 | **View > Error List** / **View > Output** | 「エラー一覧」/「表示 → 出力」 | 第1回 講義 3・6 節 | — |
 | **Build > Build Solution**（Ctrl+Shift+B） | 「ビルド → ソリューションのビルド」 | 第1回 講義 3 節 | — |
 | **Build > Rebuild Solution** | 「リビルド」 | 第12回 講義 1.2 節，演習 課題3 | — |
 | **Debug > Start Without Debugging**（Ctrl+F5） | 「デバッグ → デバッグなしで開始」 | 第1回 講義 3 節 | — |
+| ツールバーの **Startup Item**（**File > Open > Folder** で開いたとき） | — | — | スタートアップ アイテム |
 | **Debug > Start Debugging**（F5） | — | 第4回 講義 7 節（デバッグ実行），第14回 講義 5.2 節（F5） | デバッグ > デバッグの開始 |
 | **Debug > Toggle Breakpoint**（F9） | — | 第4回 講義 7 節（ブレークポイント），第14回 講義 5.2 節（F9） | デバッグ > ブレークポイントの設定/解除 |
 | **Debug > Step Over**（F10） | 「ステップオーバー」 | 第4回 講義 7 節 | デバッグ > ステップ オーバー |
 | **Debug > Step Into**（F11） | 「ステップイン」 | 第14回 講義 5 節 | デバッグ > ステップ イン |
-| **Debug > Step Out**（Shift+F11） | — | | デバッグ > ステップ アウト |
-| **Debug > Continue**（F5） | — | | デバッグ > 続行 |
-| **Debug > Break All** | — | | — |
+| **Debug > Step Out**（Shift+F11） | — | — | デバッグ > ステップ アウト |
+| **Debug > Continue**（F5） | — | — | デバッグ > 続行 |
+| **Debug > Break All** | — | — | — |
 | **Debug > Stop Debugging**（Shift+F5） | 「デバッグの停止」 | 第4回 講義 4・7 節 | — |
 | **Debug > Windows > Locals** | — | （第4回 講義 7 節は「ローカル変数の値」） | ローカル（ウィンドウ） |
+| **Debug > Windows > Autos** | — | — | デバッグ > ウィンドウ > 自動変数 |
 | **Debug > Windows > Watch > Watch 1** | 「変数ウォッチ」 | 第13回 演習 発展3 | ウォッチ（ウィンドウ） |
+| データヒント（**DataTip**。デバッグ中にコードの変数へマウスポインターを重ねると出る値） | — | — | データ ヒント |
 | **Debug > Windows > Call Stack** | 「デバッグ → ウィンドウ → 呼び出し履歴」 | 第14回 講義 5.2 節 | 呼び出し履歴 |
 | **Configuration Properties > Debugging > Command Arguments** | 「プロパティ → 構成プロパティ → デバッグ → コマンド引数」 | 第13回 演習 課題1（第10回 講義 2 節） | コマンド引数 |
 | **Configuration Properties > General > Excluded From Build** | 「ビルドから除外」 | 第12回 演習 課題3 | — |
 | **Add > Reference** | 「参照 → 参照の追加」 | 第12回 演習 発展1 | — |
 | **C/C++ > General > Additional Include Directories** | 「C/C++ → 全般 → 追加のインクルード ディレクトリ」 | 第12回 演習 発展1 | — |
-| ブレークポイントの右クリック → **Conditions**（**Conditional Expression** の **Is true**） | — | | 条件（条件式，true の場合） |
-| **Debug > Windows > Memory > Memory 1**（**Address** 欄） | — | | [メモリ] ウィンドウの「メモリ 1」（「アドレス」フィールド） |
-| **Tools > Options** の **Debugging > General** の **Enable address-level debugging** | — | | アドレスレベルのデバッグを有効にする |
-| **Exception Thrown**（ウィンドウ） | — | | 例外がスローされました |
-| **C/C++ > Code Generation > Basic Runtime Checks** | — | | — |
-| **C/C++ > General > Treat Warnings As Errors** | — | | — |
-| **Configuration Properties > C/C++ > General > Enable AddressSanitizer** | — | | 構成プロパティ > C/C++ > 全般 > AddressSanitizer を有効にする |
-| **Git > Settings** の **Git Global Config** の **User name** / **Email** | — | | Git > 設定 の「Git グローバル構成」の「ユーザー名」/「電子メール」 |
-| **Git > Create Git Repository** → **Other** > **Local** → **Create and Push** | — | | Git > Git リポジトリの作成 →「その他」>「ローカル」→「作成とプッシュ」 |
-| **Git Changes**（ウィンドウ） / **Commit All** / **Undo Changes** | — | | Git の変更 /「すべてコミット」/「変更を元に戻す」 |
-| **Git > View Branch History** / **Revert** | — | | Git > ブランチ履歴の表示 /「元に戻す」（文書によっては「復元」） |
+| ブレークポイントの右クリック → **Conditions**（**Conditional Expression** の **Is true**） | — | — | 条件（条件式，true の場合） |
+| **Debug > Windows > Memory > Memory 1**（**Address** 欄） | — | — | [メモリ] ウィンドウの「メモリ 1」（「アドレス」フィールド） |
+| **Tools > Options** の **Debugging > General** の **Enable address-level debugging** | — | — | アドレスレベルのデバッグを有効にする |
+| **Exception Thrown**（ウィンドウ） | — | — | 例外がスローされました |
+| **Exception Unhandled**（ウィンドウ） | — | — | — |
+| **C/C++ > Code Generation > Basic Runtime Checks** | — | — | — |
+| **C/C++ > General > Treat Warnings As Errors** | — | — | — |
+| **Configuration Properties > C/C++ > General > Enable AddressSanitizer** | — | — | 構成プロパティ > C/C++ > 全般 > AddressSanitizer を有効にする |
+| **Git > Settings** の **Git Global Config** の **User name** / **Email** | — | — | Git > 設定 の「Git グローバル構成」の「ユーザー名」/「電子メール」 |
+| **Git > Create Git Repository** → **Other** > **Local** → **Create and Push** | — | — | Git > Git リポジトリの作成 →「その他」>「ローカル」→「作成とプッシュ」 |
+| **Git Changes**（ウィンドウ） / **Commit All** / **Undo Changes** | — | — | Git の変更 /「すべてコミット」/「変更を元に戻す」 |
+| **Git > View Branch History** / **Revert** | — | — | Git > ブランチ履歴の表示 /「元に戻す」（文書によっては「復元」） |
 
-授業資料の表記は docs/*.md，日本語版の画面の表記は Microsoft Learn 日本語版（learn.microsoft.com/ja-jp）による。— は確かめられなかったもの。学生の画面で確かめる。
+授業資料の表記は docs/*.md，日本語版の画面の表記は Microsoft Learn 日本語版（learn.microsoft.com/ja-jp）による。「授業資料の表記」の — は授業資料にメニュー名・ウィンドウ名の形で出てこないもの，「授業資料の場所」の — は授業資料に出てこない操作，「日本語版の画面の表記」の — は確かめられなかったもの。— の表記は学生の画面で確かめる。
 日本語ではよく似た名前になるが，**Undo Changes** は commit していない変更を捨てる操作，**Revert** は commit を打ち消す commit を新しく作る操作である。
 
 VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run and Debug** ビューの **VARIABLES**・**WATCH**・**CALL STACK**，Git は **Source Control** ビュー（Ctrl+Shift+G）で同じことを見せる。
@@ -184,7 +190,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 - 「ブレークポイントで止まらない」→ Ctrl+F5 で起動している，その行が実行されない（`n = 0` など），ビルドに失敗して古い `exe` が動いている，のどれか。
 - 「止まらなくなった（無限ループ）」→ **Debug > Break All**（授業では未習。初めて見せる）で一時停止すると，今どの行を繰り返しているかと変数の値が見える。確かめたら **Debug > Stop Debugging**。
 
-**副テーマ（0 回・1 回・複数回のテスト）**: 繰り返しは，本体が 0 回・1 回・複数回になる値と，許される最大の値で試す（講義 7 節）。`EvenSum` なら `n` = 0・1・2・10・100（期待値 0・0・2・30・2550）。
+**副テーマ（0 回・1 回・複数回のテスト）**: 繰り返しは，本体が 0 回・1 回・複数回になる値（講義 7 節）と，許される最大の値で試す。`EvenSum` なら `n` = 0・1・2・10・100（期待値 0・0・2・30・2550）。
 
 **デバッグの補足（条件付きブレークポイント。授業では未習）**: `n = 100` で `i` が 50 の反復だけを見たいときは，ブレークポイントを右クリックして **Conditions** を選び，**Conditional Expression** の **Is true** に `i == 50` と書く。F5 を何十回も押さなくても，条件が真のときだけ止まる（条件付きのブレークポイントには **+** が付く）。
 
@@ -326,6 +332,8 @@ F11・ウォッチ・呼び出し履歴は第14回の講義で正式に扱う（
 - 「commit のメッセージは "何をしたか" を 1 行で。`fix` だけでは後で分かりません」
 
 **見せ方（2 分）**（Git は授業では未習。第2回に続けて見せる）
+第2回の見せ方は課題を終えた学生に限ったので，リポジトリがない学生もいる。その学生には，第2回の見せ方の手順 0〜1（ユーザー名の確認とリポジトリの作成）だけを先に行う（2 分）。
+間に合わなければ Git は使わず，変える前の行をコメントにして残し（`// if (a[i] > *best) { best = &a[i]; }` のように），その下に変えた行を書く方法で代える（戻すときは変えた行を消してコメントを外す）。
 1. `FindMax` の配列を `{12, 12, 4}` にし，`first=` の表示を加えて `first=1` を確かめた状態で commit する。
 2. `if` の `>` を `>=` に変えて保存し，**Git Changes** でファイルをダブルクリックして差分を見る（1 文字の変更が 1 行の差分として出る）。
 3. 実行して `first=0` を確かめたら，**Undo Changes** で戻す。
@@ -393,7 +401,7 @@ if (fp == NULL) {
 2. 初期化: `normalized` が `Rect result = r;` で始まるか（`Rect result;` に座標だけ入れると `name` が不定のまま）。
 3. コピー: 交換が構造体ごと（`Student temp = a[0];`）か，メンバの一部だけか。
 
-**読み合いの注意**: 提出前の課題を学生どうしで見せ合ってよいかは，担当教員の指示に従う。許されていない場合は，誤りを含む短い断片（点数だけを交換する 3 行など。README の「よくある誤り」にある）を TA が紙やホワイトボードに書いて見せ，それをレビューさせる。
+**読み合いの注意**: 提出前の課題を学生どうしで見せ合ってよいかは，担当教員の指示に従う。許されていない場合は，誤りを含む短い断片（点数だけを交換する 3 行など。第11回 README の [名前と点数を一緒に交換する](../week11/README.md#名前と点数を一緒に交換する) に 3 行と出力，課題2 の [採点のポイント・よくある誤り](../week11/README.md#採点のポイントよくある誤り-1) にほかの誤りがある）を TA が紙やホワイトボードに書いて見せ，それをレビューさせる。
 
 **確かめる問い**
 - 問「点数だけを交換した版は，平均の表示で誤りに気付ける？」→ 気付けない。平均は 80.0 のまま。名前と点数の組を表示して初めて分かる。
@@ -433,12 +441,12 @@ if (fp == NULL) {
 **よくある反応**
 - 「`calc.h` を追加したから `calc.c` はいらない」→ ヘッダは宣言（約束）だけで，本体は `calc.c` にある。コンパイルは通ってもリンクで失敗する。
 - 「4 つの変更を一度に試した」→ どの変更がどの診断を出したか分からない。1 つずつ試し，毎回元に戻して成功を確かめる。
+- 「入力の検査は `assert` で書けばよい」（発展3）→ `assert` は開発中に前提を確かめる道具で，`NDEBUG` を定義すると式ごと評価されなくなる。利用者の入力やファイルの内容は，`assert` ではなく `if` で常に検査する（演習ページ 発展3 の追加の観察と注意）。
 
 **副テーマ（ビルドの設定を文字で書く）**: Visual Studio のプロジェクト設定（どの `.c` を入れるか，**Additional Include Directories**，**Add > Reference**）は，実務では CMake などのビルドシステムで文字として書き，誰の PC でも同じようにビルドできるようにする。
 このリポジトリの [CalcApp/CMakeLists.txt](../week12/CalcApp/CMakeLists.txt) は，発展1 の参照の追加とインクルードの検索先を `target_link_libraries` と `target_include_directories` の 2 行で書いている。壊して戻す実験には，第2回・第9回の **Undo Changes** が使える。
-なお発展3 の `assert` は開発中に前提を確かめる道具で，`NDEBUG` を定義すると無効になる。利用者の入力やファイルの内容は，`assert` ではなく `if` で常に検査する（演習ページ 発展3 の追加の観察と注意）。
 
-**関連**: 第12回 README の [課題3　リンクエラーを調べる](../week12/README.md#課題3リンクエラーを調べるsplitcalc-と-builderrorssplit)（ビルド記録，診断の違いから分かること），[発展1　静的ライブラリとして使う](../week12/README.md#発展1静的ライブラリとして使うcalclib--calcccalchcalcapp--mainc) の [このリポジトリ（CMake）での対応](../week12/README.md#このリポジトリcmakeでの対応)，デバッグの題材 [BugSharedCounter](../debugging/BugSharedCounter/README.md)
+**関連**: 第12回 README の [課題3　リンクエラーを調べる](../week12/README.md#課題3リンクエラーを調べるsplitcalc-と-_builderrorssplit)（ビルド記録，診断の違いから分かること），[発展1　静的ライブラリとして使う](../week12/README.md#発展1静的ライブラリとして使うcalclib--calcccalchcalcapp--mainc) の [このリポジトリ（CMake）での対応](../week12/README.md#このリポジトリcmakeでの対応)，デバッグの題材 [BugSharedCounter](../debugging/BugSharedCounter/README.md)
 
 ## 第13回　所有者と失敗経路（メモリ管理）
 
@@ -453,7 +461,7 @@ if (fp == NULL) {
 1. `NewPoint` のコピー（このリポジトリでは，この手順 1 を済ませた版が `NewPointFail`）で，演習ページの `point_allocate` を `new_point` の前に追加し，`new_point` の `malloc(sizeof *p)` を `point_allocate(sizeof *p)` に置き換え，`simulate_failure` を 1 にしてビルドする（正常版の `NewPoint` はそのまま残す）。
 2. `Point *p = new_point(3.0, 4.0);` の行で F9，F5，F11 で `new_point` に入る。`point_allocate` が `NULL` を返し，`return NULL;` へ進んでメンバへの代入を通らないことを見せる。
 3. `main` に戻ったら **Locals** で `p` が `0x0000000000000000` であることを確かめ，F10 で `fprintf` から `return 1;` へ進む（`p->x` を表示する `printf` は通らない）。
-4. コピーの `simulate_failure` を 0 に戻すと正常出力になることを確かめ（このリポジトリでは `NewPointFail` の variant `simulate_failure_0` の版），正常版の `NewPoint` もビルド・実行する（演習ページのチェックリスト）。TA が見せるときは，リポジトリの `NewPointFail` の本体を書き換えず，自分用のコピーで行う。
+4. コピーの `simulate_failure` を 0 に戻すと正常出力になることを確かめ（このリポジトリでは，`const int simulate_failure = 1` を 0 に書き換えた版の期待する出力が [NewPointFail/variants/tests](../week13/NewPointFail/variants/tests/) の `simulate_failure_0.out` にあり，書き換え方は [NewPointFail/CMakeLists.txt](../week13/NewPointFail/CMakeLists.txt) の `softprac_add_variant` に書いてある），正常版の `NewPoint` もビルド・実行する（演習ページのチェックリスト）。TA が見せるときは，リポジトリの `NewPointFail` の本体を書き換えず，自分用のコピーで行う。
 
 F11 は第8回で先取りしたもので，ステップ実行とウォッチはこの回の演習ページにも出てくる。
 
@@ -470,7 +478,7 @@ F11 は第8回で先取りしたもので，ステップ実行とウォッチは
 **副テーマ（レビューの手順）**: 演習ページのヒントの順（確保に成功した領域を数える → すべての `return` と失敗分岐で誰が解放するかをたどる → 別名のポインタと解放後の参照を探す）は，実務でメモリを扱うコードのレビューでもそのまま使える。
 後述のチェックリストの「メモリ」の項目と合わせて使う。
 
-**デバッグの補足（確保した領域をメモリで見る。授業では未習）**: Debug 構成の C ランタイムは，`malloc` した領域を 0xCD で埋め，その前後 4 バイトずつを 0xFD で埋めて確保する（Microsoft Learn「CRT debug heap details」）。`Dynamic` で `malloc` の直後に **Memory 1** に `values` と入れると，代入前の要素が CD の並びで，最後の要素の後ろに FD が 4 つ見える。**Watch 1** に `values,5` と書けば（コマンド引数を 5 にしたとき）5 要素を配列として見られる（第5回）。この FD を範囲外への書き込みで壊すと，`free` のときに Debug の C ランタイムが検査してエラーを報告する。アクセス違反で止まったときの見方は第8回と同じ。
+**デバッグの補足（確保した領域をメモリで見る。授業では未習）**: Debug 構成の C ランタイムは，`malloc` した領域を 0xCD で埋め，その前後 4 バイトずつを 0xFD で埋めて確保する（Microsoft Learn「CRT debug heap details」）。`Dynamic` で `malloc` の直後に **Memory 1** に `values` と入れると，代入前の要素が CD の並びで，最後の要素の後ろに FD が 4 つ見える。**Watch 1** に `values,5` と書けば（コマンド引数を 5 にしたとき）5 要素を配列として見られる（「,要素数」の書式指定子は授業資料にない。第5回の「デバッグの補足」）。この FD を範囲外への書き込みで壊すと，`free` のときに Debug の C ランタイムが検査してエラーを報告する。アクセス違反で止まったときの見方は第8回と同じ。
 
 **関連**: 第13回 README の [課題4　コードレビュー](../week13/README.md#課題4コードレビュー)（指摘・修正版・所有者の図），[課題3　構造体を確保する関数](../week13/README.md#課題3構造体を確保する関数newpoint--new_pointc) の [失敗を模擬する（`NewPointFail`）](../week13/README.md#失敗を模擬するnewpointfail)，[発展3　不透明な`Vector`の生成と解放](../week13/README.md#発展3不透明なvectorの生成と解放dynamicvector--vector_maincvectorcvectorh) の [途中で失敗した場合（`DynamicVectorFail`）](../week13/README.md#途中で失敗した場合dynamicvectorfail)，デバッグの題材 [BugMallocSize](../debugging/BugMallocSize/README.md)，[BugBackupScores](../debugging/BugBackupScores/README.md)
 
@@ -502,7 +510,8 @@ F11 は第8回で先取りしたもので，ステップ実行とウォッチは
 - 「`n = 0` の `calls` は 0」→ 最初の呼び出しも数えるので 1（`depth` も 1）。`main` は数えない。
 
 **副テーマ（自動テストと CI）**: 課題1 の「再帰版と反復版を 0〜20 のすべてで比べる」確認を，人が目で見る代わりにプログラムに任せるのが自動テストで，変更のたびに自動で実行する仕組みが CI（継続的インテグレーション）である。
-参考までに，この解答リポジトリでも，各プロジェクトの `tests/`（例: [Fibonacci/tests](../week14/Fibonacci/tests/)）を [.github/workflows/ci.yml](../.github/workflows/ci.yml) に定義し，Windows（MSVC・MinGW）・Linux・macOS でビルドして実行できるようにしている。
+参考までに，この解答リポジトリでは，各プロジェクトの `tests/`（例: [Fibonacci/tests](../week14/Fibonacci/tests/)）の期待する出力を CMake がテストとして登録し，[.github/workflows/ci.yml](../.github/workflows/ci.yml) が push のたびに Windows（MSVC・MinGW）・Linux・macOS でビルドして実行する（リポジトリが非公開のときは，実行時間の課金を抑えるため push では一部のジョブだけが動く）。
+TA がこの流れを自分で体験するには，`practice` ブランチ（解答を雛形（空の `main`）にし，同じ `tests/` で自分の解答を自己採点できる。[TA.md のブランチの関係](../TA.md#ブランチの関係)）を使う。
 
 **関連**: 第14回 README の [発展1　再帰の呼び出し数](../week14/README.md#発展1再帰の呼び出し数fibonacci--fibonaccic)（小さい値から比較する，計測結果の読み方，改善案），[課題2　再帰の復帰順](../week14/README.md#課題2再帰の復帰順trace--tracec) の [**Call Stack** ウィンドウを見る](../week14/README.md#call-stack-ウィンドウを見るvisual-studion3-から-n0-まで進んだとき)（第4回・第8回のデバッガの続き），デバッグの題材 [BugFactorial](../debugging/BugFactorial/README.md)，[BugFactorialOverflow](../debugging/BugFactorialOverflow/README.md)
 

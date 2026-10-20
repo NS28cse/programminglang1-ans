@@ -1,7 +1,8 @@
 # 第5回 課題4 Functions
 # 本体に加えて，「境界の値で確認する」の表の 6 つの呼び出し（average と power の引数を書き換えた版を 3 つ），
 # 範囲の端，result を 0 で初期化した誤りの版，戻り値を変数に保存する前の版をビルドしてテストする。
-# 各版は先頭コメントの 2 行目も版の説明に置き換える
+# 各版は先頭コメントの 2 行目も版の説明に置き換える。
+# 別解（指数を半分にしながら掛ける power の版 versions/power_squaring.c）も，置換なしの版としてビルドしてテストする
 softprac_add_program(Functions functions.c)
 
 softprac_add_variant(Functions functions.c a_0_0_p_2_0
@@ -45,3 +46,6 @@ softprac_add_variant(Functions functions.c before_result
   [=[    float result = average(2.0f, 4.0f);  // 戻り値を変数に保存してから表示する
     printf("average=%.1f\n", result);]=]
   [=[    printf("average=%.1f\n", average(2.0f, 4.0f));  // 戻り値をそのまま表示に使う]=])
+
+# 別解: 指数を半分にしながら掛ける power
+softprac_add_variant(Functions versions/power_squaring.c power_squaring)

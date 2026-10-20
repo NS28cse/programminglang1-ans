@@ -92,4 +92,4 @@ reversed: kcats
 - [題材の一覧と渡し方の共通ルール](../README.md)
 - 第7回 README の [課題3　行の容量](../../week07/README.md#課題3行の容量lineinput--linec)（[3つの長さを区別する（表）](../../week07/README.md#3つの長さを区別する表)）
 - 第6回 README の [課題4　比較してから連結する](../../week06/README.md#課題4比較してから連結するcomparejoin--compare_joinc)（[容量の境界を確認する（表）](../../week06/README.md#容量の境界を確認する表)）
-- 実務の手引きの [第6回　容量と範囲外書き込み](../../ta-guide/README.md#第6回容量と範囲外書き込み文字列)（「デバッグの補足」の `/RTC1` と **Memory** ウィンドウ），[どの回でも使う型](../../ta-guide/README.md#どの回でも使う型) の [AddressSanitizer](../../ta-guide/README.md#addresssanitizer範囲外アクセスと解放後の使用を実行時に見つける)
+- 実務の手引きの [第7回　再現できる質問・バグ報告](../../ta-guide/README.md#第7回再現できる質問バグ報告入出力)（入力した文字数まで含めて症状を言わせる），[第6回　容量と範囲外書き込み](../../ta-guide/README.md#第6回容量と範囲外書き込み文字列)（「デバッグの補足」の `/RTC1` と **Memory** ウィンドウ），[どの回でも使う型](../../ta-guide/README.md#どの回でも使う型) の [AddressSanitizer](../../ta-guide/README.md#addresssanitizer範囲外アクセスと解放後の使用を実行時に見つける)

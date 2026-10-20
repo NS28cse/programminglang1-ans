@@ -6,7 +6,7 @@
 
 - 第12回（コンパイル：分割コンパイルとライブラリ）。講義 6 節「`static`と`extern`」の後。課題3 のリンクエラー（LNK2005：同じ定義が 2 つ）を経験した後に向く。
 - 学生が知っていること: ヘッダに宣言・`.c` に定義を置く分割，インクルードガード，翻訳単位，`static` と `extern`，ブレークポイント（F9）・F5・F10・**Locals**。
-  ステップイン（F11）と **Watch 1** は授業では未習（第14回の講義・第13回の演習で扱う操作）。
+  ステップイン（F11）と **Watch 1** は授業では未習（第14回の講義・第13回の演習の発展3 で扱う操作）。
 - 入力も引数もない。
 
 ## プログラムがするはずのこと
@@ -82,6 +82,6 @@ calls=0
 ## 関連
 
 - [題材の一覧と渡し方の共通ルール](../README.md)
-- 第12回 README の [課題3　リンクエラーを調べる](../../week12/README.md#課題3リンクエラーを調べるsplitcalc-と-builderrorssplit)（[エラーの比較（表の解答）](../../week12/README.md#エラーの比較表の解答)）
+- 第12回 README の [課題3　リンクエラーを調べる](../../week12/README.md#課題3リンクエラーを調べるsplitcalc-と-_builderrorssplit)（[エラーの比較（表の解答）](../../week12/README.md#エラーの比較表の解答)）
 - 第13回 README の [発展2　`static`変数の寿命を確かめる](../../week13/README.md#発展2static変数の寿命を確かめるstoragecount--countcsharedcount--mainccounterccounterh) の [第12回との接続：共有変数の宣言（`SharedCount`）](../../week13/README.md#第12回との接続共有変数の宣言sharedcount)
 - 実務の手引きの [第12回　コンパイルとリンクを分けて考える](../../ta-guide/README.md#第12回コンパイルとリンクを分けて考えるコンパイル)

@@ -1,7 +1,8 @@
 # 第5回 課題2 ColumnSum
 # 本体に加えて，table を {{1, 1, 1}, {2, 2, 2}} と {{0}} に変えた版と，
 # sum の初期化を二重ループ全体の前へ移した誤りの版（5，12，21 の累積になる）をビルドしてテストする。
-# 各版は先頭コメントの 2 行目も版の説明に置き換える
+# 各版は先頭コメントの 2 行目も版の説明に置き換える。
+# 別解（列の合計を配列に持ち，行の順に走査する版 versions/row_major.c）も，置換なしの版としてビルドしてテストする
 softprac_add_program(ColumnSum arrays.c)
 
 softprac_add_variant(ColumnSum arrays.c ones
@@ -23,3 +24,6 @@ softprac_add_variant(ColumnSum arrays.c sum_outside
     // 外側を列（0〜2），内側を行（0〜1）にする。添字は常に table[行][列] の順
     for (int col = 0; col < 3; ++col) {
 ]=])
+
+# 別解: 列の合計を配列 col_sum に持ち，外側を行にして 1 回走査する版
+softprac_add_variant(ColumnSum versions/row_major.c row_major)

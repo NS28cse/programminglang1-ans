@@ -10,12 +10,13 @@
 
 | ブランチ | 内容 | 作り方 |
 | --- | --- | --- |
-| `main` | 解答（`weekNN/` のソース・データファイル・`versions/`）と各回の README，ルートの README.md と最小の CMakeLists.txt | 解答・解説を直すときは `main` に PR を出す |
-| `ta` | `main` ＋ このファイルの「[`ta` だけにあるもの](#ta-だけにあるもの)」 | `main` を `ta` にマージし，テストや TA 用の資料を足す（`ta` から `main` へはマージしない） |
-| `ta-results` | `ta` ＋ すべてのテストの実際の出力（`results/`） | `ta` へ push すると CI（`.github/workflows/results.yml`）が作り直す。手で commit しない |
+| `main` | 解答（`weekNN/` のソース・データファイル・`versions/`）と各回の README，ルートの README.md と最小の CMakeLists.txt | `ta` で直して確かめた解答・解説を `tools/export_main.py` で写し，`main` に PR を出す |
+| `ta` | `main` ＋ このファイルの「[`ta` だけにあるもの](#ta-だけにあるもの)」 | 保守はここで行う。`main` の PR がマージされたら `git merge origin/main` で取り込む（`ta` を `main` へはマージしない） |
+| `ta-results` | `ta` ＋ すべてのテストの実際の出力（`results/`） | `ta` へ push すると CI（`.github/workflows/results.yml`）が作り直して force push する。手で commit しない |
 | `practice` | `main` の解答を雛形（空の `main`）にし，`ta` の `tests/` を加えた練習用。解答を見ずに課題を解き，テストで自己採点する | `tools/make_practice.py` で作る。練習は `practice` から切った自分のブランチで行う |
 
 詳しい手順は [CONTRIBUTING.md の「ブランチ」](CONTRIBUTING.md#ブランチ)にあります。
+`ta-results` と `practice` は作り直すたびに履歴が置き換わるので，`git pull` では更新できません。手元の `ta-results` は `git fetch origin && git switch -C ta-results origin/ta-results` で最新にします（`practice` から切った自分のブランチの載せ替えは `practice` の README.md）。
 
 ## 読者別の入口
 
@@ -33,21 +34,21 @@
 | 回 | テーマ | プロジェクト | テスト数 | 演習ページ |
 | --- | --- | --- | ---: | --- |
 | [第1回](week01/README.md) | プログラミングの基礎 | Broken，House，Message，Version，Welcome | 11 | [ex01](https://t-yokoga.github.io/softprac1/ex01.html) |
-| [第2回](week02/README.md) | 変数 | Exchange，Observe，Profile，Rectangle，Temperature | 21 | [ex02](https://t-yokoga.github.io/softprac1/ex02.html) |
+| [第2回](week02/README.md) | 変数 | Exchange，Observe，Profile，Rectangle，Temperature | 24 | [ex02](https://t-yokoga.github.io/softprac1/ex02.html) |
 | [第3回](week03/README.md) | 演算子 | Conditions，Flags，Leap，TimeParts，Update | 43 | [ex03](https://t-yokoga.github.io/softprac1/ex03.html) |
-| [第4回](week04/README.md) | 制御構造 | EvenSum，Fee，Powers，Table，YearGroup | 127 | [ex04](https://t-yokoga.github.io/softprac1/ex04.html) |
-| [第5回](week05/README.md) | 配列と関数 | Array3D，ColumnSum，Functions，Maximum，SumMean，ValueCopy，Warmup05 | 37 | [ex05](https://t-yokoga.github.io/softprac1/ex05.html) |
+| [第4回](week04/README.md) | 制御構造 | EvenSum，Fee，Powers，Table，YearGroup | 141 | [ex04](https://t-yokoga.github.io/softprac1/ex04.html) |
+| [第5回](week05/README.md) | 配列と関数 | Array3D，ColumnSum，Functions，Maximum，SumMean，ValueCopy，Warmup05 | 40 | [ex05](https://t-yokoga.github.io/softprac1/ex05.html) |
 | [第6回](week06/README.md) | 文字列 | AsciiTable，Average，CharCode，CompareJoin，CopyCapacity，Length，Lower | 40 | [ex06](https://t-yokoga.github.io/softprac1/ex06.html) |
-| [第7回](week07/README.md) | 入出力 | ByteCount，Echo，Formats，LetterCount，LineInput，LowerInput，Typing | 92 | [ex07](https://t-yokoga.github.io/softprac1/ex07.html) |
-| [第8回](week08/README.md) | ポインタ1 | CopyText，Decompose，MinMax，PointerWalk，Swap | 43 | [ex08](https://t-yokoga.github.io/softprac1/ex08.html) |
-| [第9回](week09/README.md) | ポインタ2 | ArrayTypes，FindMax，MatrixMean，Names，RaggedRows，ReturnMaximum，SwapRows | 42 | [ex09](https://t-yokoga.github.io/softprac1/ex09.html) |
+| [第7回](week07/README.md) | 入出力 | ByteCount，Echo，Formats，LetterCount，LineInput，LowerInput，Typing | 118 | [ex07](https://t-yokoga.github.io/softprac1/ex07.html) |
+| [第8回](week08/README.md) | ポインタ1 | CopyText，Decompose，MinMax，PointerWalk，Swap | 44 | [ex08](https://t-yokoga.github.io/softprac1/ex08.html) |
+| [第9回](week09/README.md) | ポインタ2 | ArrayTypes，FindMax，MatrixMean，Names，RaggedRows，ReturnMaximum，SwapRows | 44 | [ex09](https://t-yokoga.github.io/softprac1/ex09.html) |
 | [第10回](week10/README.md) | ファイル | Arguments，Binary，ByteOrder，CheckValue，LineLengths，NumberFormats，ParseNumber，ReadText，WriteSquares，WriteText | 132 | [ex10](https://t-yokoga.github.io/softprac1/ex10.html) |
 | [第11回](week11/README.md) | 構造体 | CopyMembers，PointInit，PointMove，Rect，RectContains，StructLayout，Students | 49 | [ex11](https://t-yokoga.github.io/softprac1/ex11.html) |
-| [第12回](week12/README.md) | コンパイル：分割コンパイルとライブラリ | CalcApp，CalcLib，LibraryCheck，SortModule，SplitCalc，VectorCalc | 34 | [ex12](https://t-yokoga.github.io/softprac1/ex12.html) |
-| [第13回](week13/README.md) | メモリ管理 | Dynamic，DynamicCopy，DynamicVector，DynamicVectorFail，GrowArray，GrowArrayFail，NewPoint，NewPointFail，SharedCount，StorageCount | 66 | [ex13](https://t-yokoga.github.io/softprac1/ex13.html) |
-| [第14回](week14/README.md) | 再帰 | CheckedFactorial，Factorial，Fibonacci，GcdLoop，Trace，TreeTraversal | 63 | [ex14](https://t-yokoga.github.io/softprac1/ex14.html) |
+| [第12回](week12/README.md) | コンパイル：分割コンパイルとライブラリ | CalcApp，CalcLib，LibraryCheck，SortModule，SplitCalc，VectorCalc | 52 | [ex12](https://t-yokoga.github.io/softprac1/ex12.html) |
+| [第13回](week13/README.md) | メモリ管理 | Dynamic，DynamicCopy，DynamicVector，DynamicVectorFail，GrowArray，GrowArrayFail，NewPoint，NewPointFail，SharedCount，StorageCount | 79 | [ex13](https://t-yokoga.github.io/softprac1/ex13.html) |
+| [第14回](week14/README.md) | 再帰 | CheckedFactorial，Factorial，Fibonacci，GcdLoop，Trace，TreeTraversal | 65 | [ex14](https://t-yokoga.github.io/softprac1/ex14.html) |
 | [デバッグの題材](debugging/README.md) | バグ入りのプログラム（TA 用） | 17 題 | 45 | |
-| | | **合計** | **845** | |
+| | | **合計** | **927** | |
 <!-- WEEK-TABLE:END -->
 
 テスト数は `tests/` と `variants/tests/` の期待値の数です。この表は `python3 tools/update_generated.py` で作り直します（手で書き換えません）。
@@ -100,7 +101,7 @@ ctest --preset gcc-debug -R week07/Echo   # 1 つのプロジェクトだけ
 
 ## IDE で使う
 
-`ta` ブランチには IDE の設定ファイルがあるので，[README.md の使い方](README.md#使い方)の手順のうち，構成の選び方と引数・作業ディレクトリの設定が次のように簡単になります。
+`ta` ブランチには IDE の設定ファイル（`CMakePresets.json` など）があるので，ビルド先は各回の README の `out\build\x64-Debug\` ではなくプリセット名の `out\build\msvc-debug\`（macOS / Linux は `out/build/gcc-debug/`）になります。また，[README.md の使い方](README.md#使い方)の手順のうち，構成の選び方と引数・作業ディレクトリの設定が次のように簡単になります。
 
 ### Visual Studio（Windows）
 
@@ -116,8 +117,9 @@ ctest --preset gcc-debug -R week07/Echo   # 1 つのプロジェクトだけ
 ### VS Code（Windows / macOS / Linux）
 
 1. **File > Open Folder** で開き，CMake Tools が尋ねる構成のプリセットで，Windows は **`Windows / MSVC (x64 Debug)`**，macOS / Linux は **`GCC / Clang (Debug, macOS・Linux)`** を選びます。
-2. **実行したい課題の `.c` ファイルを開いた状態で**，**Run and Debug** ビュー（Ctrl+Shift+D）の「**開いている課題を実行**」を選び，**F5** または **Ctrl+F5** で起動します（作業ディレクトリはその `.c` のフォルダ）。
-   引数が必要なときは「**開いている課題を引数つきで実行**」を選び，`.vscode/launch.json` の `args` を書き換えます。
+2. **実行したい課題の `.c` ファイルを開いた状態で**，**Run and Debug** ビュー（Ctrl+Shift+D）の「開いている課題を実行 (Windows / MSVC)」（macOS / Linux は「開いている課題を実行 (macOS / Linux)」）を選び，**F5** または **Ctrl+F5** で起動します（作業ディレクトリはその `.c` のフォルダ）。
+   引数が必要なときは「開いている課題を引数つきで実行 (Windows / MSVC)」（macOS / Linux は「開いている課題を引数つきで実行 (macOS / Linux)」）を選び，`.vscode/launch.json` の `args`（既定は `["input.txt"]`）を書き換えます。
+   `.vscode/launch.json` は commit 対象なので，書き換えたまま commit しません（試し終わったら戻します）。
 3. すべてのビルドは **Ctrl+Shift+B**，テストは **Command Palette** の **CMake: Run Tests**，または **Testing** ビューで実行します。
 
 ### よくあるトラブル（ta ブランチ）

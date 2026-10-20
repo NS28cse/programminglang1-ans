@@ -66,4 +66,4 @@ sum=200
 
 - [題材の一覧と渡し方の共通ルール](../README.md)
 - 第6回 README の [ウォームアップ　文字と数値](../../week06/README.md#ウォームアップ文字と数値charcode--char_codec)，[課題2　ASCIIの小文字へ変換](../../week06/README.md#課題2asciiの小文字へ変換lower--lowerc) の [補足：ASCIIの印字可能な範囲（`AsciiTable`）](../../week06/README.md#補足asciiの印字可能な範囲asciitable)
-- 実務の手引きの [第3回　期待値を先に書くテスト](../../ta-guide/README.md#第3回期待値を先に書くテスト演算子)
+- 実務の手引きの [第6回　容量と範囲外書き込み](../../ta-guide/README.md#第6回容量と範囲外書き込み文字列)（その回の巡回で使う声かけ），[第3回　期待値を先に書くテスト](../../ta-guide/README.md#第3回期待値を先に書くテスト演算子)

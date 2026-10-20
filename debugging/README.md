@@ -18,12 +18,12 @@
 3. Ctrl+F5（**Debug > Start Without Debugging**）で実行し，題材の README の「症状」と同じになることを確かめる。F5（**Debug > Start Debugging**）でデバッガの手順を事前に試しておく。
 
 症状は **Debug 構成**で確かめる。実行時チェック（`/RTC1`）や Debug の C ランタイムの検査で見える症状は，Release 構成では出ない。
-VS Code では，題材の `.c` を開いた状態で **Run and Debug** ビュー（Ctrl+Shift+D）の構成から「開いている課題を実行」を選ぶ（作業ディレクトリは題材のフォルダ）。引数が要る題材は「開いている課題を引数つきで実行」を選ぶ。この構成の `args` は `["input.txt"]` なので，`BugCharCount` はそのまま使え，`BugMallocSize` は `.vscode/launch.json` の `args` を `["5"]` に書き換える。
+VS Code では，題材の `.c` を開いた状態で **Run and Debug** ビュー（Ctrl+Shift+D）の構成から「開いている課題を実行 (Windows / MSVC)」または「開いている課題を実行 (macOS / Linux)」を選ぶ（作業ディレクトリは題材のフォルダ）。引数が要る題材は「開いている課題を引数つきで実行 (Windows / MSVC)」または「開いている課題を引数つきで実行 (macOS / Linux)」を選ぶ。この構成の `args` は `["input.txt"]` なので，`BugCharCount` はそのまま使え，`BugMallocSize` は `.vscode/launch.json` の `args` を `["5"]` に書き換える。`.vscode/launch.json` は commit 対象なので，書き換えたまま commit しない（試し終わったら戻す）。
 
 ### 学生への渡し方
 
 - 渡すもの: 題材フォルダの `.c`・`.h` と，`input.txt` などの入力ファイル。`README.md`・`CMakeLists.txt`・`tests/`・`variants/` は渡さない（答えと，直した版の期待値を含む）。
-- 学生は授業と同じく **Create a new project > Empty Project** で空のプロジェクトを作り，**Add > Existing Item** でソースを入れる。入力ファイルはプロジェクトフォルダに置き，引数が要る題材は **Configuration Properties > Debugging > Command Arguments** に設定する（第10回の手順）。
+- 学生は授業と同じく **Create a new project > Empty Project** で空のプロジェクトを作り，**Add > Existing Item** でソースを入れる（**Add > Existing Item** は第12回の講義で出る操作なので，それより前の回では TA が手順を見せる）。入力ファイルはプロジェクトフォルダに置き，引数が要る題材は **Configuration Properties > Debugging > Command Arguments** に設定する（第10回の手順）。
 - 最初に言うのは 3 つだけ: **プログラムがするはずのこと（期待する出力）**，**実際の症状**，**再現の手順**。各題材の README の「学生への渡し方」に，そのまま読み上げられる文を載せている。バグの場所・種類は言わない。
 - 目安は 10〜15 分。手が止まったら，README の「ヒントの段階」を 1 段ずつ出す（1 段出したら 3〜5 分待つ）。
 - 直す前に，原因を 1 文で言わせる（「〜なので〜になっていた」）。直したら，同じ再現の手順でもう一度実行させる。
@@ -57,17 +57,17 @@ VS Code では，題材の `.c` を開いた状態で **Run and Debug** ビュ�
 | 第5回 | [BugGrade](BugGrade/README.md) | 点数から A〜D を返す関数 | 条件の順序（`else if` の並び） | 関数の中の F9・F10・**Locals** | いいえ |
 | 第6回 | [BugDigitSum](BugDigitSum/README.md) | 数字の文字列の各桁の和 | 文字と数の取り違え（`- '0'` の忘れ） | F9・F10・**Locals**（文字コードの表示） | いいえ |
 | 第6回 | [BugAnswerCheck](BugAnswerCheck/README.md) | 答えと解答を `strcmp` で比べる | 戻り値の読み違い（`if (strcmp(a, b))` を「等しい」と読む） | 関数の中の F9・F10・**Locals**（**Autos**・**Watch 1** は未習） | いいえ |
-| 第7回 | [BugUpper](BugUpper/README.md) | 入力を大文字にして写す | 入力の読み方（1 回の繰り返しで `getchar` を 2 回） | F9・F10・**Locals**，コンソールへの入力と `EOF` | いいえ |
+| 第7回 | [BugUpper](BugUpper/README.md) | 入力を大文字にして写す | 入力の読み方（1 回の繰り返しで `getchar` を 2 回） | F9・F10・**Locals**，コンソールへの入力と `EOF`（**Watch 1**・**Autos** は未習） | いいえ |
 | 第7回 | [BugReverseWord](BugReverseWord/README.md) | 8 文字までの単語を逆順に表示 | 配列の範囲外（終端 `'\0'` の分の要素がない） | 実行時チェックのダイアログ・F9・**Locals**（**Memory 1** は未習） | **はい** |
 | 第8回 | [BugCopyText](BugCopyText/README.md) | 文字列をコピーする関数 | 文字列の終端のコピー忘れ | F9・**Locals**（F11・**Watch 1** は未習） | いいえ |
-| 第9回 | [BugFindMax](BugFindMax/README.md) | 最大の要素の場所を返す関数 | ポインタの指す先（ポインタの値渡しで呼び出し元を書き換えられない） | F9・F10・**Locals**（**Watch 1** は未習） | いいえ |
-| 第10回 | [BugCharCount](BugCharCount/README.md) | ファイルの文字数と行数 | ファイルの読み方（`while (!feof(fp))` で `EOF` も数える） | **Command Arguments**・F9・F5（**Continue**）・**Locals** | いいえ |
+| 第9回 | [BugFindMax](BugFindMax/README.md) | 最大の要素の場所を返す関数 | ポインタの指す先（ポインタの値渡しで呼び出し元を書き換えられない） | F9・F10・**Locals**（F11・**Watch 1**・**Call Stack** は未習） | いいえ |
+| 第10回 | [BugCharCount](BugCharCount/README.md) | ファイルの文字数と行数 | ファイルの読み方（`while (!feof(fp))` で `EOF` も数える） | **Command Arguments**・F9・F5（**Continue**）・F10・**Locals**（**Watch 1** は未習） | いいえ |
 | 第11回 | [BugStudentNames](BugStudentNames/README.md) | 名簿を読んで表示 | 構造体のポインタメンバの共有（全員が同じ配列を指す） | F9・F5（**Continue**）・**Locals**（構造体の配列を展開） | いいえ |
-| 第12回 | [BugSharedCounter](BugSharedCounter/README.md) | 呼び出し回数を数える（3 ファイル） | リンケージ（ヘッダの `static` 変数がファイルごとに別物） | 2 つのファイルで F9・データヒント（DataTip。未習） | いいえ |
-| 第13回 | [BugMallocSize](BugMallocSize/README.md) | `n` 個の `int` を動的に確保 | `malloc` のサイズの誤り（要素数をバイト数として渡す） | ヒープ破壊のダイアログ・**Command Arguments**・**Watch 1**（`values,5`） | **はい** |
-| 第13回 | [BugBackupScores](BugBackupScores/README.md) | 点数の控えを作ってから元を解放 | 解放後の使用・二重解放（構造体の代入で配列を共有） | F9・F10・**Locals**・**Watch 1** | **はい** |
-| 第14回 | [BugFactorial](BugFactorial/README.md) | 0!〜5! の表 | 再帰の基底条件（0 で止まらない） | 例外で止まる・**Call Stack**・**Locals**・F11 | 異常終了（スタックオーバーフロー） |
-| 第14回 | [BugFactorialOverflow](BugFactorialOverflow/README.md) | 0!〜15! の表 | `int` の桁あふれ（型の上限を確かめていない） | F9・F11・**Locals**（**Autos** の戻り値は未習） | **はい** |
+| 第12回 | [BugSharedCounter](BugSharedCounter/README.md) | 呼び出し回数を数える（3 ファイル） | リンケージ（ヘッダの `static` 変数がファイルごとに別物） | 2 つのファイルで F9・F10（データヒント（DataTip）・**Autos**・**Watch 1** は未習） | いいえ |
+| 第13回 | [BugMallocSize](BugMallocSize/README.md) | `n` 個の `int` を動的に確保 | `malloc` のサイズの誤り（要素数をバイト数として渡す） | ヒープ破壊のダイアログ・**Command Arguments**・F9・F10・**Locals**・**Watch 1**（第13回 発展3。発展をしていない学生には未習。`values,5` の書式指定子と **Memory 1** は未習） | **はい** |
+| 第13回 | [BugBackupScores](BugBackupScores/README.md) | 点数の控えを作ってから元を解放 | 解放後の使用・二重解放（構造体の代入で配列を共有） | F9・F10・**Locals**・**Watch 1**（第13回 発展3。発展をしていない学生には未習） | **はい** |
+| 第14回 | [BugFactorial](BugFactorial/README.md) | 0!〜5! の表 | 再帰の基底条件（0 で止まらない） | 例外で止まる・**Call Stack**・**Locals**・F9・F11 | 異常終了（スタックオーバーフロー） |
+| 第14回 | [BugFactorialOverflow](BugFactorialOverflow/README.md) | 0!〜15! の表 | `int` の桁あふれ（型の上限を確かめていない） | F9・F11・**Locals**（条件付きブレークポイント・**Autos** の戻り値は未習） | **はい** |
 
 ## テスト
 

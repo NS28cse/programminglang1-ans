@@ -1,6 +1,7 @@
 # 第5回 課題1 Maximum
 # 本体に加えて，「異なる配列で確かめる」の表の 4 つの配列（COUNT と初期化子を書き換えた版）と，
-# return をループの中へ移した誤りの版をビルドしてテストする。各版は先頭コメントの 2 行目も版の説明に置き換える
+# return をループの中へ移した誤りの版をビルドしてテストする。各版は先頭コメントの 2 行目も版の説明に置き換える。
+# 別解（最大値の位置を持つ版 versions/max_index.c）も，置換なしの版としてビルドしてテストする
 softprac_add_program(Maximum maximum.c)
 
 softprac_add_variant(Maximum maximum.c zero
@@ -37,3 +38,6 @@ softprac_add_variant(Maximum maximum.c return_in_loop
     }]=])
 # MSVC は C4715 に加えて C4702（ループの ++i に到達しない）も出すので，両方抑止する
 target_compile_options(Maximum_return_in_loop PRIVATE $<IF:$<C_COMPILER_ID:MSVC>,/wd4715,-Wno-return-type> $<$<C_COMPILER_ID:MSVC>:/wd4702>)
+
+# 別解: 候補を値ではなく添字で持つ版
+softprac_add_variant(Maximum versions/max_index.c max_index)
