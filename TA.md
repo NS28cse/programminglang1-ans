@@ -41,14 +41,14 @@
 | [第6回](week06/README.md) | 文字列 | AsciiTable，Average，CharCode，CompareJoin，CopyCapacity，Length，Lower | 40 | [ex06](https://t-yokoga.github.io/softprac1/ex06.html) |
 | [第7回](week07/README.md) | 入出力 | ByteCount，Echo，Formats，LetterCount，LineInput，LowerInput，Typing | 119 | [ex07](https://t-yokoga.github.io/softprac1/ex07.html) |
 | [第8回](week08/README.md) | ポインタ1 | CopyText，Decompose，MinMax，PointerWalk，Swap | 46 | [ex08](https://t-yokoga.github.io/softprac1/ex08.html) |
-| [第9回](week09/README.md) | ポインタ2 | ArrayTypes，FindMax，MatrixMean，Names，RaggedRows，ReturnMaximum，SwapRows | 42 | [ex09](https://t-yokoga.github.io/softprac1/ex09.html) |
-| [第10回](week10/README.md) | ファイル | Arguments，Binary，ByteOrder，CheckValue，LineLengths，NumberFormats，ParseNumber，ReadText，WriteSquares，WriteText | 132 | [ex10](https://t-yokoga.github.io/softprac1/ex10.html) |
+| [第9回](week09/README.md) | ポインタ2 | ArrayTypes，FindMax，MatrixMean，Names，RaggedRows，ReturnMaximum，SwapRows | 44 | [ex09](https://t-yokoga.github.io/softprac1/ex09.html) |
+| [第10回](week10/README.md) | ファイル | Arguments，Binary，ByteOrder，CheckValue，LineLengths，NumberFormats，ParseNumber，ReadText，WriteSquares，WriteText | 191 | [ex10](https://t-yokoga.github.io/softprac1/ex10.html) |
 | [第11回](week11/README.md) | 構造体 | CopyMembers，PointInit，PointMove，Rect，RectContains，StructLayout，Students | 49 | [ex11](https://t-yokoga.github.io/softprac1/ex11.html) |
 | [第12回](week12/README.md) | コンパイル：分割コンパイルとライブラリ | CalcApp，CalcLib，LibraryCheck，SortModule，SplitCalc，VectorCalc | 52 | [ex12](https://t-yokoga.github.io/softprac1/ex12.html) |
 | [第13回](week13/README.md) | メモリ管理 | Dynamic，DynamicCopy，DynamicVector，DynamicVectorFail，GrowArray，GrowArrayFail，NewPoint，NewPointFail，SharedCount，StorageCount | 66 | [ex13](https://t-yokoga.github.io/softprac1/ex13.html) |
 | [第14回](week14/README.md) | 再帰 | CheckedFactorial，Factorial，Fibonacci，GcdLoop，Trace，TreeTraversal | 63 | [ex14](https://t-yokoga.github.io/softprac1/ex14.html) |
 | [デバッグの題材](debugging/README.md) | バグ入りのプログラム（TA 用） | 17 題 | 45 | |
-| | | **合計** | **913** | |
+| | | **合計** | **974** | |
 <!-- WEEK-TABLE:END -->
 
 テスト数は `tests/` と `variants/tests/` の期待値の数です。この表は `python3 tools/update_generated.py` で作り直します（手で書き換えません）。
