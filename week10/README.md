@@ -43,45 +43,35 @@
 - プログラムが書き出すファイル（`bytes.bin`・`scores.txt`・`numbers.txt`・`numbers.bin`・`squares.txt`）はリポジトリに置いていない（実行時に作業ディレクトリにできる。書かれる内容はそれぞれの節に示した）。
 - 表示は ASCII だけで，Windows x64（MSVC）でも同じになる。環境で変わる点（改行コード，`long` のサイズなど）はそれぞれの節に「Windows x64 (MSVC) では…，Linux x64 では…」として書いた。
 - 実行例の `$ ReadText input.txt` は「コマンド引数に `input.txt` を設定して実行した」という意味。`(終了コード 1)` はプログラムが返した値で，画面には出ない
-  （Visual Studio の Ctrl+F5 のコンソールでは，プログラムの終了後に `C:\...\ReadText.exe (process 12345) exited with code 1 (0x1).` のように終了コードが表示される）。標準エラー出力も同じ画面に出る。
+  （Visual Studio の Ctrl+F5 のコンソールでは，プログラムの終了後に **C:\...\ReadText.exe (process 12345) exited with code 1 (0x1).** のように終了コードが表示される）。標準エラー出力も同じ画面に出る。
 
 ## 実行のしかた（コマンド引数と作業ディレクトリ）
 
-この回のプログラムは，相対パスのファイル名（`input.txt` など）を**作業ディレクトリ**を基準に探す・作る。ソースの場所や実行ファイル（`.exe`）の場所ではない。
+この回のプログラムは，相対パスのファイル名（`input.txt` など）を**作業ディレクトリ**を基準に探す・作る。作業ディレクトリはソースの場所とも `.exe` の場所とも限らず，起動のしかたで決まる（下の表）。
 引数の与え方と作業ディレクトリは，ビルドの方法（[ルートの README](../README.md#使い方) の 1〜4）で次のように違う。
 
 | 方法 | 引数の与え方 | 作業ディレクトリ（読むファイルを置く場所・書き出したファイルができる場所） |
 | --- | --- | --- |
 | 1. コマンドでビルド | 実行ファイルの後に並べる | プロジェクトフォルダ（`cd` したフォルダ） |
 | 2. 空のプロジェクト | **Command Arguments** | `.vcxproj` のフォルダ（`input.txt` などをここへコピーする） |
-| 3. フォルダーを開く | **Debug and Launch Settings** の `"args"` | 実行ファイルのフォルダ（`<ビルド先>/bin/week10/<プロジェクト名>/`。データファイルはビルドのときにここへコピーされる） |
+| 3. フォルダーを開く | **Debug and Launch Settings** の `"args"` | 実行ファイルのフォルダ（`<ビルド先>/bin/week10/<プロジェクト名>/`。プロジェクトフォルダのデータファイルはビルドのときにここへコピーされる） |
 | 4. VS Code | `cmake.debugConfig` の `args` | 3 と同じ |
 
 書き出すファイル（`scores.txt` など）も作業ディレクトリにできるので，方法 3・4 ではプロジェクトフォルダではなく実行ファイルのフォルダを見る。
+方法 3・4 のコピーはプロジェクトフォルダから実行ファイルのフォルダへの一方向で，プログラムが書き出したファイルや実行ファイルのフォルダで直接作ったファイルはプロジェクトフォルダには戻らない。
+プロジェクトフォルダのデータファイルを書き換えると次のビルドでコピーし直され，実行ファイルのフォルダで直接書き換えた同名のファイルは上書きされる（読ませるデータを変えるときはプロジェクトフォルダのほうを直してビルドする）。
 
 ### 1. コマンドで実行する
 
-プロジェクトフォルダでビルドし，引数は実行ファイルの後に空白で区切って並べる（[ルートの README](../README.md#1-コマンドでビルドする)）。
+プロジェクトフォルダ（例: `week10/ReadText`）でビルドし（[ルートの README](../README.md#1-コマンドでビルドする)），引数は実行ファイルの後に空白で区切って並べる。
 
 ```sh
-# macOS / Linux
-cd week10/ReadText
-gcc -std=c17 -Wall -Wextra -Wpedantic *.c -o a.out -lm
-./a.out input.txt
-./a.out "my input.txt"
-./a.out ""
+./a.out input.txt        # 引数 1 個
+./a.out "my input.txt"   # 空白を含む名前も引用符で囲めば 1 個
+./a.out ""               # 空文字列の引数 1 個
 ```
 
-```bat
-rem Windows: スタート メニューの「Developer Command Prompt for VS」（cmd）で
-cd week10\ReadText
-cl /std:c17 /W4 /utf-8 *.c /Fe:a.exe
-a.exe input.txt
-a.exe "my input.txt"
-a.exe ""
-```
-
-- 空文字列の引数 `""` は cmd・bash・zsh では 1 個の空の引数として渡るが，**Windows PowerShell 5.1 は空の引数を落とす**（`argc` が 1 になる）。`""` の確認は cmd か Visual Studio の **Command Arguments** 欄で行う。
+- 空文字列の引数 `""` は cmd・bash・zsh では 1 個の空の引数として渡るが，**Windows PowerShell 5.1 は空の引数を落とす**（`argc` が 1 になる）。Windows で `""` を確かめるときは PowerShell ではなく cmd（「Developer Command Prompt for VS」で `a.exe ""`）か Visual Studio の **Command Arguments** 欄を使う。
 - `WriteText_mode_a` のような書き換えた版は，ソースをその版に書き換えてビルドし直して実行する（[ソースを書き換えて試す](../README.md#ソースを書き換えて試す)）。
 
 ### 2. Visual Studio（授業の手順：**Empty Project**）
@@ -105,7 +95,7 @@ a.exe ""
 - `ReadText`: `"args": [ "input.txt" ]`，空白を含む名前: `"args": [ "my input.txt" ]`
 - `CheckValue`: `"args": [ "squares.txt", "9" ]`，`WriteSquares`: `"args": [ "4", "squares.txt" ]`
 
-作業ディレクトリは実行ファイルのフォルダ `out\build\x64-Debug\bin\week10\<プロジェクト名>\`。`input.txt` などのデータファイルはビルドのときにここへコピーされ，書き出すファイルもここにできる。
+作業ディレクトリは実行ファイルのフォルダ `out\build\x64-Debug\bin\week10\<プロジェクト名>\`。プロジェクトフォルダの `input.txt` などのデータファイルはビルドのときにここへコピーされ，書き出すファイルもここにできる（書き出したファイルはプロジェクトフォルダには戻らない。[上の注意](#実行のしかたコマンド引数と作業ディレクトリ)）。
 
 ### 4. VS Code
 
@@ -116,7 +106,7 @@ a.exe ""
 { "cmake.debugConfig": { "args": [ "squares.txt", "9" ] } }
 ```
 
-作業ディレクトリは実行ファイルのフォルダ `build/bin/week10/<プロジェクト名>/`（データファイルのコピー，書き出すファイルの場所は 3 と同じ）。
+作業ディレクトリは実行ファイルのフォルダ `build/bin/week10/<プロジェクト名>/`（データファイルのコピーのされ方，書き出すファイルの場所は 3 と同じ）。
 
 - VS Code の gdb/lldb（**CMake: Debug**）は引数をデバッガ経由で渡すので，空白や空文字列を含む引数の扱いが環境で異なることがある。境界の確認は 1 のコマンドで行うのが確実。
 
@@ -185,7 +175,7 @@ usage: ReadText filename
 
 ### 採点のポイント・よくある誤り
 
-- `input.txt` が `x64\Debug\` やソリューションのフォルダにある（**Working Directory** が `$(ProjectDir)` でない）→ `fopen: No such file or directory`。
+- `input.txt` を `.vcxproj` のフォルダ以外（`x64\Debug\` やソリューションのフォルダなど）に置いた，または **Working Directory** を変えた → `fopen: No such file or directory`。
 - `input.txt.txt`（拡張子非表示），BOM 付き UTF-8 で保存（先頭に `EF BB BF` の 3 バイトが増え，表示の先頭に余分な文字が出る）。
 - **Command Arguments** に `ReadText.exe input.txt` と書く → `argc` が 3 になり usage。
 - `char ch = fgetc(fp);` で受ける（`EOF` と `0xFF` を区別できない），`while (!feof(fp))` で回して最後に `EOF` を 1 回余分に処理する。
@@ -213,19 +203,30 @@ $ LineLengths input.txt
 | `A`を31個 | あり・なし | どちらも 31 |
 | `A`を32個 | あり・なし | どちらも長さは表示しない（`line too long`・`read or output error` を標準エラーに出し，終了コード 1） |
 
-実行結果（各ファイル 1 行だけ）:
+実行結果。使ったファイルは次のとおり（`abc_nl.txt` は `ABC` と改行，`abc.txt` は `ABC` だけ，`empty_line.txt` は改行 1 個，
+`a31_nl.txt`・`a31.txt` は `A`×31 の後に改行あり・なし，`a32_nl.txt`・`a32.txt` は `A`×32 の後に改行あり・なし，`empty.txt` は 0 バイト）。
 
 ```text
-$ LineLengths abc.txt      ← "ABC\n"         → 3
-$ LineLengths abc.txt      ← "ABC"           → 3
-$ LineLengths empty_line.txt ← "\n"          → 0
-$ LineLengths a31.txt      ← A×31 + "\n"     → 31
-$ LineLengths a31.txt      ← A×31            → 31
-$ LineLengths a32.txt      ← A×32 + "\n"（改行なしも同じ）
+$ LineLengths abc_nl.txt
+3
+$ LineLengths abc.txt
+3
+$ LineLengths empty_line.txt
+0
+$ LineLengths a31_nl.txt
+31
+$ LineLengths a31.txt
+31
+$ LineLengths a32_nl.txt
 line too long
 read or output error
 (終了コード 1)
-$ LineLengths empty.txt    ← 空ファイル: 何も表示しない（終了コード 0）
+$ LineLengths a32.txt
+line too long
+read or output error
+(終了コード 1)
+$ LineLengths empty.txt
+(終了コード 0)
 ```
 
 - 31 文字で改行あり: `fgets` は `A`×31 と終端で配列が一杯になり，改行は配列に入らない → 次の `fgetc` が `'\n'` なので 31 文字の行（改行はここで読み捨てられる）。
@@ -534,6 +535,12 @@ $ ReadText scores.txt  ← 課題1のプログラムで読み返す
 $ WriteText            ← 2 回目（同じ条件）: 再び 3 行。6 行にはならない
 ```
 
+`ReadText` と `WriteText` は別のプロジェクトなので作業ディレクトリも別で，`WriteText` が作った `scores.txt` は `ReadText` の作業ディレクトリにはない。
+`scores.txt` を `ReadText` の作業ディレクトリへコピーするか，`ReadText` の引数を相対パスで `WriteText` の作業ディレクトリへ向ける。
+方法 1 で `week10/ReadText` から実行するなら `../WriteText/scores.txt`（Windows の cmd では `..\WriteText\scores.txt`），
+方法 2 で両方のプロジェクトの `.vcxproj` のフォルダが同じフォルダの中に並んでいるなら `..\WriteText\scores.txt`，
+方法 3・4 では実行ファイルのフォルダがどちらも `bin/week10/` の下に並ぶので `../WriteText/scores.txt` と書く。
+
 `scores.txt` のバイト数: Windows（テキストモードで `\n` が CRLF になる）では 3 行 ×（2 文字 + CR LF）= **12 バイト**，Linux/macOS では **9 バイト**。
 `"wb"` で書けば Windows でも 9 バイトになる（「バイナリで保存した場合とバイト数が異なることがある」の答え）。`ReadText` で読み返した表示はどちらも同じ。
 
@@ -812,3 +819,4 @@ Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 �
 | 自分の言葉で，処理の流れと使った型を説明できる | `FILE *`（ストリームでありファイルの中身ではない），`fgetc` の戻り値が `int` である理由（課題1），`char *argv[]` と `argc`（課題2），`size_t` と `fread` の戻り値（課題3），`unsigned char *` でオブジェクトの表現を見る（`ByteOrder`），`long` と `strtol`・`errno`（課題2・発展2），`double` のテキスト/バイナリ表現（発展1） |
 
 注: 空文字列の引数は `ReadText ""`，`ParseNumber ""`（本体・合計版），`Arguments ""`，`WriteSquares 4 ""`，`CheckValue "" 9` でも確かめている。
+`Arguments ""` は `arg1=` の 1 行を表示して終了コード 0（空の引数も 1 個として数える），`WriteSquares 4 ""` は `usage: WriteSquares count filename`，`CheckValue "" 9` は `usage: CheckValue filename value` を標準エラーに出して終了コード 1。
