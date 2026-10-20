@@ -10,13 +10,13 @@
 
 | 課題 | プロジェクト | ソース | データファイル |
 | --- | --- | --- | --- |
-| 1 複写 | `Echo` | [`echo.c`](Echo/echo.c)（講義の例題） | [`input.txt`](Echo/input.txt) |
-| 1 小文字化フィルタ | `LowerInput` | [`lower_input.c`](LowerInput/lower_input.c) | [`input.txt`](LowerInput/input.txt)，[`ab.txt`](LowerInput/ab.txt)（課題4の入力ファイル） |
-| 2 英字数 | `LetterCount` | [`letter_count.c`](LetterCount/letter_count.c) | [`input.txt`](LetterCount/input.txt) |
-| 2 バイト数 | `ByteCount` | [`byte_count.c`](ByteCount/byte_count.c)（演習ページのコード） | [`input.txt`](ByteCount/input.txt) |
-| 3 行の容量 | `LineInput` | [`line.c`](LineInput/line.c)（講義の例題） | [`input.txt`](LineInput/input.txt) |
+| 1 複写 | `Echo` | [`echo.c`](Echo/echo.c)（講義の例題） | [`input.txt`](Echo/input.txt)（`abc` と `XYZ` の 2 行） |
+| 1 小文字化フィルタ | `LowerInput` | [`lower_input.c`](LowerInput/lower_input.c) | [`input.txt`](LowerInput/input.txt)（`Hello C17!` と `AZaz09` の 2 行），[`ab.txt`](LowerInput/ab.txt)（課題4の入力ファイル。`AB` の 1 行） |
+| 2 英字数 | `LetterCount` | [`letter_count.c`](LetterCount/letter_count.c) | [`input.txt`](LetterCount/input.txt)（`abc 12!` の 1 行） |
+| 2 バイト数 | `ByteCount` | [`byte_count.c`](ByteCount/byte_count.c)（演習ページのコード） | [`input.txt`](ByteCount/input.txt)（`ab` と `C` の 2 行） |
+| 3 行の容量 | `LineInput` | [`line.c`](LineInput/line.c)（講義の例題） | [`input.txt`](LineInput/input.txt)（`Hello` の 1 行） |
 | 4 書式 | `Formats` | [`formats.c`](Formats/formats.c)（演習ページのコード） | なし（入力を待たない） |
-| 発展 タイピング | `Typing` | [`typing.c`](Typing/typing.c) | [`input.txt`](Typing/input.txt) |
+| 発展 タイピング | `Typing` | [`typing.c`](Typing/typing.c) | [`input.txt`](Typing/input.txt)（`thiS is a Pen` の 1 行） |
 
 - 演習ページはソース名を指定していないため，講義の例題（`echo.c`，`line.c`）はその名前を使い，ほかはプロジェクト名を小文字・`_` 区切りにしました。
 - 演習ページの「一時的に置き換える」「`line[8]`へ変更する」「`n`を123456へ変更する」などの**実験用の変更**は，フォルダのソース（本体）には入れていません。
@@ -40,33 +40,30 @@ Visual Studio では，入力するのはエディタではなく Ctrl+F5 で開
 ### リダイレクト・パイプ（任意。授業の範囲外の確認用）
 
 演習ページは「シェル操作は行わない」としていますが，TA が動作確認する場合や，興味のある学生に聞かれた場合のために使い方をまとめます。
-実行ファイルの場所は，学生の Visual Studio プロジェクトなら **Output** ウィンドウ（**Show output from: Build**）に表示される `...\x64\Debug\Echo.exe` です。
-このリポジトリでは，[ルートの README の方法 1](../README.md#1-コマンドでビルドする) のとおりプロジェクトフォルダ（`week07\Echo` など。`input.txt` がある）でコンパイルして
-`./a.out < input.txt`（PowerShell では `Get-Content input.txt | .\a.exe`）と実行するか，
-CMake でビルドした実行ファイルのフォルダ（Visual Studio でフォルダーを開いた場合は `out\build\x64-Debug\bin\week07\Echo\`。`input.txt` などのデータファイルもコピーされている）で実行します。
-以下は実行ファイルのあるフォルダで実行する例です。方法 1 でコンパイルした場合は実行ファイル名を `a.exe` に読み替え，2 つのプログラムをつなぐ例では，もう一方の実行ファイルを相対パスで指定します（CMake でビルドした場合は `..\ByteCount\ByteCount.exe` など）。
+実行ファイルの場所と作業フォルダは[ルートの README の使い方](../README.md#使い方)のとおりです（CMake でビルドした場合は `bin\week07\<プロジェクト名>\` に `input.txt` などのデータファイルもコピーされます）。
+以下はその実行ファイルのフォルダで実行する例です。2 つのプログラムをつなぐ例では，もう一方の実行ファイルを相対パスで指定します。
 
 **cmd（コマンドプロンプト）**: 記号の意味は講義の表どおりです。
 
 ```bat
-rem input.txt を標準入力へ接続（キー入力も Ctrl+Z も不要）
+rem （bin\week07\Echo\ で）input.txt を標準入力へ接続（キー入力も Ctrl+Z も不要）
 Echo.exe < input.txt
-rem 結果を out.txt へ（既存の内容は上書き）
+rem （以下 4 行は bin\week07\LowerInput\ で）結果を out.txt へ（既存の内容は上書き）
 LowerInput.exe < input.txt > out.txt
 rem out.txt の末尾へ追記
 LowerInput.exe < input.txt >> out.txt
-rem LowerInput の stdout を ByteCount の stdin へ
-LowerInput.exe < input.txt | ByteCount.exe
-rem stderr だけを err.txt へ（stdout は画面のまま）
+rem LowerInput の stdout を ByteCount の stdin へ（ByteCount.exe は隣のフォルダにある）
+LowerInput.exe < input.txt | ..\ByteCount\ByteCount.exe
+rem （bin\week07\LineInput\ で）stderr だけを err.txt へ（stdout は画面のまま）
 LineInput.exe < input.txt 2> err.txt
 ```
 
-**PowerShell**（VS Code の既定のターミナル）: `<` は使えません（英語版では `The '<' operator is reserved for future use.`，日本語版では「`<` 演算子は将来使用するために予約されています」というエラーになる）。
+**PowerShell**（VS Code の既定のターミナル）: `<` は使えません（予約された演算子としてエラーになる）。
 
 ```powershell
-Get-Content input.txt | .\Echo.exe                      # 入力ファイルを標準入力へ（行ごとに送られる）
-.\LowerInput.exe < input.txt                            # ← PowerShell ではエラー
-cmd /c "LowerInput.exe < input.txt | ByteCount.exe"     # バイト数を正確に確かめたいときは cmd に任せる
+Get-Content input.txt | .\Echo.exe                                  # （bin\week07\Echo\ で）入力ファイルを標準入力へ（行ごとに送られる）
+.\LowerInput.exe < input.txt                                        # ← PowerShell ではエラー
+cmd /c "LowerInput.exe < input.txt | ..\ByteCount\ByteCount.exe"    # （bin\week07\LowerInput\ で）バイト数を正確に確かめたいときは cmd に任せる
 ```
 
 PowerShell には次の違いがあるため，**バイト数を比べる実験は cmd で行う**よう案内してください。
@@ -282,7 +279,7 @@ azaz09
 
 #### 誤りの例の版（`Echo` の `no_parens`・`char_ch`）
 
-どちらも警告が出る書き方です（警告をエラーにする設定ではビルドが止まる）。警告を確かめたうえで実行すると，誤りの動作を確かめられます。
+`no_parens` はどのコンパイラでも警告が出る書き方です（GCC/Clang `-Wparentheses`，MSVC C4706）。`char_ch` は MSVC だけが C4244（`int` から `char` への変換）を出し，GCC/Clang は `char` が符号付きなら警告を出しません。警告をエラーにする設定では，警告が出るとビルドが止まります。警告を確かめたうえで実行すると，誤りの動作を確かめられます。
 
 | 版 | 書き換えた行 | 入力 | 標準出力 | ビルド時の警告 |
 | --- | --- | --- | --- | --- |
@@ -292,7 +289,7 @@ azaz09
 `char` が符号付きか符号なしかは処理系定義です（MSVC と x86/x64 の GCC・Clang は符号付き，Linux の ARM などは符号なし）。
 表の `char_ch` の結果は符号付きの場合です。GCC/Clang では `-fsigned-char` を付けてビルドすると環境によらず符号付きになります（MSVC の `char` は既定で符号付き）。
 0xFF のバイトは，macOS / Linux なら `printf 'ab\377cd\n' | ./a.out` のように与えられます。
-符号なしの環境では 0xFF でも `EOF` でも止まらず無限ループになります（`-funsigned-char` を付けると，GCC は `ch != EOF` に `-Wtype-limits`（比較が常に真）の警告を出す）。
+符号なしの環境では 0xFF でも `EOF` でも止まらず無限ループになります（`-funsigned-char` を付けると，`ch != EOF` に GCC は `-Wtype-limits`，Clang は `-Wtautological-constant-out-of-range-compare`（どちらも比較が常に真）の警告を出す）。
 
 ---
 
@@ -703,7 +700,7 @@ score=13        ← プログラムの出力
 - 一致しなかったときに `position` を進め忘れていないか（`++position;` を `if` の中に入れる）→ 一致した文字だけで位置が進む別の仕様になり，`Txxxxxxxxxp` が 1，`Thi is a pen` が 5 になります（完全一致の `This is a pen` は 13 のままなので，完全一致だけでは誤りに気付けない）。
 - `score` と `position` を 1 つの変数で兼用していないか。
 - 小文字化を `getchar` の直後（`EOF` の判定前）に行う，または `char` で受けた値に行っていないか。
-- 改行も 1 文字として比較・加点していないか（`This is a pen` Enter が 13 を超える，または 14 文字目扱いになる）。
+- 改行で読み終えているか（条件の `ch != '\n'` を省いて `EOF` まで読む誤り）→ Enter を押しても `score=` が表示されずに入力を待ち続け，改行も 1 文字として位置を進めるので，2 行目以降は 14 文字目以降として扱われ加点されません（`This is a pen` を 2 行与えても `score=13`。範囲の確認 `position < length` もないと配列の外を読む）。
 - お手本の長さ 13 を数値で直接書き，お手本を変えたときに追従できない形になっていないか（`strlen` か `sizeof target - 1` を使う）。
 
 ---

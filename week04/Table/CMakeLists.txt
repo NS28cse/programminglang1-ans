@@ -20,6 +20,7 @@ softprac_add_variant(Table table.c cols_4_bound_only
 # 改行を内側のループの本体の最後へ移した版（1 要素ずつ別の行）
 softprac_add_variant(Table table.c newline_inner
   "${table_head}" "// 改行を内側のループの本体の最後へ移した版（1 要素ずつ別の行になる）．"
+  "${space_line}" "            if (col < 3) {                      // 区切りの直後に改行するので，1・2 列目の行末に空白が残る\n"
   [=[            }
         }
         printf("\n");                           // 内側のループが終わった後に 1 回だけ改行する
@@ -32,6 +33,7 @@ softprac_add_variant(Table table.c newline_inner
 # 改行を外側のループより後へ移した版（全要素が 1 行）
 softprac_add_variant(Table table.c newline_after
   "${table_head}" "// 改行を外側のループより後へ移した版（全要素が 1 行に並ぶ）．"
+  "${space_line}" "            if (col < 3) {                      // 列の間だけ区切りを入れるので，行の境目には区切りが入らない\n"
   [=[        printf("\n");                           // 内側のループが終わった後に 1 回だけ改行する
     }
 ]=]

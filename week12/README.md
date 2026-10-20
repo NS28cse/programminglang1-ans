@@ -103,7 +103,7 @@ Rebuild started at 10:17...
 ========== Rebuild completed at 10:17 and took 01.456 seconds ==========
 ```
 
-CMake（Ninja）で同じ操作をした場合（`$B` はビルドフォルダ）:
+CMake（Ninja）で同じ操作をした場合（`$B` はビルドフォルダ。オブジェクトファイルの置き場所やログの行は CMake の構成によって変わるので，ログは例）:
 
 ```text
 $ touch week12/SplitCalc/calc.c && cmake --build $B --target SplitCalc     ← calc.c だけ更新
@@ -137,7 +137,7 @@ Visual Studio の **Rebuild**（プロジェクトを右クリックした場合
   `calc.c` をプロジェクトの **Source Files** に追加しないと，課題3のようにリンクエラー（`LNK2019`）になる。
 - **`.obj` と `.exe` は同じものか**: 違う。`.obj`（オブジェクト）は 1 つの翻訳単位をコンパイルした機械語と名前・未解決の参照の情報で，単独では実行できない。
   `.exe` はリンカが `main.obj`・`calc.obj` と標準ライブラリを結び付けて参照をすべて解決した実行ファイル。Visual Studio の既定では `.obj` は `<プロジェクトフォルダ>\x64\Debug\`（例 `SplitCalc\x64\Debug\main.obj`），`.exe` は `<ソリューションフォルダ>\x64\Debug\`（例 `SplitCalc.exe`）にできる
-  （このリポジトリの CMake では `CMakeFiles/SplitCalc.dir/week12/SplitCalc/calc.c.o`・`main.c.o` と `bin/week12/SplitCalc/SplitCalc`）。
+  （このリポジトリの CMake では，例えば `CMakeFiles/SplitCalc.dir/week12/SplitCalc/calc.c.o`・`main.c.o` と `bin/week12/SplitCalc/SplitCalc`。オブジェクトファイルの置き場所は CMake の構成によって変わる）。
 - **`main.c` と `calc.c` を別々の実行アプリ用プロジェクトにしてよいか**: いけない。プロジェクト＝1 つの実行ファイルなので，`calc.c` だけのプロジェクトは `main` がなくリンクに失敗し（`LNK2019`（未解決の外部シンボル `main`）／`LNK1120`），
   `main.c` だけのプロジェクトは `add` の定義がなく `LNK2019` になる。同じプロジェクトに入れるか，発展1のように `calc.c` を**静的ライブラリ**のプロジェクトにして参照する。
 
@@ -250,6 +250,7 @@ calc_divide(6.0, 2.0): ok=1 q=3.0
 ### `calc.c` をビルドから除外した場合（**Excluded From Build**）
 
 **Solution Explorer** で `calc.c` を右クリック → **Properties** の **Configuration Properties > General** で **Excluded From Build** を **Yes** にして **Rebuild** すると，`main.c` のコンパイルは成功し，**リンク**で失敗する。
+設定の前に，**Properties** ダイアログ上部の **Configuration** と **Platform** を実行中の構成（ツールバーの `Debug` と `x64`）に合わせる（別の構成に設定すると，実行中の構成では除外されない）。
 
 MSVC（x64）の診断（`LNK2019` は未解決の外部シンボル，`LNK1120` はその件数のまとめ）:
 
@@ -276,7 +277,7 @@ collect2: error: ld returned 1 exit status
 ```
 
 `gcc -c main.c` だけなら `main.o` は正常にできる（コンパイルは成功している）。**Excluded From Build** を **No** に戻して **Rebuild** すると成功し，元の 4 行に戻る。
-ビルド失敗時に `There were build errors. Would you like to continue and run the last successful build?` と出ても **No** を選び，**実行しない**（古い `.exe` を動かしても修正の確認にならない）。
+ビルド失敗時に **There were build errors. Would you like to continue and run the last successful build?** と出ても **No** を選び，**実行しない**（古い `.exe` を動かしても修正の確認にならない）。
 
 ### エラーの比較（表の解答）
 
@@ -483,7 +484,7 @@ MSVC では C2371（`Vector` の再定義。基本型が異なる）などのコ
 タグのない構造体は書くたびに**別の型**になるので，2 回目の `typedef` は「別の型に同じ名前を付ける」ことになる。関数のプロトタイプだけなら同じ宣言の繰り返しは許されるが，構造体の定義が重なるとエラーになる（講義 3.2）。
 確認後はガードの 3 行を戻し，ビルドが成功して元の出力に戻ることを確認する。
 
-前処理後の内容（講義 4.2 の `/P`。GCC では `gcc -E`）で `} Vector;` を数えると，ガードありは 1 回，ガードなしは 2 回だった。
+前処理後の内容（講義 4.2 の `/P`。`vector_main.c` の **Properties** の **C/C++ > Preprocessor > Preprocess to a File** を **Yes (/P)** にする。GCC では `gcc -E`）で `} Vector;` を数えると，ガードありは 1 回，ガードなしは 2 回だった。
 ガードありの `vector_main.c` も前処理後は GCC の `-E` で 48 行（元は 16 行）に増える（ヘッダの展開と，元の行位置を表す行のため。標準ヘッダを読むファイルではさらに大きく増える）。`/P` の設定は必ず戻して **Rebuild** させる（`/P` のままでは `.obj` が作られない）。
 
 ### ヘッダの独立性を確認する（直接の `#include "vector.h"` を外す）
@@ -593,7 +594,7 @@ MSVC では C2061（識別子 `Vector` の位置の構文エラー）などの�
 | `CalcApp` を **Set as Startup Project** | **Startup Item** で `CalcApp.exe` を選ぶ |
 
 - フォルダ名順では `CalcApp` が `CalcLib` より先に読まれるが，`target_link_libraries` のターゲット名はすべての `CMakeLists.txt` を読み終えてから解決されるので，そのまま参照できる。
-- ライブラリは MSVC では `CalcLib.lib`，GCC/Clang では `libCalcLib.a` として `<ビルドフォルダ>/projects/week12/CalcLib/` にできる（他の環境の `.a` が Windows の `.lib` に当たる）。中身は `calc.c` のオブジェクト 1 つで，`add`・`multiply`・`subtract` の定義を持つ（`ar t` → `calc.c.o`，`nm` → `T add`・`T multiply`・`T subtract`）。
+- ライブラリは MSVC では `CalcLib.lib`，GCC/Clang では `libCalcLib.a` として，Ninja（Visual Studio でフォルダーを開いた場合を含む）では `<ビルドフォルダ>/projects/week12/CalcLib/` にできる（他の環境の `.a` が Windows の `.lib` に当たる）。中身は `calc.c` のオブジェクト 1 つで，`add`・`multiply`・`subtract` の定義を持つ（`ar t` → `calc.c.o`，`nm` → `T add`・`T multiply`・`T subtract`）。
 
 コマンドでビルドする場合（[ルートの README の方法 1](../README.md#1-コマンドでビルドする)）は，先に `CalcLib` で静的ライブラリを作り，`CalcApp` ではヘッダの検索先（`-I`・`/I`。**Additional Include Directories** に当たる）とリンクするライブラリを指定する:
 
@@ -614,10 +615,12 @@ cl /std:c17 /W4 /utf-8 /c calc.c                    # calc.obj を作る
 lib calc.obj /OUT:CalcLib.lib                       # 静的ライブラリ CalcLib.lib にまとめる
 cd ..\CalcApp
 cl /std:c17 /W4 /utf-8 /I..\CalcLib main.c ..\CalcLib\CalcLib.lib /Fe:a.exe
+# 検索先とファイル名を分けて指定する形（/link より後はリンカへのオプション）
+cl /std:c17 /W4 /utf-8 /I..\CalcLib main.c /Fe:a.exe /link /LIBPATH:..\CalcLib CalcLib.lib
 .\a.exe
 ```
 
-`-L../CalcLib` はライブラリの検索先（**Additional Library Directories**），`-lCalcLib` はリンクする `libCalcLib.a`（**Additional Dependencies**）に当たる。`calc.c` を変えたときは，`calc.o` と `libCalcLib.a` を作り直してから `CalcApp` をリンクし直す。
+`-L../CalcLib` はライブラリの検索先（**Additional Library Directories**），`-lCalcLib` はリンクする `libCalcLib.a`（**Additional Dependencies**）に当たる。`cl` の 2 つ目の形では `/LIBPATH:..\CalcLib` が **Additional Library Directories**，`CalcLib.lib` が **Additional Dependencies** に当たる。`calc.c` を変えたときは，`calc.o` と `libCalcLib.a` を作り直してから `CalcApp` をリンクし直す。
 
 実行結果（`CalcApp`）:
 
@@ -639,7 +642,7 @@ subtract=3.0
 | 3. `CalcApp` の呼び出しをコンパイルする | `main.c` を 1. の宣言でコンパイルし，`subtract` への未解決の参照を持つ `main.obj` を作る | 宣言と呼び出しの型が合わないとここでエラー |
 | 4. `CalcApp` を更新後の `.lib` とリンクする | `main.obj` と新しい `CalcLib.lib` の `subtract` を結び付けて `CalcApp.exe` を作る | 古い `.lib` とリンクすると `LNK2019`。静的ライブラリの更新は再リンクして初めて `.exe` に入る |
 
-プロジェクト参照が正しければ，`CalcApp` のビルドで 2 → 3 → 4 の順に必要な作業が行われる。CMake（Ninja）での記録（`$B` はビルドフォルダ）:
+プロジェクト参照が正しければ，`CalcApp` のビルドで 2 → 3 → 4 の順に必要な作業が行われる。CMake（Ninja）での記録（`$B` はビルドフォルダ。オブジェクトファイルの置き場所やログの行は CMake の構成によって変わるので，ログは例）:
 
 ```text
 $ touch week12/CalcLib/calc.c && cmake --build $B --target CalcApp      ← 実装だけを変更
@@ -863,6 +866,7 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 1. **`NDEBUG` を定義する**: `#define _CRT_SECURE_NO_WARNINGS` の次（`#include <assert.h>` より前）に `#define NDEBUG` を置いてビルドすると，表示は上と**まったく同じ 5 行**で，終了コードも 0 になる
    （さらに `assert(bytes[3] == 'c');` を**わざと偽になる** `assert(bytes[3] == 'x');` に変えても異常終了しないので，`assert` が無効になっていると分かる）。前処理後を見ると 2 つの `assert(...)` は `((void) (0));` に置き換わっており，式は評価されない。
    一方，`strcpy`・`memcpy`・`srand`・`rand` は `assert` の外にあるので同じように実行される。`#include <assert.h>` の後で定義しても効かない（マクロは取り込んだ時点の定義で決まる）。Visual Studio では Release 構成が既定で `NDEBUG` を定義する。
+   Release 構成で試すとコマンドラインの `NDEBUG` の定義と重なって，MSVC では C4005（マクロの再定義），GCC では `"NDEBUG" redefined`，Clang では `-Wmacro-redefined` の警告が出るので，この観察は Debug 構成で行う（Release 構成では `#define NDEBUG` がなくても `assert` は無効）。
 2. **`assert` の式にコピーや `rand` を入れない理由**: `NDEBUG` を定義した構成（Release など）では `assert` の式自体が評価されないので，`assert(strcpy(text, src) != NULL)` や `assert(rand() >= 0)` と書くと，
    その構成ではコピーも乱数の生成も行われず，プログラムの動作が変わる（乱数の系列もずれる）。`assert` は「ここでは必ず成り立つはず」という開発中の前提の確認であり，入力検査や必要な処理は `if` と通常の文で書く。
    参考: `int n = 9; assert(n >= 0 && n <= 8);` だけのプログラムで試すと，前提が崩れて ``af: af.c:5: main: Assertion `n >= 0 && n <= 8' failed.`` を出して異常終了（Linux では終了コード 134），`NDEBUG` ありでは何も起きずに続行した。

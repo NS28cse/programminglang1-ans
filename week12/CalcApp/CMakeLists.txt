@@ -1,7 +1,6 @@
-# 第12回 発展1 CalcApp: CalcLib（静的ライブラリ）を使うアプリ．ソースは main.c だけ
-# Visual Studio の手順との対応
-#   手順4「参照 → 参照の追加」で CalcLib を選ぶ             → target_link_libraries
-#   手順5「追加のインクルード ディレクトリ」に CalcLib の実フォルダ → target_include_directories
+# 第12回 発展1 CalcApp: CalcLib（静的ライブラリ）を使うアプリ。ソースは main.c だけ
+#   Add > Reference で CalcLib を選ぶ                    → target_link_libraries
+#   Additional Include Directories に CalcLib のフォルダ → target_include_directories
 softprac_add_program(CalcApp main.c)
 target_include_directories(CalcApp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../CalcLib")
 # CalcLib は ../CalcLib/CMakeLists.txt で定義する．フォルダ名順では CalcApp より後に読まれるが，
