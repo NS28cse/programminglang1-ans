@@ -31,6 +31,3 @@ softprac_add_variant(Dynamic dynamic.c swap_all
     for (size_t i = 0; i < n / 2; ++i) {]=]
   [=[    // 考察の確認：全要素について交換する（各組を 2 回交換するので元の順序に戻る）
     for (size_t i = 0; i < n; ++i) {]=])
-
-# 課題2の別解：両端を指す 2 つのポインタを内側へ進めて交換する版（versions/）。本体と同じ n=1，2，3，5，1000 で
-softprac_add_variant(Dynamic versions/reverse_pointers.c reverse_pointers)

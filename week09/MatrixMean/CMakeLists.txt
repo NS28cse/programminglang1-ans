@@ -99,3 +99,24 @@ softprac_add_variant(MatrixMean matrix.c overall_rows0
   "${return_line}" "${overall_call_0}")
 
 softprac_add_variant(MatrixMean versions/flat_means.c flat_means)
+
+# 別解も本体の rows1・rows0・low_high・fraction と同じ書き換えで確かめる
+set(flat_desc "// 列数を型ではなく引数 cols で渡すので，同じ関数で列数の違う行列も扱える。代わりに添字の計算は自分で正しく書く。")
+set(flat_init "    int flat[ROWS * COLS] = {1, 2, 3, 4, 5, 6};  // 1 行目が flat[0]〜flat[2]，2 行目が flat[3]〜flat[5]")
+set(flat_call "    print_means(flat, ROWS, COLS);")
+softprac_add_variant(MatrixMean versions/flat_means.c flat_rows1
+  "${flat_desc}"
+  "// 別解で print_means に渡す rows を 1 にした版。先頭の 1 行だけを処理するので row0 だけを表示する。"
+  "${flat_call}" "    print_means(flat, 1, COLS);  // 先頭の 1 行だけ")
+softprac_add_variant(MatrixMean versions/flat_means.c flat_rows0
+  "${flat_desc}"
+  "// 別解で print_means に渡す rows を 0 にした版。処理する行がないので何も表示しない。"
+  "${flat_call}" "    print_means(flat, 0, COLS);  // rows=0 なので何も表示しない")
+softprac_add_variant(MatrixMean versions/flat_means.c flat_low_high
+  "${flat_desc}"
+  "// 別解の配列を値の両端 {0, 0, 0}, {100, 100, 100} の順に並べた版。"
+  "${flat_init}" "    int flat[ROWS * COLS] = {0, 0, 0, 100, 100, 100};  // 値の両端 0 と 100")
+softprac_add_variant(MatrixMean versions/flat_means.c flat_fraction
+  "${flat_desc}"
+  "// 別解の配列を {1, 1, 2}, {2, 2, 3} の順に並べた版。\n// 行平均が割り切れない（4/3 と 7/3）ので，%.2f で 1.33 と 2.33 になる。"
+  "${flat_init}" "    int flat[ROWS * COLS] = {1, 1, 2, 2, 2, 3};  // 行平均が割り切れない値")

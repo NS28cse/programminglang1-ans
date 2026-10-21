@@ -15,3 +15,12 @@ softprac_add_variant(DynamicCopy dynamic.c copy_alloc_fail
 
 # 別解：逆順に読みながらコピーする版（versions/）。本体と同じ n=1，2，5，1000 で
 softprac_add_variant(DynamicCopy versions/reverse_copy.c reverse_copy)
+# 別解でも copy の確保に失敗した経路（values を解放して終了する）を本体の copy_alloc_fail と同じ置換で確かめる
+softprac_add_variant(DynamicCopy versions/reverse_copy.c reverse_copy_alloc_fail
+  [=[// copy[i] に values[n - 1 - i] を入れれば，コピーと逆順が 1 回の走査で済み，交換も temp も要らない。
+// 所有する領域は values と copy の 2 つ（本体と同じ）。]=]
+  [=[// 別解で copy の確保を NULL に置き換えて失敗を模擬した版。先に確保した values を解放してから終了する。]=]
+  [=[    // 独立したコピー：ポインタではなく要素をコピーするため，別の領域を確保する
+    copy = malloc(n * sizeof *copy);]=]
+  [=[    // 試験用：copy の確保失敗を模擬する（実際には確保しない）
+    copy = NULL;]=])

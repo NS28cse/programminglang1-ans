@@ -10,7 +10,7 @@ Visual Studio では，プロジェクトの **Properties > Configuration Proper
 
 | 課題 | プロジェクト | ソース |
 | --- | --- | --- |
-| 課題1・課題2 | `Dynamic` | [dynamic.c](Dynamic/dynamic.c)（引数: `5`）<br>別解: [versions/reverse_pointers.c](Dynamic/versions/reverse_pointers.c) |
+| 課題1・課題2 | `Dynamic` | [dynamic.c](Dynamic/dynamic.c)（引数: `5`） |
 | 課題2「追加：独立したコピー」 | `DynamicCopy` | [dynamic.c](DynamicCopy/dynamic.c)（引数: `5`）<br>別解: [versions/reverse_copy.c](DynamicCopy/versions/reverse_copy.c) |
 | 課題3 | `NewPoint` | [new_point.c](NewPoint/new_point.c)，[versions/return_styles.c](NewPoint/versions/return_styles.c) |
 | 課題3「失敗を模擬する」 | `NewPointFail` | [new_point.c](NewPointFail/new_point.c) |
@@ -351,51 +351,6 @@ copy: 5 4 3 2 1
 
 ### 別解
 
-#### 両端を指す 2 つのポインタを内側へ進めて交換する（[Dynamic/versions/reverse_pointers.c](Dynamic/versions/reverse_pointers.c)）
-
-**考え方**: 交換する組の数を `n/2` と数えてから回すのではなく，先頭を指す `left` と最後の要素を指す `right` を 1 つずつ内側へ進め，2 つが出会ったら止めます。組の相手を `n - 1 - i` と計算する必要がなく，「両端から交換して真ん中で止まる」という手順がそのままコードになります。
-
-```c
-    // 課題2：left は先頭，right は最後の要素（n は 1 以上なので values + n - 1 は確保した範囲内）を指す
-    int *left = values;
-    int *right = values + n - 1;
-    while (left < right) {          // 出会ったら終わる（奇数個なら中央で left == right になり，交換しない）
-        int temp = *left;
-        *left = *right;
-        *right = temp;
-        ++left;
-        --right;
-    }
-```
-
-実行結果（本体と同じ。`n` を 3，1000 にしても本体と同じ表示になる）:
-
-```text
-> Dynamic 1   （versions/reverse_pointers.c）
-n=1 sum=1 mean=1.0
-reversed: 1
-> Dynamic 2   （同上）
-n=2 sum=3 mean=1.5
-reversed: 2 1
-> Dynamic 5   （同上）
-n=5 sum=15 mean=3.0
-reversed: 5 4 3 2 1
-```
-
-**本体との比べ方**:
-
-| 観点 | 本体（添字 `i` と `n - 1 - i`） | 別解（ポインタ `left` と `right`） |
-| --- | --- | --- |
-| 交換の回数 | `n/2` 回（`n` = 1，2，5，1000 で 0，1，2，500 回） | 同じ |
-| ループの条件判定 | `n/2 + 1` 回 | 同じ（`left < right` が偽になるまで） |
-| 相手の位置 | 交換ごとに `n - 1 - i` を 2 回計算する | 計算しない（`--right` で 1 つ戻すだけ） |
-| 止まる理由 | 組の数が `n/2`（整数除算）であることを考える | 出会ったら止める。奇数個なら中央で `left == right`，偶数個なら交差して `left > right` になる |
-| 誤りやすい所 | `values[n - i]`（`i = 0` で範囲外），`i < n`（元の順序に戻る） | `right = values + n`（最後の要素の次を指し，範囲外を読み書きする），`left != right`（偶数個では一度も等しくならずに交差し，範囲外へ進み続ける） |
-
-**どちらを勧めるか**: どちらも正しく，交換の回数も同じなので，どちらで書いてきても正解とします。演習ページのヒント（半分まで交換する）と考察（`n/2` の整数除算）にそのまま答えられるのは本体の形です。
-別解は走査に別のポインタを使い，`values` 自身は先頭を指したまま動かさないので，考察の「逆順後も `values` が先頭を指している」や課題4 の `free(values + 1)` の誤りと結び付けて説明できます。
-学生がこの形で書いてきたら，`right` の初期値が `values + n - 1` か，条件が `<` か（`!=` では `n = 2` で範囲外へ進む），`values` 自身を `++` していないかを確かめ，考察の `n/2` の問いにも答えているかを見ます。
-
 #### 逆順に読みながらコピーする（[DynamicCopy/versions/reverse_copy.c](DynamicCopy/versions/reverse_copy.c)）
 
 **考え方**: 追加課題の `copy` は，同じ順にコピーしてから並べ替えなくてもかまいません。`copy` の先頭から順に，`values` を末尾から読んで入れれば，コピーが終わった時点で逆順になっています。
@@ -433,6 +388,8 @@ copy: 5 4 3 2 1
 
 - 新しい配列を `malloc` して逆順にコピーしていないか（課題2は**同じ領域**で並べ替える指示）。
 - ループ条件を `i < n` にして元に戻っていないか，`values[n - i]` として範囲外（`i=0` で `values[n]`）を読んでいないか。
+- 添字の代わりに，先頭を指す `left` と最後の要素を指す `right` を内側へ進めて `while (left < right)` で交換する形も正解です（交換の組と回数は本体と同じ）。
+  `right` の初期値が `values + n - 1` か（`values + n` は最後の要素の次を指し，範囲外を読み書きする），条件が `<` か（`!=` では偶数個のとき一度も等しくならずに交差し，範囲外へ進み続ける），`values` 自身を `++` していないかを確かめます。
 - 逆順処理を `free` の後に置いていないか（解放後の使用）。
 - 追加課題で `int *copy = values;` としていないか，`copy` の確保失敗時に `values` を解放し忘れていないか，`copy` を解放し忘れていないか。
 

@@ -41,3 +41,29 @@ target_compile_options(Maximum_return_in_loop PRIVATE $<IF:$<C_COMPILER_ID:MSVC>
 
 # 別解: 候補を値ではなく添字で持つ版
 softprac_add_variant(Maximum versions/max_index.c max_index)
+
+# 別解も「異なる配列で確かめる」の表の 4 つの配列で確かめる（本体の zero・same・first・last と同じ置換）
+softprac_add_variant(Maximum versions/max_index.c max_index_zero
+  "// 候補を値ではなく添字 best_index で持ち，a[best_index] と比べる。最後に a[best_index] を返す。"
+  "// 別解を「異なる配列で確かめる」の表の {0}，n = 1 に書き換えた版（ループを 0 回で終え，max=0）。"
+  "COUNT = 5" "COUNT = 1" "{72, 85, 60, 93, 80}" "{0}")
+softprac_add_variant(Maximum versions/max_index.c max_index_same
+  "// 候補を値ではなく添字 best_index で持ち，a[best_index] と比べる。最後に a[best_index] を返す。"
+  "// 別解を「異なる配列で確かめる」の表の {60, 60, 60}，n = 3 に書き換えた版（等しい値で位置が変わらず，max=60）。"
+  "COUNT = 5" "COUNT = 3" "{72, 85, 60, 93, 80}" "{60, 60, 60}")
+softprac_add_variant(Maximum versions/max_index.c max_index_first
+  "// 候補を値ではなく添字 best_index で持ち，a[best_index] と比べる。最後に a[best_index] を返す。"
+  "// 別解を「異なる配列で確かめる」の表の {100, 20, 30}，n = 3 に書き換えた版（最初が最大，max=100）。"
+  "COUNT = 5" "COUNT = 3" "{72, 85, 60, 93, 80}" "{100, 20, 30}")
+softprac_add_variant(Maximum versions/max_index.c max_index_last
+  "// 候補を値ではなく添字 best_index で持ち，a[best_index] と比べる。最後に a[best_index] を返す。"
+  "// 別解を「異なる配列で確かめる」の表の {20, 30, 100}，n = 3 に書き換えた版（最後が最大，max=100）。"
+  "COUNT = 5" "COUNT = 3" "{72, 85, 60, 93, 80}" "{20, 30, 100}")
+# 同じ最大値が複数あるとき最初の位置が残ることを，{93, 85, 93} で返す直前に best_index を表示して確かめる
+softprac_add_variant(Maximum versions/max_index.c max_index_tie
+  "// 候補を値ではなく添字 best_index で持ち，a[best_index] と比べる。最後に a[best_index] を返す。"
+  "// 別解を {93, 85, 93}，n = 3 に書き換え，返す直前に best_index を表示する版（最初の位置 0 が残る）。"
+  "COUNT = 5" "COUNT = 3" "{72, 85, 60, 93, 80}" "{93, 85, 93}"
+  [=[    return a[best_index];]=]
+  [=[    printf("best_index=%d\n", best_index);  // 確認用：同じ最大値のどの位置が残ったか
+    return a[best_index];]=])

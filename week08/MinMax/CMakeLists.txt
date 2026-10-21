@@ -80,3 +80,14 @@ softprac_add_variant(MinMax versions/min_max_local.c local_overlap
   "${call_and_print}"
   [=[    min_max(data, 4, &data[1], &high);
     printf("overlap: min=%d max=%d data={%d, %d, %d, %d}\n", data[1], high, data[0], data[1], data[2], data[3]);]=])
+
+# 別解も検証表の 4 つの配列で確かめる（本体の single_5 などと同じ置換）
+foreach(spec "single_5;{5};1" "same_3;{3, 3, 3};3" "all_negative;{-8, -2, -5};3" "five_elements;{7, 2, 10, 3, 5};5")
+  list(GET spec 0 tag)
+  list(GET spec 1 array)
+  list(GET spec 2 n)
+  softprac_add_variant(MinMax versions/min_max_local.c local_${tag}
+    "${local_head}" "${local_head}
+ * main の配列を検証表の ${array} に変え，呼び出しの n も ${n} に合わせた版．"
+    "{7, -2, 9, 0}" "${array}" "min_max(data, 4" "min_max(data, ${n}")
+endforeach()

@@ -181,10 +181,10 @@ usage: ReadText filename
 - 考え方: 1 文字ずつではなく，`fgets` で配列（`char line[256]`）へ最大 255 バイトずつ読み，`fputs` で読んだとおりに書きます。引数の検査・エラー処理・表示は本体と同じです。
 
   ```c
-      char line[256];  // 1 行がこれより長くても，残りは次の fgets で読む
+      char line[256];  /* 1 行がこれより長くても，残りは次の fgets で読む */
       int failed = 0;
       while (fgets(line, sizeof line, fp) != NULL) {
-          // fgets は改行も配列に残すので，fputs（改行を足さない）でそのまま書く
+          /* fgets は改行も配列に残すので，fputs（改行を足さない）でそのまま書く */
           if (fputs(line, stdout) == EOF) { failed = 1; break; }
       }
   ```
@@ -273,21 +273,21 @@ $ LineLengths empty.txt
 
   ```c
       int ch;
-      int length = 0;   // 今の行でここまでに読んだ文字数（改行は含めない）
+      int length = 0;   /* 今の行でここまでに読んだ文字数（改行は含めない） */
       int failed = 0;
       while ((ch = fgetc(fp)) != EOF) {
           if (ch == '\n') {
               if (printf("%d\n", length) < 0) { failed = 1; break; }
               length = 0;
           } else if (length == MAX_LENGTH) {
-              fprintf(stderr, "line too long\n");   // 改行の前に 32 文字目が来た
+              fprintf(stderr, "line too long\n");   /* 改行の前に 32 文字目が来た */
               failed = 1;
               break;
           } else {
               ++length;
           }
       }
-      // 最後の行に改行がないとき（length > 0）も 1 行として表示する。空ファイルは何も表示しない
+      /* 最後の行に改行がないとき（length > 0）も 1 行として表示する。空ファイルは何も表示しない */
       if (!failed && !ferror(fp) && length > 0) {
           if (printf("%d\n", length) < 0) { failed = 1; }
       }
@@ -848,7 +848,7 @@ Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 �
   `parse_long`・`read_value`・`report_line_error` は本体と同じで，表示・エラーの文面・終了コードもすべて本体と同じです。
 
   ```c
-      long values[MAX_COUNT];   // ヘッダの個数は 0〜100 と検査するので，100 個分あれば足りる
+      long values[MAX_COUNT];   /* ヘッダの個数は 0〜100 と検査するので，100 個分あれば足りる */
       long count = 0;
       int ok = read_values(fp, values, &count);
       ...
@@ -857,7 +857,7 @@ Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 �
 
   ```c
       long n;
-      int result = read_value(fp, MAX_COUNT, &n);   // n が 0〜100 なので values の範囲内に収まる
+      int result = read_value(fp, MAX_COUNT, &n);   /* n が 0〜100 なので values の範囲内に収まる */
       ...
       for (long i = 0; i < n; ++i) {
           result = read_value(fp, MAX_VALUE, &values[i]);
@@ -870,7 +870,7 @@ Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 �
   {
       for (long i = 0; i < count; ++i) {
           if (values[i] == target) {
-              return 1;   // 検査は済んでいるので，見つけたらすぐ返してよい
+              return 1;   /* 検査は済んでいるので，見つけたらすぐ返してよい */
           }
       }
       return 0;

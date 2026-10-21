@@ -27,3 +27,17 @@ softprac_add_variant(ReturnMaximum return_maximum.c best_zero
   "    int best = 0;  // 誤りの例: 全要素が負だと配列にない 0 を返す")
 
 softprac_add_variant(ReturnMaximum versions/max_index.c max_index)
+
+# 別解も本体の negative・pointer_n0 と同じ書き換えで確かめる
+#   max_index_negative … 配列を {-7, -12, -4} にした版（本体と同じ before=-4 -4 と after=-4 99）
+#   max_index_n0       … 場所を返す max_index だけ n を 0 にした版（-1 が返り，何も表示しない）
+set(index_desc "// max_pointer の代わりに，最大要素の添字（n<=0 なら -1）を返す max_index を使う。")
+softprac_add_variant(ReturnMaximum versions/max_index.c max_index_negative
+  "${index_desc}"
+  "// 別解の配列を全要素が負の {-7, -12, -4} にした版。表示は before=-4 -4 と after=-4 99。"
+  "${init}" "${init_negative}")
+softprac_add_variant(ReturnMaximum versions/max_index.c max_index_n0
+  "${index_desc}"
+  "// 別解で場所を返す max_index だけ n を 0 にした版（max_value は n=3 のまま）。\n// max_index は -1 を返すので，if の中は実行されず何も表示しない。"
+  "    int index = max_index(a, 3);  // 最大要素の添字（ここでは 1）"
+  "    int index = max_index(a, 0);  // n=0 なので -1（何も表示しない）")

@@ -49,3 +49,25 @@ softprac_add_variant(Functions functions.c before_result
 
 # 別解: 指数を半分にしながら掛ける power
 softprac_add_variant(Functions versions/power_squaring.c power_squaring)
+
+# 別解も境界の表と範囲の端の呼び出しで確かめる（本体の a_*_p_* と同じ置換）
+softprac_add_variant(Functions versions/power_squaring.c power_squaring_a_0_0_p_2_0
+  "// base^exponent を，exponent が奇数なら result に base を掛け，base を 2 乗して exponent を半分にする，の繰り返しで求める。"
+  "// 別解を境界の表の average(0.0f, 0.0f) と power(2, 0) に書き換えた版（0.0 と 1）。"
+  "average(2.0f, 4.0f)" "average(0.0f, 0.0f)" "power(2, 5)" "power(2, 0)")
+softprac_add_variant(Functions versions/power_squaring.c power_squaring_a_m4_2_p_5_1
+  "// base^exponent を，exponent が奇数なら result に base を掛け，base を 2 乗して exponent を半分にする，の繰り返しで求める。"
+  "// 別解を境界の表の average(-4.0f, 2.0f) と power(5, 1) に書き換えた版（-1.0 と 5）。"
+  "average(2.0f, 4.0f)" "average(-4.0f, 2.0f)" "power(2, 5)" "power(5, 1)")
+softprac_add_variant(Functions versions/power_squaring.c power_squaring_a_1_2_p_5_5
+  "// base^exponent を，exponent が奇数なら result に base を掛け，base を 2 乗して exponent を半分にする，の繰り返しで求める。"
+  "// 別解を境界の表の average(1.0f, 2.0f) と power(5, 5) に書き換えた版（1.5 と 3125）。"
+  "average(2.0f, 4.0f)" "average(1.0f, 2.0f)" "power(2, 5)" "power(5, 5)")
+softprac_add_variant(Functions versions/power_squaring.c power_squaring_a_m100_m100_p_1_0
+  "// base^exponent を，exponent が奇数なら result に base を掛け，base を 2 乗して exponent を半分にする，の繰り返しで求める。"
+  "// 別解を範囲の端 average(-100.0f, -100.0f) と power(1, 0) に書き換えた版（-100.0 と 1）。"
+  "average(2.0f, 4.0f)" "average(-100.0f, -100.0f)" "power(2, 5)" "power(1, 0)")
+softprac_add_variant(Functions versions/power_squaring.c power_squaring_a_m100_100_p_1_5
+  "// base^exponent を，exponent が奇数なら result に base を掛け，base を 2 乗して exponent を半分にする，の繰り返しで求める。"
+  "// 別解を範囲の端 average(-100.0f, 100.0f) と power(1, 5) に書き換えた版（0.0 と 1）。"
+  "average(2.0f, 4.0f)" "average(-100.0f, 100.0f)" "power(2, 5)" "power(1, 5)")
