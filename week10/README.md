@@ -1,33 +1,32 @@
 # 第10回 演習 解答・解説（ファイル）
 
 - 演習ページ: [ex10](https://t-yokoga.github.io/softprac1/ex10.html)（原稿: [docs/ex10.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex10.md)）・講義: [lec10](https://t-yokoga.github.io/softprac1/lec10.html)（例題: [docs/sample/10/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/10/)）
-- TA 用の資料: [実務の手引き 第10回](../ta-guide/README.md#第10回失敗を伝えるエラー処理ファイル)・デバッグの題材 [BugCharCount](../debugging/BugCharCount/README.md)
 - 今回の範囲: `fopen`/`fclose`（モード `r`・`w`・`a`・`rb`・`wb`・`wx`），`fgetc`・`fgets`・`fprintf`・`fscanf`・`fread`・`fwrite`，
   `ferror`・`perror`・`fflush`，`int main(int argc, char *argv[])`，`strtol` と `errno`/`ERANGE`，テキストとバイナリ，エンディアン，UTF-8。
   そのほかは第9回までの範囲（関数，`enum` の定数，ポインタ配列，`strcmp`，ビット演算）だけを使う。
 
 ## プロジェクト一覧
 
-| 課題 | 内容 | プロジェクト | ソース | 既定の引数（`run.args`） | データファイル | テスト数 |
-| --- | --- | --- | --- | --- | --- | --- |
-| 1 | 1 文字ずつ読んで表示 | `ReadText` | [read_text.c](ReadText/read_text.c) | `input.txt` | [input.txt](ReadText/input.txt) | 9 |
-| 1 | 行の長さ | `LineLengths` | [line_lengths.c](LineLengths/line_lengths.c) | `input.txt` | [input.txt](LineLengths/input.txt) | 13 |
-| 2 | 数値引数の検査（講義の `parse_number.c`） | `ParseNumber` | [parse_number.c](ParseNumber/parse_number.c) | `42` | なし | 29 |
-| 2 | 引数を表示して文字列を探す | `Arguments` | [arguments.c](Arguments/arguments.c) | `nagano ishikawa` | なし | 12 |
-| 3 | バイト列を保存（講義の `binary.c`） | `Binary` | [binary.c](Binary/binary.c) | なし | なし（`bytes.bin` は実行時に作る） | 4 |
-| 3 | バイト順を調べる（「別の `main`」） | `ByteOrder` | [byte_order.c](ByteOrder/byte_order.c) | なし | なし | 3 |
-| 4 | テキストを書く（モード `w`） | `WriteText` | [write_text.c](WriteText/write_text.c) | なし | なし（`scores.txt` は実行時に作る） | 8 |
-| 発展1 | 数値をテキスト・バイナリで往復 | `NumberFormats` | [number_formats.c](NumberFormats/number_formats.c) | なし | なし（`numbers.txt`・`numbers.bin` は実行時に作る） | 3 |
-| 発展2 | 二乗の一覧を書く | `WriteSquares` | [write_squares.c](WriteSquares/write_squares.c) | `4 squares.txt` | なし（`squares.txt` は実行時に作る） | 14 |
-| 発展2 | 一覧を検査して値を探す | `CheckValue` | [check_value.c](CheckValue/check_value.c) | `squares.txt 9` | [squares.txt](CheckValue/squares.txt)（`WriteSquares 4` の出力のコピー） | 37 |
+| 課題 | 内容 | プロジェクト | ソース | 実行に使う引数 | データファイル |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 1 文字ずつ読んで表示 | `ReadText` | [read_text.c](ReadText/read_text.c)，別解 [versions/read_lines.c](ReadText/versions/read_lines.c) | `input.txt` | [input.txt](ReadText/input.txt) |
+| 1 | 行の長さ | `LineLengths` | [line_lengths.c](LineLengths/line_lengths.c)，別解 [versions/count_chars.c](LineLengths/versions/count_chars.c) | `input.txt` | [input.txt](LineLengths/input.txt) |
+| 2 | 数値引数の検査（講義の `parse_number.c`） | `ParseNumber` | [parse_number.c](ParseNumber/parse_number.c) | `42` | なし |
+| 2 | 引数を表示して文字列を探す | `Arguments` | [arguments.c](Arguments/arguments.c) | `nagano ishikawa` | なし |
+| 3 | バイト列を保存（講義の `binary.c`） | `Binary` | [binary.c](Binary/binary.c) | なし | なし（`bytes.bin` は実行時に作る） |
+| 3 | バイト順を調べる（「別の `main`」） | `ByteOrder` | [byte_order.c](ByteOrder/byte_order.c) | なし | なし |
+| 4 | テキストを書く（モード `w`） | `WriteText` | [write_text.c](WriteText/write_text.c) | なし | なし（`scores.txt` は実行時に作る） |
+| 発展1 | 数値をテキスト・バイナリで往復 | `NumberFormats` | [number_formats.c](NumberFormats/number_formats.c) | なし | なし（`numbers.txt`・`numbers.bin` は実行時に作る） |
+| 発展2 | 二乗の一覧を書く | `WriteSquares` | [write_squares.c](WriteSquares/write_squares.c) | `4 squares.txt` | なし（`squares.txt` は実行時に作る） |
+| 発展2 | 一覧を検査して値を探す | `CheckValue` | [check_value.c](CheckValue/check_value.c)，別解 [versions/store_values.c](CheckValue/versions/store_values.c) | `squares.txt 9` | [squares.txt](CheckValue/squares.txt)（`WriteSquares 4` の出力のコピー） |
 
-書き換えた版のテストについては [ルートの README](../README.md#解答の読み方) を参照。
+引数の与え方は下の[実行のしかた](#実行のしかたコマンド引数と作業ディレクトリ)を参照。書き換えて試す方法は [ルートの README](../README.md#ソースを書き換えて試す) を参照。
 
 ### この回の約束（TA 向け）
 
 - 各フォルダのソースは，演習ページ・講義の期待する表示をそのまま出す（`ParseNumber` は `42`，`Binary` は `41 00 42 0A`，`ByteOrder` は `01 00`，`WriteText` は何回実行しても 3 行，`NumberFormats` は `text=0.50 1.25 -2.00`）。
 - 演習ページの「〜へ置き換えます」「値を変更すると」「モードだけを `a` へ変えます」などの小問は，本体の一部を書き換えた版で示す。
-  実行例では `<プロジェクト>_<版>`（例: `WriteText_mode_a`）という実行ファイル名で示し，テスト名は `variant_<版>[--<ケース>]`。
+  実行例では `<プロジェクト>_<版>`（例: `WriteText_mode_a`）という名前で示す（ソースをその版に書き換えてビルドし直し，実行した結果）。
 
   | プロジェクト | 版 | 演習ページの小問 |
   | --- | --- | --- |
@@ -39,68 +38,78 @@
   | `WriteText` | `mode_a`，`mode_wx` | モードだけを `a` へ変える，表の `wx` |
   | `NumberFormats` | `precision_0125` | `data[0]` を 0.125，最後の 2 行の表示を `%.3f` にする |
 
+- 考え方の違う解き方は `versions/` に別解として置き，課題ごとの「別解」の節で本体と比べる（`ReadText`・`LineLengths`・`CheckValue`）。別解も本体と同じ引数・入力で同じ表示になる。
 - `ByteOrder` は演習ページの「講義の `unsigned short` の観察用断片を別の `main` で実行します」に対応する。演習ページにプロジェクト名がないので，
   解答で名前を付けた（全回で重複しない名前）。学生のプロジェクト名は自由でよい。
-- プログラムが書き出すファイル（`bytes.bin`・`scores.txt`・`numbers.txt`・`numbers.bin`・`squares.txt`）はリポジトリに置いていない（書かれるべき内容は `tests/<ケース>.files/` にある）。
+- プログラムが書き出すファイル（`bytes.bin`・`scores.txt`・`numbers.txt`・`numbers.bin`・`squares.txt`）はリポジトリに置いていない（実行時に作業ディレクトリにできる。書かれる内容はそれぞれの節に示した）。
 - 表示は ASCII だけで，Windows x64（MSVC）でも同じになる。環境で変わる点（改行コード，`long` のサイズなど）はそれぞれの節に「Windows x64 (MSVC) では…，Linux x64 では…」として書いた。
 - 実行例の `$ ReadText input.txt` は「コマンド引数に `input.txt` を設定して実行した」という意味。`(終了コード 1)` はプログラムが返した値で，画面には出ない
-  （Visual Studio の Ctrl+F5 のコンソールでは，プログラムの終了後に `C:\...\ReadText.exe (process 12345) exited with code 1 (0x1).` のように終了コードが表示される）。標準エラー出力も同じ画面に出る。
+  （Visual Studio の Ctrl+F5 のコンソールでは，プログラムの終了後に **C:\...\ReadText.exe (process 12345) exited with code 1 (0x1).** のように終了コードが表示される）。標準エラー出力も同じ画面に出る。
 
 ## 実行のしかた（コマンド引数と作業ディレクトリ）
 
-この回のプログラムは，相対パスのファイル名（`input.txt` など）を**作業ディレクトリ**を基準に探す・作る。ソースの場所や実行ファイル（`.exe`）の場所ではない。
+この回のプログラムは，相対パスのファイル名（`input.txt` など）を**作業ディレクトリ**を基準に探す・作る。作業ディレクトリはソースの場所とも `.exe` の場所とも限らず，起動のしかたで決まる（下の表）。
+引数の与え方と作業ディレクトリは，ビルドの方法（[ルートの README](../README.md#使い方) の 1〜4）で次のように違う。
 
-### Visual Studio（授業の手順：**Empty Project**）
+| 方法 | 引数の与え方 | 作業ディレクトリ（読むファイルを置く場所・書き出したファイルができる場所） |
+| --- | --- | --- |
+| 1. コマンドでビルド | 実行ファイルの後に並べる | プロジェクトフォルダ（`cd` したフォルダ） |
+| 2. 空のプロジェクト | **Command Arguments** | `.vcxproj` のフォルダ（`input.txt` などをここへコピーする） |
+| 3. フォルダーを開く | **Debug and Launch Settings** の `"args"` | 実行ファイルのフォルダ（`<ビルド先>/bin/week10/<プロジェクト名>/`。プロジェクトフォルダのデータファイルはビルドのときにここへコピーされる） |
+| 4. VS Code | `cmake.debugConfig` の `args` | 3 と同じ |
+
+書き出すファイル（`scores.txt` など）も作業ディレクトリにできるので，方法 3・4 ではプロジェクトフォルダではなく実行ファイルのフォルダを見る。
+方法 3・4 のコピーはプロジェクトフォルダから実行ファイルのフォルダへの一方向で，プログラムが書き出したファイルや実行ファイルのフォルダで直接作ったファイルはプロジェクトフォルダには戻らない。
+プロジェクトフォルダのデータファイルを書き換えると次のビルドでコピーし直され，実行ファイルのフォルダで直接書き換えた同名のファイルは上書きされる（読ませるデータを変えるときはプロジェクトフォルダのほうを直してビルドする）。
+
+### 1. コマンドで実行する
+
+プロジェクトフォルダ（例: `week10/ReadText`）でビルドし（[ルートの README](../README.md#1-コマンドでビルドする)），引数は実行ファイルの後に空白で区切って並べる。
+
+```sh
+./a.out input.txt        # 引数 1 個
+./a.out "my input.txt"   # 空白を含む名前も引用符で囲めば 1 個
+./a.out ""               # 空文字列の引数 1 個
+```
+
+- 空文字列の引数 `""` は cmd・bash・zsh では 1 個の空の引数として渡るが，**Windows PowerShell 5.1 は空の引数を落とす**（`argc` が 1 になる）。Windows で `""` を確かめるときは PowerShell ではなく cmd（「Developer Command Prompt for VS」で `a.exe ""`）か Visual Studio の **Command Arguments** 欄を使う。
+- `WriteText_mode_a` のような書き換えた版は，ソースをその版に書き換えてビルドし直して実行する（[ソースを書き換えて試す](../README.md#ソースを書き換えて試す)）。
+
+### 2. Visual Studio（授業の手順：**Empty Project**）
 
 1. **Solution Explorer** で**プロジェクト**（例: `ReadText`）を右クリック → **Properties**。
 2. 上の **Configuration** を実行に使う構成（通常は `Debug`，迷ったら **All Configurations**）に，**Platform** を `x64` にする。
 3. **Configuration Properties > Debugging** の **Command Arguments** に `input.txt` と書く（`ReadText.exe` は書かない）。2 個なら `squares.txt 9` のように空白で区切る。
    空白を含む 1 個の名前は `"my input.txt"`，空文字列の引数は `""` と書く。この欄は C の文字列リテラルではないので `\` を二重にしない。
 4. **Working Directory** を `$(ProjectDir)`（`.vcxproj` のあるフォルダ）にする。
-5. `input.txt` を `.vcxproj` と同じフォルダに保存する（エクスプローラーで拡張子を表示し，`input.txt.txt` になっていないか確認）。
+5. `input.txt` を `.vcxproj` と同じフォルダに保存する（エクスプローラーで拡張子を表示し，`input.txt.txt` になっていないか確認）。書き出すファイル（`scores.txt` など）もこのフォルダにできる。
 6. Ctrl+Shift+B でビルド，Ctrl+F5 で実行。引数を変えるたびにソースを直す必要はない。
 
 複数のプロジェクトがあるソリューションでは，実行されるのはスタートアップ プロジェクト（**Solution Explorer** で太字のもの。右クリック → **Set as Startup Project** で変える）である。
 別のプロジェクトの **Properties** を変えても結果が変わらないときは，ここを確認させる（講義「パスが見つからない場合」の表）。
 
-### このリポジトリを Visual Studio で開く場合（**File > Open > Folder**）
+### 3. このリポジトリを Visual Studio で開く場合（**File > Open > Folder**）
 
-ツールバーの **Startup Item** で `week10 ReadText  [input.txt]` などを選んで Ctrl+F5。引数の変え方はルートの README の [Visual Studio で使う](../README.md#visual-studio-で使うwindows) にある。
+ツールバーの **Startup Item** で実行したいプロジェクト（`ReadText.exe` など）を選び，**Debug > Debug and Launch Settings for \<プロジェクト\>** で表示された構成に `"args"` を足して Ctrl+F5（[ルートの README](../README.md#3-visual-studio-でフォルダーを開く)）。
+**1 要素が 1 引数**で，引用符は要らない:
 
-### VS Code
+- `ReadText`: `"args": [ "input.txt" ]`，空白を含む名前: `"args": [ "my input.txt" ]`
+- `CheckValue`: `"args": [ "squares.txt", "9" ]`，`WriteSquares`: `"args": [ "4", "squares.txt" ]`
 
-1. 実行したい課題の `.c` を開き，**Run and Debug** ビューで「**開いている課題を引数つきで実行**」（Windows は MSVC，macOS/Linux は gdb/lldb）を選ぶ。
-2. `.vscode/launch.json` のその構成の `"args"` を課題に合わせて書き換える。**1 要素が 1 引数**で，引用符は要らない:
-   - `ReadText`: `"args": [ "input.txt" ]`，空白を含む名前: `"args": [ "my input.txt" ]`
-   - `CheckValue`: `"args": [ "squares.txt", "9" ]`，`WriteSquares`: `"args": [ "4", "squares.txt" ]`
-3. `"cwd": "${fileDirname}"` なので，作業ディレクトリは開いている `.c` のフォルダ（= プロジェクトフォルダ）。F5 / Ctrl+F5 で実行。
+作業ディレクトリは実行ファイルのフォルダ `out\build\x64-Debug\bin\week10\<プロジェクト名>\`。プロジェクトフォルダの `input.txt` などのデータファイルはビルドのときにここへコピーされ，書き出すファイルもここにできる（書き出したファイルはプロジェクトフォルダには戻らない。[上の注意](#実行のしかたコマンド引数と作業ディレクトリ)）。
 
-### ターミナルから実行する
+### 4. VS Code
 
-作業ディレクトリをプロジェクトフォルダにしてから，ビルドした実行ファイルを相対パスで起動する（ビルド先は `out/build/<プリセット>/bin/week10/`。
-書き換えた版は `out/build/<プリセット>/variants/week10/<プロジェクト>_<版>`，例: `WriteText_mode_a.exe`）。
+**Command Palette** の **CMake: Set Launch/Debug Target** で実行したいプロジェクトを選び，**Workspace** の設定 `cmake.debugConfig` の `args` に引数を書いて **CMake: Run Without Debugging**（Ctrl+Shift+F5）で実行する（[ルートの README](../README.md#4-vs-code-で使うwindows--macos--linux)）。
+3 と同じく **1 要素が 1 引数**で，引用符は要らない:
 
-```bat
-rem Windows の cmd（プリセット msvc-debug）
-cd week10\ReadText
-..\..\out\build\msvc-debug\bin\week10\ReadText.exe input.txt
-..\..\out\build\msvc-debug\bin\week10\ReadText.exe "my input.txt"
-..\..\out\build\msvc-debug\bin\week10\ReadText.exe ""
+```json
+{ "cmake.debugConfig": { "args": [ "squares.txt", "9" ] } }
 ```
 
-```sh
-# macOS / Linux（プリセット gcc-debug）
-cd week10/ReadText
-../../out/build/gcc-debug/bin/week10/ReadText input.txt
-../../out/build/gcc-debug/bin/week10/ReadText "my input.txt"
-# 書き換えた版の例（追記モードの WriteText）
-cd ../WriteText
-../../out/build/gcc-debug/variants/week10/WriteText_mode_a
-```
+作業ディレクトリは実行ファイルのフォルダ `build/bin/week10/<プロジェクト名>/`（データファイルのコピーのされ方，書き出すファイルの場所は 3 と同じ）。
 
-- 空文字列の引数 `""` は cmd・bash・zsh では 1 個の空の引数として渡るが，**Windows PowerShell 5.1 は空の引数を落とす**（`argc` が 1 になる）。`""` の確認は cmd か Visual Studio の **Command Arguments** 欄で行う。
-- VS Code の gdb/lldb（cppdbg）は引数をデバッガ経由で渡すので，空白や空文字列を含む引数の扱いが環境で異なることがある。境界の確認はターミナルで行うのが確実。
-- `ctest` で全部を確かめる場合: `ctest --preset msvc-debug -R week10`（macOS/Linux は `gcc-debug`）。
+- VS Code の gdb/lldb（**CMake: Debug**）は引数をデバッガ経由で渡すので，空白や空文字列を含む引数の扱いが環境で異なることがある。境界の確認は 1 のコマンドで行うのが確実。
 
 ---
 
@@ -165,9 +174,34 @@ usage: ReadText filename
 
 うまくいかないときは `input.txt` に戻し，「内容」「名前」「作業ディレクトリ」を 1 つずつ変えて原因を切り分けさせる。
 
+### 別解
+
+**`fgets` で配列へまとめて読み，`fputs` でそのまま表示する**（[ReadText/versions/read_lines.c](ReadText/versions/read_lines.c)）
+
+- 考え方: 1 文字ずつではなく，`fgets` で配列（`char line[256]`）へ最大 255 バイトずつ読み，`fputs` で読んだとおりに書きます。引数の検査・エラー処理・表示は本体と同じです。
+
+  ```c
+      char line[256];  /* 1 行がこれより長くても，残りは次の fgets で読む */
+      int failed = 0;
+      while (fgets(line, sizeof line, fp) != NULL) {
+          /* fgets は改行も配列に残すので，fputs（改行を足さない）でそのまま書く */
+          if (fputs(line, stdout) == EOF) { failed = 1; break; }
+      }
+  ```
+
+- 本体との比べ方:
+  - 関数を呼ぶ回数: 本体は 1 バイトごとに `fgetc` と `putchar` を 1 回ずつ呼びます（`input.txt` の 11 バイトなら `fgetc` 12 回（最後の `EOF` を含む）と `putchar` 11 回）。
+    別解は 1 行ごとに 1 回ずつです（`fgets` 3 回（2 行と，終わりの `NULL`）と `fputs` 2 回）。どちらの入出力にもバッファがあるので，この大きさのファイルで速さの違いは分かりません。
+  - メモリ: 本体は `int` 1 個，別解は `char` 256 個の配列です。
+  - 長い行: 255 バイトより長い行は何回かの `fgets` に分かれますが，読んだ順に続けて書くので表示は同じです。「`fgets` 1 回 = 1 行」と考えて行を数えると誤ります（行を扱うのは `LineLengths`）。
+  - 空ファイル・最後に改行のない行・存在しないファイル・引数の誤りは，本体と同じ表示・終了コードになります（`fgets` は改行のない最後の行も返し，`NULL` の後で `ferror` を調べる）。
+  - 途中に `NUL` バイトを含むファイルだけは違います。`fputs` は文字列の終端と見なした `NUL` の手前までしか書かないので，その行の残りが表示されません。本体の `fgetc`/`putchar` は `NUL` もそのまま書きます（テキストを表示する課題なので対象外の入力）。
+- どちらを勧めるか: どちらも正しい解です。講義の例題として本体を基本にします。行単位で書いてきたら，容量を `sizeof line` で渡しているか，
+  改行を足さない `fputs` を使っているか（`puts` だと改行が 2 重になる），`printf(line)` のように読んだ内容を書式に渡していないか（`%` を含む行で誤動作する）を見ます。
+
 ### 採点のポイント・よくある誤り
 
-- `input.txt` が `x64\Debug\` やソリューションのフォルダにある（**Working Directory** が `$(ProjectDir)` でない）→ `fopen: No such file or directory`。
+- `input.txt` を `.vcxproj` のフォルダ以外（`x64\Debug\` やソリューションのフォルダなど）に置いた，または **Working Directory** を変えた → `fopen: No such file or directory`。
 - `input.txt.txt`（拡張子非表示），BOM 付き UTF-8 で保存（先頭に `EF BB BF` の 3 バイトが増え，表示の先頭に余分な文字が出る）。
 - **Command Arguments** に `ReadText.exe input.txt` と書く → `argc` が 3 になり usage。
 - `char ch = fgetc(fp);` で受ける（`EOF` と `0xFF` を区別できない），`while (!feof(fp))` で回して最後に `EOF` を 1 回余分に処理する。
@@ -195,29 +229,79 @@ $ LineLengths input.txt
 | `A`を31個 | あり・なし | どちらも 31 |
 | `A`を32個 | あり・なし | どちらも長さは表示しない（`line too long`・`read or output error` を標準エラーに出し，終了コード 1） |
 
-実行結果（各ファイル 1 行だけ）:
+実行結果。使ったファイルは次のとおり（`abc_nl.txt` は `ABC` と改行，`abc.txt` は `ABC` だけ，`empty_line.txt` は改行 1 個，
+`a31_nl.txt`・`a31.txt` は `A`×31 の後に改行あり・なし，`a32_nl.txt`・`a32.txt` は `A`×32 の後に改行あり・なし，`empty.txt` は 0 バイト）。
 
 ```text
-$ LineLengths abc.txt      ← "ABC\n"         → 3
-$ LineLengths abc.txt      ← "ABC"           → 3
-$ LineLengths empty_line.txt ← "\n"          → 0
-$ LineLengths a31.txt      ← A×31 + "\n"     → 31
-$ LineLengths a31.txt      ← A×31            → 31
-$ LineLengths a32.txt      ← A×32 + "\n"（改行なしも同じ）
+$ LineLengths abc_nl.txt
+3
+$ LineLengths abc.txt
+3
+$ LineLengths empty_line.txt
+0
+$ LineLengths a31_nl.txt
+31
+$ LineLengths a31.txt
+31
+$ LineLengths a32_nl.txt
 line too long
 read or output error
 (終了コード 1)
-$ LineLengths empty.txt    ← 空ファイル: 何も表示しない（終了コード 0）
+$ LineLengths a32.txt
+line too long
+read or output error
+(終了コード 1)
+$ LineLengths empty.txt
+(終了コード 0)
 ```
 
 - 31 文字で改行あり: `fgets` は `A`×31 と終端で配列が一杯になり，改行は配列に入らない → 次の `fgetc` が `'\n'` なので 31 文字の行（改行はここで読み捨てられる）。
 - 31 文字で改行なし: 次の `fgetc` が `EOF` → 31 文字の行。
-- 32 文字: 次の `fgetc` が 32 文字目の `A` → 長すぎるので，残りを 2 行目として数えずに閉じて終了する（テスト `too_long_after_line`: `ABC` の後に 32 文字の行があると `3` だけ表示して終了し，3 行目は処理しない）。
-- 環境差: Windows のテキストモードは CRLF を LF に変換するので，メモ帳で作った CRLF のファイルでも結果は同じ。Linux/macOS で CRLF のファイルを読むと `\r` が残り，`ABC` が 4 になる。Windows と Linux で結果が違う（どちらも処理系の仕様どおり）ので，CRLF のファイルは共通のテストにしていない。
+- 32 文字: 次の `fgetc` が 32 文字目の `A` → 長すぎるので，残りを 2 行目として数えずに閉じて終了する（例えば `ABC` の後に 32 文字の行があると `3` だけ表示して終了し，3 行目は処理しない）。
+- 環境差: Windows のテキストモードは CRLF を LF に変換するので，メモ帳で作った CRLF のファイルでも結果は同じ。Linux/macOS で CRLF のファイルを読むと `\r` が残り，`ABC` が 4 になる。Windows と Linux で結果が違うが，どちらも処理系の仕様どおり。
 
 **説明すること**: `strlen(line)` から常に 1 を引くと，最後の行に改行がない `ABC` は `strlen` が 3 なので 2 になってしまう（最後の `C` を改行と誤って除く）。
 `fgets` が改行を配列に入れるのは「改行まで読めたとき」だけで，ファイルの最後の行や容量で切れた行には改行がない。
 そこで `line[length - 1] == '\n'` を確かめ，改行を実際に読み取ったときだけ 1 バイト除く（`length > 0` も先に調べて `line[-1]` を読まない）。
+
+### 別解
+
+**`fgetc` で 1 文字ずつ数え，行を配列に保存しない**（[LineLengths/versions/count_chars.c](LineLengths/versions/count_chars.c)）
+
+- 考え方: 読んだ文字を数えるだけにします。改行を読んだらそれまでの長さを表示して 0 に戻し，32 文字目を読んだら `line too long` で終了します。
+  ファイルの終わりで数えかけの文字があれば（`length > 0`），改行のない最後の行として表示します。表示・エラーの文面・終了コードは本体と同じです。
+
+  ```c
+      int ch;
+      int length = 0;   /* 今の行でここまでに読んだ文字数（改行は含めない） */
+      int failed = 0;
+      while ((ch = fgetc(fp)) != EOF) {
+          if (ch == '\n') {
+              if (printf("%d\n", length) < 0) { failed = 1; break; }
+              length = 0;
+          } else if (length == MAX_LENGTH) {
+              fprintf(stderr, "line too long\n");   /* 改行の前に 32 文字目が来た */
+              failed = 1;
+              break;
+          } else {
+              ++length;
+          }
+      }
+      /* 最後の行に改行がないとき（length > 0）も 1 行として表示する。空ファイルは何も表示しない */
+      if (!failed && !ferror(fp) && length > 0) {
+          if (printf("%d\n", length) < 0) { failed = 1; }
+      }
+  ```
+
+- 本体との比べ方:
+  - メモリ: 本体は `char` 32 個の配列，別解は `int` 1 個です。上限 31 は配列の容量ではなく `length == MAX_LENGTH` の比較で決まります。
+  - 特別な場合の数: 本体は「改行が配列に入ったか」と「容量ちょうどで改行が入らなかったか（もう 1 文字読む）」を区別します。別解では 31 文字の行に特別な処理がなく，改行か `EOF` が来れば 31 と表示します。
+    代わりに，ループの後で「最後の行に改行がない」場合を処理します。`length > 0` の判定を忘れると改行のない `ABC` が表示されず，`length >= 0` にすると改行で終わるファイルや空ファイルで余分な `0` を表示します。
+  - 関数を呼ぶ回数: 本体は 1 行（31 バイトまで）ごとに `fgets` 1 回，別解は 1 文字ごとに `fgetc` 1 回です（どちらも入力はバッファから読むので，この大きさでは速さの違いは分かりません）。
+  - 同じになること: 32 文字の行を 2 行として数えない，空行は 0，空ファイルは何も表示しない，Linux/macOS で CRLF のファイルを読むと `\r` も数える（`ABC` が 4）。
+    違うのは `NUL` を含む行（本体は `strlen` が `NUL` の手前で止まり，別解は `NUL` も 1 文字と数える）だけで，これは講義の例の対象外の入力です。
+- どちらを勧めるか: 長さを数えるだけなら別解のほうが特別な場合が少なく，誤りにくい形です。ただし課題は講義の `line_lengths.c` で `fgets` が改行を残すこと（説明すること）を確かめるものなので，本体を基本にします。
+  別解の形で書いてきたら，改行のない `ABC` だけのファイル・空ファイル・31 文字と 32 文字を表のとおり確かめたかを見ます。行の内容を後で数値に変換するなど，文字列として使うときは配列に保存する本体の形が必要です（発展2 の `CheckValue`）。
 
 ### 採点のポイント・よくある誤り
 
@@ -234,8 +318,7 @@ $ LineLengths empty.txt    ← 空ファイル: 何も表示しない（終了�
 
 ### 本体（講義の `parse_number.c`）と検証表
 
-解答: [ParseNumber/parse_number.c](ParseNumber/parse_number.c)（講義の `parse_number.c` に先頭のコメントだけを加えたもの）。既定の引数（`run.args`）は `42`。
-次の実行例と表の値の期待値は [ParseNumber/tests](ParseNumber/tests) にある。
+解答: [ParseNumber/parse_number.c](ParseNumber/parse_number.c)（講義の `parse_number.c` に先頭のコメントだけを加えたもの）。実行に使う引数は `42`。
 
 ```c
 #include <stdio.h>
@@ -296,16 +379,16 @@ expected an integer from 0 to 100
 | `abc` | `expected an integer from 0 to 100`，終了コード 1 | 数字を読めない（`end == argv[1]`） |
 | 42 50 | `usage: ParseNumber integer`，終了コード 1 | 引数が多すぎる（`argc` が 3） |
 
-そのほか: 引数なしは `usage: ParseNumber integer`（終了コード 1）。`""`（空文字列）は `end == argv[1]` なので `expected an integer from 0 to 100`（終了コード 1，テスト `empty_arg`）。
+そのほか: 引数なしは `usage: ParseNumber integer`（終了コード 1）。`""`（空文字列）は `end == argv[1]` なので `expected an integer from 0 to 100`（終了コード 1）。
 
 **極端に長い整数**: `999999999999999999999999999999` は `strtol` が `LONG_MAX` を返し `errno` を `ERANGE` にするので拒否される。
 `long` は Windows x64 (MSVC) では 4 バイト（最大 2147483647），Linux x64 では 8 バイト（最大 9223372036854775807）。
-例えば `3000000000` は Windows では `ERANGE`，Linux では `long` に収まって `value > 100` で拒否される（どちらも `expected an integer from 0 to 100`，テスト `ten_digits`）。理由は違っても両方で拒否されるのは，
+例えば `3000000000` は Windows では `ERANGE`，Linux では `long` に収まって `value > 100` で拒否される（どちらも `expected an integer from 0 to 100`）。理由は違っても両方で拒否されるのは，
 「桁数」ではなく `errno` と範囲で判断しているから。「10 桁なら必ず範囲外」とは決められない。
 
-### 複数の数値を合計するなら（テスト `variant_sum`）
+### 複数の数値を合計するなら
 
-本体の `main` の検査・変換部分（`if (argc != 2)` から `printf("%ld\n", value);` まで）を演習ページの断片へ置き換え，最後は元の `return 0;` で終わる版（テスト `variant_sum--*`）。
+本体の `main` の検査・変換部分（`if (argc != 2)` から `printf("%ld\n", value);` まで）を演習ページの断片へ置き換え，最後は元の `return 0;` で終わる版。
 
 ```c
 int main(int argc, char *argv[])
@@ -345,14 +428,14 @@ invalid integer
 $ ParseNumber_sum
 expected 1 to 10 integers
 (終了コード 1)
-$ ParseNumber_sum 1 2 3 4 5 6 7 8 9 10 11      ← 11 個（テスト variant_sum--eleven_values）
+$ ParseNumber_sum 1 2 3 4 5 6 7 8 9 10 11      ← 11 個
 expected 1 to 10 integers
 (終了コード 1)
-$ ParseNumber_sum 42 50                          ← テスト variant_sum--two_values
+$ ParseNumber_sum 42 50
 92
 ```
 
-`12 x 34` では `12` を加えた後に `x` で失敗するが，合計は表示しない（途中までの合計を結果として扱わない）。テストでは 100 を 10 個（合計 1000），11 個（拒否），101・-1・`12x`・非常に長い整数も確かめている。
+`12 x 34` では `12` を加えた後に `x` で失敗するが，合計は表示しない（途中までの合計を結果として扱わない）。100 を 10 個なら `1000` を表示し，101・-1・`12x`・非常に長い整数を含むと `invalid integer`（終了コード 1）になる。
 
 ### 引数を表示して文字列を探す（`Arguments`）
 
@@ -371,7 +454,7 @@ hokuriku!
 $ Arguments                       ← 何も表示しない
 $ Arguments Toyama
 arg1=Toyama
-$ Arguments "toyama city" toyama        ← テスト space_and_toyama
+$ Arguments "toyama city" toyama
 arg1=toyama city
 arg2=toyama
 hokuriku!
@@ -408,9 +491,9 @@ $ Binary
 ```
 
 `bytes.bin` は 4 バイト（`41 00 42 0A`）。途中の `00` も普通のデータとして読める（文字列ではないので `%s` で表示しない）。
-繰り返し実行すると同じ名前のファイルを上書きし，常に 4 バイトになる（テスト `overwrite`: 20 バイトの古い `bytes.bin` があっても 4 バイトになる）。
+繰り返し実行すると同じ名前のファイルを上書きし，常に 4 バイトになる（20 バイトの古い `bytes.bin` があっても 4 バイトになる）。
 
-**読み取った個数だけを使う**（テスト `variant_show_n`）: `buffer` は 16 要素だが，`fread` が返す `n` は 4。表示するのは `buffer[0]`〜`buffer[3]` だけで，残り 12 個は値が決まっていない（読んではいけない）。
+**読み取った個数だけを使う**: `buffer` は 16 要素だが，`fread` が返す `n` は 4。表示するのは `buffer[0]`〜`buffer[3]` だけで，残り 12 個は値が決まっていない（読んではいけない）。
 `n` を確かめるために，表示のループの直前へ 1 行足した版:
 
 ```c
@@ -426,7 +509,7 @@ n=4
 
 `size = 1` なので `n` はバイト数と一致する。ファイルが 16 バイトより大きいと 1 回の `fread` では全部読めない。「`fread` を呼んだ = ファイル全体を読んだ」ではない。
 
-### UTF-8 をバイトとして観察する（テスト `variant_utf8_a`）
+### UTF-8 をバイトとして観察する
 
 `data` を次の 4 バイトに置き換えた版（`Binary_utf8_a`）:
 
@@ -457,7 +540,7 @@ sizeof value = 2
 01 00
 ```
 
-値を `0x1234` へ変更した版（テスト `variant_value_0x1234`，`unsigned short value = 0x1234;`）:
+値を `0x1234` へ変更した版（`unsigned short value = 0x1234;`）:
 
 ```text
 $ ByteOrder_value_0x1234
@@ -465,7 +548,7 @@ sizeof value = 2
 34 12
 ```
 
-演習ページの「1 バイトを 2 進数表示する」断片を `return 0;` の前に足した版（テスト `variant_bits_of_byte`）:
+演習ページの「1 バイトを 2 進数表示する」断片を `return 0;` の前に足した版:
 
 ```c
     /* 1 バイトの中は上位ビット（bit 7）から表示する */
@@ -485,9 +568,9 @@ sizeof value = 2
 ```
 
 - Windows x64（MSVC）・Linux x64・macOS（Apple Silicon）はいずれもリトルエンディアンで，`unsigned short` は 2 バイト。どれも同じ表示になる。
-  ビッグエンディアンの処理系なら `00 01`・`12 34` になる（テストはリトルエンディアンを前提にしている）。
+  ビッグエンディアンの処理系なら `00 01`・`12 34` になる。
 - 先に `0x34` があっても，数値が `0x3412` に変わったわけではない。値は `0x1234` のままで，**メモリに置く複数バイトの順序**が下位バイトからなだけ。
-- 1 バイトの中のビットは反転しない。2 進数表示は上位ビット（bit 7）から並べるので，`1` は `00000001`（テスト `variant_bits_of_byte`）。
+- 1 バイトの中のビットは反転しない。2 進数表示は上位ビット（bit 7）から並べるので，`1` は `00000001`。
 
 ### 採点のポイント・よくある誤り
 
@@ -517,10 +600,16 @@ $ ReadText scores.txt  ← 課題1のプログラムで読み返す
 $ WriteText            ← 2 回目（同じ条件）: 再び 3 行。6 行にはならない
 ```
 
+`ReadText` と `WriteText` は別のプロジェクトなので作業ディレクトリも別で，`WriteText` が作った `scores.txt` は `ReadText` の作業ディレクトリにはない。
+`scores.txt` を `ReadText` の作業ディレクトリへコピーするか，`ReadText` の引数を相対パスで `WriteText` の作業ディレクトリへ向ける。
+方法 1 で `week10/ReadText` から実行するなら `../WriteText/scores.txt`（Windows の cmd では `..\WriteText\scores.txt`），
+方法 2 で両方のプロジェクトの `.vcxproj` のフォルダが同じフォルダの中に並んでいるなら `..\WriteText\scores.txt`，
+方法 3・4 では実行ファイルのフォルダがどちらも `bin/week10/` の下に並ぶので `../WriteText/scores.txt` と書く。
+
 `scores.txt` のバイト数: Windows（テキストモードで `\n` が CRLF になる）では 3 行 ×（2 文字 + CR LF）= **12 バイト**，Linux/macOS では **9 バイト**。
 `"wb"` で書けば Windows でも 9 バイトになる（「バイナリで保存した場合とバイト数が異なることがある」の答え）。`ReadText` で読み返した表示はどちらも同じ。
 
-### モードを `a` に変えた版（テスト `variant_mode_a`）
+### モードを `a` に変えた版
 
 ```c
     /* a: ファイルがなければ作り，あれば以前の内容を残して末尾へ追記する */
@@ -535,17 +624,17 @@ $ WriteText_mode_a     → 9 行
 $ WriteText_mode_a     → 3 行（a はファイルがなければ新しく作る）
 ```
 
-（行数は実行後に `scores.txt` を数えたもの。内容はテスト `variant_mode_a--new_file`・`variant_mode_a--append_to_3_lines`・`variant_mode_a--append_to_6_lines` の期待値にある。）
+（行数は実行後に `scores.txt` を数えたもの。）
 
 ### 表「上書きと追記を比較する」
 
-| モード | 実行前に3行ある場合 | 注意 | 確かめたこと（テスト） |
+| モード | 実行前に3行ある場合 | 注意 | 確かめたこと |
 | --- | --- | --- | --- |
-| `w` | 今回の3行だけになる | 以前の内容を消す | 3 行 → 3 行，`old data` などの別の内容 → 3 行（本体の `overwrite_*`） |
-| `a` | 以前の3行と今回の3行で6行 | 繰り返すたびに増える | 3 → 6 → 9 行，なければ 3 行で作成（`variant_mode_a--*`） |
-| `wx` | 開くのに失敗 | 既存ファイルを保護する | `fopen: File exists`，終了コード 1，元の内容のまま（`variant_mode_wx--existing_file`）。なければ 3 行で作成 |
+| `w` | 今回の3行だけになる | 以前の内容を消す | 3 行 → 3 行，`old data` などの別の内容 → 3 行 |
+| `a` | 以前の3行と今回の3行で6行 | 繰り返すたびに増える | 3 → 6 → 9 行，なければ 3 行で作成 |
+| `wx` | 開くのに失敗 | 既存ファイルを保護する | `fopen: File exists`，終了コード 1，元の内容のまま。なければ 3 行で作成 |
 
-`wx` の版（テスト `variant_mode_wx`，`fopen("scores.txt", "wx")`）の実行結果:
+`wx` の版（`fopen("scores.txt", "wx")`）の実行結果:
 
 ```text
 （scores.txt がある状態で）
@@ -613,7 +702,7 @@ numbers.bin（25 バイト = 1 + 3 * sizeof(double)。16 進数）
   この小さな例ではテキストの方が小さい。テキスト・バイナリのどちらが常に小さい・速いということはない。
 - `numbers.bin` は「同じ処理系で読み戻す専用」。`double` のサイズ・表現・バイト順が違う処理系とは交換できない。
 
-### `data[0]` を 0.125，表示を `%.3f` にした版（テスト `variant_precision_0125`）
+### `data[0]` を 0.125，表示を `%.3f` にした版
 
 保存の書式は `%.2f` のまま，`data[0]` を 0.125 にし，最後の 2 行の表示書式だけ `%.3f` に変えた版:
 
@@ -682,7 +771,7 @@ usage: WriteSquares count filename
 (終了コード 1)
 ```
 
-テストでは `N` = 4・0・100 の内容，既存ファイルの保護，未使用の名前，空白を含む名前（`"my squares.txt"`），`N` = 101・-1・`12x`・非常に長い整数，引数の個数の誤り，空のファイル名を確かめている。
+空白を含む名前（`"my squares.txt"`）は 1 個の名前として受け付ける。`N` = -1・`12x`・非常に長い整数は `expected a count from 0 to 100`，引数の個数の誤りと空のファイル名は `usage: WriteSquares count filename` で拒否する（終了コード 1）。
 書き込み途中で失敗した場合は `write error: <名前> may be incomplete` を出して終了コード 1（途中までのファイルが残るので，完成品として使わない）。
 
 ### 読む側：`CheckValue`
@@ -698,7 +787,7 @@ usage: WriteSquares count filename
   `N` 行の後に 1 文字でも残っていれば（空行も）`extra data` で拒否する。最後の行の改行はなくてもよい。
 - `main`: 引数の個数と検索値（0〜9801）を先に検査し，ファイルを開いて `check_file` を呼び，必ず `fclose` する。形式が正しいときだけ `found`/`not found` を表示する。
 
-作業ディレクトリは `CheckValue` のフォルダ。`WriteSquares` で作った `squares.txt` をここへコピーしたものが [CheckValue/squares.txt](CheckValue/squares.txt)（同じ相対パス `squares.txt` でも，プロジェクトが違えば別のフォルダを探す）。
+作業ディレクトリは `CheckValue` のフォルダ（方法 3・4 ではデータファイルがコピーされる実行ファイルのフォルダ）。`WriteSquares` で作った `squares.txt` をここへコピーしたものが [CheckValue/squares.txt](CheckValue/squares.txt)（同じ相対パス `squares.txt` でも，プロジェクトが違えば別のフォルダを探す）。
 
 ```text
 $ CheckValue squares.txt 9
@@ -714,9 +803,9 @@ expected a value from 0 to 9801
 値が 0，1，4，9 という特定の計算結果になっているかは検査しない。また，1 行目の個数そのものは検索対象ではない（`2`・`0`・`1` のファイルで 2 を探すと `not found`）。
 
 **前提として検査しないこと**: 形式の約束（ASCII・`NUL` なし）は前提とし，`NUL` や非 ASCII のバイトは検査しない。
-例えば `9`，`NUL`，`x` の行は `fgets` の後の文字列が `"9"` で終わるので 9 として読む（テスト `nul_not_checked` → `found`）。
+例えば `9`，`NUL`，`x` の行は `fgets` の後の文字列が `"9"` で終わるので 9 として読む（→ `found`）。
 符号や先頭の空白は `strtol` の仕様どおり受け付ける（値の行の `+9`，検索値の `" 9"` や `+9` も 9 として扱う）。
-BOM 付き UTF-8 で保存した `squares.txt` は，先頭の `EF BB BF` が数字ではないので `line 1: expected a count from 0 to 100` で拒否される（テスト `bad_bom`）。
+BOM 付き UTF-8 で保存した `squares.txt` は，先頭の `EF BB BF` が数字ではないので `line 1: expected a count from 0 to 100` で拒否される。
 
 ### 表「異常なデータも別ファイルで確認する」（記入済み）
 
@@ -734,22 +823,70 @@ BOM 付き UTF-8 で保存した `squares.txt` は，先頭の `EF BB BF` が数
 
 （行番号はファイルの何行目かで，表示はすべて標準エラー。どの異常でも `found`/`not found` は表示しない。）
 
-そのほかテストで確かめていること: 値の前後の空白・タブ（受け付ける），CRLF のファイル（受け付ける），途中の空行・空白だけの行（拒否），
+そのほか確かめたこと: 値の前後の空白・タブ（受け付ける），CRLF のファイル（受け付ける），途中の空行・空白だけの行（拒否），
 30 バイトの行（受け付ける）と 31 バイトの行（`line 5: line too long` で拒否。31 バイト以上のヘッダも `line 1: line too long`），`N` = 0 のファイル，`N` = 100 のファイルで 9801（`found`）と 9800（`not found`），
 **見つけた後の行が壊れている場合**（`4`・`0`・`1`・`abc`・`9` で 1 を探すと，1 は 3 行目で見つかるが 4 行目の `abc` で `line 4: …` となり `found` は出ない），
 検索値 9802・-1・`12x`，存在しないファイル，空白を含むファイル名，引数の個数の誤り，空のファイル名。
 
 ```text
-$ CheckValue bad.txt 9       ← 5 行目が空白 30 個 + "9"（31 バイト。テスト bad_line_31_bytes）
+$ CheckValue bad.txt 9       ← 5 行目が空白 30 個 + "9"（31 バイト）
 line 5: line too long
 (終了コード 1)
 ```
 
 環境差: Windows のテキストモードは CRLF を LF に変換するので，CRLF のファイルでも「30 バイト + 改行」の行は受け付ける。
-Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 バイトの値の行は CR 込みで 31 バイトとなり `line too long` で拒否される（29 バイト以下の行は CR を末尾の空白として除くので受け付ける）。Windows と結果が違うので，CRLF の 30 バイトの行は共通のテストにしていない（CRLF のテストは 29 バイト以下の行だけ）。
+Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 バイトの値の行は CR 込みで 31 バイトとなり `line too long` で拒否される（29 バイト以下の行は CR を末尾の空白として除くので受け付ける）。
 
 `read_value` が失敗したときは，その呼び出しで得られなかった値を読まない（`*value` は書き換えず，呼び出し側もすぐ失敗として終わる）。
 検索だけなら 1 個ずつ比較すれば足りるので，値全体を配列に保存していない。
+
+### 別解
+
+**値を全部配列に保存してから探す**（[CheckValue/versions/store_values.c](CheckValue/versions/store_values.c)）
+
+- 考え方: 演習ページの「固定長配列に保存する方法」です。`read_values` がファイル全体を検査しながら値を `long values[MAX_COUNT]` へ集め，形式が正しいと分かってから `contains` が配列の中を探します。
+  `parse_long`・`read_value`・`report_line_error` は本体と同じで，表示・エラーの文面・終了コードもすべて本体と同じです。
+
+  ```c
+      long values[MAX_COUNT];   /* ヘッダの個数は 0〜100 と検査するので，100 個分あれば足りる */
+      long count = 0;
+      int ok = read_values(fp, values, &count);
+      ...
+      printf("%s\n", contains(values, count, target) ? "found" : "not found");
+  ```
+
+  ```c
+      long n;
+      int result = read_value(fp, MAX_COUNT, &n);   /* n が 0〜100 なので values の範囲内に収まる */
+      ...
+      for (long i = 0; i < n; ++i) {
+          result = read_value(fp, MAX_VALUE, &values[i]);
+          ...
+      }
+  ```
+
+  ```c
+  int contains(const long values[], long count, long target)
+  {
+      for (long i = 0; i < count; ++i) {
+          if (values[i] == target) {
+              return 1;   /* 検査は済んでいるので，見つけたらすぐ返してよい */
+          }
+      }
+      return 0;
+  }
+  ```
+
+- 本体との比べ方:
+  - メモリ: 本体は値 1 個（`long` 1 個），別解は 100 個分の配列です（Windows x64 では `long` が 4 バイトなので 400 バイト，Linux x64 では 8 バイトなので 800 バイト）。
+    個数の上限がずっと大きい形式では固定長の配列が足りなくなります（第13回の動的メモリ確保が要る）。
+  - 読む回数: どちらもファイルを 1 回だけ読みます。比べる回数は本体が `N` 回，別解は見つかった所までで，最大 `N` 回です。
+  - 誤りやすさ: 本体は「見つけても `return` しない」をループの中で守る必要があります。別解は検査が終わってから探すので，見つけてすぐ返してよく，
+    見つけた後の行が壊れている場合（`4`・`0`・`1`・`abc`・`9` で 1 を探す）も自然に `found` を表示しません。
+  - 新しく要ること: 配列の容量の確認です。ヘッダの `N` を 0〜100 と検査してから `values[i]` に書くので範囲内に収まります（確認問題 7）。`N` の検査を省くと `values[100]` 以降へ書く範囲外アクセスになります。
+  - 保存した値は何回も検索するときに使い回せます。ただしこの形式は値の順番を約束していない（`5`・`6` も `9`・`4` も受け付ける）ので，昇順を前提に途中で探索を打ち切る・二分探索するのは誤りです。
+- どちらを勧めるか: 1 回だけ探すなら，配列の要らない本体を勧めます（演習ページも配列に保存しない形）。別解の形で書いてきたら正しい解として認め，
+  `N` を検査する前に配列へ書いていないか，配列の大きさを `N` の上限から決めているか，形式の検査が終わる前に `found` を表示していないかを見ます。
 
 ### 採点のポイント・よくある誤り
 
@@ -778,7 +915,7 @@ Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 �
 7. **よくない。** ファイルの個数（ヘッダ）は壊れていたり，わざと大きくされていたりするかもしれない。配列の容量以内か（`NumberFormats` は 3 と一致するか，`CheckValue` は 0〜100 か）を確かめ，
    さらにその個数のデータが本当にあるか（`fread` の戻り値，`CheckValue` の `missing value`）を確かめてから使う。
 8. ファイル**全体**が正しい形式であることを確かめてから結果を出すため。途中で見つけた直後に終わると，後ろに `abc`・範囲外の値・余分な行・個数不足があっても `found` と報告してしまい，
-   壊れたファイルを正しいデータとして扱うことになる（テスト `bad_after_found`）。検索結果は「形式が正しいファイルの中にあったか」として報告する。
+   壊れたファイルを正しいデータとして扱うことになる。検索結果は「形式が正しいファイルの中にあったか」として報告する。
 
 ### 講義ページの確認問題（参考）
 
@@ -790,8 +927,9 @@ Linux/macOS で CRLF のファイルを読むと CR が行に残るため，30 �
 
 | 項目 | 確認できる課題と内容 |
 | --- | --- |
-| 正常な値だけでなく，課題に示された境界の値でも確認した | `ParseNumber`: 0・100（受け付ける），101・-1（拒否），`+42`・`" 42"`・`"42 "`・`12x`・`abc`・非常に長い整数・引数の過不足。合計版の 10 個・11 個。<br>`LineLengths`: 31 文字（改行あり・なし）と 32 文字，空行，空ファイル。<br>`ReadText`: 空ファイル，最後の改行なし，`missing.txt`，引数なし，`""`，空白を含む名前。<br>`WriteText`: `w`・`a`・`wx` を既存ファイルあり・なしで比較。<br>`WriteSquares`: `N` = 0・100・101，既存ファイル。<br>`CheckValue`: 表の 7 種類の異常，0 と 9801，30・31 バイトの行。すべて自動テストにしている |
+| 正常な値だけでなく，課題に示された境界の値でも確認した | `ParseNumber`: 0・100（受け付ける），101・-1（拒否），`+42`・`" 42"`・`"42 "`・`12x`・`abc`・非常に長い整数・引数の過不足。合計版の 10 個・11 個。<br>`LineLengths`: 31 文字（改行あり・なし）と 32 文字，空行，空ファイル。<br>`ReadText`: 空ファイル，最後の改行なし，`missing.txt`，引数なし，`""`，空白を含む名前。<br>`WriteText`: `w`・`a`・`wx` を既存ファイルあり・なしで比較。<br>`WriteSquares`: `N` = 0・100・101，既存ファイル。<br>`CheckValue`: 表の 7 種類の異常，0 と 9801，30・31 バイトの行 |
 | 警告を確認し，原因を説明・修正した | すべてのプロジェクトが警告なしでビルドできる（MSVC `/W4` の C4996（`fopen` などが安全でない関数とされる）は，`fopen` を使うファイルの先頭の `#define _CRT_SECURE_NO_WARNINGS` で抑止。`%zu` は MSVC 2015 以降で使え，現在の UCRT の `fopen` はモードの `x` に対応している）。`perror` の文面，`wx` の失敗，`text=0.120` も Windows（MSVC）で同じになる。<br>学生の提出物で MSVC `/W4` で出る警告の例: C4996（`fopen` などが安全でない関数とされる。`_CRT_SECURE_NO_WARNINGS` がない，または `#include` の後に書いた），C4244（`int` から `char` への変換でデータが失われる可能性。`char ch = fgetc(fp);`。`long` → `int` は MSVC では同じ 4 バイトなので通常は対象にならないが，Linux では値が変わり得る），C4018/C4389（符号付きと符号なしの比較。`size_t` と `int`），C4100（使っていない仮引数。`argc`） |
 | 自分の言葉で，処理の流れと使った型を説明できる | `FILE *`（ストリームでありファイルの中身ではない），`fgetc` の戻り値が `int` である理由（課題1），`char *argv[]` と `argc`（課題2），`size_t` と `fread` の戻り値（課題3），`unsigned char *` でオブジェクトの表現を見る（`ByteOrder`），`long` と `strtol`・`errno`（課題2・発展2），`double` のテキスト/バイナリ表現（発展1） |
 
-注: 空文字列の引数は `ReadText ""`（テスト `empty_arg`），`ParseNumber ""`（本体 `empty_arg`・合計版 `variant_sum--empty_arg`），`Arguments ""`（`empty_arg`），`WriteSquares 4 ""`，`CheckValue "" 9` でも確かめている。
+注: 空文字列の引数は `ReadText ""`，`ParseNumber ""`（本体・合計版），`Arguments ""`，`WriteSquares 4 ""`，`CheckValue "" 9` でも確かめている。
+`Arguments ""` は `arg1=` の 1 行を表示して終了コード 0（空の引数も 1 個として数える），`WriteSquares 4 ""` は `usage: WriteSquares count filename`，`CheckValue "" 9` は `usage: CheckValue filename value` を標準エラーに出して終了コード 1。
