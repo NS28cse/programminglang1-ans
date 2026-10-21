@@ -3,7 +3,7 @@
 #include <stdio.h>
 enum { ROWS = 2, COLS = 3 };
 // 一次元の配列 a を rows 行 cols 列の行列として読み，先頭 rows 行の行平均を表示する。
-// a には rows * cols 個以上の要素があること（rows=0 なら何も表示しない）
+// 契約: rows は 0 以上，cols は 1 以上で，a には rows * cols 個以上の要素があること（rows=0 なら何も表示しない）
 void print_means(const int a[], int rows, int cols)
 {
     for (int r = 0; r < rows; ++r) {
