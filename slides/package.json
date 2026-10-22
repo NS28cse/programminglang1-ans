@@ -1,0 +1,15 @@
+{
+  "name": "softprac1-ta-slides",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "slidev debugger-basics.md",
+    "build": "slidev build debugger-basics.md --base ./ --out dist/debugger-basics",
+    "export": "slidev export debugger-basics.md --output dist/debugger-basics.pdf"
+  },
+  "devDependencies": {
+    "@slidev/cli": "^53.0.0",
+    "@slidev/theme-default": "^0.25.0",
+    "playwright-chromium": "^1.64.1"
+  }
+}

@@ -225,6 +225,17 @@ debugging/
 - 各回の節は「テーマと理由 → 声かけ → 見せ方 → 確かめる問い → よくある反応 → 副テーマ → デバッグの補足 → 関連」の順にする。「関連」には，その回の解答 README の節と，その回のデバッグの題材を挙げる。
 - 冒頭の「使い方」の表記の対応表（英語版の表記・授業資料の表記・日本語版の画面の表記）は，手引きと題材の README で使う Visual Studio の操作の用語集を兼ねる。新しい操作を使ったら表に足す。
 
+## 説明用スライド（`slides/`）
+
+演習の前に TA が全員へ数分で見せる説明のスライド（[slides/README.md](slides/README.md)）。[Slidev](https://sli.dev/) で書き，ビルドの対象ではない。評価は [ta-material-reviewer](.claude/agents/ta-material-reviewer.md) で行う。
+
+- 1 本 1 ファイル（`slides/<名前>.md`）。追加したら `slides/package.json` の `scripts`，`.github/workflows/slides.yml` の `DECKS`，`slides/README.md` の一覧に加える。
+- 内容は実務の手引きの該当する回の節に合わせ，詳しい説明は手引きに置く（スライドに手引きと違う内容を書かない）。
+- 例には演習の課題そのものを使わない（課題の答えを見せないため）。同じ形の別のプログラムにする。
+- その回までに授業で扱った文法・操作だけを前提にし，未習のものは「（授業では未習）」か発表者ノートで断る。Visual Studio の表記は英語版の太字で，日本語版の名前を添える。
+- コードは合字にしない（`slides/style.css`）。`<=` が `≤` のように見えると，学生が打つ文字と違ってしまう。
+- 依存パッケージは `slides/package-lock.json` で固定する。更新は授業の前にまとめて行い，`npm run build`・`npm run export` が通ることを確かめる。
+
 ## 仕上げ
 
 commit の前に，次の 2 つを実行する。
@@ -270,6 +281,8 @@ python3 tools/check_docs.py         # 文書のリンクとアンカー，デバ
 
 - 全ジョブに時間制限があり，同じブランチに新しい push が来ると古い実行は取り消される。
 - 非公開リポジトリでは Actions の実行時間が課金対象になる（Windows は 2 倍，macOS は 10 倍で数える）。そのため非公開のときの push・PR では，MSVC Debug・Linux Debug・repository-checks だけを動かす。すべてのジョブは Actions タブから手動で実行すると動く。
+
+`.github/workflows/slides.yml` は，`slides/` を変えた push・PR でスライドを HTML と PDF に書き出し，成果物（Artifacts の `slides`）にする。`ta` ブランチでは GitHub Pages にも公開する（Pages を有効にし，`github-pages` 環境で `ta` からの公開を許可したときだけ。詳しくは [slides/README.md](slides/README.md#github-pages)）。
 
 `.github/workflows/results.yml` は，`ta` ブランチへの push（と手動の実行）で `tools/collect_results.py` を Linux（GCC）で実行し，
 `ta` の先頭に `results/` を加えたコミットを `ta-results` ブランチへ force push する（`ta-results` は毎回作り直すので，手で commit しない）。

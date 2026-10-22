@@ -1,0 +1,88 @@
+name: slides
+
+# slides/ の説明用スライド（Slidev）を HTML と PDF に書き出す。
+# どのブランチでも成果物（Artifacts の slides）を作り，ta ブランチでは GitHub Pages に公開する
+# （Pages は Settings > Pages の Source を GitHub Actions にし，github-pages 環境で ta からの公開を許可したときだけ動く）
+on:
+  push:
+    paths: ['slides/**', '.github/workflows/slides.yml']
+  pull_request:
+    paths: ['slides/**', '.github/workflows/slides.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: slides
+    env:
+      # 公開先のパス（https://<ユーザー>.github.io/<リポジトリ>/）
+      BASE: /${{ github.event.repository.name }}/
+      DECKS: debugger-basics
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: slides/package-lock.json
+      - name: Install
+        run: npm ci
+      - name: Japanese fonts and Chromium for the PDF export
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q fonts-noto-cjk
+          npx playwright install --with-deps chromium
+      - name: Build HTML and export PDF
+        run: |
+          mkdir -p dist
+          for deck in $DECKS; do
+            npx slidev build "$deck.md" --base "${BASE}${deck}/" --out "dist/$deck"
+            npx slidev export "$deck.md" --output "dist/$deck.pdf"
+          done
+      - name: Index page
+        run: |
+          {
+            echo '<!doctype html><meta charset="utf-8"><title>説明用スライド</title>'
+            echo '<h1>説明用スライド</h1><ul>'
+            for deck in $DECKS; do
+              title=$(sed -n 's/^title: //p' "$deck.md" | head -1)
+              echo "<li>$title（<a href=\"$deck/\">スライド</a>・<a href=\"$deck.pdf\">PDF</a>）</li>"
+            done
+            echo '</ul>'
+          } > dist/index.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: slides
+          path: slides/dist
+      - name: Upload for GitHub Pages
+        if: github.ref == 'refs/heads/ta' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: slides/dist
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/ta' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Pages を有効にしていないリポジトリでは失敗するが，build の成果物には影響しない
+    continue-on-error: true
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

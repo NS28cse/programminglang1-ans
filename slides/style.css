@@ -1,0 +1,5 @@
+/* C の演算子（<= や != など）を合字にしない。学生が打つ文字と同じ形で見せるため */
+code, pre, .slidev-code {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
