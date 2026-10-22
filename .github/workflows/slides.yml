@@ -1,8 +1,7 @@
 name: slides
 
-# slides/ の説明用スライド（Slidev）を HTML と PDF に書き出す。
-# どのブランチでも成果物（Artifacts の slides）を作り，ta ブランチでは GitHub Pages に公開する
-# （Pages は Settings > Pages の Source を GitHub Actions にし，github-pages 環境で ta からの公開を許可したときだけ動く）
+# slides/ の説明用スライド（Slidev。README.md 以外の .md をすべて）を HTML と PDF に書き出し，成果物（Artifacts の slides）にする。
+# ta ブランチでは，リポジトリ変数 SLIDES_PAGES が true のとき GitHub Pages にも公開する（設定は slides/README.md の「GitHub Pages」）
 on:
   push:
     paths: ['slides/**', '.github/workflows/slides.yml']
@@ -24,10 +23,6 @@ jobs:
     defaults:
       run:
         working-directory: slides
-    env:
-      # 公開先のパス（https://<ユーザー>.github.io/<リポジトリ>/）
-      BASE: /${{ github.event.repository.name }}/
-      DECKS: debugger-basics
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -43,40 +38,46 @@ jobs:
           sudo apt-get install -y -q fonts-noto-cjk
           npx playwright install --with-deps chromium
       - name: Build HTML and export PDF
+        # HTML は相対パス（--base ./）と hash ルーター（各スライドの routerMode: hash）にして，
+        # どの URL に置いても，途中のスライドで再読み込みしても動くようにする
         run: |
           mkdir -p dist
-          for deck in $DECKS; do
-            npx slidev build "$deck.md" --base "${BASE}${deck}/" --out "dist/$deck"
-            npx slidev export "$deck.md" --output "dist/$deck.pdf"
+          for file in *.md; do
+            [ "$file" = README.md ] && continue
+            deck="${file%.md}"
+            npx slidev build "$file" --base ./ --out "dist/$deck"
+            npx slidev export "$file" --output "dist/$deck.pdf"
           done
       - name: Index page
         run: |
-          {
-            echo '<!doctype html><meta charset="utf-8"><title>説明用スライド</title>'
-            echo '<h1>説明用スライド</h1><ul>'
-            for deck in $DECKS; do
-              title=$(sed -n 's/^title: //p' "$deck.md" | head -1)
-              echo "<li>$title（<a href=\"$deck/\">スライド</a>・<a href=\"$deck.pdf\">PDF</a>）</li>"
-            done
-            echo '</ul>'
-          } > dist/index.html
+          python3 - <<'EOF'
+          import html, pathlib, re
+          items = []
+          for md in sorted(pathlib.Path(".").glob("*.md")):
+              if md.name == "README.md":
+                  continue
+              m = re.search(r"^title: (.+)$", md.read_text(encoding="utf-8"), re.M)
+              title = html.escape(m.group(1) if m else md.stem)
+              items.append(f'<li>{title}（<a href="{md.stem}/">スライド</a>・<a href="{md.stem}.pdf">PDF</a>）</li>')
+          pathlib.Path("dist/index.html").write_text(
+              '<!doctype html><html lang="ja"><meta charset="utf-8"><title>説明用スライド</title>'
+              '<h1>説明用スライド</h1><ul>' + "".join(items) + '</ul></html>\n', encoding="utf-8")
+          EOF
       - uses: actions/upload-artifact@v4
         with:
           name: slides
           path: slides/dist
       - name: Upload for GitHub Pages
-        if: github.ref == 'refs/heads/ta' && github.event_name != 'pull_request'
+        if: vars.SLIDES_PAGES == 'true' && github.ref == 'refs/heads/ta' && github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: slides/dist
 
   deploy:
     needs: build
-    if: github.ref == 'refs/heads/ta' && github.event_name != 'pull_request'
+    if: vars.SLIDES_PAGES == 'true' && github.ref == 'refs/heads/ta' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Pages を有効にしていないリポジトリでは失敗するが，build の成果物には影響しない
-    continue-on-error: true
     permissions:
       pages: write
       id-token: write

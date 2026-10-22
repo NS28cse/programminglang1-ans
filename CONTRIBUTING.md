@@ -229,12 +229,15 @@ debugging/
 
 演習の前に TA が全員へ数分で見せる説明のスライド（[slides/README.md](slides/README.md)）。[Slidev](https://sli.dev/) で書き，ビルドの対象ではない。評価は [ta-material-reviewer](.claude/agents/ta-material-reviewer.md) で行う。
 
-- 1 本 1 ファイル（`slides/<名前>.md`）。追加したら `slides/package.json` の `scripts`，`.github/workflows/slides.yml` の `DECKS`，`slides/README.md` の一覧に加える。
-- 内容は実務の手引きの該当する回の節に合わせ，詳しい説明は手引きに置く（スライドに手引きと違う内容を書かない）。
-- 例には演習の課題そのものを使わない（課題の答えを見せないため）。同じ形の別のプログラムにする。
-- その回までに授業で扱った文法・操作だけを前提にし，未習のものは「（授業では未習）」か発表者ノートで断る。Visual Studio の表記は英語版の太字で，日本語版の名前を添える。
-- コードは合字にしない（`slides/style.css`）。`<=` が `≤` のように見えると，学生が打つ文字と違ってしまう。
-- 依存パッケージは `slides/package-lock.json` で固定する。更新は授業の前にまとめて行い，`npm run build`・`npm run export` が通ることを確かめる。
+- 1 本 1 ファイル（`slides/<名前>.md`）。CI は `slides/` の `README.md` 以外の `.md` をすべて書き出すので，追加したら `slides/README.md` の一覧に加える。実務の手引きのその回の節の「関連」にもリンクを足す。
+- 内容は実務の手引きの該当する回の節に合わせ，詳しい説明は手引きに置く（スライドに手引きと違う内容を書かない）。全員に見せるのは担当教員の了承を得たときだけ，と `slides/README.md` に書いてある。
+- 例には，演習の課題やデバッグの題材と**同じ形・同じ種類の誤り**を使わない（答えを見せないため）。
+- その回までに授業で扱った文法・操作だけを前提にし，未習のものは「（授業では未習）」か発表者ノートで断る。Visual Studio の表記は英語版の太字で，日本語版の名前を添える（実務の手引きの対応表と同じ名前）。
+- 各スライドの発表者ノートに，時間の目安・言うこと・出やすい質問と答えを書く。問いのスライドの答えはノートに書く。
+- 例のコード・追跡表・期待値は実際にコンパイル・実行して確かめる。ステップ実行の順序を見せるときは，どこから F10 を押すかを書く。
+- コードは合字にしない（`slides/style.css`）。コードの強調の指定は最後を `all` にする（PDF は最後のクリックの状態を書き出すため）。
+- HTML は `routerMode: hash` と `--base ./` で書き出す（どの URL に置いても，途中で再読み込みしても動くように）。
+- 依存パッケージは `slides/package-lock.json` で固定する。更新は授業の前にまとめて行い，HTML と PDF の書き出しが通ることを確かめる。
 
 ## 仕上げ
 
@@ -282,7 +285,7 @@ python3 tools/check_docs.py         # 文書のリンクとアンカー，デバ
 - 全ジョブに時間制限があり，同じブランチに新しい push が来ると古い実行は取り消される。
 - 非公開リポジトリでは Actions の実行時間が課金対象になる（Windows は 2 倍，macOS は 10 倍で数える）。そのため非公開のときの push・PR では，MSVC Debug・Linux Debug・repository-checks だけを動かす。すべてのジョブは Actions タブから手動で実行すると動く。
 
-`.github/workflows/slides.yml` は，`slides/` を変えた push・PR でスライドを HTML と PDF に書き出し，成果物（Artifacts の `slides`）にする。`ta` ブランチでは GitHub Pages にも公開する（Pages を有効にし，`github-pages` 環境で `ta` からの公開を許可したときだけ。詳しくは [slides/README.md](slides/README.md#github-pages)）。
+`.github/workflows/slides.yml` は，`slides/` を変えた push・PR でスライドを HTML と PDF に書き出し，成果物（Artifacts の `slides`）にする。`ta` ブランチでは，リポジトリ変数 `SLIDES_PAGES` が `true` のとき GitHub Pages にも公開する（設定は [slides/README.md](slides/README.md#github-pages)）。
 
 `.github/workflows/results.yml` は，`ta` ブランチへの push（と手動の実行）で `tools/collect_results.py` を Linux（GCC）で実行し，
 `ta` の先頭に `results/` を加えたコミットを `ta-results` ブランチへ force push する（`ta-results` は毎回作り直すので，手で commit しない）。
