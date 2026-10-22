@@ -3,3 +3,9 @@ code, pre, .slidev-code {
   font-variant-ligatures: none;
   font-feature-settings: "liga" 0, "calt" 0;
 }
+
+/* 例のコード（14 行）を大きめに見せる。教室の後ろからも 9・10 行目を見分けられるように */
+.code-large .slidev-code {
+  font-size: 0.95rem !important;
+  line-height: 1.35 !important;
+}
