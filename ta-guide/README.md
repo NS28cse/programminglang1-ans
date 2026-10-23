@@ -5,9 +5,10 @@
 
 ## 使い方
 
-- 各回に**主テーマを 1 つ**，任意で**副テーマを 1 つ**割り当てている。全員への一斉の説明ではなく，巡回中にその場面
-  （エラーで手が止まっている，境界の値を試していない，「動かない」と言っている など）に出会った学生や近くの数人に，1〜3 分で伝える。
-  担当教員の了承があれば，[説明用スライド](https://ns28cse.github.io/programminglang1-ans/)（`slides` ブランチ。この手引きの一部を全員向けにしたもの）を演習の前に全員に見せてもよい。
+- TA の仕事は，演習中に学生へ **1 対 1 で**教えることである。全員への説明はしない。
+- 各回に**主テーマを 1 つ**，任意で**副テーマを 1 つ**割り当てている。巡回中にその場面
+  （エラーで手が止まっている，境界の値を試していない，「動かない」と言っている など）に出会った学生に，1〜3 分で伝える。
+- テーマごとの[説明用スライド](https://ns28cse.github.io/programminglang1-ans/)（`slides` ブランチ）がある。1 対 1 で説明するときに学生の画面で開いて要る 1〜2 枚だけを一緒に見るか，URL を伝えて後で読んでもらう（下の「[説明用スライド](#説明用スライド)」）。
 - 演習の課題を終えることを優先する。ここに書いた内容を，課題の要求や採点の基準に加えない（担当教員の指示がある場合を除く）。
 - 各回の節は「テーマと理由 → 声かけ → 見せ方 → 確かめる問い → よくある反応 → 副テーマ → デバッグの補足 → 関連」の順に並べた。「デバッグの補足」（一部の回だけ。任意）は，学生がバグで止まっている場面で 1 つだけ選んで使い，主テーマ・副テーマと同時には使わない。声かけと問いは，そのまま読み上げられる文にしてある。
 - 文法・関数は，その回までに講義で扱ったものだけを前提にする。Visual Studio の操作のうち，その回までに授業で扱っていないもの（第2回の Git，第8回の Step Into・Watch 1・Call Stack など）は，各節に「（授業では未習。初めて見せる）」と書いた。
@@ -77,7 +78,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 | [第8回](../week08/README.md) | ポインタ1 | Step Into とウォッチでポインタを見る／最小の再現コード | 「F11 で関数に入って，矢印の先を見よう」 | [ex08](https://t-yokoga.github.io/softprac1/ex08.html) |
 | [第9回](../week09/README.md) | ポインタ2 | 実験の前に commit，後で差分／警告と「動いた」を区別 | 「実験の前に commit，実験の後は差分を見て戻す」 | [ex09](https://t-yokoga.github.io/softprac1/ex09.html) |
 | [第10回](../week10/README.md) | ファイル | 失敗を伝えるエラー処理／異常系のテスト | 「失敗したとき，画面に何が出て，終了コードはいくつ？」 | [ex10](https://t-yokoga.github.io/softprac1/ex10.html) |
-| [第11回](../week11/README.md) | 構造体 | コードレビュー（読み合い）／容量に名前を付ける | 「この関数が何を受け取って何を返すか，30 秒で説明しよう」 | [ex11](https://t-yokoga.github.io/softprac1/ex11.html) |
+| [第11回](../week11/README.md) | 構造体 | コードレビュー（説明しながら読む）／容量に名前を付ける | 「この関数が何を受け取って何を返すか，30 秒で説明しよう」 | [ex11](https://t-yokoga.github.io/softprac1/ex11.html) |
 | [第12回](../week12/README.md) | コンパイル：分割コンパイルとライブラリ | コンパイルとリンクを分けて考える／ビルドの設定を文字で書く | 「C で始まるか LNK で始まるか。それで直す場所が変わる」 | [ex12](https://t-yokoga.github.io/softprac1/ex12.html) |
 | [第13回](../week13/README.md) | メモリ管理 | 所有者と失敗経路／レビューの手順 | 「この領域の持ち主は誰？ どの return でも解放される？」 | [ex13](https://t-yokoga.github.io/softprac1/ex13.html) |
 | [第14回](../week14/README.md) | 再帰 | 推測せずに計測する／自動テストと CI | 「遅いと思ったら，まず回数を数えよう」 | [ex14](https://t-yokoga.github.io/softprac1/ex14.html) |
@@ -108,7 +109,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 
 **副テーマ（ビルドの成功と正しさは別）**: 課題2 `Message` で，演習ページの期待する表示と自分の出力を 1 行ずつ並べて比べさせる（空行・`"`・`\`・`%` の 1 文字の違い）。期待する出力と比べることが，テストのいちばん小さな形である（確認問題6）。
 
-**関連**: 第1回 README の [課題3　エラーメッセージを読んで修正する](../week01/README.md#課題3エラーメッセージを読んで修正するbroken--brokenc)（MSVC・GCC・Clang の診断の比較，採点のポイント），[課題4　ソースファイルと実行ファイル](../week01/README.md#課題4ソースファイルと実行ファイルversion--versionc)
+**関連**: 第1回 README の [課題3　エラーメッセージを読んで修正する](../week01/README.md#課題3エラーメッセージを読んで修正するbroken--brokenc)（MSVC・GCC・Clang の診断の比較，採点のポイント），[課題4　ソースファイルと実行ファイル](../week01/README.md#課題4ソースファイルと実行ファイルversion--versionc)，説明用スライド 「[エラーメッセージを読む](https://ns28cse.github.io/programminglang1-ans/error-messages/)」，「[再現できる質問](https://ns28cse.github.io/programminglang1-ans/bug-report/)」
 
 ## 第2回　バージョン管理を始める（変数）
 
@@ -141,7 +142,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 
 **デバッグの補足（デバッガの前に）**: デバッガは第4回から。この回は「実行する前に表示を予測して書く → 実行して比べる」が出発点になる。予測と違ったら，例えば `Rectangle` の再計算の前に `printf("width=%d area=%d\n", width, area);` を 1 行足し，どの代入の後から値が予測とずれたかを確かめる。確かめ終わったら足した行は消す（期待する表示と 1 文字も違えないため）。
 
-**関連**: 第2回 README の [全課題に共通の採点ポイント](../week02/README.md#全課題に共通の採点ポイント)（警告が出たまま提出していないか），[課題2　型と表示の対応](../week02/README.md#課題2型と表示の対応profile--profilec) の [型と違う書式で試さない](../week02/README.md#型と違う書式で試さない演習ページの注意について)
+**関連**: 第2回 README の [全課題に共通の採点ポイント](../week02/README.md#全課題に共通の採点ポイント)（警告が出たまま提出していないか），[課題2　型と表示の対応](../week02/README.md#課題2型と表示の対応profile--profilec) の [型と違う書式で試さない](../week02/README.md#型と違う書式で試さない演習ページの注意について)，説明用スライド 「[動いたら commit，試したら差分](https://ns28cse.github.io/programminglang1-ans/version-control/)」
 
 ## 第3回　期待値を先に書くテスト（演算子）
 
@@ -167,7 +168,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 
 **副テーマ（試してはいけない実験）**: 0 による整数除算・範囲外のシフト・`printf` の引数に `x++` と `x` を並べる書き方は未定義動作で，「実行したら動いた」は根拠にならない（演習ページの注意）。MSVC では警告が出ないこともあるので，コードを読んで判断させる。
 
-**関連**: 第3回 README の [記録（`memo.txt`）の書き方の例](../week03/README.md#記録memotxtの書き方の例)，[課題1　秒を分と秒へ分解する](../week03/README.md#課題1秒を分と秒へ分解するtimeparts--time_partsc) の [境界の値を試す](../week03/README.md#境界の値を試すseconds-を-0596061-に変更)，[課題4　うるう年の条件式](../week03/README.md#課題4うるう年の条件式leap--leapc) の [例外を含む年で確認する](../week03/README.md#例外を含む年で確認する1900200020242025)，[課題2　前置・後置と複合代入](../week03/README.md#課題2前置後置と複合代入update--updatec) の採点のポイント（`printf` の引数の未定義動作）
+**関連**: 第3回 README の [記録（`memo.txt`）の書き方の例](../week03/README.md#記録memotxtの書き方の例)，[課題1　秒を分と秒へ分解する](../week03/README.md#課題1秒を分と秒へ分解するtimeparts--time_partsc) の [境界の値を試す](../week03/README.md#境界の値を試すseconds-を-0596061-に変更)，[課題4　うるう年の条件式](../week03/README.md#課題4うるう年の条件式leap--leapc) の [例外を含む年で確認する](../week03/README.md#例外を含む年で確認する1900200020242025)，[課題2　前置・後置と複合代入](../week03/README.md#課題2前置後置と複合代入update--updatec) の採点のポイント（`printf` の引数の未定義動作），説明用スライド 「[テストの値を選ぶ](https://ns28cse.github.io/programminglang1-ans/test-cases/)」
 
 ## 第4回　デバッガで流れを追う（制御構造）
 
@@ -196,7 +197,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 
 **デバッグの補足（条件付きブレークポイント。授業では未習）**: `n = 100` で `i` が 50 の反復だけを見たいときは，ブレークポイントを右クリックして **Conditions** を選び，**Conditional Expression** の **Is true** に `i == 50` と書く。F5 を何十回も押さなくても，条件が真のときだけ止まる（条件付きのブレークポイントには **+** が付く）。
 
-**関連**: 第4回 README の [課題2　偶数の合計](../week04/README.md#課題2偶数の合計evensum--even_sumc) の [値を追跡する（`n = 4`）](../week04/README.md#値を追跡するn--4)・「説明すること」，講義 [lec04](https://t-yokoga.github.io/softprac1/lec04.html) の「7　二重ループとテスト」，デバッグの題材 [BugEvenSum](../debugging/BugEvenSum/README.md)，[BugSkipCount](../debugging/BugSkipCount/README.md)，説明用スライド「[デバッガで流れを追う](https://ns28cse.github.io/programminglang1-ans/debugger-basics/)」（演習の前に全員へ 5〜7 分。担当教員の了承があるときだけ）
+**関連**: 第4回 README の [課題2　偶数の合計](../week04/README.md#課題2偶数の合計evensum--even_sumc) の [値を追跡する（`n = 4`）](../week04/README.md#値を追跡するn--4)・「説明すること」，講義 [lec04](https://t-yokoga.github.io/softprac1/lec04.html) の「7　二重ループとテスト」，デバッグの題材 [BugEvenSum](../debugging/BugEvenSum/README.md)，[BugSkipCount](../debugging/BugSkipCount/README.md)，説明用スライド 「[デバッガで流れを追う](https://ns28cse.github.io/programminglang1-ans/debugger-basics/)」，「[テストの値を選ぶ](https://ns28cse.github.io/programminglang1-ans/test-cases/)」
 
 ## 第5回　読みやすいコードと関数の契約（配列と関数）
 
@@ -247,7 +248,7 @@ int count_passed(const int scores[], int n);   /* 本体は if (scores[i] >= PAS
 この違いは「配列を渡すと先頭の場所が渡る」（講義 4 節）の確かめになる。
 任意の発展として（**Watch 1** と書式指定子は授業では未習），**Watch 1** に `a,5` のように「,要素数」を付けて書くと，`max_score` の中でも 5 要素を配列として表示できる。
 
-**関連**: 第5回 README の [課題1　最大の点数](../week05/README.md#課題1最大の点数maximum--maximumc)（「説明すること」の `const` の意図・`i` を 1 から始める理由），[課題4　平均と累乗を関数にする](../week05/README.md#課題4平均と累乗を関数にするfunctions--functionsc)・[発展　役割を分ける](../week05/README.md#発展役割を分けるsummean--summeanc)（それぞれの採点のポイント），デバッグの題材 [BugRowSum](../debugging/BugRowSum/README.md)，[BugGrade](../debugging/BugGrade/README.md)，[BugMeanScore](../debugging/BugMeanScore/README.md)
+**関連**: 第5回 README の [課題1　最大の点数](../week05/README.md#課題1最大の点数maximum--maximumc)（「説明すること」の `const` の意図・`i` を 1 から始める理由），[課題4　平均と累乗を関数にする](../week05/README.md#課題4平均と累乗を関数にするfunctions--functionsc)・[発展　役割を分ける](../week05/README.md#発展役割を分けるsummean--summeanc)（それぞれの採点のポイント），デバッグの題材 [BugRowSum](../debugging/BugRowSum/README.md)，[BugGrade](../debugging/BugGrade/README.md)，[BugMeanScore](../debugging/BugMeanScore/README.md)，説明用スライド 「[読みやすいコードと関数の契約](https://ns28cse.github.io/programminglang1-ans/readable-code/)」，「[書き込む前に容量を確かめる](https://ns28cse.github.io/programminglang1-ans/buffer-capacity/)」
 
 ## 第6回　容量と範囲外書き込み（文字列）
 
@@ -278,7 +279,7 @@ int count_passed(const int scores[], int n);   /* 本体は if (scores[i] >= PAS
 **デバッグの補足（終端をメモリで見る。授業では未習）**: デバッグ中に **Debug > Windows > Memory > Memory 1** を開き，**Address** 欄に `text` と入れると，各バイトが 16 進で並ぶ。`hoge` なら 68・6F・67・65 の後に 00（終端 `'\0'`）が続く。連結の後に 00 がどこへ移ったかを見れば，`i <= added` の等号の意味が分かる（初期化で残りが 0 なので，`i < added` でも 00 が見えてしまうことも分かる）。**Memory** ウィンドウは **Tools > Options** の **Debugging > General** で **Enable address-level debugging** が有効なときに使える。
 Debug 構成の実行時チェック（**Basic Runtime Checks**，`/RTC1`）は，**関数から戻るとき**に局所配列のすぐ外が書き換えられていないかを調べ，変数名を挙げてスタックの破壊を報告して止まる。止まるのは関数の終わりなので，その行ではなく，名前の出た配列への書き込み（特に容量の判定の差 1）を探す。すぐ外より遠くへの書き込みや，範囲外の読み取りは見つからない。
 
-**関連**: 第6回 README の [課題4　比較してから連結する](../week06/README.md#課題4比較してから連結するcomparejoin--compare_joinc)（容量の境界の表，説明すること，採点のポイント），[課題3　変換する順序](../week06/README.md#課題3変換する順序average--averagec) の [符号の異なる比較を読む](../week06/README.md#符号の異なる比較を読む)，デバッグの題材 [BugDigitSum](../debugging/BugDigitSum/README.md)，[BugAnswerCheck](../debugging/BugAnswerCheck/README.md)
+**関連**: 第6回 README の [課題4　比較してから連結する](../week06/README.md#課題4比較してから連結するcomparejoin--compare_joinc)（容量の境界の表，説明すること，採点のポイント），[課題3　変換する順序](../week06/README.md#課題3変換する順序average--averagec) の [符号の異なる比較を読む](../week06/README.md#符号の異なる比較を読む)，デバッグの題材 [BugDigitSum](../debugging/BugDigitSum/README.md)，[BugAnswerCheck](../debugging/BugAnswerCheck/README.md)，説明用スライド 「[書き込む前に容量を確かめる](https://ns28cse.github.io/programminglang1-ans/buffer-capacity/)」
 
 ## 第7回　再現できる質問・バグ報告（入出力）
 
@@ -304,7 +305,7 @@ Debug 構成の実行時チェック（**Basic Runtime Checks**，`/RTC1`）は�
 **副テーマ（結果は `stdout`，診断は `stderr`）**: `LineInput` は行を読めなかったとき `No line read.` を `stderr` に出し，`return 1;` で終わる。Ctrl+F5 のコンソールでは終了後に **exited with code 1** と終了コードが表示される。
 結果と診断の出力先を分けておくと，パイプの次のプログラムにエラーメッセージが混ざらない（課題4 の冒頭の問いと問5）。
 
-**関連**: 第7回 README の [共通: 入力の与え方・入力終了・リダイレクト](../week07/README.md#共通-入力の与え方入力終了リダイレクト)，[課題2　英字の数を数える](../week07/README.md#課題2英字の数を数えるlettercount--letter_countcbytecount--byte_countc)・[課題3　行の容量](../week07/README.md#課題3行の容量lineinput--linec) の採点のポイント，デバッグの題材 [BugUpper](../debugging/BugUpper/README.md)，[BugReverseWord](../debugging/BugReverseWord/README.md)
+**関連**: 第7回 README の [共通: 入力の与え方・入力終了・リダイレクト](../week07/README.md#共通-入力の与え方入力終了リダイレクト)，[課題2　英字の数を数える](../week07/README.md#課題2英字の数を数えるlettercount--letter_countcbytecount--byte_countc)・[課題3　行の容量](../week07/README.md#課題3行の容量lineinput--linec) の採点のポイント，デバッグの題材 [BugUpper](../debugging/BugUpper/README.md)，[BugReverseWord](../debugging/BugReverseWord/README.md)，説明用スライド 「[再現できる質問](https://ns28cse.github.io/programminglang1-ans/bug-report/)」
 
 ## 第8回　Step Into とウォッチでポインタを見る（ポインタ1）
 
@@ -366,7 +367,7 @@ F11・ウォッチ・呼び出し履歴は第14回の講義で正式に扱う（
 **副テーマ（警告と「動いた」を区別する）**: `MatrixMean` の仮引数を `int *a[COLS]` にすると，MSVC は C4047（間接参照のレベルが異なる）と C4024（仮引数と実引数の型が異なる）を出す。
 この形のまま実行すると範囲外アクセスになり得るので実行しない。「実行して期待値になった」ことは，型や境界の誤りを正当化しない（演習ページ「連続性と範囲」）。
 
-**関連**: 第9回 README の [課題1　見つからない場合](../week09/README.md#課題1見つからない場合findmax--double_pointerc) の [検索範囲と同点の扱い（表）](../week09/README.md#検索範囲と同点の扱い表)，[課題3　行ごとの平均](../week09/README.md#課題3行ごとの平均matrixmean--matrixc) の [配列へのポインタで表す](../week09/README.md#配列へのポインタで表す)，デバッグの題材 [BugFindMax](../debugging/BugFindMax/README.md)
+**関連**: 第9回 README の [課題1　見つからない場合](../week09/README.md#課題1見つからない場合findmax--double_pointerc) の [検索範囲と同点の扱い（表）](../week09/README.md#検索範囲と同点の扱い表)，[課題3　行ごとの平均](../week09/README.md#課題3行ごとの平均matrixmean--matrixc) の [配列へのポインタで表す](../week09/README.md#配列へのポインタで表す)，デバッグの題材 [BugFindMax](../debugging/BugFindMax/README.md)，説明用スライド 「[動いたら commit，試したら差分](https://ns28cse.github.io/programminglang1-ans/version-control/)」
 
 ## 第10回　失敗を伝えるエラー処理（ファイル）
 
@@ -402,35 +403,35 @@ if (fp == NULL) {
 
 **デバッグの補足（バイト順をメモリで見る。授業では未習）**: `ByteOrder` の `for` の行で止め，**Memory 1** の **Address** に `&value` と入れると，`value = 1` が 01・00 の順に並ぶ（x64 の Visual Studio）。プログラムの表示 `01 00` と同じ並びであることを画面で確かめられる。`Binary` では `fread` の後で `buffer` を見ると，読んだ 4 バイト（41・00・42・0A）の後ろに，読んでいない残りの 12 バイトの意味のない値（Debug 構成では CC が並ぶことが多い）が並ぶ（`n` 個目以降を使わない理由）。
 
-**関連**: 第10回 README の [課題1　ファイルを読む](../week10/README.md#課題1ファイルを読むreadtext--read_textc) の表，[課題2　数値引数の検査](../week10/README.md#課題2数値引数の検査parsenumber--parse_numberc)，[発展2　二乗の一覧を書き出して検索する](../week10/README.md#発展2二乗の一覧を書き出して検索するwritesquares--write_squaresccheckvalue--check_valuec) の「表「異常なデータも別ファイルで確認する」（記入済み）」，期待値の例 [CheckValue/tests](../week10/CheckValue/tests/)（`.err` が標準エラー出力，`.code` が終了コード），デバッグの題材 [BugCharCount](../debugging/BugCharCount/README.md)
+**関連**: 第10回 README の [課題1　ファイルを読む](../week10/README.md#課題1ファイルを読むreadtext--read_textc) の表，[課題2　数値引数の検査](../week10/README.md#課題2数値引数の検査parsenumber--parse_numberc)，[発展2　二乗の一覧を書き出して検索する](../week10/README.md#発展2二乗の一覧を書き出して検索するwritesquares--write_squaresccheckvalue--check_valuec) の「表「異常なデータも別ファイルで確認する」（記入済み）」，期待値の例 [CheckValue/tests](../week10/CheckValue/tests/)（`.err` が標準エラー出力，`.code` が終了コード），デバッグの題材 [BugCharCount](../debugging/BugCharCount/README.md)，説明用スライド 「[テストの値を選ぶ](https://ns28cse.github.io/programminglang1-ans/test-cases/)」
 
-## 第11回　コードレビュー：読み合いで見つける（構造体）
+## 第11回　コードレビュー：説明しながら読んで見つける（構造体）
 
 **テーマと理由**: 構造体の誤りには，出力のテストでは見つけにくいものがある。課題2 `Students` で点数だけを交換すると名前と点数の対応が壊れるが，平均は 80.0 のままである。
-発展2 `RectContains` で上限の `<` を `<=` にしても，内側の点だけを試していれば気付かない。実務では，他の人がコードを読む**コードレビュー**で，仕様との食い違いや見落としを見つける。
+発展2 `RectContains` で上限の `<` を `<=` にしても，内側の点だけを試していれば気付かない。実務では，他の人がコードを読む**コードレビュー**で，仕様との食い違いや見落としを見つける。ここでは TA がレビューする人になり，学生に自分のコードを説明させながら一緒に読む。
 
 **声かけ**
 - 「この関数が何を受け取って何を返すか，30 秒で説明してみてください。説明に詰まった所が見直す所です」
 - 「`contains` は上限を含みますか，含みませんか。コードのどの記号がそれを決めていますか」
 
-**見せ方（3 分）**: 後述の「コードレビューの観点チェックリスト」から 3 項目を選び，`normalized` と `contains` と交換の部分を読む。
+**見せ方（3 分）**: 学生の画面で，後述の「コードレビューの観点チェックリスト」から 3 項目を選び，学生に `normalized` と `contains` と交換の部分を説明させながら読む。TA は指摘を質問の形で言う（「ここはなぜ `<=` ？」）。
 1. 仕様の境界: `contains` の上限の比較が `<` か（下限を含み上限を含まない仕様）。
 2. 初期化: `normalized` が `Rect result = r;` で始まるか（`Rect result;` に座標だけ入れると `name` が不定のまま）。
 3. コピー: 交換が構造体ごと（`Student temp = a[0];`）か，メンバの一部だけか。
-4. 読み合いの注意: 提出前の課題を学生どうしで見せ合ってよいかは，担当教員の指示に従う。許されていない場合は，誤りを含む短い断片（点数だけを交換する 3 行など。第11回 README の [名前と点数を一緒に交換する](../week11/README.md#名前と点数を一緒に交換する) に 3 行と出力，課題2 の [採点のポイント・よくある誤り](../week11/README.md#採点のポイントよくある誤り-1) にほかの誤りがある）を TA が紙やホワイトボードに書いて見せ，それをレビューさせる。
+4. 学生のコードにレビューで見つかる誤りがないときは，誤りを含む短い断片（点数だけを交換する 3 行など。第11回 README の [名前と点数を一緒に交換する](../week11/README.md#名前と点数を一緒に交換する) に 3 行と出力，課題2 の [採点のポイント・よくある誤り](../week11/README.md#採点のポイントよくある誤り-1) にほかの誤りがある）を TA が紙に書いて見せ，それをレビューさせる。
 
 **確かめる問い**
 - 問「点数だけを交換した版は，平均の表示で誤りに気付ける？」→ 気付けない。平均は 80.0 のまま。名前と点数の組を表示して初めて分かる。
 - 問「`p2 = p1;` の後で `p1.text[0] = 'H';` とすると，`p2.text` からも見える？」→ 見える。ポインタメンバはアドレスだけがコピーされ，同じ配列を共有する（課題4 `CopyMembers`）。
 
 **よくある反応**
-- 「指摘されるのは恥ずかしい」→ レビューは人ではなくコードを見るもの。指摘する側も「ここはなぜ `<=` ？」のように質問の形で言う。
+- 「指摘されるのは恥ずかしい」→ レビューは人ではなくコードを見るもの。TA も「ここはなぜ `<=` ？」のように質問の形で言う。
 
 **副テーマ（容量に名前を付ける）**: `Rect`・`RectContains` の解答では `enum { MAX_NAME = 20 };` と `char name[MAX_NAME + 1];` で，名前の最大長と終端の 1 要素を分けて書いている。`char name[21];` の 21 より意図（20 文字＋終端）が読み取りやすく，レビューで容量を確かめやすい。演習ページの `char name[21];` のままでも誤りではない。課題では演習ページの形でよく，実務の書き方として紹介する。
 
 **デバッグの補足（構造体の隙間をメモリで見る。授業では未習）**: `StructLayout` の `main` に確かめ用の `Record r = {'A', 1, 'B'};` を一時的に足し，**Memory 1** に `&r` と入れる。先頭の 41（`tag`），先頭から 4 バイト進んだ位置（オフセット 4）からの 01・00・00・00（`count`），オフセット 8 の 42（`flag`）が見え，`offsetof` の 0・4・8 と対応する。間の 3 バイトずつが隙間で，その値は決まっていないので意味を読まない。確かめ用の行は，使わない変数の警告（C4189）が出るので，終わったら消す。
 
-**関連**: 第11回 README の [課題2　点数の平均](../week11/README.md#課題2点数の平均students--studentsc) の [名前と点数を一緒に交換する](../week11/README.md#名前と点数を一緒に交換する)，[課題4　配列メンバとポインタメンバを比較する](../week11/README.md#課題4配列メンバとポインタメンバを比較するcopymembers--copy_membersc)，[発展2　長方形を正規化して点を判定する](../week11/README.md#発展2長方形を正規化して点を判定するrectcontains--rect_containsc) の採点のポイント，デバッグの題材 [BugStudentNames](../debugging/BugStudentNames/README.md)
+**関連**: 第11回 README の [課題2　点数の平均](../week11/README.md#課題2点数の平均students--studentsc) の [名前と点数を一緒に交換する](../week11/README.md#名前と点数を一緒に交換する)，[課題4　配列メンバとポインタメンバを比較する](../week11/README.md#課題4配列メンバとポインタメンバを比較するcopymembers--copy_membersc)，[発展2　長方形を正規化して点を判定する](../week11/README.md#発展2長方形を正規化して点を判定するrectcontains--rect_containsc) の採点のポイント，デバッグの題材 [BugStudentNames](../debugging/BugStudentNames/README.md)，説明用スライド 「[読みやすいコードと関数の契約](https://ns28cse.github.io/programminglang1-ans/readable-code/)」
 
 ## 第12回　コンパイルとリンクを分けて考える（コンパイル）
 
@@ -462,7 +463,7 @@ if (fp == NULL) {
 **副テーマ（ビルドの設定を文字で書く）**: Visual Studio のプロジェクト設定（どの `.c` を入れるか，**Additional Include Directories**，**Add > Reference**）は，実務では CMake などのビルドシステムで文字として書き，誰の PC でも同じようにビルドできるようにする。
 このリポジトリの [CalcApp/CMakeLists.txt](../week12/CalcApp/CMakeLists.txt) は，発展1 の参照の追加とインクルードの検索先を `target_link_libraries` と `target_include_directories` の 2 行で書いている。壊して戻す実験には，第2回・第9回の **Undo Changes** が使える。
 
-**関連**: 第12回 README の [課題3　リンクエラーを調べる](../week12/README.md#課題3リンクエラーを調べるsplitcalc-と-_builderrorssplit)（ビルド記録，診断の違いから分かること），[発展1　静的ライブラリとして使う](../week12/README.md#発展1静的ライブラリとして使うcalclib--calcccalchcalcapp--mainc) の [このリポジトリ（CMake）での対応](../week12/README.md#このリポジトリcmakeでの対応)，デバッグの題材 [BugSharedCounter](../debugging/BugSharedCounter/README.md)
+**関連**: 第12回 README の [課題3　リンクエラーを調べる](../week12/README.md#課題3リンクエラーを調べるsplitcalc-と-_builderrorssplit)（ビルド記録，診断の違いから分かること），[発展1　静的ライブラリとして使う](../week12/README.md#発展1静的ライブラリとして使うcalclib--calcccalchcalcapp--mainc) の [このリポジトリ（CMake）での対応](../week12/README.md#このリポジトリcmakeでの対応)，デバッグの題材 [BugSharedCounter](../debugging/BugSharedCounter/README.md)，説明用スライド 「[エラーメッセージを読む](https://ns28cse.github.io/programminglang1-ans/error-messages/)」
 
 ## 第13回　所有者と失敗経路（メモリ管理）
 
@@ -495,7 +496,7 @@ if (fp == NULL) {
 
 **デバッグの補足（確保した領域をメモリで見る。授業では未習）**: Debug 構成の C ランタイムは，`malloc` した領域を 0xCD で埋め，その前後 4 バイトずつを 0xFD で埋めて確保する（Microsoft Learn「CRT debug heap details」）。`Dynamic` で `malloc` の直後に **Memory 1** に `values` と入れると，代入前の要素が CD の並びで，最後の要素の後ろに FD が 4 つ見える。**Watch 1** に `values,5` と書けば（コマンド引数を 5 にしたとき）5 要素を配列として見られる（「,要素数」の書式指定子は授業資料にない。第5回の「デバッグの補足」）。この FD を範囲外への書き込みで壊すと，`free` のときに Debug の C ランタイムが検査してエラーを報告する。アクセス違反で止まったときの見方は第8回と同じ。
 
-**関連**: 第13回 README の [課題4　コードレビュー](../week13/README.md#課題4コードレビュー)（指摘・修正版・所有者の図），[課題3　構造体を確保する関数](../week13/README.md#課題3構造体を確保する関数newpoint--new_pointc) の [失敗を模擬する（`NewPointFail`）](../week13/README.md#失敗を模擬するnewpointfail)，[発展3　不透明な`Vector`の生成と解放](../week13/README.md#発展3不透明なvectorの生成と解放dynamicvector--vector_maincvectorcvectorh) の [途中で失敗した場合（`DynamicVectorFail`）](../week13/README.md#途中で失敗した場合dynamicvectorfail)，デバッグの題材 [BugMallocSize](../debugging/BugMallocSize/README.md)，[BugBackupScores](../debugging/BugBackupScores/README.md)
+**関連**: 第13回 README の [課題4　コードレビュー](../week13/README.md#課題4コードレビュー)（指摘・修正版・所有者の図），[課題3　構造体を確保する関数](../week13/README.md#課題3構造体を確保する関数newpoint--new_pointc) の [失敗を模擬する（`NewPointFail`）](../week13/README.md#失敗を模擬するnewpointfail)，[発展3　不透明な`Vector`の生成と解放](../week13/README.md#発展3不透明なvectorの生成と解放dynamicvector--vector_maincvectorcvectorh) の [途中で失敗した場合（`DynamicVectorFail`）](../week13/README.md#途中で失敗した場合dynamicvectorfail)，デバッグの題材 [BugMallocSize](../debugging/BugMallocSize/README.md)，[BugBackupScores](../debugging/BugBackupScores/README.md)，説明用スライド「[読みやすいコードと関数の契約](https://ns28cse.github.io/programminglang1-ans/readable-code/)」
 
 ## 第14回　推測せずに計測する（再帰）
 
@@ -659,6 +660,21 @@ AddressSanitizer は Edit and Continue（`/ZI`）・`/RTC`（実行時チェッ�
 - 使ってよいか，どこまで使ってよいかは授業の規則（担当教員の指示）に従う。
 - 使う場合も，出てきたコードは自分のコードと同じく，先に書いた期待値の表（境界・異常を含む）で確かめ，警告 0 にし，1 行ずつ説明できるようにする。
 - その回の課題で使わないと決められている書き方（例えば第4回までの入力関数）が出てきたら，課題の条件に合わないので書き直す。
+
+### 説明用スライド
+
+テーマごとのスライド（`slides` ブランチ。[公開ページ](https://ns28cse.github.io/programminglang1-ans/)）。1 対 1 で説明するときに，学生の画面で開いて要る 1〜2 枚だけを一緒に見る（全部を見せなくてよい）。時間がないときは URL を伝えて後で読んでもらう。
+スライドの本文は学生がひとりで読んでも分かるように書いてあり，発表者ノート（公開ページの発表者ビュー）に，使う場面・学生に聞く問いと期待する答え・よくある反応を書いてある。
+
+| スライド | 関係する回 | この手引きの節 |
+| --- | --- | --- |
+| [エラーメッセージを読む](https://ns28cse.github.io/programminglang1-ans/error-messages/)（[PDF](https://ns28cse.github.io/programminglang1-ans/error-messages.pdf)） | 第1回〜（リンクは第12回） | [デバッグの進め方](#デバッグの進め方)，第1回・第12回 |
+| [動いたら commit，試したら差分](https://ns28cse.github.io/programminglang1-ans/version-control/)（[PDF](https://ns28cse.github.io/programminglang1-ans/version-control.pdf)） | 第2回〜 | [Git の最小の手順](#git-の最小の手順visual-studio-の-git-changes)，第2回・第9回 |
+| [テストの値を選ぶ](https://ns28cse.github.io/programminglang1-ans/test-cases/)（[PDF](https://ns28cse.github.io/programminglang1-ans/test-cases.pdf)） | 第3回〜 | [テストケースの書き方の型](#テストケースの書き方の型)，第3回・第4回・第10回 |
+| [デバッガで流れを追う](https://ns28cse.github.io/programminglang1-ans/debugger-basics/)（[PDF](https://ns28cse.github.io/programminglang1-ans/debugger-basics.pdf)） | 第4回〜 | [デバッグの進め方](#デバッグの進め方)，第4回 |
+| [読みやすいコードと関数の契約](https://ns28cse.github.io/programminglang1-ans/readable-code/)（[PDF](https://ns28cse.github.io/programminglang1-ans/readable-code.pdf)） | 第5回〜 | [コードレビューの観点チェックリスト](#コードレビューの観点チェックリスト)，第5回・第11回・第13回 |
+| [書き込む前に容量を確かめる](https://ns28cse.github.io/programminglang1-ans/buffer-capacity/)（[PDF](https://ns28cse.github.io/programminglang1-ans/buffer-capacity.pdf)） | 第5回〜（文字列は第6回） | 第5回・第6回 |
+| [再現できる質問](https://ns28cse.github.io/programminglang1-ans/bug-report/)（[PDF](https://ns28cse.github.io/programminglang1-ans/bug-report.pdf)） | 第1回〜（入力は第7回） | [質問・バグ報告のテンプレート](#質問バグ報告のテンプレート)，第7回 |
 
 ## テーマと回の対応
 
