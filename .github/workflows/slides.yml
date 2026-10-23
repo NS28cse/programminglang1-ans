@@ -30,9 +30,11 @@ jobs:
       - name: Install
         run: npm ci
       - name: Japanese fonts and Chromium for the PDF export
+        # apt のミラーが応答しないと止まったままになるので，この手順だけ時間を区切り，取得を再試行する
+        timeout-minutes: 8
         run: |
-          sudo apt-get update -q
-          sudo apt-get install -y -q fonts-noto-cjk
+          sudo apt-get update -q -o Acquire::Retries=3
+          sudo apt-get install -y -q -o Acquire::Retries=3 fonts-noto-cjk
           npx playwright install --with-deps chromium
       - name: Build HTML and export PDF
         # HTML は相対パス（--base ./）と hash ルーター（各スライドの routerMode: hash）にして，
