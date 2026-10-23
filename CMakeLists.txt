@@ -25,6 +25,10 @@ set(SOFTPRAC_WEEKS "" CACHE STRING "ビルドする回を限定する（例: wee
 enable_testing()
 
 set(SOFTPRAC_RUN_TEST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/RunTest.cmake")
+# データファイルの規則 softprac_is_data_file（ビルドでのコピーとテストの作業フォルダへのコピーで同じ規則を使う）
+set(SOFTPRAC_DATA_RULE_ONLY ON)
+include("${SOFTPRAC_RUN_TEST}")
+unset(SOFTPRAC_DATA_RULE_ONLY)
 include(cmake/SoftpracVariant.cmake)   # softprac_add_variant（ソースを書き換えた版のテスト）
 
 # 授業と同じ警告設定（警告レベル4，UTF-8 ソース）を 1 つのターゲットに付ける
@@ -68,12 +72,13 @@ function(softprac_add_program name)
     VS_DEBUGGER_WORKING_DIRECTORY "${out_dir}"
     FOLDER "${SOFTPRAC_WEEK}")
   # CONFIGURE_DEPENDS: プロジェクトフォルダにデータファイルを足すと，次のビルドで構成し直してコピーする
-  # （ソース・設定と，コンパイラを直接使って作った a.out・*.exe など，第10回のプログラムが書き出すファイルはコピーしない）
+  # （ソース・設定と，コンパイラを直接使って作った a.out・*.exe など，第10回のプログラムが書き出すファイルはコピーしない。
+  #   規則は cmake/RunTest.cmake の softprac_is_data_file で，テストの作業フォルダへのコピーと共通）
   file(GLOB data_files LIST_DIRECTORIES false CONFIGURE_DEPENDS "${SOFTPRAC_PROJECT_DIR}/*")
   foreach(f IN LISTS data_files)
-    get_filename_component(fname "${f}" NAME)
-    if(NOT fname MATCHES "(\\.c|\\.h|^CMakeLists\\.txt|^README.*|^run\\.args|^a\\.out|\\.exe|\\.obj|\\.o|\\.pdb|\\.ilk)$"
-       AND NOT f MATCHES "/week10/(WriteSquares/squares.*\\.txt|WriteText/scores\\.txt|NumberFormats/numbers\\..*|Binary/bytes\\.bin)$")
+    softprac_is_data_file("${f}" is_data)
+    if(is_data)
+      get_filename_component(fname "${f}" NAME)
       configure_file("${f}" "${out_dir}/${fname}" COPYONLY)
     endif()
   endforeach()

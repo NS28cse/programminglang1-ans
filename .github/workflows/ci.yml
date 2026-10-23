@@ -1,9 +1,14 @@
 name: build-and-test
 
+# ta への push と PR で動く（作業ブランチは PR を作ると動く。PR のブランチで push と PR の 2 回動かないように push は ta だけ）
 on:
   push:
+    branches: [ta]
   pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 # 同じブランチに新しい push が来たら，古い実行は取り消す
 concurrency:
@@ -11,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 # 非公開リポジトリでは Actions の実行時間が課金対象になる（Windows は 2 倍，macOS は 10 倍で数える）。
-# 非公開のときの push・PR では，MSVC Debug と Linux Debug・リポジトリの検査だけを動かす。
+# 非公開のときの push・PR では，MSVC Debug と Linux Debug，main-and-practice・repository-checks（どちらも Linux で短い）だけを動かす。
 # すべてのジョブを動かしたいときは Actions タブから手動で実行する（workflow_dispatch）。
 
 jobs:
@@ -123,7 +128,8 @@ jobs:
   # main と practice の形で確かめる（tools/export_main.py・make_practice.py）:
   #   - 実際の main が ta から写したものと同じこと，実際の practice が main から作り直したものと同じこと
   #     （ta の解答・解説・テストを変えると，main・practice に反映するまで失敗する。ta 以外のブランチと PR では警告だけにする）
-  #   - ta の解答を main の最小の CMakeLists.txt でビルドでき（-Werror），practice の雛形に main の解答を重ねるとテストがすべて通ること
+  #   - ta の解答を main の最小の CMakeLists.txt でビルドでき（-Werror），practice の雛形に ta の解答（export_main.py で _main に写したもの）を重ねるとテストがすべて通ること
+  #   公開・非公開にかかわらず動く
   main-and-practice:
     runs-on: ubuntu-latest
     timeout-minutes: 15

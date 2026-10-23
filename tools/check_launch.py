@@ -52,7 +52,7 @@ def main():
 
     # 1. Visual Studio の起動構成
     configs = json.loads((ROOT / ".vs" / "launch.vs.json").read_text(encoding="utf-8"))["configurations"]
-    launched = 0
+    launched = only_exists = 0
     for c in configs:
         m = re.fullmatch(r"(\w+)\.exe \(bin\\(week\d\d|debugging)\\(\w+)\\(\w+)\.exe\)", c["projectTarget"])
         if not m or not m.group(1) == m.group(3) == m.group(4):
@@ -67,6 +67,7 @@ def main():
             errors.append(f"{c['name']}: 作業ディレクトリがない: {cwd}")
             continue
         if m.group(2) == "debugging":
+            only_exists += 1
             continue   # バグ入りの題材は起動しない（存在だけを確かめる）
         launched += 1
         before = set(p.name for p in cwd.iterdir())
@@ -81,7 +82,9 @@ def main():
             for p in cwd.iterdir():
                 if p.name not in before and p.is_file():
                     p.unlink()
-    print(f"launch.vs.json: {launched} 構成を起動，{len(configs) - launched} 構成（debugging/）は実行ファイルの存在だけを確認")
+    skipped = len(configs) - launched - only_exists
+    print(f"launch.vs.json: {launched} 構成を起動，{only_exists} 構成（debugging/）は実行ファイルの存在だけを確認"
+          + (f"，{skipped} 構成はエラーで確かめられなかった（下の [NG]）" if skipped else ""))
 
     # 2. VS Code の起動構成（フォルダ名 = 実行ファイル名）
     folders = [p for p in all_projects() if p.name in programs(p)]

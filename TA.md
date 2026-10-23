@@ -11,7 +11,7 @@
 | ブランチ | 内容 | 作り方 |
 | --- | --- | --- |
 | `main` | 解答（`weekNN/` のソース・データファイル・`versions/`）と各回の README，ルートの README.md と最小の CMakeLists.txt | `ta` で直して確かめた解答・解説を `tools/export_main.py` で写し，`main` に PR を出す |
-| `ta` | `main` ＋ このファイルの「[`ta` だけにあるもの](#ta-だけにあるもの)」 | 保守はここで行う。`main` の PR がマージされたら `git merge origin/main` で取り込む（`ta` を `main` へはマージしない） |
+| `ta` | `main` ＋ このファイルの「[`ta` だけにあるもの](#ta-だけにあるもの)」 | 保守はここで行う。作業ブランチから `ta` への PR を出してマージする。解答・解説の変更は，`ta` へマージする前に `main`・`practice` へ反映し，作業ブランチに `git merge origin/main` で取り込む（`ta` を `main` へはマージしない） |
 | `ta-results` | `ta` ＋ すべてのテストの実際の出力（[results/](https://github.com/NS28cse/programminglang1-ans/tree/ta-results/results)） | `ta` へ push すると CI（`.github/workflows/results.yml`）が作り直して force push する。手で commit しない |
 | `practice` | `main` の解答を雛形（空の `main`）にし，`ta` の `tests/` を加えた練習用。解答を見ずに課題を解き，テストで自己採点する | `tools/make_practice.py` で作る。練習は `practice` から切った自分のブランチで行う |
 | `slides` | 演習の前に全員へ見せる説明用スライド（Slidev）だけ。ほかのブランチとファイルを共有しない | `ta` とは別に保守し，`slides` への push で [GitHub Pages](https://ns28cse.github.io/programminglang1-ans/) に公開する。規約は `slides` の [README.md](https://github.com/NS28cse/programminglang1-ans/blob/slides/README.md) |
@@ -103,7 +103,7 @@ ctest --preset gcc-debug -R week07/Echo   # 1 つのプロジェクトだけ
 
 ## IDE で使う
 
-`ta` ブランチには IDE の設定ファイル（`CMakePresets.json` など）があるので，ビルド先は各回の README の `out\build\x64-Debug\` ではなくプリセット名の `out\build\msvc-debug\`（macOS / Linux は `out/build/gcc-debug/`）になります。また，[README.md の使い方](README.md#使い方)の手順のうち，構成の選び方と引数・作業ディレクトリの設定が次のように簡単になります。
+`ta` ブランチには IDE の設定ファイル（`CMakePresets.json` など）があるので，ビルド先は [README.md の方法 3](README.md#3-visual-studio-でフォルダーを開く)（と第1回の README）の `out\build\x64-Debug\` ではなくプリセット名の `out\build\msvc-debug\`（macOS / Linux は `out/build/gcc-debug/`）になります。また，[README.md の使い方](README.md#使い方)の手順のうち，構成の選び方と引数・作業ディレクトリの設定が次のように簡単になります。
 
 ### Visual Studio（Windows）
 
@@ -122,7 +122,34 @@ ctest --preset gcc-debug -R week07/Echo   # 1 つのプロジェクトだけ
 2. **実行したい課題の `.c` ファイルを開いた状態で**，**Run and Debug** ビュー（Ctrl+Shift+D）の「開いている課題を実行 (Windows / MSVC)」（macOS / Linux は「開いている課題を実行 (macOS / Linux)」）を選び，**F5** または **Ctrl+F5** で起動します（作業ディレクトリはその `.c` のフォルダ）。
    引数が必要なときは「開いている課題を引数つきで実行 (Windows / MSVC)」（macOS / Linux は「開いている課題を引数つきで実行 (macOS / Linux)」）を選び，`.vscode/launch.json` の `args`（既定は `["input.txt"]`）を書き換えます。
    `.vscode/launch.json` は commit 対象なので，書き換えたまま commit しません（試し終わったら戻します）。
+   `versions/` の `.c`（比較用・別解）を開いた状態では起動できません（フォルダ名を実行ファイル名と見なすため）。プロジェクトフォルダの `.c` を開いて起動します。
 3. すべてのビルドは **Ctrl+Shift+B**，テストは **Command Palette** の **CMake: Run Tests**，または **Testing** ビューで実行します。
+
+### VS Code と MinGW（Windows で Visual Studio を使わない場合）
+
+`CMakePresets.json` の Windows 用のプリセットは MSVC だけです（Visual Studio が MinGW の構成を既定に選ばないようにするため）。MSYS2 の gcc（UCRT64）と VS Code で使うときは，
+リポジトリのルートに次の `CMakeUserPresets.json` を作ります（`.gitignore` 済みで commit されません。Visual Studio も同じフォルダで使うなら，構成のドロップダウンで MSVC を選び直します）。
+
+```json
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "mingw-debug",
+      "displayName": "Windows / MinGW gcc (Debug)",
+      "inherits": "base",
+      "generator": "Ninja",
+      "cacheVariables": { "CMAKE_C_COMPILER": "gcc", "CMAKE_BUILD_TYPE": "Debug" },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    }
+  ],
+  "buildPresets": [ { "name": "mingw-debug", "configurePreset": "mingw-debug" } ],
+  "testPresets": [ { "name": "mingw-debug", "configurePreset": "mingw-debug", "output": { "outputOnFailure": true } } ]
+}
+```
+
+- `gcc`・`gdb`・`cmake`・`ninja` が PATH にあること（MSYS2 の `mingw-w64-ucrt-x86_64-gcc`・`-gdb`・`-cmake`・`-ninja`。CI の `windows-mingw` と同じ組み合わせ）。
+- CMake Tools のプリセットで **`Windows / MinGW gcc (Debug)`** を選び，**Run and Debug** ビューでは「開いている課題を実行 (Windows / MinGW)」を使います（引数が要るときは `.vscode/launch.json` のその構成の `args` に書き足して試し，commit する前に戻します）。
 
 ### よくあるトラブル（ta ブランチ）
 

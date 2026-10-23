@@ -3,6 +3,8 @@
   //   - 開いている .c があるフォルダ（= プロジェクト）の実行ファイル out/build/<プリセット>/bin/<weekNN または debugging>/<名前>/<名前> を起動する
   //   - 作業ディレクトリはそのフォルダ（Visual Studio の $(ProjectDir) と同じ）
   //   - コマンドライン引数が必要な課題は「引数つき」を選び，下の args を書き換える
+  //   - versions/ の .c（比較用・別解）を開いた状態では使えない（フォルダ名 versions を実行ファイル名と見なすため）。プロジェクトフォルダの .c を開いて起動する
+  //   - Windows で MSVC の代わりに MinGW（MSYS2）の gcc を使うときは「(Windows / MinGW)」を選ぶ（プリセットは TA.md の「VS Code と MinGW」）
   "version": "0.2.0",
   "configurations": [
     {
@@ -23,6 +25,18 @@
       "args": [ "input.txt" ],
       "cwd": "${fileDirname}",
       "console": "integratedTerminal",
+      "preLaunchTask": "CMake: すべてビルド"
+    },
+    {
+      "name": "開いている課題を実行 (Windows / MinGW)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/build/${command:cmake.activeConfigurePresetName}/bin/${relativeFileDirname}/${fileDirnameBasename}.exe",
+      "args": [],
+      "cwd": "${fileDirname}",
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb.exe",
       "preLaunchTask": "CMake: すべてビルド"
     },
     {

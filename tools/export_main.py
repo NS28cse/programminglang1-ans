@@ -23,7 +23,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from projects import ROOT  # noqa: E402
+from projects import ROOT, tree_kind  # noqa: E402
 
 # main が独自の内容で持つプロジェクトフォルダの CMakeLists.txt
 MAIN_CMAKE = {
@@ -53,8 +53,10 @@ def main():
         return 0 if args and args[0] in ("-h", "--help") else 2
     check = "--check" in sys.argv[1:]
     dest = pathlib.Path(args[0]).resolve()
-    if dest == ROOT or not (dest / ".git").exists():
-        print(f"[NG] {dest} は main の作業ツリーではない")
+    kind = tree_kind(dest) if dest.is_dir() else None
+    if dest == ROOT or not (dest / ".git").exists() or kind != "main":
+        what = {"ta": "ta の作業ツリー", "practice": "practice の作業ツリー（cmake/RunTest.cmake・.vs/launch.vs.json がある）"}.get(kind, "main の作業ツリーではない")
+        print(f"[NG] {dest} は {what}。main の作業ツリー（git worktree add <フォルダ> origin/main --detach）を渡す。何も書き換えていない")
         return 2
 
     # 写すのは commit 済みの内容だけにする（作業ツリーに未 commit の変更があれば止める）
