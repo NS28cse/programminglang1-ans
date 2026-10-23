@@ -4,7 +4,8 @@
 このファイルは `ta` ブランチだけにある。`ta` ブランチの入口は [TA.md](TA.md)，ビルドの基本は [README.md](README.md)（`main` と共通）にある。
 
 - 評価: 解答（`weekNN/`）は [softprac-grader](.claude/agents/softprac-grader.md) が回ごとに採点する。
-  実務の手引き（`ta-guide/`）とデバッグの題材（`debugging/`）は [ta-material-reviewer](.claude/agents/ta-material-reviewer.md) が評価する（題材に固有の確認はその手順 5）。
+  指導資料（実務の手引き `ta-guide/`，デバッグの題材 `debugging/`，`slides` ブランチの説明用スライド）は [ta-material-reviewer](.claude/agents/ta-material-reviewer.md) が評価する（題材に固有の確認はその手順 5）。
+  評価エージェントはファイルを変えない。worktree を作ったり消したりせず，ほかのブランチは `git archive origin/<ブランチ> | tar -x -C $(mktemp -d)` で一時フォルダに取り出して読む。
 - 授業サイト: <https://t-yokoga.github.io/softprac1/>
 - 授業資料のリポジトリ: <https://github.com/t-yokoga/softprac1>（`docs/exNN.md` が演習，`docs/lecNN.md` が講義，`docs/sample/` が例題）
 
@@ -13,7 +14,7 @@
 | ブランチ | 内容 | 変更のしかた |
 | --- | --- | --- |
 | `main` | 解答と解説だけ（`README.md`，最小の `CMakeLists.txt`・`.gitignore`，`.gitattributes`，`weekNN/` のソース・データファイル・`versions/`・各回の README，ライブラリなどに要るプロジェクトフォルダの `CMakeLists.txt` 3 つ） | `ta` で確かめた変更を `tools/export_main.py` で写して PR を出す |
-| `ta` | `main` ＋ テスト・書き換えた版・TA 用の資料・IDE の設定・CI・規約とツール | 保守はここで行う（作業ブランチを `ta` から切り，CI が通ったら `ta` へマージする。PR を出してもよい） |
+| `ta` | `main` ＋ テスト・書き換えた版・TA 用の資料・IDE の設定・CI・規約とツール | 保守はここで行う（作業ブランチを `ta` から切り，`ta` への PR を出す。CI は PR で動くので，全ジョブが通ったら merge commit でマージする） |
 | `ta-results` | `ta` ＋ すべてのテストの実際の出力（`results/`） | `ta` への push で CI（`results.yml`）が作り直して force push する。手で commit しない |
 | `practice` | `main` の解答を雛形にし，`ta` の `tests/` と Visual Studio の起動構成（`.vs/launch.vs.json`）を加えた練習用（各回の README は課題の表だけ） | `main` を更新したりテストを変えたりしたら，下の手順で作り直す。TA の練習は `practice` から切った各自のブランチで行う |
 | `slides` | 演習の前に全員へ見せる説明用スライド（Slidev）だけ。ほかのブランチとファイルを共有しない | `ta` とは別に保守する（`slides` から作業ブランチを切る）。`slides` への push で GitHub Pages（<https://ns28cse.github.io/programminglang1-ans/>）に公開される。規約は `slides` の [README.md](https://github.com/NS28cse/programminglang1-ans/blob/slides/README.md) |
@@ -23,16 +24,25 @@
 - `main` と `ta` で内容が違うのは，ルートの `CMakeLists.txt`（`ta` はテスト・variant・CI 用のオプション・`debugging/` を加えたもの）と `.gitignore`，`week12/CalcLib`・`week12/CalcApp`・`week13/DynamicVectorFail` の `CMakeLists.txt`（`ta` は variant を加えたもの）だけ。
   実行ファイルの場所（`<ビルド先>/bin/weekNN/<名前>/`）とデータファイルのコピーは両方のルートの `CMakeLists.txt` で同じにする（各回の README がこの場所を書いている）。
 
-`main` への反映の手順（ta の変更を commit してから）:
+解答・解説（`README.md` を含む）を変えたときは，`ta` へマージする**前に** `main` と `practice` に反映する。この順にすると，`ta` への push で CI の `main-and-practice` が失敗しない。
+
+1. 作業ブランチで変更を commit し，`ta` への PR を出して CI の結果を見る（`main-and-practice` はこの時点では警告だけ）。
+2. 作業ブランチの内容を `main` に写し，`main` への PR を出して merge commit でマージする（下の手順）。
+3. `practice` を新しい `main` から作り直す（下の手順）。
+4. 作業ブランチに `main` をマージし（`git fetch origin && git merge origin/main`），push する。PR の CI がすべて（`main-and-practice` を含む）通ったら `ta` へマージする。
+
+`main` への反映の手順（作業ブランチの変更を commit してから。`export_main.py` は作業ブランチからでも動く）:
 
 ```sh
 git fetch origin
 git worktree add ../main-sync origin/main --detach  # 初回だけ（以後は cd ../main-sync && git switch --detach origin/main）
 python3 tools/export_main.py ../main-sync           # 解答・解説を写す（--check を付けると違いの表示だけ）
-cd ../main-sync && git switch -c <作業ブランチ>
+cd ../main-sync && git switch -c <main 用の作業ブランチ>
 cmake -S . -B /tmp/build-main -DCMAKE_C_FLAGS=-Werror && cmake --build /tmp/build-main   # main の最小の CMakeLists.txt で警告なくビルドできること
-git add -A && git commit && git push -u origin <作業ブランチ>   # main への PR を出す（merge commit でマージする）。マージされたら ta で git merge origin/main する
+git add -A && git commit && git push -u origin <main 用の作業ブランチ>   # main への PR を出す（merge commit でマージする）
 ```
+
+- `main` にはワークフローがないので，`main` への PR では CI が動かない。上の `cmake` の結果（警告なしでビルドできたこと）を PR の説明に書く。
 
 `practice` の作り直しの手順（`main` の新しい内容から作り直し，`practice` を force push で置き換える）:
 
@@ -47,7 +57,7 @@ git push --force origin HEAD:practice               # practice は main の 1 �
 cd - && git worktree remove ../practice-work
 ```
 
-- `ta` に `main` をマージしておく（`git merge origin/main`）と，`ta` が `main` を含む形が保たれる。内容は同じなので衝突はしない。`ta` を `main` にマージしてはいけない（TA 用のファイルが `main` に入る）。
+- 作業ブランチ（と `ta`）に `main` をマージしておく（`git merge origin/main`）と，`ta` が `main` を含む形が保たれる。内容は同じなので衝突はしない。`ta` を `main` にマージしてはいけない（TA 用のファイルが `main` に入る）。
 - フォルダ直下の `*.c` をまとめる規則でビルドできない新しいプロジェクト（ライブラリなど）は，`main` 用の `CMakeLists.txt` を `main` で手で書き，`tools/export_main.py` の `MAIN_CMAKE` に加える。
 
 ## フォルダ構成
@@ -109,6 +119,9 @@ weekNN/
 | `tests/<ケース>.setup/` | 実行前に作業フォルダへコピーするファイル（ケース専用の入力ファイル） |
 | `tests/<ケース>.files/` | 実行後に作業フォルダにあるべきファイル（`.bin` はバイト単位，他は改行コードを無視して比較） |
 
+- テストは，プロジェクトフォルダのデータファイル（ビルドで実行ファイルのフォルダへコピーするものと同じ。規則は `cmake/RunTest.cmake` の `softprac_is_data_file`）と `<ケース>.setup/` を一時フォルダにコピーして実行する。同じ名前のファイルは `.setup/` が優先する。書き換えた版（variants）も同じ。
+- 実行で残るファイル（第10回の出力など）を増やしたら，`softprac_is_data_file` の規則に加える（加えないと，IDE で一度実行した後にテストへ紛れ込む）。
+
 - 「値を変えて確かめる」「一時的に書き換える」小問は，フォルダに `CMakeLists.txt` を置き，`softprac_add_program(<名前> <ソース>)` に続けて
   `softprac_add_variant(<名前> <ソース> <ケース名> "<置換前>" "<置換後>")` を書くと，ソースの一部を置き換えた版をビルドしてテストできる
   （期待値は `variants/tests/<ケース名>.out`，同じ版を別の入力で試すときは `<ケース名>--<名前>.out`。置換文字列には `;` も書ける。
@@ -129,6 +142,8 @@ ctest --test-dir /tmp/build-week05 --output-on-failure
 ## 各回の README.md（解答・解説）
 
 TA が授業で解説・採点に使う資料。演習ページの**すべての問い**に答える。冒頭は次のひな形どおりに書く（`N` は回の番号，`NN` は 2 桁）。
+
+`tools/make_practice.py` は，各回の README の 1 行目のテーマ・`## プロジェクト一覧` の表（「課題」「プロジェクト」の列，あれば「内容」）・`## 課題N　題名（…）` の見出しと，ルートの README.md の「使い方」の文言（引数の説明の段落・`### ソースを書き換えて試す`・`## よくあるトラブル`）を使う。これらを変えたら make_practice を一度実行して確かめる（合わなければ何も書き換えずに止まる）。
 
 ```markdown
 # 第N回 演習 解答・解説（テーマ）
@@ -189,7 +204,7 @@ README・手引き・題材の README とソースのコメントは，TA と学
 - 学生が読むソース（`weekNN/<プロジェクト>/*.c`・`*.h`・`versions/*.c`）のコメントには，テストやビルドのしくみ（variant・CMakeLists.txt など）を書かない。
 - Visual Studio の画面の表記（メニュー・ウィンドウ名・プロパティ名と値・ダイアログや出力の文面）は **Visual Studio 2026（英語版）** に合わせ，**太字**で書く。メニューの階層は ` > ` でつなぐ（例: **Configuration Properties > Debugging > Command Arguments**，フォルダを開くのは **File > Open > Folder**）。本文と，概念としての「プロジェクト」「ブレークポイント」などは日本語のままでよい。
 - VS Code の画面の表記も英語版に合わせて**太字**で書く（例: **File > Open Folder**，**Run and Debug** ビュー，**Source Control** ビュー，**Command Palette**）。`.vscode/launch.json` の構成名（「開いている課題を実行」など）はそのまま「」で書く。
-- 用語: `debugging/` は「デバッグの題材」，`ta-guide/` は「実務の手引き」と呼ぶ。「指導資料」は両方をまとめて指すときだけ使う。
+- 用語: `debugging/` は「デバッグの題材」，`ta-guide/` は「実務の手引き」，`slides` ブランチのものは「説明用スライド」と呼ぶ。「指導資料」はこれらの解答以外の教材をまとめて指すときだけ使う。
 - 文体は 1 ファイルの中でそろえる（ルートの README.md はです・ます，ほかは本文の多数派に合わせる）。`.md` に BOM を付けない。
 
 ## デバッグの題材（`debugging/`）
@@ -239,8 +254,8 @@ python3 tools/check_docs.py         # 文書のリンクとアンカー，デバ
 
 - 生成されたファイルも同じコミットに含める（テスト数が変わったのに作り直さないと，CI の repository-checks が失敗する）。
 - push して CI の repository-checks が失敗したら，手元でこの 2 つを実行し，変わったファイルを commit する。Visual Studio の **Debug and Launch Settings** で `.vs/launch.vs.json` の引数を書き換えたまま commit したときも失敗する（既定の引数は `run.args` で変える）。
-- push したら CI の全ジョブが成功したことを確かめる。
-- 解答・解説を変えたら，`ta` にマージした後で `main` にも反映する（「[ブランチ](#ブランチ)」）。`main`・`practice` に反映するまで，`ta` の CI の `main-and-practice` は失敗する（`main` へ反映し，`practice` を作り直してから，`ta` に `origin/main` をマージして push すると成功する）。
+- push したら PR の CI の全ジョブが成功したことを確かめる。`ta` へマージした後も，`ta` への push の CI と `results.yml`（`ta-results` の作り直し）が成功したことを確かめる。
+- 解答・解説を変えたら，`ta` へマージする前に `main` に反映し，`practice` を作り直し，作業ブランチに `origin/main` をマージする（「[ブランチ](#ブランチ)」の 1〜4）。反映するまで PR の CI の `main-and-practice` は警告になり，`ta` へマージすると失敗する。
 
 `tools/` のスクリプト:
 
@@ -254,7 +269,7 @@ python3 tools/check_docs.py         # 文書のリンクとアンカー，デバ
 | `check_launch.py` | IDE の起動構成が実際に動くこと（`python3 tools/check_launch.py <ビルド先>`。CI 用。手元でも確かめられる） |
 | `collect_results.py` | すべてのテストを実行し，実際の出力を `results/` に保存して `results/README.md`（環境・結果の一覧）を書く（`ta-results` ブランチの中身。CI 用。手元でも実行できる） |
 | `make_practice.py` | `main` の作業ツリーを `practice` の中身（雛形・`tests/`・課題の表・テストの登録・Visual Studio の起動構成）に書き換える（「[ブランチ](#ブランチ)」） |
-| `export_main.py` | 解答と解説を `main` の作業ツリーへ写す（「[ブランチ](#ブランチ)」） |
+| `export_main.py` | 解答と解説を `main` の作業ツリーへ写す（「[ブランチ](#ブランチ)」）。`export_main.py`・`make_practice.py` は `main` 以外の作業ツリー（`ta`・`practice`）を渡すと何も書き換えずに止まる |
 | `projects.py` | プロジェクトの列挙（ルートの `CMakeLists.txt` と同じ規則）を各スクリプトで共有するライブラリ |
 
 ## CI（GitHub Actions）
@@ -268,11 +283,12 @@ python3 tools/check_docs.py         # 文書のリンクとアンカー，デバ
 | `windows-mingw` | MSYS2 UCRT64 の gcc（VS Code + MinGW）。Visual Studio の構成の一覧に MinGW が出ないよう，プリセットを使わず CMake のオプションで指定する |
 | `linux` | GCC・Clang × Debug・Release。`-Werror`，AddressSanitizer/UBSan |
 | `macos` | Apple Clang。プリセット `gcc-debug`。IDE の起動構成で全プロジェクトを起動する（`debugging/` は起動せず，実行ファイルの存在だけを確かめる） |
-| `main-and-practice` | 実際の `main` が ta から `tools/export_main.py` で写したものと同じこと（`--check`），実際の `practice` が `tools/make_practice.py` で `main` から作り直したものと同じこと（反映の漏れを知らせる。`ta` への push では失敗にし，ほかのブランチと PR では警告だけにする）。ta の解答を main に写して main の最小の `CMakeLists.txt` で `-Werror` ビルドでき，practice に main の解答を重ねるとテストがすべて通ること |
+| `main-and-practice` | 実際の `main` が ta から `tools/export_main.py` で写したものと同じこと（`--check`），実際の `practice` が `tools/make_practice.py` で `main` から作り直したものと同じこと（反映の漏れを知らせる。`ta` への push では失敗にし，PR と手動の実行では警告だけにする）。ta の解答を main に写して main の最小の `CMakeLists.txt` で `-Werror` ビルドでき，practice の雛形に ta の解答（main に写したもの）を重ねるとテストがすべて通ること |
 | `repository-checks` | Windows で使えないファイル名，生成物が最新か（`update_generated.py --check`），文書のリンクと題材の一覧（`check_docs.py`） |
 
-- 全ジョブに時間制限があり，同じブランチに新しい push が来ると古い実行は取り消される。
-- 非公開リポジトリでは Actions の実行時間が課金対象になる（Windows は 2 倍，macOS は 10 倍で数える）。そのため非公開のときの push・PR では，MSVC Debug・Linux Debug・repository-checks だけを動かす。すべてのジョブは Actions タブから手動で実行すると動く。
+- `ta` への push と PR（と Actions タブからの手動の実行）で動く。作業ブランチへの push だけでは動かないので，PR を出す（同じブランチで push と PR の 2 回ずつ動かないようにしている）。
+- 全ジョブに時間制限があり，同じブランチに新しい push が来ると古い実行は取り消される。ワークフローの権限は読み取りだけ。
+- 非公開リポジトリでは Actions の実行時間が課金対象になる（Windows は 2 倍，macOS は 10 倍で数える）。そのため非公開のときの push・PR では，MSVC Debug・Linux Debug と，Linux で短く終わる `main-and-practice`・`repository-checks` だけを動かす。すべてのジョブは Actions タブから手動で実行すると動く。
 
 `.github/workflows/results.yml` は，`ta` ブランチへの push（と手動の実行）で `tools/collect_results.py` を Linux（GCC）で実行し，
 `ta` の先頭に `results/` を加えたコミットを `ta-results` ブランチへ force push する（`ta-results` は毎回作り直すので，手で commit しない）。

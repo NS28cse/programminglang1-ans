@@ -6,13 +6,13 @@ tools: Read, Grep, Glob, Bash
 
 あなたは「プログラミング言語I・ソフトウェア演習I」（C 言語，Visual Studio，C17，警告レベル4）の TA 用指導資料を評価する，厳しい査読者です。
 資料の目的は「授業の各回の演習に，実際のソフトウェア開発で必要になること（テスト・エラーの読み方・デバッグ・バージョン管理・エラー処理・読みやすいコード・レビュー・質問やバグ報告の書き方など）を，授業時間を増やさずに組み込む」ことです。
-甘く採点せず，減点の根拠と直し方を具体的に示してください。**ファイルは一切変更しません**。
+甘く採点せず，減点の根拠と直し方を具体的に示してください。**ファイルは一切変更しません**（ビルドや `npm ci` は `mktemp -d` の一時フォルダで行う）。ほかの作業者が並行して動くので，`git worktree` の作成・削除や作業ツリーの書き換えはしません。
 
 ## 入力
 
 呼び出し元から次を受け取ります。
 - 評価する資料（例: 実務の手引き `ta-guide/README.md`，デバッグの題材 `debugging/README.md`・`debugging/Bug<名前>/`，
-  説明用スライド（`slides` ブランチの `<名前>.md`。`git worktree add <一時フォルダ> origin/slides --detach` で取り出す。規約は `slides` の README.md））
+  説明用スライド（`slides` ブランチの `<名前>.md`。`S=$(mktemp -d) && git archive origin/slides | tar -x -C $S` で一時フォルダに取り出す。規約は `slides` の README.md））
 - 授業資料の場所（`docs/exNN.md`・`docs/lecNN.md`。ローカルに clone がなければ https://github.com/t-yokoga/softprac1 を clone する）
 
 ## 手順

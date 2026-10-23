@@ -53,6 +53,22 @@ def cache_value(build: pathlib.Path, key):
     return ""
 
 
+def compiler_info(build: pathlib.Path):
+    """(コンパイラの ID と版, 警告などのフラグ) を構成の結果から返す。"""
+    cid = ver = ""
+    for f in sorted(build.glob("CMakeFiles/*/CMakeCCompiler.cmake")):
+        text = f.read_text(encoding="utf-8", errors="replace")
+        m = re.search(r'set\(CMAKE_C_COMPILER_ID "([^"]*)"\)', text)
+        n = re.search(r'set\(CMAKE_C_COMPILER_VERSION "([^"]*)"\)', text)
+        cid, ver = (m.group(1) if m else ""), (n.group(1) if n else "")
+    if cid == "MSVC":
+        flags = "`/std:c17 /W4 /utf-8`"
+    else:
+        flags = "`-std=c17 -Wall -Wextra -Wpedantic`"
+    name = f"{cid} {ver}".strip() or first_line([cache_value(build, "CMAKE_C_COMPILER"), "--version"])
+    return name, flags
+
+
 def program_folders():
     """実行ファイル名 → プロジェクトフォルダ（リポジトリからの相対パス）。"""
     return {name: p.relative_to(ROOT).as_posix() for p in all_projects() for name in programs(p)}
@@ -84,7 +100,7 @@ def report(build: pathlib.Path, cases):
     groups = {g: sorted(groups[g]) for g in sorted(groups, key=lambda g: (g == "debugging", g))}
 
     commit = first_line(["git", "-C", str(ROOT), "rev-parse", "HEAD"])
-    compiler = f"{cache_value(build, 'CMAKE_C_COMPILER')}"
+    compiler, flags = compiler_info(build)
     lines = [
         "# テストの実行結果",
         "",
@@ -95,7 +111,7 @@ def report(build: pathlib.Path, cases):
         f"| 実行した日時（UTC） | {datetime.datetime.now(datetime.timezone.utc):%Y-%m-%d %H:%M} |",
         f"| `ta` のコミット | `{commit}` |",
         f"| OS | {platform.system()} {platform.machine()}（{platform.platform()}） |",
-        f"| コンパイラ | {first_line([compiler, '--version'])}（`-std=c17 -Wall -Wextra -Wpedantic`，Debug） |",
+        f"| コンパイラ | {compiler}（{flags}，Debug） |",
         f"| CMake | {first_line(['cmake', '--version'])} |",
         "",
         "## 見方",
@@ -161,10 +177,12 @@ def main():
     RESULTS.mkdir()
     configure = ["cmake", "-S", ROOT, "-B", build, "-DCMAKE_BUILD_TYPE=Debug", f"-DSOFTPRAC_RESULTS_DIR={RESULTS}",
                  "-DSOFTPRAC_WERROR=OFF", "-DSOFTPRAC_SANITIZE=OFF", "-DSOFTPRAC_WEEKS="]
-    if run(configure).returncode != 0 or run(["cmake", "--build", build, "-j", args.jobs]).returncode != 0:
+    # --config / -C は Visual Studio などのマルチ構成のジェネレーター用（単一構成では何もしない）
+    build_cmd = ["cmake", "--build", build, "--config", "Debug", "-j", args.jobs]
+    if run(configure).returncode != 0 or run(build_cmd).returncode != 0:
         return 2
     junit = build / "results-junit.xml"
-    run(["ctest", "--test-dir", build, "-j", args.jobs, "--timeout", "60", "--output-junit", junit])
+    run(["ctest", "--test-dir", build, "-C", "Debug", "-j", args.jobs, "--timeout", "60", "--output-junit", junit])
     total, failed = report(build, read_junit(junit))
     print(f"results/: テスト {total} 件，一致 {total - failed} 件，不一致 {failed} 件")
     return 1 if failed else 0

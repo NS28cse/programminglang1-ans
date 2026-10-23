@@ -1,4 +1,4 @@
-﻿// 第13回 発展2 変更1　定義を外す（_SharedCountNoDef / main.c）
+﻿// 第13回 発展2　変更1　定義を外す（_SharedCountNoDef / main.c）
 // SharedCount と同じ内容。counter.h の extern 宣言によって total を使う（このフォルダでは定義がないのでリンクで失敗する）。
 #include <stdio.h>
 #include "counter.h"

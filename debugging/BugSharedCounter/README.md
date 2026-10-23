@@ -37,7 +37,7 @@ calls=0
 
 1. **範囲を 2 つに分ける**: 「`count_call` が呼ばれていない」「呼ばれて増えているが，`main` が別のものを読んでいる」のどちらか。
 2. **関数の中で止める**: `counter.c` の `++call_count;` の行に F9，F5。3 回止まることで，呼ばれていることが分かる。3 回目に止まったら F10 を 1 回押し，コードの `call_count` にマウスポインターを重ねて（データヒント（DataTip）。授業では未習）値が 3 になることを見る。`call_count` は関数の外の変数なので **Locals** には出ない（**Debug > Windows > Autos** には出る）。
-3. **呼び出し元で見る**: `main.c` の `printf` の行に F9 を置いて F5。ここで `call_count` にマウスポインターを重ねると 0。
+3. **呼び出し元で見る**: `main.c` の `printf` の行に F9 を置いて F5。ここで `call_count` にマウスポインターを重ねると 0（同じ名前の `static` 変数は，止まっているファイルのものが表示される）。
 4. **仮説**: 「`counter.c` の `call_count` と `main.c` の `call_count` は別の変数。ヘッダの `static int call_count = 0;` が，インクルードした `.c` ごとに 1 つずつ別の変数を作っている」。
 5. **確かめる**: **Debug > Windows > Watch > Watch 1**（授業では未習）に `&call_count` を書き，`counter.c` で止まったときと `main.c` で止まったときのアドレスが違うことを見る。
    ウォッチを使わない場合は，「`#include` はヘッダの中身をその場に貼り付ける」ことから，`counter.c` と `main.c` にそれぞれ `static int call_count = 0;` が書かれたのと同じだと説明させる（講義 6 節：`static` は名前を他の翻訳単位から参照させない）。

@@ -1,8 +1,8 @@
-# 第3回 課題5（発展） Flags: 本体（flags = 1u）と，最初の flags を変えた版，同じ権限を 2 回セットする版（OR と加算），
+# 第3回 課題5（発展）　Flags: 本体（flags = 1u）と，最初の flags を変えた版，同じ権限を 2 回セットする版（OR と加算），
 # 誤りの例（クリアに ! や ^ を使う），比較用ソース（versions/）
 softprac_add_program(Flags flags.c)
 
-set(title "/* 第3回 課題5（発展） 権限フラグ（Flags / flags.c）")
+set(title "/* 第3回 課題5（発展）　権限フラグ（Flags / flags.c）")
 set(header "${title}\n * unsigned int の各ビットを権限として使い，マスクでセット・クリア・反転して，権限の有無を調べる。\n */")
 set(start_line "    unsigned int flags = 1u;            /* 初期値: 読む権限だけ */")
 set(set_line "    flags |= write_mask;  /* セット: OR で対象ビットだけ1にする */")

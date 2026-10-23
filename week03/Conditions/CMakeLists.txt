@@ -1,7 +1,7 @@
 # 第3回 課題3 Conditions: 本体（score = 75，d = 0）と，score・d を 1 項目ずつ変えた版（条件の境界を試す）
 softprac_add_program(Conditions conditions.c)
 
-set(title "/* 第3回 課題3 範囲の判定と短絡評価（Conditions / conditions.c）")
+set(title "/* 第3回 課題3　範囲の判定と短絡評価（Conditions / conditions.c）")
 set(header "${title}\n * score が 0〜100 の範囲内かを && と || で判定し，&& の短絡評価で 0 による除算を防ぐ。\n */")
 
 # score を -1，0，100，101 に変える（d は 0 のまま）

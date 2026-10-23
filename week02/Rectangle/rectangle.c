@@ -1,4 +1,4 @@
-﻿// 第2回 課題1 長方形の面積と再計算（Rectangle / rectangle.c）
+﻿// 第2回 課題1　長方形の面積と再計算（Rectangle / rectangle.c）
 // area に保存されるのは式ではなく，計算した時点の値であることを確かめる
 #include <stdio.h>
 

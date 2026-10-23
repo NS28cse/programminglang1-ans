@@ -14,8 +14,8 @@
 | 発展2 二分木の3つの走査 | `TreeTraversal` | [tree.c](TreeTraversal/tree.c)<br>別解: [versions/walk_count.c](TreeTraversal/versions/walk_count.c) |
 | 発展3 帰りがけ順と解放の順序 | （プロジェクトなし） | 参考コード [TreeTraversal/versions/destroy_tree.c](TreeTraversal/versions/destroy_tree.c) |
 
-ファイル名を指定しているのは `recursion.c`・`trace.c`・`fibonacci.c`・`tree.c` だけなので，課題3・4 のソース名（`gcd_loop.c`・`checked_factorial.c`）は内容から付けた。
-発展3 は「完成した動的な木の構築プログラムは要求しません」とあるので，プロジェクトは作らず，参考コードを `TreeTraversal/versions/` に置いた。
+演習ページがファイル名を指定していない課題3・4 のソースは，内容から `gcd_loop.c`・`checked_factorial.c` としている。
+発展3 は「完成した動的な木の構築プログラムは要求しません」とあるのでプロジェクトはなく，参考コードは `TreeTraversal/versions/destroy_tree.c` にある。
 
 表示は Windows x64 (MSVC) と Linux x64 で同じ（`unsigned long long` はどちらも 64 ビット，`unsigned int`・`int` は 32 ビット，`size_t` は `%zu` で表示）。アドレスなど環境で変わる値は表示していない。
 
@@ -280,7 +280,7 @@ main
 | 最初の`sum_to` | `n = 3`。`main` へ返す予定の値は 6（= 3 + 2 + 1 + 0）。この時点ではまだ `3 + sum_to(2)` の戻りを待っている |
 | 基底条件から1段戻ったとき | `sum_to(0)` が 0 を返し，`sum_to(1)` の `int result = 1 + sum_to(0);` の初期化が完了した時点で `result = 1` が確定する（その次の行 `leave 1: 1` で表示される）。同様に `sum_to(2)` は 3，`sum_to(3)` は 6 と，復帰のたびに 1 段ずつ確定する |
 
-- **Call Stack** ウィンドウの上から `sum_to` (n=0)，`sum_to` (n=1)，`sum_to` (n=2)，`sum_to` (n=3)，`main` の順に並ぶ。行を選ぶと，その呼び出しの `n` が **Locals** ウィンドウに表示される（実行は巻き戻らない）。
+- **Call Stack** ウィンドウには，上から `sum_to` の行が n=0，1，2，3 の順に 4 つ並び，最後に `main` の行が来る。表示は `Trace.exe!sum_to(int n=1) Line 14` のような形（待っている段は再帰呼び出しの 14 行目。いちばん上の段の行番号は止まった位置で変わる）。行を選ぶと，その呼び出しの `n` が **Locals** ウィンドウに表示される（実行は巻き戻らない）。
 - 待機中の段の `result` は初期化が終わっていないので，表示される値は意味のないごみ。MSVC の Debug 構成で `/RTC1`（Debug の既定）が有効な場合は，未初期化のスタック領域が 0xCC で埋められるため，`-858993460`（0xCCCCCCCC）と表示されることが多い。これを途中結果として記録してはいけない。
 
 ### 出力位置を変える
@@ -944,15 +944,7 @@ size_t tree_height(const Node *p)
 
 演習は構築プログラムを要求していないが，TA の説明用に，講義の木と同じ形を個別の `malloc` で作り，`destroy_tree` で解放する例を [TreeTraversal/versions/destroy_tree.c](TreeTraversal/versions/destroy_tree.c) に置いた。
 解放の順序を見るために `destroy_tree` に表示を 1 行加えている。
-Linux で解放しないとどうなるかを確かめるには，`week14/TreeTraversal` で `versions/destroy_tree.c` の `main` にある `destroy_tree(root);` の行を消し，`-fsanitize=address,undefined -g` を付けて[コマンドでビルド](../README.md#1-コマンドでビルドする)して実行する。
-
-```sh
-cd week14/TreeTraversal
-# versions/destroy_tree.c の destroy_tree(root); の行を消してから
-gcc -std=c17 -Wall -Wextra -Wpedantic -fsanitize=address,undefined -g versions/destroy_tree.c -o a.out && ./a.out
-git restore versions/destroy_tree.c   # 確かめたら元に戻す
-```
-
+Linux で解放しないとどうなるかを確かめるには，`versions/destroy_tree.c` の `main` にある `destroy_tree(root);` の行を消し，[ルートの README の方法](../README.md#1-コマンドでビルドする)でサニタイザを付けてこのファイル 1 つをビルドし，実行する（確かめたら `destroy_tree(root);` の行を元に戻す）。
 LeakSanitizer が `SUMMARY: AddressSanitizer: 240 byte(s) leaked in 10 allocation(s).` とリークを報告し，終了コードは 1 になる（根の 24 バイトが直接のリーク，残り 9 ノードの 216 バイトが間接のリーク）。
 
 ```c

@@ -1,4 +1,4 @@
-﻿// 第2回 課題2 型と表示の対応（Profile / profile.c）
+﻿// 第2回 課題2　型と表示の対応（Profile / profile.c）
 // 整数は int と %d，小数は double と %f，1 文字は char と %c を対応させる
 #include <stdio.h>
 

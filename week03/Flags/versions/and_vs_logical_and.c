@@ -1,4 +1,4 @@
-﻿/* 第3回 確認問題7 ビットごとの AND と論理 AND（Flags / versions/and_vs_logical_and.c）
+﻿/* 第3回 確認問題7　ビットごとの AND と論理 AND（Flags / versions/and_vs_logical_and.c）
  * 4u & 2u と 4u && 2u の値を並べて表示する。
  */
 #include <stdio.h>

@@ -13,6 +13,7 @@
 #   - 同じフォルダの他の .c（main を持たないもの）も一緒にリンクし，フォルダをインクルードパスに加える
 #     （分割コンパイルのプロジェクトでも，書き換えるファイルだけを指定すればよい）
 #   - 期待する出力は <プロジェクト>/variants/tests/<ケース名>.out（.args/.in/.code なども同じ規則）
+#     本体のテストと同じく，プロジェクトフォルダのデータファイル（input.txt など）を作業フォルダへコピーしてから実行する
 #     同じ版を複数の入力で試すときは <ケース名>--<名前>.out / .in / .args を並べる（実行ファイルは 1 つ）
 #   - テスト名は weekNN/<プログラム名>/variant_<ケース名>
 include_guard(GLOBAL)
@@ -91,6 +92,7 @@ function(softprac_add_variant base source case)
       COMMAND "${CMAKE_COMMAND}"
         "-DPROGRAM=$<TARGET_FILE:${name}>"
         "-DPROJECT_DIR=${vdir}"
+        "-DDATA_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
         "-DCASE=${tcase}"
         "-DWORK_DIR=${CMAKE_BINARY_DIR}/testwork/${SOFTPRAC_WEEK}/${name}/${tcase}"
         "-DSAVE_DIR=$<$<BOOL:${SOFTPRAC_RESULTS_DIR}>:${SOFTPRAC_RESULTS_DIR}/${SOFTPRAC_WEEK}/${base}/variants/tests>"

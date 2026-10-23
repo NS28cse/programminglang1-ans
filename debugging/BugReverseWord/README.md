@@ -35,10 +35,11 @@ reversed: kcats
   reversed: hgfedcba
   ```
 
-- AddressSanitizer 付き（`-DSOFTPRAC_SANITIZE=ON`）では，`'\0'` を書く行で止まる:
+- AddressSanitizer 付き（`-DSOFTPRAC_SANITIZE=ON`）では，`'\0'` を書く行で止まる（抜粋）:
 
   ```text
   .../reverse_word.c:24:9: runtime error: index 8 out of bounds for type 'char [8]'
+  .../reverse_word.c:24:18: runtime error: store to address ... with insufficient space for an object of type 'char'
   ==...==ERROR: AddressSanitizer: stack-buffer-overflow on address ... 
   WRITE of size 1 at ... thread T0
       #0 ... in main .../reverse_word.c:24

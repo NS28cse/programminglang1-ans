@@ -48,7 +48,7 @@ softprac_add_variant(YearGroup versions/no_default.c no_default_year_5)
 # 確認問題8: 講義の goto の例と，goto done; を break; に置き換えた版（どちらも 0，1，2，done）
 softprac_add_variant(YearGroup versions/goto_done.c goto_done)
 softprac_add_variant(YearGroup versions/goto_done.c goto_to_break
-  "// n が 3 になったら，for の直後にあるラベル done へ移動する（この回の課題では goto を使わない）．"
+  "// n が 3 になったら，for の直後にあるラベル done へ移動する（この演習では goto を使わない）．"
   "// goto done; を break; に置き換え，使わなくなったラベル done: を消した版（break で for の直後の文へ進む）．"
   "            goto done;" "            break;          // goto done; の代わりに for を抜ける"
   "done:\n" "")

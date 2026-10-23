@@ -2,7 +2,7 @@
 # 更新の順番を逆にした版，誤りの例（1 行の x = x + 3 * 2;）
 softprac_add_program(Update update.c)
 
-set(title "/* 第3回 課題2 前置・後置と複合代入（Update / update.c）")
+set(title "/* 第3回 課題2　前置・後置と複合代入（Update / update.c）")
 set(header "${title}\n * 後置・前置のインクリメントの式の値と，複合代入 += と *= で更新した x を表示する。\n */")
 set(update_lines
   "    /* その時点の x を順に更新する: 3を加算して保存し，さらに2倍して保存する */\n    x += 3;\n    x *= 2;\n")

@@ -45,11 +45,40 @@ def has_sources(project: pathlib.Path):
     return any(project.glob("*.c"))
 
 
+def strip_cmake_comments(text: str):
+    """CMake のコメント（# から行末まで，#[[ ... ]] の括弧コメント）を除く。引用符・[[ ]] の中の # は残す。"""
+    out, i, n = [], 0, len(text)
+    while i < n:
+        c = text[i]
+        if text.startswith("#[[", i):
+            end = text.find("]]", i + 3)
+            i = n if end < 0 else end + 2
+        elif c == "#":
+            end = text.find("\n", i)
+            i = n if end < 0 else end
+        elif c == '"':
+            j = i + 1
+            while j < n and text[j] != '"':
+                j += 2 if text[j] == "\\" else 1
+            out.append(text[i:j + 1])
+            i = j + 1
+        elif text.startswith("[[", i):
+            end = text.find("]]", i + 2)
+            j = n if end < 0 else end + 2
+            out.append(text[i:j])
+            i = j
+        else:
+            out.append(c)
+            i += 1
+    return "".join(out)
+
+
 def programs(project: pathlib.Path):
-    """プロジェクトフォルダが作る実行ファイル名の一覧を返す（ライブラリだけなら空）。"""
+    """プロジェクトフォルダが作る実行ファイル名の一覧を返す（ライブラリだけなら空。コメントの中の呼び出しは数えない）。"""
     cmake = project / "CMakeLists.txt"
     if cmake.exists():
-        return re.findall(r"softprac_add_program\(\s*([A-Za-z0-9_]+)", cmake.read_text(encoding="utf-8"))
+        text = strip_cmake_comments(cmake.read_text(encoding="utf-8"))
+        return re.findall(r"softprac_add_program\(\s*([A-Za-z0-9_]+)", text)
     if has_sources(project):
         return [project.name]
     return []
@@ -58,6 +87,18 @@ def programs(project: pathlib.Path):
 def count_tests(project: pathlib.Path):
     """プロジェクトの CTest のテスト数（tests/*.out と，softprac_add_variant の variants/tests/*.out）。"""
     return len(list(project.glob("tests/*.out"))) + len(list(project.glob("variants/tests/*.out")))
+
+
+def tree_kind(path: pathlib.Path):
+    """作業ツリーがどのブランチの形かを返す: "ta"・"practice"・"main"，どれでもなければ None。
+    ta は tools/ を持ち，practice は main にない cmake/RunTest.cmake と .vs/launch.vs.json を持つ。"""
+    if (path / "tools" / "export_main.py").exists():
+        return "ta"
+    if (path / "cmake" / "RunTest.cmake").exists() or (path / ".vs" / "launch.vs.json").exists():
+        return "practice"
+    if (path / "week01").is_dir() and (path / "CMakeLists.txt").exists():
+        return "main"
+    return None
 
 
 def read_lines(path: pathlib.Path):

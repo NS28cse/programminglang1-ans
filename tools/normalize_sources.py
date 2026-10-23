@@ -31,17 +31,25 @@ def run(check=False, groups=None):
     すでにそろっている（または書き換えた）なら True。"""
     if groups is None:
         groups = group_dirs()
-    bad = []
+    bad, not_utf8 = [], []
     paths = sorted({p for g in groups for p in g.rglob("*") if p.suffix in (".c", ".h") and p.is_file()})
     for path in paths:
         data = path.read_bytes()
-        fixed = normalized(data)
+        try:
+            fixed = normalized(data)
+        except UnicodeDecodeError as e:
+            not_utf8.append(f"{path.relative_to(ROOT).as_posix()}（{e.start} バイト目）")
+            continue
         if fixed != data:
             bad.append(path.relative_to(ROOT).as_posix())
             if not check:
                 path.write_bytes(fixed)
+    for p in not_utf8:
+        print(f"[NG] UTF-8 ではない（Shift_JIS などで保存した？ エディタで UTF-8 にして保存し直す）: {p}")
     for p in bad:
         print(("[NG] 要修正: " if check else "修正: ") + p)
+    if not_utf8:
+        return False
     if not bad:
         print(f"ソースの BOM・改行: そろっている（{len(paths)} ファイル）")
     elif check:

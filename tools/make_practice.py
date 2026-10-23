@@ -26,7 +26,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from projects import ROOT, programs, project_dirs, read_lines, week_dirs  # noqa: E402
+from projects import ROOT, programs, project_dirs, read_lines, tree_kind, week_dirs  # noqa: E402
 
 BOM = "﻿"
 EXCLUDE_TOP = {".git"}
@@ -71,8 +71,18 @@ def tasks(week: pathlib.Path):
     result = {}
     lines = (week / "README.md").read_text(encoding="utf-8").splitlines()
     start = next((i for i, l in enumerate(lines) if l.startswith("## プロジェクト一覧")), None)
+    if start is None:
+        raise Stop(f"{week.name}/README.md に見出し「## プロジェクト一覧」がない")
+    # 見出し「## 課題N　題名（`Project` / …）」: プロジェクト名 → [(課題N, 題名)]
+    headings = {}
+    for line in lines:
+        m = re.match(r"^## ((?:課題|発展)\S*)　(.+?)（(.*)）\s*$", line)
+        if m:
+            for p in dict.fromkeys(re.findall(r"`([A-Za-z0-9_]+)`", m.group(3))):
+                if p in names:
+                    headings.setdefault(p, []).append((m.group(1), m.group(2)))
     header = None
-    for line in lines[start + 1:] if start is not None else []:
+    for line in lines[start + 1:]:
         if line.startswith("## "):
             break
         if not line.startswith("|"):
@@ -80,6 +90,8 @@ def tasks(week: pathlib.Path):
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
         if header is None:
             header = cells
+            if not {"課題", "プロジェクト"} <= set(header):
+                raise Stop(f"{week.name}/README.md の「プロジェクト一覧」の表に「課題」「プロジェクト」の列がない")
             continue
         if set(cells[0]) <= set("-: "):
             continue
@@ -87,23 +99,43 @@ def tasks(week: pathlib.Path):
         m = re.fullmatch(r"`([A-Za-z0-9_]+)`", row.get("プロジェクト", ""))
         if m and m.group(1) in names:
             task = row.get("課題", "")
-            task = f"課題{task}" if re.fullmatch(r"[0-9]+", task) else task
-            result.setdefault(m.group(1), []).append(f"{task}　{row['内容']}" if row.get("内容") else task)
+            task = re.sub(r"^([0-9]+)(?=\s|$)", r"課題\1", task)   # 「1 複写」→「課題1 複写」
+            id_only = re.fullmatch(r"(?:課題|発展)[0-9〜・，]*(?:（[^）]*）|「[^」]*」)?", task) is not None
+            if row.get("内容"):
+                label = f"{task}　{row['内容']}"
+            elif not id_only or any(t in task for _, t in headings.get(m.group(1), [])):
+                label = task   # 「課題」の列に題名も書いてある
+            else:
+                # 「内容」の列がなく「課題」の列が番号だけの表は，そのプロジェクトの見出しの題名で補う
+                hs = headings.get(m.group(1), [])
+                if len(hs) == 1 and task.startswith(hs[0][0]):
+                    label = f"{task}　{hs[0][1]}"
+                elif hs:
+                    label = "<br>".join(f"{n}　{t}" for n, t in hs)
+                else:
+                    label = task
+            if label not in result.get(m.group(1), []):
+                result.setdefault(m.group(1), []).append(label)
     from_table = set(result)
-    for line in lines:
-        m = re.match(r"^## ((?:課題|発展)\S*)　(.+?)（(.*)）\s*$", line)
-        if not m:
-            continue
-        for p in re.findall(r"`([A-Za-z0-9_]+)`", m.group(3)):
-            if p in names and p not in from_table:
-                result.setdefault(p, []).append(f"{m.group(1)}　{m.group(2)}")
+    for p, hs in headings.items():
+        if p not in from_table:
+            result[p] = [f"{n}　{t}" for n, t in hs]
     return result
+
+
+def theme_of(week: pathlib.Path):
+    """README の 1 行目「# 第N回 演習 解答・解説（テーマ）」のテーマ。"""
+    first = (week / "README.md").read_text(encoding="utf-8").splitlines()[0]
+    m = re.search(r"（(.*)）", first)
+    if not m:
+        raise Stop(f"{week.name}/README.md の 1 行目にテーマ（（…））がない: {first[:40]}")
+    return m.group(1)
 
 
 def week_readme(week: pathlib.Path):
     n = int(week.name[4:])
     head = (week / "README.md").read_text(encoding="utf-8").splitlines()
-    theme = re.search(r"（(.*)）", head[0]).group(1)
+    theme = theme_of(week)
     links = next((l for l in head[1:6] if l.startswith("- 演習ページ")), "")
     by_project = tasks(week)
     rows = ["| 課題 | プロジェクト | 作るファイル | 実行に使うもの | テスト数 |", "| --- | --- | --- | --- | ---: |"]
@@ -129,7 +161,8 @@ def week_readme(week: pathlib.Path):
         "",
         "演習ページを読んで，各プロジェクトの雛形（空の `main`）に解答を書きます。"
         "書いたらビルドしてテストを実行し，期待する出力と一致するか確かめます（手順は[ルートの README](../README.md#テストで確かめる)）。",
-        "説明・表の記入・確認問題は演習ページを見て自分で答え，`main` ブランチのこの回の README で答え合わせをします。",
+        "説明・表の記入・確認問題は演習ページを見て自分で答え，"
+        f"[`main` ブランチのこの回の README](https://github.com/NS28cse/programminglang1-ans/blob/main/{week.name}/README.md) で答え合わせをします。",
         "",
         *rows,
         "",
@@ -155,7 +188,14 @@ ROOT_README = """# programminglang1-ans（practice ブランチ）
    git switch -c practice-<名前> origin/practice
    ```
 
-   `practice` はテストが変わると作り直されます（履歴が置き換わるので `git pull` では更新できません）。新しいテストで続けるときは `git fetch` してから `git rebase --onto origin/practice <前の practice のコミット>` で自分のコミットを載せ替えます。
+   `practice` はテストが変わると作り直されます（履歴が置き換わるので `git pull` では更新できません）。新しいテストで続けるときは，`git fetch` してから自分のコミットを載せ替えます。
+
+   ```sh
+   git fetch origin
+   git rebase --onto origin/practice origin/practice@{1}   # origin/practice@{1} は fetch する前の practice
+   ```
+
+   `origin/practice@{1}` が使えないとき（clone し直したときなど）は，`git log --oneline` で自分のコミットのすぐ下にある `practice: 解答を雛形にする（main …）` のコミットを探し，その名前（例: `dcc3463`）を代わりに書きます。
 
 2. その回の README（[各回の課題](#各回の課題)）で，課題とプロジェクト・作るファイルを確かめます。
 3. 演習ページを読み，プロジェクトフォルダの雛形に解答を書きます。ファイルの名前と分け方は演習ページの指定どおりにしてあります。
@@ -179,12 +219,12 @@ ROOT_README = """# programminglang1-ans（practice ブランチ）
 
 | 方法 | テストの実行 |
 | --- | --- |
-| コマンド | `cmake -S . -B build && cmake --build build` の後，`ctest --test-dir build -R week05/Functions --output-on-failure`（`-R` で回やプロジェクトを絞る。`-R week05` なら第5回すべて） |
+| コマンド | `cmake -S . -B build && cmake --build build --config Debug` の後，`ctest --test-dir build -C Debug -R week05/Functions --output-on-failure`（`-R` で回やプロジェクトを絞る。`-R week05` なら第5回すべて。`--config`・`-C` は Windows の Visual Studio のジェネレーターで必要で，ほかでは付けても同じ） |
 | Visual Studio でフォルダーを開く | **Test > Run CTests for softprac1_answers**，または **Test Explorer** |
 | VS Code | **Testing** ビュー，または **Command Palette** の **CMake: Run Tests** |
 
 - 失敗したテストは，期待する出力と実際の出力を並べて表示します（`--output-on-failure`）。
-- 雛形のままでは，そのプロジェクトのテストはほとんど失敗します（入力が空の場合など，何も表示しないのが正しいケースだけは雛形でも通ります）。全部が通れば，演習ページの表示例どおりに書けています。
+- 雛形のままでは，そのプロジェクトのテストはほとんど失敗します。ただし，何もしないのが正しいケース（入力が空・引数が足りないときに何も表示しない，既にあるファイルをそのまま残すなど）は雛形でも通ります。全部が通れば，演習ページの表示例どおりに書けています。
 - 標準エラー出力（エラーメッセージ）の文面は比べません（終了コードは比べます）。メッセージは `main` の解答と見比べます。
 - 関数だけを書くファイル（`main` を持たない `.c`）は，空のままだと「空の翻訳単位」の警告が出ます（MSVC は C4206）。中身を書けば消えます。
 - 空のプロジェクトやコマンドで作った実行ファイルは，入力を与えて出力をファイルに保存し，`diff`（Windows は `fc`）で `tests/<ケース>.out` と比べます。
@@ -223,15 +263,78 @@ def launch_vs(dest: pathlib.Path):
                       ensure_ascii=False, indent=2) + "\n"
 
 
-def replace_once(text: str, old: str, new: str):
+class Stop(Exception):
+    """書き換えを始める前に見つかった問題（作業ツリーは書き換えていない）。"""
+
+
+def find(text: str, marker: str, where: str, start: int = 0):
+    """marker の位置を返す。なければ，どのファイルのどの文言かを示して止める。"""
+    i = text.find(marker, start)
+    if i < 0:
+        raise Stop(f"{where} に「{marker.strip()[:50]}」が見つからない")
+    return i
+
+
+def replace_once(text: str, old: str, new: str, where: str):
     """old がちょうど 1 回あることを確かめて置き換える（main の README・.gitignore の形が想定と違えば止める）。"""
     if text.count(old) != 1:
-        sys.exit(f"[NG] main の README.md・.gitignore の形が想定と違う（ta の README.md を main に反映してから作り直す）: {old[:40]!r}")
+        raise Stop(f"{where} に「{old.strip()[:50]}」がちょうど 1 回ない（{text.count(old)} 回）")
     return text.replace(old, new)
 
 
 def run_git(*args, cwd):
     return subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, check=True).stdout
+
+
+CMAKE_TESTS = """project(softprac1_answers LANGUAGES C)
+enable_testing()
+set(SOFTPRAC_RUN_TEST "${CMAKE_SOURCE_DIR}/cmake/RunTest.cmake")
+
+# <プロジェクト>/tests/<ケース>.out があれば CTest に登録する（practice ブランチ。テスト名は weekNN/<名前>/<ケース>）
+function(softprac_add_tests name project_dir)
+  file(GLOB outs CONFIGURE_DEPENDS "${project_dir}/tests/*.out")
+  foreach(out IN LISTS outs)
+    get_filename_component(case "${out}" NAME_WE)
+    add_test(NAME "${SOFTPRAC_WEEK}/${name}/${case}"
+      COMMAND "${CMAKE_COMMAND}" "-DPROGRAM=$<TARGET_FILE:${name}>" "-DPROJECT_DIR=${project_dir}" "-DCASE=${case}"
+        "-DWORK_DIR=${CMAKE_BINARY_DIR}/testwork/${SOFTPRAC_WEEK}/${name}/${case}" -P "${SOFTPRAC_RUN_TEST}")
+  endforeach()
+endfunction()
+"""
+CMAKE_COPY_END = """      configure_file("${f}" "${out_dir}/${fname}" COPYONLY)
+    endif()
+  endforeach()
+endfunction()"""
+
+
+def root_readme(main_readme: str, week_rows):
+    """practice のルートの README（練習の手順 + main の README の「使い方」「よくあるトラブル」）。"""
+    where = "main の README.md"
+    usage = main_readme[find(main_readme, "## 使い方", where):]
+    usage = usage.replace("それぞれの回の README のコマンドでビルドします。",
+                          "`main` ブランチのそれぞれの回の README のコマンドでビルドします（CMake を使う方法 3・4 ならそのままビルドできます）。")
+    # practice にない versions/ と，README の書き換え方を前提にした節は除く
+    usage = "\n".join(l for l in usage.split("\n") if "versions/" not in l)
+    # 引数は practice の .vs/launch.vs.json（weekNN 名前  [引数] の構成）で渡す
+    start = find(usage, "- 引数を使う課題は，**Startup Item** でプロジェクトを選んだ状態で", where)
+    end = find(usage, "  ```\n", where, find(usage, "  ```json\n", where, start) + 1) + len("  ```\n")
+    usage = usage[:start] + PRACTICE_VS_ARGS + usage[end:]
+    usage = replace_once(usage, "`main` ブランチにはこのファイルを含めていません。"
+                         "`ta` ブランチでは [TA.md の「IDE で使う」](https://github.com/NS28cse/programminglang1-ans/blob/ta/TA.md#ide-で使う)の方法を使います",
+                         "このブランチには含めていません", where)
+    start = find(usage, "### ソースを書き換えて試す", where)
+    usage = usage[:start] + usage[find(usage, "## よくあるトラブル", where):]
+    return ROOT_README.replace("{week_table}", "\n".join(week_rows)) + usage
+
+
+def root_cmake(cmake: str):
+    """main の CMakeLists.txt に tests/ の登録を加える（ta の RunTest.cmake を使う）。"""
+    if "softprac_add_tests" in cmake:
+        return cmake
+    where = "main の CMakeLists.txt"
+    cmake = replace_once(cmake, "project(softprac1_answers LANGUAGES C)\n", CMAKE_TESTS, where)
+    return replace_once(cmake, CMAKE_COPY_END, CMAKE_COPY_END.replace(
+        "endfunction()", '  softprac_add_tests(${name} "${SOFTPRAC_PROJECT_DIR}")\nendfunction()'), where)
 
 
 def main():
@@ -240,8 +343,12 @@ def main():
         print(__doc__)
         return 0 if len(sys.argv) == 2 else 2
     dest = pathlib.Path(sys.argv[1]).resolve()
-    if dest == ROOT or not (dest / ".git").exists() or not (dest / "week01").is_dir():
-        print(f"[NG] {dest} は main の作業ツリーではない")
+    kind = tree_kind(dest) if dest.is_dir() else None
+    if dest == ROOT or not (dest / ".git").exists() or kind != "main":
+        what = {"ta": "ta の作業ツリー",
+                "practice": "practice の作業ツリー（cmake/RunTest.cmake・.vs/launch.vs.json がある。practice は main から作り直す）"}
+        print(f"[NG] {dest} は {what.get(kind, 'main の作業ツリーではない')}。"
+              "main の作業ツリー（git worktree add <フォルダ> origin/main --detach）を渡す。何も書き換えていない")
         return 2
 
     # 雛形にするのは作り直す先（main）のソース。ta とプロジェクト・ソースの集合が違えば（ta が main より先に進んでいるなど），
@@ -254,18 +361,30 @@ def main():
         mismatch += [f"{week.name}/{p}/{s}: ta だけ" for p, s in sorted(ta_set - dest_set)]
         mismatch += [f"{week.name}/{p}/{s}: main だけ" for p, s in sorted(dest_set - ta_set)]
     if mismatch:
-        print("[NG] ta と main でソースの集合が違う（先に main へ反映する）:\n" + "\n".join(mismatch))
+        print("[NG] ta と main でソースの集合が違う（先に main へ反映する）。何も書き換えていない:\n" + "\n".join(mismatch))
         return 2
 
-    readmes, week_rows = {}, ["| 回 | テーマ | プロジェクト | テスト数 |", "| --- | --- | --- | ---: |"]
+    # 書き換える前に，生成するものをすべて作る（README・CMakeLists.txt・.gitignore の形が想定と違えばここで止まる）
+    try:
+        readmes, week_rows = {}, ["| 回 | テーマ | プロジェクト | テスト数 |", "| --- | --- | --- | ---: |"]
+        for week in week_dirs():
+            n = int(week.name[4:])
+            readmes[week.name] = week_readme(week)
+            projects = [p for p in project_dirs(week) if any(p.glob("*.c"))]
+            week_rows.append(f"| [第{n}回]({week.name}/README.md) | {theme_of(week)} | {'，'.join(p.name for p in projects)} "
+                             f"| {sum(count_tests(p) for p in projects)} |")
+        readme = root_readme((dest / "README.md").read_text(encoding="utf-8"), week_rows)
+        cmake = root_cmake((dest / "CMakeLists.txt").read_text(encoding="utf-8"))
+        gitignore = (dest / ".gitignore").read_text(encoding="utf-8")
+        if "!/.vs/launch.vs.json" not in gitignore:
+            gitignore = replace_once(gitignore, "\n.vs/\n", "\n/.vs/*\n!/.vs/launch.vs.json\n", "main の .gitignore")
+        launch = launch_vs(dest)
+    except Stop as e:
+        print(f"[NG] {e}。何も書き換えていない（ta の README.md を main に反映したか，tools/make_practice.py が前提にする文言を変えていないか確かめる）")
+        return 2
+
     for week in week_dirs():
         n = int(week.name[4:])
-        readmes[week.name] = week_readme(week)
-        projects = [p for p in project_dirs(week) if any(p.glob("*.c"))]
-        theme = re.search(r"（(.*)）", (week / "README.md").read_text(encoding="utf-8").splitlines()[0]).group(1)
-        week_rows.append(f"| [第{n}回]({week.name}/README.md) | {theme} | {'，'.join(p.name for p in projects)} "
-                         f"| {sum(count_tests(p) for p in projects)} |")
-
         dweek = dest / week.name
         for d in list(dweek.iterdir()):
             if d.is_dir() and d.name.startswith("_"):
@@ -280,64 +399,15 @@ def main():
                 shutil.copytree(p / "tests", dp / "tests", ignore=shutil.ignore_patterns("*.err"))
         (dweek / "README.md").write_bytes(readmes[week.name].encode("utf-8"))
 
-    # ルートの README: 練習の手順 + main の README の「使い方」「よくあるトラブル」
-    main_readme = (dest / "README.md").read_text(encoding="utf-8")
-    usage = main_readme[main_readme.index("## 使い方"):]
-    usage = usage.replace("それぞれの回の README のコマンドでビルドします。",
-                          "`main` ブランチのそれぞれの回の README のコマンドでビルドします（CMake を使う方法 3・4 ならそのままビルドできます）。")
-    # practice にない versions/ と，README の書き換え方を前提にした節は除く
-    usage = "\n".join(l for l in usage.split("\n") if "versions/" not in l)
-    # 引数は practice の .vs/launch.vs.json（weekNN 名前  [引数] の構成）で渡す
-    start = usage.index("- 引数を使う課題は，**Startup Item** でプロジェクトを選んだ状態で")
-    end = usage.index("  ```\n", usage.index("  ```json\n", start) + 1) + len("  ```\n")
-    usage = usage[:start] + PRACTICE_VS_ARGS + usage[end:]
-    usage = replace_once(usage, "`main` ブランチにはこのファイルを含めていません。"
-                         "`ta` ブランチでは [TA.md の「IDE で使う」](https://github.com/NS28cse/programminglang1-ans/blob/ta/TA.md#ide-で使う)の方法を使います",
-                         "このブランチには含めていません")
-    start = usage.index("### ソースを書き換えて試す")
-    usage = usage[:start] + usage[usage.index("## よくあるトラブル"):]
-    text = ROOT_README.replace("{week_table}", "\n".join(week_rows)) + usage
-    (dest / "README.md").write_bytes(text.encode("utf-8"))
-
-    # CMakeLists.txt: tests/ を CTest に登録する（ta の RunTest.cmake を使う）
-    cmake = (dest / "CMakeLists.txt").read_text(encoding="utf-8")
-    if "softprac_add_tests" not in cmake:
-        cmake = cmake.replace("project(softprac1_answers LANGUAGES C)\n", """project(softprac1_answers LANGUAGES C)
-enable_testing()
-set(SOFTPRAC_RUN_TEST "${CMAKE_SOURCE_DIR}/cmake/RunTest.cmake")
-
-# <プロジェクト>/tests/<ケース>.out があれば CTest に登録する（practice ブランチ。テスト名は weekNN/<名前>/<ケース>）
-function(softprac_add_tests name project_dir)
-  file(GLOB outs CONFIGURE_DEPENDS "${project_dir}/tests/*.out")
-  foreach(out IN LISTS outs)
-    get_filename_component(case "${out}" NAME_WE)
-    add_test(NAME "${SOFTPRAC_WEEK}/${name}/${case}"
-      COMMAND "${CMAKE_COMMAND}" "-DPROGRAM=$<TARGET_FILE:${name}>" "-DPROJECT_DIR=${project_dir}" "-DCASE=${case}"
-        "-DWORK_DIR=${CMAKE_BINARY_DIR}/testwork/${SOFTPRAC_WEEK}/${name}/${case}" -P "${SOFTPRAC_RUN_TEST}")
-  endforeach()
-endfunction()
-""", 1)
-        cmake = cmake.replace("""      configure_file("${f}" "${out_dir}/${fname}" COPYONLY)
-    endif()
-  endforeach()
-endfunction()""", """      configure_file("${f}" "${out_dir}/${fname}" COPYONLY)
-    endif()
-  endforeach()
-  softprac_add_tests(${name} "${SOFTPRAC_PROJECT_DIR}")
-endfunction()""", 1)
-        assert "softprac_add_tests(${name}" in cmake, "CMakeLists.txt の形が想定と違う"
-        (dest / "CMakeLists.txt").write_bytes(cmake.encode("utf-8"))
+    (dest / "README.md").write_bytes(readme.encode("utf-8"))
+    (dest / "CMakeLists.txt").write_bytes(cmake.encode("utf-8"))
     (dest / "cmake").mkdir(exist_ok=True)
     shutil.copyfile(ROOT / "cmake" / "RunTest.cmake", dest / "cmake" / "RunTest.cmake")
     shutil.copyfile(ROOT / ".gitattributes", dest / ".gitattributes")
-
     # Visual Studio の起動構成。main の .gitignore は .vs/ を除外しているので，launch.vs.json だけを含める
     (dest / ".vs").mkdir(exist_ok=True)
-    (dest / ".vs" / "launch.vs.json").write_bytes(launch_vs(dest).encode("utf-8"))
-    gitignore = (dest / ".gitignore").read_text(encoding="utf-8")
-    if "!/.vs/launch.vs.json" not in gitignore:
-        gitignore = replace_once(gitignore, "\n.vs/\n", "\n/.vs/*\n!/.vs/launch.vs.json\n")
-        (dest / ".gitignore").write_bytes(gitignore.encode("utf-8"))
+    (dest / ".vs" / "launch.vs.json").write_bytes(launch.encode("utf-8"))
+    (dest / ".gitignore").write_bytes(gitignore.encode("utf-8"))
 
     print(run_git("status", "--short", cwd=dest).count("\n"), "件のファイルが変わった。git add -A して commit する")
     return 0

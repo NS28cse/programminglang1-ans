@@ -2,7 +2,7 @@
 # leap の式だけを講義の例題の 1 つの式にした版（4 年すべて），誤りの例（100 の例外を落とす）
 softprac_add_program(Leap leap.c)
 
-set(title "/* 第3回 課題4 うるう年の条件式（Leap / leap.c）")
+set(title "/* 第3回 課題4　うるう年の条件式（Leap / leap.c）")
 set(header "${title}\n * うるう年の規則を 3 つの条件に分け，&& と || で組み合わせた式の値（0 か 1）で判定する。\n */")
 
 foreach(y IN ITEMS 1900 2024 2025)

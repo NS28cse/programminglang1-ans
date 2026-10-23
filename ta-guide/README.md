@@ -41,7 +41,7 @@ Visual Studio の画面の表記は Visual Studio 2026（英語版）に合わ�
 | **Debug > Windows > Watch > Watch 1** | 「変数ウォッチ」 | 第13回 演習 発展3 | ウォッチ（ウィンドウ） |
 | データヒント（**DataTip**。デバッグ中にコードの変数へマウスポインターを重ねると出る値） | — | — | データ ヒント |
 | **Debug > Windows > Call Stack** | 「デバッグ → ウィンドウ → 呼び出し履歴」 | 第14回 講義 5.2 節 | 呼び出し履歴 |
-| **Configuration Properties > Debugging > Command Arguments** | 「プロパティ → 構成プロパティ → デバッグ → コマンド引数」 | 第13回 演習 課題1（第10回 講義 2 節） | コマンド引数 |
+| **Configuration Properties > Debugging > Command Arguments** | 「プロパティ → 構成プロパティ → デバッグ → コマンド引数」 | 第10回 講義 2 節（演習は第10回 課題1・第12回 発展2・第13回 課題1） | コマンド引数 |
 | **Configuration Properties > General > Excluded From Build** | 「ビルドから除外」 | 第12回 演習 課題3 | — |
 | **Add > Reference** | 「参照 → 参照の追加」 | 第12回 演習 発展1 | — |
 | **C/C++ > General > Additional Include Directories** | 「C/C++ → 全般 → 追加のインクルード ディレクトリ」 | 第12回 演習 発展1 | — |
@@ -54,7 +54,7 @@ Visual Studio の画面の表記は Visual Studio 2026（英語版）に合わ�
 | **C/C++ > General > Treat Warnings As Errors** | — | — | — |
 | **Configuration Properties > C/C++ > General > Enable AddressSanitizer** | — | — | 構成プロパティ > C/C++ > 全般 > AddressSanitizer を有効にする |
 | **Git > Settings** の **Git Global Config** の **User name** / **Email** | — | — | Git > 設定 の「Git グローバル構成」の「ユーザー名」/「電子メール」 |
-| **Git > Create Git Repository** → **Other** > **Local** → **Create and Push** | — | — | Git > Git リポジトリの作成 →「その他」>「ローカル」→「作成とプッシュ」 |
+| **Git > Create Git Repository** → **Other** > **Local** → **Local path** → **Create** | — | — | Git > Git リポジトリの作成 →「その他」>「ローカル」→「作成」 |
 | **Git Changes**（ウィンドウ） / **Commit All** / **Undo Changes** | — | — | Git の変更 /「すべてコミット」/「変更を元に戻す」 |
 | **Git > View Branch History** / **Revert** | — | — | Git > ブランチ履歴の表示 /「元に戻す」（文書によっては「復元」） |
 
@@ -71,7 +71,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 | [第2回](../week02/README.md) | 変数 | バージョン管理を始める／警告を放置しない | 「動いたら commit。試したら差分を見て戻そう」 | [ex02](https://t-yokoga.github.io/softprac1/ex02.html) |
 | [第3回](../week03/README.md) | 演算子 | 期待値を先に書くテスト／試してはいけない実験 | 「実行する前に，期待する表示を書こう。境界の両側も」 | [ex03](https://t-yokoga.github.io/softprac1/ex03.html) |
 | [第4回](../week04/README.md) | 制御構造 | デバッガで流れを追う／0 回・1 回・複数回のテスト | 「紙の追跡表を，デバッガで答え合わせしよう」 | [ex04](https://t-yokoga.github.io/softprac1/ex04.html) |
-| [第5回](../week05/README.md) | 配列と関数 | 読みやすいコードと関数の約束／AI 支援の確かめ方 | 「関数名と引数だけで，何を返すか分かる？」 | [ex05](https://t-yokoga.github.io/softprac1/ex05.html) |
+| [第5回](../week05/README.md) | 配列と関数 | 読みやすいコードと関数の契約／AI 支援の確かめ方 | 「関数名と引数だけで，何を返すか分かる？」 | [ex05](https://t-yokoga.github.io/softprac1/ex05.html) |
 | [第6回](../week06/README.md) | 文字列 | 容量と範囲外書き込み／警告をキャストで黙らせない | 「書き込む前に，終端まで入るか確かめた？」 | [ex06](https://t-yokoga.github.io/softprac1/ex06.html) |
 | [第7回](../week07/README.md) | 入出力 | 再現できる質問・バグ報告／結果は stdout，診断は stderr | 「何を入力して，何を期待して，何が出た？」 | [ex07](https://t-yokoga.github.io/softprac1/ex07.html) |
 | [第8回](../week08/README.md) | ポインタ1 | Step Into とウォッチでポインタを見る／最小の再現コード | 「F11 で関数に入って，矢印の先を見よう」 | [ex08](https://t-yokoga.github.io/softprac1/ex08.html) |
@@ -119,9 +119,10 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 - 「期待する表示が出たら，値を変える前に commit しておきましょう。戻すのが 1 回の操作で済みます」
 - 「どの行を変えたかは，**Git Changes** の差分で確かめてから戻しましょう」
 
-**見せ方（初回は 5 分程度。2 回目からは手順 2〜4 だけで 2 分。課題を終えた学生に限る）**（授業では未習。初めて見せる）
+**見せ方（課題を終えた学生に限る。2 回に分ける: 初めて声をかけたときは手順 0〜2 だけで 3 分，次に声をかけたときに手順 3〜4 で 2 分）**（授業では未習。初めて見せる）
+
 0. **Git > Settings** の **Git Global Config** で **User name**・**Email** を確かめる（未設定なら入力）。
-1. `Rectangle` のソリューションを開いたまま **Git > Create Git Repository** を選ぶ。**Create a Git repository** ダイアログの **Other** で **Local** を選び，**Initialize a local Git repository** のパスの欄を作業場所の `PL1` のフォルダにして **Create and Push** を押す（ボタン名は Create and Push だが，**Local** ならどこにもプッシュされない）。`PL1` 全体が 1 つのリポジトリになり，他の課題の `.sln` を開いても同じリポジトリが使われる。
+1. `Rectangle` のソリューションを開いたまま **Git > Create Git Repository** を選ぶ。**Create a Git repository** ダイアログの **Other** で **Local** を選び，**Initialize a local Git repository** の **Local path** を作業場所の `PL1` のフォルダにして **Create** を押す（Microsoft Learn の本文には **Create and Push** とあるが，**Local** を選んだ画面のボタンは **Create**。どこにもプッシュされない）。`PL1` 全体が 1 つのリポジトリになり，他の課題の `.sln` を開いても同じリポジトリが使われる。
 2. `Rectangle` が期待する 3 行を出したら，**View > Git Changes** でメッセージ（例: `week02 Rectangle: 期待する表示`）を書いて **Commit All**。
 3. `width = 6;` を `width = 0;` に変えて保存し，ビルド・実行する。**Git Changes** のファイルをダブルクリックすると，変えた 1 行が前（左）と今（右）で並ぶ。
 4. ファイルを右クリックして **Undo Changes** → ソースが commit した状態に戻る。ビルドし直して元の 3 行が出ることを確かめる。
@@ -162,7 +163,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 
 **よくある反応**
 - 「合ったので 1 つしか試していません」→ 正しく見える値だけでは誤りは見つからない。誤りがあれば結果が変わる値（境界・例外）を選ばせる。
-- 「`decimal minutes=61.00` と出たが，ビルドは成功して警告もない」→ `seconds / 60` の整数除算（GCC/Clang では警告も出ない）。期待値 61.18 を先に書いていれば，その場で気付ける。
+- 「`decimal minutes=61.00` と出たが，ビルドは成功して警告もない」→ `seconds / 60` の整数除算（MSVC `/W4` でも GCC/Clang でも警告は出ない）。期待値 61.18 を先に書いていれば，その場で気付ける。
 
 **副テーマ（試してはいけない実験）**: 0 による整数除算・範囲外のシフト・`printf` の引数に `x++` と `x` を並べる書き方は未定義動作で，「実行したら動いた」は根拠にならない（演習ページの注意）。MSVC では警告が出ないこともあるので，コードを読んで判断させる。
 
@@ -181,7 +182,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 1. `EvenSum` の `n` を 4 にし，`if (i % 2 == 0)` の行で F9（**Debug > Toggle Breakpoint**）。
 2. F5（**Debug > Start Debugging**）。止まったら **Debug > Windows > Locals** で `n`・`sum`・`i` を見る。この行で止まったときの `sum` は，表の「加算前の `sum`」と比べる。
 3. F10（**Debug > Step Over**）で 1 文ずつ進める。`sum += i;` を通った回だけ `sum` が変わり，**Locals** で赤く表示される。ここで表の「加算後の `sum`」と比べる。
-4. F5（**Debug > Continue**）で次の反復の同じ行まで進み，表の「本体に入るときの `i`」の列と照らし合わせる。
+4. もう一度 F5（**Debug > Continue**。授業では未習なので TA が見せる）で次の反復の同じ行まで進み，表の「本体に入るときの `i`」の列と照らし合わせる。
 
 **確かめる問い**
 - 問「`n = 0` にすると，ブレークポイントで止まる？」→ 止まらない。最初の条件判定 `1 <= 0` が偽で，本体を 1 回も実行しないから。
@@ -197,14 +198,18 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 
 **関連**: 第4回 README の [課題2　偶数の合計](../week04/README.md#課題2偶数の合計evensum--even_sumc) の [値を追跡する（`n = 4`）](../week04/README.md#値を追跡するn--4)・「説明すること」，講義 [lec04](https://t-yokoga.github.io/softprac1/lec04.html) の「7　二重ループとテスト」，デバッグの題材 [BugEvenSum](../debugging/BugEvenSum/README.md)，[BugSkipCount](../debugging/BugSkipCount/README.md)，説明用スライド「[デバッガで流れを追う](https://ns28cse.github.io/programminglang1-ans/debugger-basics/)」（演習の前に全員へ 5〜7 分。担当教員の了承があるときだけ）
 
-## 第5回　読みやすいコードと関数の約束（配列と関数）
+## 第5回　読みやすいコードと関数の契約（配列と関数）
 
 **テーマと理由**: 初めて自分で関数を作る回で，課題4 `Functions` は「計算は関数，表示は `main`」，発展 `SumMean` は「役割を分ける」課題である。コードは書く時間より読まれる時間の方が長い。
-**名前で意味が分かる・1 つの関数は 1 つの仕事・数値には名前を付ける・受け付ける範囲（約束）をコメントに書く** の 4 点を確かめる。
+**名前で意味が分かる・1 つの関数は 1 つの仕事・数値には名前を付ける・受け付ける範囲（契約。呼び出す側との約束）をコメントに書く** の 4 点を確かめる。
+「契約」は講義（6 節）・演習ページ（「関数の契約と検証」）と同じ用語である。
+声をかけるのは，課題1 の `max_score` か課題4 の関数を書き終え，名前が `f`・`x`・`tmp` のままの学生と，「異なる配列で確かめる」の表で配列を変えたのに，呼び出しの `max_score(a, 5)` の 5 を表の配列に合わせて直し忘れている学生である。
+1〜3 分で使うなら，まず声かけ 1 つと問い 3（`n = 0`）。課題を終えた学生には問い 4（どの配列で確かめるか）。
 
 **声かけ**
 - 「関数名と引数の名前だけで，何を受け取って何を返すか分かりますか」
-- 「同じ 5 が何か所にも出てきたら，`enum { COUNT = 5 };` のように名前を付けましょう」
+- 「表の配列に変えたら，渡す `n` も表の『渡す `n`』の列に合わせましたか。配列より大きい `n` を渡すと配列の外を読むので，その実行結果は使えません」
+- （次の手として）「同じ 5 が何か所にも出てきたら，`enum { COUNT = 5 };` のように名前を付けましょう。配列を宣言した `main` なら `sizeof a / sizeof a[0]` でも求められますが，`max_score` の中では使えません。受け取った `a` はポインタだからです」（演習ページ 課題1）
 
 **見せ方（2 分）**: 次の 2 つの宣言は，同じ処理をする関数のものである（合格点 60 は第4回の講義の例）。どちらが読みやすいか，理由を 1 つ言わせる。
 
@@ -212,26 +217,37 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 int f(int a[], int n);   /* 本体は if (a[i] > 59) { ++r; } */
 
 enum { PASS_SCORE = 60 };
-/* scores の先頭 n 個（n は 0 以上）のうち，PASS_SCORE 以上の個数を返す */
+/* 契約: n は 0 以上で，scores から n 個読めること。PASS_SCORE 以上の個数を返す */
 int count_passed(const int scores[], int n);   /* 本体は if (scores[i] >= PASS_SCORE) { ++passed; } */
 ```
 
-後者は，名前・`const`（配列を書き換えない）・約束のコメント・名前付きの定数で，本体を読まなくても使い方が分かる。
+後者は，名前・`const`（配列を書き換えない）・契約のコメント・名前付きの定数で，本体を読まなくても使い方が分かる。
+見せた後は，学生自身の `max_score` の宣言の前に契約のコメント（例:「契約: n は 1 以上で，a から n 個の要素を読めること」）があるかを確かめさせる。
 
 **確かめる問い**
 - 問「`average` の中で `printf` するのと，値を返して `main` で表示するのは何が違う？」→ 返せば呼び出し元で別の計算にも使える。表示しかしない関数は再利用できない（演習ページ「戻り値と表示を分ける」）。
-- 問「`power` の約束（`base` は 1〜5，`exponent` は 0〜5）はどこに書く？」→ 関数の前のコメント。呼び出す側が守る条件なので，本体を読まなくても見える場所に書く。
+- 問「`power` の受け付ける範囲（`base` は 1〜5，`exponent` は 0〜5）はどこに書く？」→ 関数の前のコメント。呼び出す側が守る条件（契約）なので，本体を読まなくても見える場所に書く。
+- 問「`max_score` に `n = 0` を渡してよい？ `SumMean` の `sum_array` は？」→ `max_score` は最初に `a[0]` を読むので，契約は `n` が 1 以上（課題1 の「要素数 `n` は1以上」）。
+  `sum_array` は 0 回のループで 0 を返すので `n` が 0 以上でよい。ただし `SumMean` の `main` は合計を `n` で割るので，`n` が 1 以上であることを呼び出す側で守る（契約は関数ごとに決まり，呼び出す側の前提とは別。演習ページ 発展）。
+- 問「`max_score` が正しいことは，どの配列で確かめる？」→ 演習ページ「異なる配列で確かめる」の 4 行（要素が 1 個の {0}，全部同じ {60, 60, 60}，最初が最大，最後が最大）。`i < n - 1` で最後の要素を調べない誤りは，最後が最大の行（例 `{20, 30, 100}` で 30 になる）でだけ結果が変わる。表の行は「どの誤りなら結果が変わるか」で選ぶ（後述の「テストケースの書き方の型」）。
 
 **よくある反応**
 - 「短い名前の方が速く書ける」→ 読むのは 1 週間後の自分も含めて何度もある。ループの `i` のように慣例が決まっているものはそのままでよい。
-- 「最初の表示 `average=3.0` が合ったので `average` は正しい」→ (2 + 4) / 2 は割り切れるので，戻り値の型を `int` にした誤りが表示には出ない（`/W4` なら C4244 が出るので，警告も見させる）。`average(1.0f, 2.0f)` が 1.5 になるかを試させる。
+- 「最初の表示 `average=3.0` が合ったので `average` は正しい」→ 戻り値の型を誤って `int` にしていても，`float result = average(2.0f, 4.0f);` の形なら (2 + 4) / 2 は割り切れるので表示には出ない（MSVC `/W4` では `float` から `int` への変換の C4244 が出る。GCC/Clang の `-Wall -Wextra` では出ない）。
+  `printf("average=%.1f\n", average(2.0f, 4.0f));` のように直接渡す形なら，書式と型の不一致（MSVC は C4477，GCC/Clang は `-Wformat`）が出る。この形のまま実行しない（未定義動作。第2回と同じ）。まず戻り値の型を `float` に直して警告 0 にし，そのあとで `average(1.0f, 2.0f)` が 1.5 になるかを試させる。
+  `float result = average(...);` の形なら実行してよく，`int` のままだと `average(1.0f, 2.0f)` が 1.0 になって誤りが表に出る。
 
 **副テーマ（AI のコーディング支援を使う場合）**: 使ってよいかは授業の規則に従う。使う場合も，出てきたコードは自分で書いたコードと同じく境界の表（`power(2, 0)`・`power(5, 5)` など）で確かめ，説明できない行を残さない。
 `^` を累乗の意味で使う（第3回のビット XOR）のように，もっともらしく見える誤りがあることを伝える。
+- 場面: AI が出した `power` をそのまま貼って，`power=32` が出たところで終えている学生。
+- 問「この `power` で `power(2, 0)` は何を返す？ 境界の表のどの行で確かめた？」→ 期待値は 1（base<sup>0</sup>）。AI の版が `result = base` から始める，`i <= exponent` にしている，などなら 2 や 4 が返り，表の `power(2, 0)` の行で見分けられる。答えられなければ，その行を実行させる。
 
-**デバッグの補足（配列をウォッチする。授業では未習）**: `max_score` の中の `a` はポインタなので，**Watch 1** に `a` と書くと先頭の要素しか見えない。`a,5` のように「,要素数」を付けると（書式指定子），5 要素を配列として表示できる。`main` の `scores` は配列なので，そのまま全要素が見える。この違いは「配列を渡すと先頭の場所が渡る」（講義 4 節）の確かめになる。
+**デバッグの補足（配列を渡したときの見え方）**: 学生の `main` の `max_score` を呼ぶ行と，`max_score` の `for` の行の両方に F9 でブレークポイントを置いて F5（関数の中で止めるのに F11 は使わない）。
+先に `main` で止まり，**Locals** の配列は展開すると `{72, 85, 60, 93, 80}` の 5 要素が並ぶ。もう一度 F5（**Debug > Continue**。第4回で見せたもの）で `max_score` の中で止まり，**Locals** の `a` は `0x… {72}` のように先頭の 1 要素だけが表示される。
+この違いは「配列を渡すと先頭の場所が渡る」（講義 4 節）の確かめになる。
+任意の発展として（**Watch 1** と書式指定子は授業では未習），**Watch 1** に `a,5` のように「,要素数」を付けて書くと，`max_score` の中でも 5 要素を配列として表示できる。
 
-**関連**: 第5回 README の [課題4　平均と累乗を関数にする](../week05/README.md#課題4平均と累乗を関数にするfunctions--functionsc)・[発展　役割を分ける](../week05/README.md#発展役割を分けるsummean--summeanc)（それぞれの採点のポイント），デバッグの題材 [BugRowSum](../debugging/BugRowSum/README.md)，[BugGrade](../debugging/BugGrade/README.md)
+**関連**: 第5回 README の [課題1　最大の点数](../week05/README.md#課題1最大の点数maximum--maximumc)（「説明すること」の `const` の意図・`i` を 1 から始める理由），[課題4　平均と累乗を関数にする](../week05/README.md#課題4平均と累乗を関数にするfunctions--functionsc)・[発展　役割を分ける](../week05/README.md#発展役割を分けるsummean--summeanc)（それぞれの採点のポイント），デバッグの題材 [BugRowSum](../debugging/BugRowSum/README.md)，[BugGrade](../debugging/BugGrade/README.md)，[BugMeanScore](../debugging/BugMeanScore/README.md)
 
 ## 第6回　容量と範囲外書き込み（文字列）
 
@@ -285,7 +301,7 @@ Debug 構成の実行時チェック（**Basic Runtime Checks**，`/RTC1`）は�
 **よくある反応**
 - 「入力が 2 回表示される」→ 1 回目はコンソールが映した入力，2 回目はプログラムの出力。報告では「入力」と「出力」を分けて書く（演習ページの記録の注意と同じ）。
 
-**副テーマ（結果は `stdout`，診断は `stderr`）**: `LineInput` は行を読めなかったとき `No line read.` を `stderr` に出し，`return 1;` で終わる。Ctrl+F5 のコンソールでは終了後に `exited with code 1` と終了コードが表示される。
+**副テーマ（結果は `stdout`，診断は `stderr`）**: `LineInput` は行を読めなかったとき `No line read.` を `stderr` に出し，`return 1;` で終わる。Ctrl+F5 のコンソールでは終了後に **exited with code 1** と終了コードが表示される。
 結果と診断の出力先を分けておくと，パイプの次のプログラムにエラーメッセージが混ざらない（課題4 の冒頭の問いと問5）。
 
 **関連**: 第7回 README の [共通: 入力の与え方・入力終了・リダイレクト](../week07/README.md#共通-入力の与え方入力終了リダイレクト)，[課題2　英字の数を数える](../week07/README.md#課題2英字の数を数えるlettercount--letter_countcbytecount--byte_countc)・[課題3　行の容量](../week07/README.md#課題3行の容量lineinput--linec) の採点のポイント，デバッグの題材 [BugUpper](../debugging/BugUpper/README.md)，[BugReverseWord](../debugging/BugReverseWord/README.md)
@@ -318,7 +334,7 @@ F11・ウォッチ・呼び出し履歴は第14回の講義で正式に扱う（
 「交換されない」の例（`a = b;` でポインタのコピーを入れ替えるだけの `swap`）を，後述の「質問・バグ報告のテンプレート」に載せた。
 
 **デバッグの補足（アクセス違反で止まったら）**: 演習では無効なポインタを実行して試さないが，学生のプログラムが誤って止まったときは次の順に見る。
-① **Exception Thrown** ウィンドウの文面を読む（read access violation と，`p was nullptr` のようにどのポインタかが出ることがある。C のプログラムでも `nullptr` と表示されるが，`NULL` のこと）。② 黄色の矢印の行で，どの式がポインタをたどっているかを見る。③ **Locals** でそのポインタの値を確かめる（`0x0000000000000000` なら `NULL`）。④ **Call Stack** で呼び出し元の行をダブルクリックし，そのポインタをどこで受け取ったか・作ったかをさかのぼる。確かめたら Shift+F5 で止めてから直す。
+① **Exception Thrown** ウィンドウの文面を読む（**read access violation** と，**p was nullptr** のようにどのポインタかが出ることがある。C のプログラムでも `nullptr` と表示されるが，`NULL` のこと）。② 黄色の矢印の行で，どの式がポインタをたどっているかを見る。③ **Locals** でそのポインタの値を確かめる（`0x0000000000000000` なら `NULL`）。④ **Call Stack** で呼び出し元の行をダブルクリックし，そのポインタをどこで受け取ったか・作ったかをさかのぼる。確かめたら Shift+F5 で止めてから直す。
 
 **関連**: 第8回 README の [課題1　`swap`を追う](../week08/README.md#課題1swapを追うswap--pointersc)（図，「`*a = *b` を `a = b` に変えても交換にならない理由」，採点のポイント），デバッグの題材 [BugCopyText](../debugging/BugCopyText/README.md)
 
@@ -363,7 +379,7 @@ F11・ウォッチ・呼び出し履歴は第14回の講義で正式に扱う（
 - 「`fclose` が何を返すか，リファレンスのどこに書いてあるか探してみましょう」（関数のリファレンスの戻り値の節に，成功なら 0，失敗なら `EOF` とある。使う前に仕様を読む習慣を付ける）
 
 **見せ方（2 分）**
-1. `ReadText` のプロジェクトの **Configuration Properties > Debugging > Command Arguments** を `missing.txt` にして Ctrl+F5。`fopen: No such file or directory` と，コンソールの最後の `exited with code 1` を見せる（`input.txt` に戻すと `exited with code 0`）。
+1. `ReadText` のプロジェクトの **Configuration Properties > Debugging > Command Arguments** を `missing.txt` にして Ctrl+F5。`fopen: No such file or directory` と，コンソールの最後の **exited with code 1** を見せる（`input.txt` に戻すと **exited with code 0**）。
 2. ソースの次の部分と対応させる。`perror` が `stderr` に理由を出し，`return 1;` が終了コードになる。
 
 ```c
@@ -381,7 +397,7 @@ if (fp == NULL) {
 **よくある反応**
 - 「`input.txt` が開けない」→ 作業ディレクトリ・ファイル名（`input.txt.txt` になっていないか）・引数を 1 つずつ確かめる。同時に変えると原因が分からなくなる（演習ページの「空白を含むファイル名」の注意）。
 
-**副テーマ（異常系のテスト）**: 発展2 `CheckValue` の「異常なデータも別ファイルで確認する」表は，壊れた入力ごとに期待するメッセージと終了コードを決めたテストである。正常な 1 件より，壊れたファイル 7 件の方が誤りを見つけやすい。
+**副テーマ（異常系のテスト）**: 発展2 `CheckValue` の「異常なデータも別ファイルで確認する」表は，入力を 1 か所ずつ変えたファイルごとに，期待するメッセージと終了コードを決めたテストである。表の 7 件のうち 6 件は拒否されるのが正しく，正常なファイルの最終行の改行だけを削除したものは受け付ける（`found`）のが正しい。拒否すべきでない入力まで決めておくのも異常系のテストの一部である。
 学生が「正しいファイルなのに拒否される」と言ったら，BOM 付きで保存していないかを確かめる（仕様どおりの拒否）。
 
 **デバッグの補足（バイト順をメモリで見る。授業では未習）**: `ByteOrder` の `for` の行で止め，**Memory 1** の **Address** に `&value` と入れると，`value = 1` が 01・00 の順に並ぶ（x64 の Visual Studio）。プログラムの表示 `01 00` と同じ並びであることを画面で確かめられる。`Binary` では `fread` の後で `buffer` を見ると，読んだ 4 バイト（41・00・42・0A）の後ろに，読んでいない残りの 12 バイトの意味のない値（Debug 構成では CC が並ぶことが多い）が並ぶ（`n` 個目以降を使わない理由）。
@@ -401,8 +417,7 @@ if (fp == NULL) {
 1. 仕様の境界: `contains` の上限の比較が `<` か（下限を含み上限を含まない仕様）。
 2. 初期化: `normalized` が `Rect result = r;` で始まるか（`Rect result;` に座標だけ入れると `name` が不定のまま）。
 3. コピー: 交換が構造体ごと（`Student temp = a[0];`）か，メンバの一部だけか。
-
-**読み合いの注意**: 提出前の課題を学生どうしで見せ合ってよいかは，担当教員の指示に従う。許されていない場合は，誤りを含む短い断片（点数だけを交換する 3 行など。第11回 README の [名前と点数を一緒に交換する](../week11/README.md#名前と点数を一緒に交換する) に 3 行と出力，課題2 の [採点のポイント・よくある誤り](../week11/README.md#採点のポイントよくある誤り-1) にほかの誤りがある）を TA が紙やホワイトボードに書いて見せ，それをレビューさせる。
+4. 読み合いの注意: 提出前の課題を学生どうしで見せ合ってよいかは，担当教員の指示に従う。許されていない場合は，誤りを含む短い断片（点数だけを交換する 3 行など。第11回 README の [名前と点数を一緒に交換する](../week11/README.md#名前と点数を一緒に交換する) に 3 行と出力，課題2 の [採点のポイント・よくある誤り](../week11/README.md#採点のポイントよくある誤り-1) にほかの誤りがある）を TA が紙やホワイトボードに書いて見せ，それをレビューさせる。
 
 **確かめる問い**
 - 問「点数だけを交換した版は，平均の表示で誤りに気付ける？」→ 気付けない。平均は 80.0 のまま。名前と点数の組を表示して初めて分かる。
@@ -459,12 +474,13 @@ if (fp == NULL) {
 - 「失敗の模擬を 1 にして，`allocation failed` の後でメンバに触れていないか，ステップ実行で確かめましょう」
 
 **見せ方（3 分）**
-1. `NewPoint` のコピー（このリポジトリでは，この手順 1 を済ませた版が `NewPointFail`）で，演習ページの `point_allocate` を `new_point` の前に追加し，`new_point` の `malloc(sizeof *p)` を `point_allocate(sizeof *p)` に置き換え，`simulate_failure` を 1 にしてビルドする（正常版の `NewPoint` はそのまま残す）。
-2. `Point *p = new_point(3.0, 4.0);` の行で F9，F5，F11 で `new_point` に入る。`point_allocate` が `NULL` を返し，`return NULL;` へ進んでメンバへの代入を通らないことを見せる。
+1. `NewPoint` のコピーを作り，演習ページの `point_allocate` を `new_point` の前に追加する。`new_point` の `malloc(sizeof *p)` を `point_allocate(sizeof *p)` に置き換え，`simulate_failure` を 1 にしてビルドする。
+   - 正常版の `NewPoint` はそのまま残す。
+   - このリポジトリでは，この手順 1 を済ませた版が `NewPointFail` である。TA が見せるときは，リポジトリの `NewPointFail` の本体は書き換えず，自分用のコピーで行う。
+2. `Point *p = new_point(3.0, 4.0);` の行で F9，F5，F11 で `new_point` に入る（F11 は第8回で先取りしたもので，ステップ実行とウォッチはこの回の演習ページにも出てくる）。`point_allocate` が `NULL` を返し，`return NULL;` へ進んでメンバへの代入を通らないことを見せる。
 3. `main` に戻ったら **Locals** で `p` が `0x0000000000000000` であることを確かめ，F10 で `fprintf` から `return 1;` へ進む（`p->x` を表示する `printf` は通らない）。
-4. コピーの `simulate_failure` を 0 に戻すと正常出力になることを確かめ（このリポジトリでは，`const int simulate_failure = 1` を 0 に書き換えた版の期待する出力が [NewPointFail/variants/tests](../week13/NewPointFail/variants/tests/) の `simulate_failure_0.out` にあり，書き換え方は [NewPointFail/CMakeLists.txt](../week13/NewPointFail/CMakeLists.txt) の `softprac_add_variant` に書いてある），正常版の `NewPoint` もビルド・実行する（演習ページのチェックリスト）。TA が見せるときは，リポジトリの `NewPointFail` の本体を書き換えず，自分用のコピーで行う。
-
-F11 は第8回で先取りしたもので，ステップ実行とウォッチはこの回の演習ページにも出てくる。
+4. コピーの `simulate_failure` を 0 に戻すと正常出力になることを確かめる。正常版の `NewPoint` もビルド・実行する（演習ページのチェックリスト）。
+   - このリポジトリでは，`const int simulate_failure = 1` を 0 に書き換えた版の期待する出力が [NewPointFail/variants/tests](../week13/NewPointFail/variants/tests/) の `simulate_failure_0.out` にある。書き換え方は [NewPointFail/CMakeLists.txt](../week13/NewPointFail/CMakeLists.txt) の `softprac_add_variant` に書いてある。
 
 **確かめる問い**
 - 問「`int *b = a; free(a); a = NULL;` の後，`b` も `NULL` になる？」→ ならない。`b` は古いアドレスのままで，`b[0]` を読めば解放後の使用，`free(b)` は二重解放。
@@ -474,10 +490,8 @@ F11 は第8回で先取りしたもので，ステップ実行とウォッチは
 - 「`p = NULL;` にしたから解放した」→ `NULL` の代入は解放ではない。`free(p);` の後に `p = NULL;`。`free` せずに `NULL` を代入するとリークになる。
 - 「`int a[3]; free(a);` で後始末した」→ `free` に渡せるのは `malloc`・`calloc`・`realloc` が返したポインタか `NULL` だけ。自動変数の配列はブロックの終わりで寿命が終わる。
 
-解放後の使用や範囲外アクセスを実行時に見つける道具として，後述の「AddressSanitizer」を紹介してもよい（授業では未習）。
-
 **副テーマ（レビューの手順）**: 演習ページのヒントの順（確保に成功した領域を数える → すべての `return` と失敗分岐で誰が解放するかをたどる → 別名のポインタと解放後の参照を探す）は，実務でメモリを扱うコードのレビューでもそのまま使える。
-後述のチェックリストの「メモリ」の項目と合わせて使う。
+後述のチェックリストの「メモリ」の項目と合わせて使う。解放後の使用や範囲外アクセスを実行時に見つける道具として，後述の「AddressSanitizer」を紹介してもよい（授業では未習）。
 
 **デバッグの補足（確保した領域をメモリで見る。授業では未習）**: Debug 構成の C ランタイムは，`malloc` した領域を 0xCD で埋め，その前後 4 バイトずつを 0xFD で埋めて確保する（Microsoft Learn「CRT debug heap details」）。`Dynamic` で `malloc` の直後に **Memory 1** に `values` と入れると，代入前の要素が CD の並びで，最後の要素の後ろに FD が 4 つ見える。**Watch 1** に `values,5` と書けば（コマンド引数を 5 にしたとき）5 要素を配列として見られる（「,要素数」の書式指定子は授業資料にない。第5回の「デバッグの補足」）。この FD を範囲外への書き込みで壊すと，`free` のときに Debug の C ランタイムが検査してエラーを報告する。アクセス違反で止まったときの見方は第8回と同じ。
 
@@ -511,7 +525,7 @@ F11 は第8回で先取りしたもので，ステップ実行とウォッチは
 - 「`n = 0` の `calls` は 0」→ 最初の呼び出しも数えるので 1（`depth` も 1）。`main` は数えない。
 
 **副テーマ（自動テストと CI）**: 課題1 の「再帰版と反復版を 0〜20 のすべてで比べる」確認を，人が目で見る代わりにプログラムに任せるのが自動テストで，変更のたびに自動で実行する仕組みが CI（継続的インテグレーション）である。
-参考までに，この解答リポジトリでは，各プロジェクトの `tests/`（例: [Fibonacci/tests](../week14/Fibonacci/tests/)）の期待する出力を CMake がテストとして登録し，[.github/workflows/ci.yml](../.github/workflows/ci.yml) が push のたびに Windows（MSVC・MinGW）・Linux・macOS でビルドして実行する（リポジトリが非公開のときは，実行時間の課金を抑えるため push では一部のジョブだけが動く）。
+参考までに，この解答リポジトリでは，各プロジェクトの `tests/`（例: [Fibonacci/tests](../week14/Fibonacci/tests/)）の期待する出力を CMake がテストとして登録し，[.github/workflows/ci.yml](../.github/workflows/ci.yml) が `ta` への push と PR のたびに Windows（MSVC・MinGW）・Linux・macOS でビルドして実行する。
 TA がこの流れを自分で体験するには，`practice` ブランチ（解答を雛形（空の `main`）にし，同じ `tests/` で自分の解答を自己採点できる。[TA.md のブランチの関係](../TA.md#ブランチの関係)）を使う。
 
 **関連**: 第14回 README の [発展1　再帰の呼び出し数](../week14/README.md#発展1再帰の呼び出し数fibonacci--fibonaccic)（小さい値から比較する，計測結果の読み方，改善案），[課題2　再帰の復帰順](../week14/README.md#課題2再帰の復帰順trace--tracec) の [**Call Stack** ウィンドウを見る](../week14/README.md#call-stack-ウィンドウを見るvisual-studion3-から-n0-まで進んだとき)（第4回・第8回のデバッガの続き），デバッグの題材 [BugFactorial](../debugging/BugFactorial/README.md)，[BugFactorialOverflow](../debugging/BugFactorialOverflow/README.md)
@@ -589,12 +603,12 @@ int main(void)
 
 ### コードレビューの観点チェックリスト
 
-読む前に「何をする関数か（約束）」を作者に 1 文で言ってもらい，それと比べながら読む。指摘は「なぜ〜？」の質問の形にする。
+読む前に「何をする関数か（契約）」を作者に 1 文で言ってもらい，それと比べながら読む。指摘は「なぜ〜？」の質問の形にする。
 
-- [ ] 仕様: 受け付ける範囲（約束）がコメントにあり，境界の扱い（`<` か `<=` か）が仕様と一致している（第5回，第11回 `RectContains`）
+- [ ] 仕様: 受け付ける範囲（契約）がコメントにあり，境界の扱い（`<` か `<=` か）が仕様と一致している（第5回，第11回 `RectContains`）
 - [ ] 名前: 変数・関数の名前で役割が分かる。同じ数値が何度も出てこない（第5回）
 - [ ] 初期化: 読む前に値が入っている。累積の変数はループの前で初期化している（第4回 `EvenSum`，第11回 `normalized`）
-- [ ] 範囲: 添字は 0〜`n − 1`。書き込む前に終端を含めて容量を確かめている（第5回，第6回，第8回 `CopyText`）
+- [ ] 範囲: 添字は 0〜`n - 1`。書き込む前に終端を含めて容量を確かめている（第5回，第6回，第8回 `CopyText`）
 - [ ] 戻り値: `fgets`・`fopen`・`strtol`・`malloc` などの失敗を調べている。関数は失敗を戻り値で返し（出力先は変更しない），`main` が `stderr` へ出して `return 1;` で終わる（第8回 `CopyText`，第10回，第12回 `calc_divide`，第13回）
 - [ ] 型と警告: 警告 0。キャストで警告を消していない（第2回，第6回，第9回）
 - [ ] コピーと共有: 構造体やポインタのコピーで，中身が複製されるのか共有されるのかを区別している（第9回，第11回）
@@ -607,9 +621,9 @@ int main(void)
 
 **最初に 1 回**
 1. **Git > Settings** を開き，**Git Global Config** の **User name** と **Email** を確かめる（未設定なら入力。commit に記録される名前で，公開しないので自分が分かる値でよい）。
-2. 課題のソリューションを開いたまま **Git > Create Git Repository** を選ぶ。**Create a Git repository** ダイアログの **Other** で **Local** を選び，**Initialize a local Git repository** のパスの欄を作業場所の `PL1` のフォルダにして **Create and Push** を押す（**Local** ならどこにもプッシュされない）。
+2. 課題のソリューションを開いたまま **Git > Create Git Repository** を選ぶ。**Create a Git repository** ダイアログの **Other** で **Local** を選び，**Initialize a local Git repository** の **Local path** を作業場所の `PL1` のフォルダにして **Create** を押す（**Local** ならどこにもプッシュされない）。
    **.gitignore template** を Visual Studio 用のままにすると，`x64` や `.vs` などのビルドの生成物は履歴に入らない。
-   （VS 2022 ではこの選択肢が **Local only**，ボタンが **Create**。）
+   （VS 2022 ではこの選択肢が **Local only**。ボタンは同じ **Create**。）
 3. 以後は各課題の `.sln` を開けば，`PL1` のリポジトリが使われる。
 
 **毎回の作業**
@@ -632,9 +646,11 @@ int main(void)
 授業の課題では使わなくてよい。手元で確かめる道具として，第6回・第13回で興味を持った学生に紹介する（授業では未習）。
 プロジェクトの **Configuration Properties > C/C++ > General > Enable AddressSanitizer** を **Yes (/fsanitize=address)** にして F5 で実行すると，配列の外への書き込みや解放後の使用が起きた所で止まり，その種類が表示される。Ctrl+F5 で実行した場合は，報告がコンソールに表示される。
 AddressSanitizer は Edit and Continue（`/ZI`）・`/RTC`（実行時チェック）・インクリメンタル リンク（`/INCREMENTAL`）と併用できない（Microsoft Learn の「AddressSanitizer」）。Debug 構成では次の 3 つを変える。
+
 - **C/C++ > General > Debug Information Format** を **Program Database (/Zi)**
 - **C/C++ > Code Generation > Basic Runtime Checks** を **Default**
 - **Linker > General > Enable Incremental Linking** を **No (/INCREMENTAL:NO)**
+
 設定はプロパティ ページ上部の **Configuration** が **Debug** であることを確かめてから変え，試した後は 4 つとも元に戻す（または試す用のプロジェクトのコピーで行う）。提出する課題は授業の設定のままにする。
 見つかるのは実行した経路の誤りだけなので，境界の値のテストと組み合わせて使う。
 
@@ -650,7 +666,7 @@ AddressSanitizer は Edit and Continue（`/ZI`）・`/RTC`（実行時チェッ�
 
 | テーマ | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
 | --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| テストを書く（期待値・境界・異常） | ○ | | ● | ○ | | | | | | ○ | | | ○ | ○ |
+| テストを書く（期待値・境界・異常） | ○ | | ● | ○ | ○ | | | | | ○ | | | ○ | ○ |
 | エラーメッセージと警告を読む | ● | ○ | | | | ○ | | | ○ | | | ● | | |
 | デバッグ（printf・ブレークポイント・ステップ・ウォッチ・メモリ） | | ○ | | ● | ○ | ○ | | ● | | ○ | ○ | | ○ | ○ |
 | バージョン管理（Git） | | ● | | | | | | | ● | | | ○ | | |

@@ -2,7 +2,7 @@
 # 右辺を整数除算にした版（seconds = 61 と，誤りの例の 3671），確認問題 2・3 の比較用ソース（versions/）
 softprac_add_program(TimeParts time_parts.c)
 
-set(title "/* 第3回 課題1 秒を分と秒へ分解する（TimeParts / time_parts.c）")
+set(title "/* 第3回 課題1　秒を分と秒へ分解する（TimeParts / time_parts.c）")
 set(header "${title}\n * seconds を整数の除算と余りで分と秒に分け，60.0 で割った小数の分も表示する。\n */")
 
 foreach(s IN ITEMS 0 59 60 61 10000)

@@ -1,4 +1,4 @@
-﻿// 第2回 課題5 発展：小数を使った計算（Temperature / temperature.c）
+﻿// 第2回 課題5　発展：小数を使った計算（Temperature / temperature.c）
 // 摂氏 celsius から華氏 fahrenheit を計算する。77.0 を直接書かず，式で求める
 #include <stdio.h>
 
