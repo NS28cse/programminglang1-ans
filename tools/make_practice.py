@@ -14,7 +14,11 @@
   - 各回の README.md を，課題とプロジェクト・作るファイル・引数・テスト数の表だけにする（解答と解説は除く）
   - ルートの README.md を練習の手順にし（main の README の「使い方」「よくあるトラブル」を含める），
     CMakeLists.txt に tests/ のテストの登録を加え，cmake/RunTest.cmake と .gitattributes を写す
+  - Visual Studio（File > Open > Folder）の起動構成 .vs/launch.vs.json を作り，.gitignore で .vs/ のうちそれだけを含める。
+    各プロジェクトの構成の名前は「weekNN 名前  [引数]」，引数は ta の run.args。作業ディレクトリは書かない
+    （Visual Studio の既定の作業ディレクトリは実行ファイルのフォルダ <ビルド先>/bin/weekNN/<名前>/ で，データファイルもそこへコピーされる）
 """
+import json
 import pathlib
 import re
 import shutil
@@ -22,7 +26,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from projects import ROOT, project_dirs, read_lines, week_dirs  # noqa: E402
+from projects import ROOT, programs, project_dirs, read_lines, week_dirs  # noqa: E402
 
 BOM = "﻿"
 EXCLUDE_TOP = {".git"}
@@ -141,7 +145,7 @@ ROOT_README = """# programminglang1-ans（practice ブランチ）
 各プロジェクトのソースは雛形（空の `main`）になっていて，入力ファイルと自動テスト（期待する出力）だけが入っています。
 
 - 授業サイト: <https://t-yokoga.github.io/softprac1/>
-- 解答と解説は `main` ブランチ，テストの実際の出力は `ta-results` ブランチにあります（このブランチは `ta` の `tools/make_practice.py` で作っています）。
+- 解答と解説は [`main`](https://github.com/NS28cse/programminglang1-ans/tree/main) ブランチ，テストの実際の出力は [`ta-results`](https://github.com/NS28cse/programminglang1-ans/tree/ta-results/results) ブランチにあります（このブランチは [`ta`](https://github.com/NS28cse/programminglang1-ans/tree/ta) の `tools/make_practice.py` で作っています）。
 
 ## 進め方
 
@@ -192,6 +196,38 @@ ROOT_README = """# programminglang1-ans（practice ブランチ）
   ```
 
 """
+
+PRACTICE_VS_ARGS = """- 引数を使う課題は，**Startup Item** で `week10 ReadText  [input.txt]` のような `weekNN 名前  [引数]` の項目を選びます（授業の **Command Arguments** に当たります）。
+  引数は各回の README の表の「実行に使うもの」と同じで，作業ディレクトリは `Echo.exe` などの項目と同じく実行ファイルのフォルダです。
+  ほかの引数で試すときは，その項目を選んだ状態で **Debug > Debug and Launch Settings for \\<項目\\>** を開き，`"args"` を書き換えます（`.vs/launch.vs.json` に保存されます。試し終わったら `git restore .vs/launch.vs.json` で戻します）。
+"""
+
+
+def launch_vs(dest: pathlib.Path):
+    """practice の .vs/launch.vs.json（各プロジェクトを ta の run.args の引数で起動する構成）。
+    projectTarget は practice の CMakeLists.txt が実行ファイルを置く bin/weekNN/<名前>/<名前>.exe（ビルド先からの相対）。
+    currentDir は書かず，Visual Studio の既定（実行ファイルのフォルダ。データファイルもそこへコピーされる）にする。"""
+    configs = []
+    for week in week_dirs():
+        for p in project_dirs(week):
+            args = read_lines(p / "run.args") if (p / "run.args").exists() else []
+            for name in programs(dest / week.name / p.name):
+                configs.append({
+                    "type": "default",
+                    "project": "CMakeLists.txt",
+                    "projectTarget": f"{name}.exe (bin\\{week.name}\\{name}\\{name}.exe)",
+                    "name": f"{week.name} {name}" + (f"  [{' '.join(args)}]" if args else ""),
+                    "args": args,
+                })
+    return json.dumps({"version": "0.2.1", "defaults": {}, "configurations": configs},
+                      ensure_ascii=False, indent=2) + "\n"
+
+
+def replace_once(text: str, old: str, new: str):
+    """old がちょうど 1 回あることを確かめて置き換える（main の README・.gitignore の形が想定と違えば止める）。"""
+    if text.count(old) != 1:
+        sys.exit(f"[NG] main の README.md・.gitignore の形が想定と違う（ta の README.md を main に反映してから作り直す）: {old[:40]!r}")
+    return text.replace(old, new)
 
 
 def run_git(*args, cwd):
@@ -251,6 +287,13 @@ def main():
                           "`main` ブランチのそれぞれの回の README のコマンドでビルドします（CMake を使う方法 3・4 ならそのままビルドできます）。")
     # practice にない versions/ と，README の書き換え方を前提にした節は除く
     usage = "\n".join(l for l in usage.split("\n") if "versions/" not in l)
+    # 引数は practice の .vs/launch.vs.json（weekNN 名前  [引数] の構成）で渡す
+    start = usage.index("- 引数を使う課題は，**Startup Item** でプロジェクトを選んだ状態で")
+    end = usage.index("  ```\n", usage.index("  ```json\n", start) + 1) + len("  ```\n")
+    usage = usage[:start] + PRACTICE_VS_ARGS + usage[end:]
+    usage = replace_once(usage, "`main` ブランチにはこのファイルを含めていません。"
+                         "`ta` ブランチでは [TA.md の「IDE で使う」](https://github.com/NS28cse/programminglang1-ans/blob/ta/TA.md#ide-で使う)の方法を使います",
+                         "このブランチには含めていません")
     start = usage.index("### ソースを書き換えて試す")
     usage = usage[:start] + usage[usage.index("## よくあるトラブル"):]
     text = ROOT_README.replace("{week_table}", "\n".join(week_rows)) + usage
@@ -287,6 +330,14 @@ endfunction()""", 1)
     (dest / "cmake").mkdir(exist_ok=True)
     shutil.copyfile(ROOT / "cmake" / "RunTest.cmake", dest / "cmake" / "RunTest.cmake")
     shutil.copyfile(ROOT / ".gitattributes", dest / ".gitattributes")
+
+    # Visual Studio の起動構成。main の .gitignore は .vs/ を除外しているので，launch.vs.json だけを含める
+    (dest / ".vs").mkdir(exist_ok=True)
+    (dest / ".vs" / "launch.vs.json").write_bytes(launch_vs(dest).encode("utf-8"))
+    gitignore = (dest / ".gitignore").read_text(encoding="utf-8")
+    if "!/.vs/launch.vs.json" not in gitignore:
+        gitignore = replace_once(gitignore, "\n.vs/\n", "\n/.vs/*\n!/.vs/launch.vs.json\n")
+        (dest / ".gitignore").write_bytes(gitignore.encode("utf-8"))
 
     print(run_git("status", "--short", cwd=dest).count("\n"), "件のファイルが変わった。git add -A して commit する")
     return 0

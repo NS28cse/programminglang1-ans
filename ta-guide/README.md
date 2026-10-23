@@ -7,6 +7,7 @@
 
 - 各回に**主テーマを 1 つ**，任意で**副テーマを 1 つ**割り当てている。全員への一斉の説明ではなく，巡回中にその場面
   （エラーで手が止まっている，境界の値を試していない，「動かない」と言っている など）に出会った学生や近くの数人に，1〜3 分で伝える。
+  担当教員の了承があれば，[説明用スライド](https://ns28cse.github.io/programminglang1-ans/)（`slides` ブランチ。この手引きの一部を全員向けにしたもの）を演習の前に全員に見せてもよい。
 - 演習の課題を終えることを優先する。ここに書いた内容を，課題の要求や採点の基準に加えない（担当教員の指示がある場合を除く）。
 - 各回の節は「テーマと理由 → 声かけ → 見せ方 → 確かめる問い → よくある反応 → 副テーマ → デバッグの補足 → 関連」の順に並べた。「デバッグの補足」（一部の回だけ。任意）は，学生がバグで止まっている場面で 1 つだけ選んで使い，主テーマ・副テーマと同時には使わない。声かけと問いは，そのまま読み上げられる文にしてある。
 - 文法・関数は，その回までに講義で扱ったものだけを前提にする。Visual Studio の操作のうち，その回までに授業で扱っていないもの（第2回の Git，第8回の Step Into・Watch 1・Call Stack など）は，各節に「（授業では未習。初めて見せる）」と書いた。
@@ -194,7 +195,7 @@ VS Code を使う学生には，同じキー（F9・F5・F10・F11）と **Run a
 
 **デバッグの補足（条件付きブレークポイント。授業では未習）**: `n = 100` で `i` が 50 の反復だけを見たいときは，ブレークポイントを右クリックして **Conditions** を選び，**Conditional Expression** の **Is true** に `i == 50` と書く。F5 を何十回も押さなくても，条件が真のときだけ止まる（条件付きのブレークポイントには **+** が付く）。
 
-**関連**: 第4回 README の [課題2　偶数の合計](../week04/README.md#課題2偶数の合計evensum--even_sumc) の [値を追跡する（`n = 4`）](../week04/README.md#値を追跡するn--4)・「説明すること」，講義 [lec04](https://t-yokoga.github.io/softprac1/lec04.html) の「7　二重ループとテスト」，デバッグの題材 [BugEvenSum](../debugging/BugEvenSum/README.md)，[BugSkipCount](../debugging/BugSkipCount/README.md)
+**関連**: 第4回 README の [課題2　偶数の合計](../week04/README.md#課題2偶数の合計evensum--even_sumc) の [値を追跡する（`n = 4`）](../week04/README.md#値を追跡するn--4)・「説明すること」，講義 [lec04](https://t-yokoga.github.io/softprac1/lec04.html) の「7　二重ループとテスト」，デバッグの題材 [BugEvenSum](../debugging/BugEvenSum/README.md)，[BugSkipCount](../debugging/BugSkipCount/README.md)，説明用スライド「[デバッガで流れを追う](https://ns28cse.github.io/programminglang1-ans/debugger-basics/)」（演習の前に全員へ 5〜7 分。担当教員の了承があるときだけ）
 
 ## 第5回　読みやすいコードと関数の約束（配列と関数）
 

@@ -25,7 +25,7 @@ jobs:
       matrix:
         preset: ${{ fromJSON((github.event.repository.private && github.event_name != 'workflow_dispatch') && '["msvc-debug"]' || '["msvc-debug", "msvc-release"]') }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
@@ -46,7 +46,7 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Configure (Visual Studio generator, /W4 /WX)
         run: cmake -S . -B build -A x64 -DSOFTPRAC_WERROR=ON
       - name: Build
@@ -65,7 +65,7 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: msys2/setup-msys2@v2
         with:
           msystem: UCRT64
@@ -91,7 +91,7 @@ jobs:
         cc: [gcc, clang]
         build_type: ${{ fromJSON((github.event.repository.private && github.event_name != 'workflow_dispatch') && '["Debug"]' || '["Debug", "Release"]') }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Configure (warnings as errors, ASan/UBSan)
         # Ninja はインストールせず，標準の Makefile ジェネレーターを使う
         run: >-
@@ -110,7 +110,7 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Configure / Build / Test (preset)
         run: |
           cmake --preset gcc-debug -DSOFTPRAC_WERROR=ON
@@ -120,26 +120,42 @@ jobs:
         # windows-msvc-preset と同じ（debugging/ の題材は存在だけを確かめる）
         run: python3 tools/check_launch.py out/build/gcc-debug
 
-  # main と practice の形で確かめる: ta の解答を main の最小の CMakeLists.txt でビルドし（-Werror），
-  # practice の雛形に main の解答を重ねるとテストがすべて通ること（tools/export_main.py・make_practice.py）
+  # main と practice の形で確かめる（tools/export_main.py・make_practice.py）:
+  #   - 実際の main が ta から写したものと同じこと，実際の practice が main から作り直したものと同じこと
+  #     （ta の解答・解説・テストを変えると，main・practice に反映するまで失敗する。ta 以外のブランチと PR では警告だけにする）
+  #   - ta の解答を main の最小の CMakeLists.txt でビルドでき（-Werror），practice の雛形に main の解答を重ねるとテストがすべて通ること
   main-and-practice:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
+      # main と practice は，それぞれ最新のコミットだけを別のフォルダに取り出す（履歴は使わない）
+      - uses: actions/checkout@v7
         with:
           ref: main
           path: _main
-      - name: Build the answers with main's minimal CMakeLists.txt (-Werror)
+      - uses: actions/checkout@v7
+        with:
+          ref: practice
+          path: _practice-actual
+      - name: The actual main matches ta (export_main.py --check)
+        continue-on-error: ${{ github.ref != 'refs/heads/ta' }}
+        run: python3 tools/export_main.py _main --check
+      - name: The actual practice matches the one rebuilt from main (make_practice.py)
+        continue-on-error: ${{ github.ref != 'refs/heads/ta' }}
         run: |
-          if [ -f _main/cmake/RunTest.cmake ]; then echo "main はまだ分ける前の構成なので確かめない"; exit 0; fi
+          cp -a _main _practice-rebuilt
+          python3 tools/make_practice.py _practice-rebuilt
+          diff -r --exclude=.git _practice-actual _practice-rebuilt
+      - name: Build the answers with main's minimal CMakeLists.txt (-Werror)
+        if: ${{ !cancelled() }}
+        run: |
           python3 tools/export_main.py _main
           cmake -S _main -B _build-main -DCMAKE_C_FLAGS=-Werror
           cmake --build _build-main -j 4
       - name: Practice stubs + main's answers pass every test
+        if: ${{ !cancelled() }}
         run: |
-          if [ -f _main/cmake/RunTest.cmake ]; then exit 0; fi
           cp -a _main _practice
           python3 tools/make_practice.py _practice
           ( cd _practice && find week* -name '*.c' -o -name '*.h' ) | while read -r f; do cp "_main/$f" "_practice/$f"; done
@@ -152,7 +168,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: File names are valid on Windows
         run: |
           git ls-files | python3 -c "

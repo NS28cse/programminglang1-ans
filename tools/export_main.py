@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """ta ブランチの解答と解説を main ブランチの作業ツリーへ写す（main に反映するときに使う）。
 
-    git worktree add ../main-sync main            # main の作業ツリーを別のフォルダに用意する（初回だけ）
-    python3 tools/export_main.py ../main-sync     # 写す（main だけにあって ta にないファイルは消す）
-    python3 tools/export_main.py ../main-sync --check   # 写さずに違いだけを表示する（違いがあれば終了コード 1）
+    git fetch origin
+    git worktree add ../main-sync origin/main --detach   # main の作業ツリーを別のフォルダに用意する（初回だけ。以後は git switch --detach origin/main）
+    python3 tools/export_main.py ../main-sync            # 写す（main だけにあって ta にないファイルは消す）
+    python3 tools/export_main.py ../main-sync --check    # 写さずに違いだけを表示する（違いがあれば終了コード 1）
 
 写すもの（main と ta で同じ内容にするもの。git が管理しているファイルだけ）:
-  - README.md
+  - README.md，.gitattributes（改行コードの扱い）
   - weekNN/ 以下のすべて。ただし次を除く（ta だけに置くもの）:
       tests/・variants/（自動テスト），run.args（IDE の既定の引数），
       プロジェクトフォルダの CMakeLists.txt（書き換えた版の定義。main は MAIN_CMAKE の 3 つだけを独自の内容で持つ）
@@ -34,7 +35,7 @@ TA_ONLY = re.compile(r"^week\d\d/[^/]+/(tests/|variants/|run\.args$|CMakeLists\.
 
 
 def shared(path: str):
-    if path == "README.md":
+    if path in ("README.md", ".gitattributes"):
         return True
     return re.match(r"^week\d\d/", path) is not None and not TA_ONLY.match(path)
 
@@ -57,10 +58,10 @@ def main():
         return 2
 
     # 写すのは commit 済みの内容だけにする（作業ツリーに未 commit の変更があれば止める）
-    dirty = subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain", "--", "README.md", "week*"],
+    dirty = subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain", "--", "README.md", ".gitattributes", "week*"],
                            capture_output=True, text=True, check=True).stdout.strip()
     if dirty:
-        print("[NG] ta の作業ツリーの README.md・weekNN/ に commit していない変更がある。commit してから写す:\n" + dirty)
+        print("[NG] ta の作業ツリーの README.md・.gitattributes・weekNN/ に commit していない変更がある。commit してから写す:\n" + dirty)
         return 2
     src_files = {p for p in tracked(ROOT) if shared(p)}
     dest_files = {p for p in tracked(dest) if shared(p) and p not in MAIN_CMAKE}
