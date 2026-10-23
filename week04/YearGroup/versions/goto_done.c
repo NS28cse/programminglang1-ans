@@ -1,5 +1,5 @@
-﻿// 第4回 確認問題8 講義の goto の例（YearGroup / versions/goto_done.c）
-// n が 3 になったら，for の直後にあるラベル done へ移動する（この回の課題では goto を使わない）．
+﻿// 第4回 確認問題8　講義の goto の例（YearGroup / versions/goto_done.c）
+// n が 3 になったら，for の直後にあるラベル done へ移動する（この演習では goto を使わない）．
 #include <stdio.h>
 
 int main(void)

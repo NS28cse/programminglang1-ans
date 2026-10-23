@@ -1,4 +1,4 @@
-﻿// 第6回 課題2 ASCIIの小文字へ変換（Lower / lower.c）
+﻿// 第6回 課題2　ASCIIの小文字へ変換（Lower / lower.c）
 // 1文字の変換を関数 lower で行い，ASCII を前提に 'A'〜'Z' だけを小文字にする。
 // 数字・記号・スペース・終端は変えない。
 #include <stddef.h>

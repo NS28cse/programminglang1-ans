@@ -564,7 +564,7 @@ power=32
 - **`return` を `for` の外へ置く理由**: `return` を実行するとその場で関数が終わり呼び出し元へ戻る。`for` の中に置くと 1 回掛けただけで返り，`exponent` 回の繰り返しにならない。
   また `exponent = 0` のときは本体を 1 回も実行しないので，`for` の中の `return` に到達せず，値を返さずに関数の終わりに達する（コンパイラが警告する。GCC は `-Wreturn-type`，MSVC は C4715。その戻り値を使うと未定義動作）。
 - **プロトタイプ宣言の末尾にセミコロンが必要な理由**: プロトタイプ宣言は本体を持たない**宣言**で，変数の宣言と同じく `;` で終わる。`;` がないと，コンパイラは次の行の `int main(void)` を，その関数の旧式の仮引数宣言（本体の前に仮引数の型を並べる古い書き方）の続きとして読み，
-  `main` の本体の `{` でエラーになる。`int power(int base, int exponent)` の `;` を消すと，GCC は `main` の `{` の行で `error: expected '=', ',', ';', 'asm' or '__attribute__' before '{' token` を出す。
+  `main` の本体の `{` でエラーになる。`int power(int base, int exponent)` の `;` を消すと，GCC は `main` の `{` の行で `error: expected '=', ',', ';', 'asm' or '__attribute__' before '{' token` を出し，その後の関数定義（`average`・`power`）の `{` でも同じエラーが続き，最後に `expected '{' at end of input` が出る。原因は 1 つなので，最初のエラーだけを見て直す。
   MSVC は C2085（`main` が仮引数の並びにない）を出す。これも `main` を旧式の仮引数宣言として読んだためで，続けて別のエラーが出ることもある。
   定義（`{ … }` の本体を持つ）の後には `;` を付けない。
 

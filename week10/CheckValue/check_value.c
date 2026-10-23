@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
     int found = 0;
     int ok = check_file(fp, target, &found);
     if (fclose(fp) == EOF) {
+        fprintf(stderr, "read error\n");
         ok = 0;
     }
     if (!ok) {
