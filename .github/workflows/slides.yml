@@ -1,6 +1,6 @@
 name: slides
 
-# README.md 以外の .md（Slidev のスライド）をすべて HTML と PDF に書き出す。
+# README.md 以外の .md（Slidev のスライド。テーマごとに 1 つ）をすべて HTML と PDF に書き出す。
 # slides ブランチへの push では GitHub Pages に公開し，PR では成果物（Artifacts の slides）にする。
 # 公開には Settings > Pages の Source を GitHub Actions にし，github-pages 環境で slides ブランチからの公開を許可しておく（README.md の「公開のしくみ」）
 on:
@@ -55,15 +55,19 @@ jobs:
           for md in sorted(pathlib.Path(".").glob("*.md")):
               if md.name == "README.md":
                   continue
-              m = re.search(r"^title: (.+)$", md.read_text(encoding="utf-8"), re.M)
+              text = md.read_text(encoding="utf-8")
+              m = re.search(r"^title: (.+)$", text, re.M)
               title = html.escape(m.group(1) if m else md.stem)
-              items.append(f'<li>{title}（<a href="{md.stem}/">スライド</a>・<a href="{md.stem}.pdf">PDF</a>）</li>')
+              # info: の 1 行目（「関係する回: …」）を一覧に添える
+              w = re.search(r"^info: \|\n\s+(.+)$", text, re.M)
+              weeks = f'<br><small>{html.escape(w.group(1))}</small>' if w else ""
+              items.append(f'<li>{title}（<a href="{md.stem}/">スライド</a>・<a href="{md.stem}.pdf">PDF</a>）{weeks}</li>')
           pathlib.Path("dist/index.html").write_text(
               '<!doctype html><html lang="ja"><meta charset="utf-8">'
               '<meta name="viewport" content="width=device-width, initial-scale=1">'
               '<title>説明用スライド</title>'
               '<h1>説明用スライド</h1>'
-              '<p>プログラミング言語I・ソフトウェア演習I の演習の前に TA が見せる説明</p>'
+              '<p>プログラミング言語I・ソフトウェア演習I の演習中に，TA が 1 対 1 で説明するときに使うスライド（テーマごと）</p>'
               '<ul>' + "".join(items) + '</ul></html>\n', encoding="utf-8")
           EOF
       - uses: actions/upload-artifact@v7
