@@ -1,184 +1,61 @@
-# programminglang1-ans
+# 説明用スライド（`slides` ブランチ）
 
-「プログラミング言語I・ソフトウェア演習I」（C 言語）の **TA 用解答・解説** リポジトリです。
+「プログラミング言語I・ソフトウェア演習I」（C 言語）の演習の前に，TA が全員へ数分で見せる説明のスライドです。[Slidev](https://sli.dev/) で書いています。
+このブランチはスライドだけを置き，ビルドした HTML と PDF を GitHub Pages で公開します。解答・テスト・TA 用の資料は `ta` ブランチ（入口は [TA.md](https://github.com/NS28cse/programminglang1-ans/blob/ta/TA.md)）にあります。
 
-- 授業サイト: <https://t-yokoga.github.io/softprac1/>（資料: <https://github.com/t-yokoga/softprac1>）
-- 全 14 回の演習について，課題・発展課題のソースコードと，解答・解説（各回の `README.md`）をまとめています。
+**公開ページ**: <https://ns28cse.github.io/programminglang1-ans/>（スライドの一覧。各スライドの HTML と PDF）
 
-> [!WARNING]
-> 公開リポジトリで，解答を含みます。学生にこのリポジトリを案内するかどうかと，その時期・範囲は，担当教員の指示に従ってください。
-
-## ブランチ
-
-| ブランチ | 内容 | 使う人 |
-| --- | --- | --- |
-| `main` | 解答（ソース・入力ファイル）と解説（各回の README）。ビルドに必要な最小限のファイルだけを置いています | TA・学生 |
-| `ta` | `main` に，TA 用の資料（実務の手引き・デバッグの題材），自動テスト（期待する出力），IDE の設定，CI，保守の規約とツールを加えたもの。入口は `ta` ブランチの `TA.md` です | TA・保守する人 |
-| `ta-results` | `ta` のすべてのテストを実際に実行した結果（標準出力・標準エラー出力・終了コード・作られたファイル）を `results/` に加えたもの。学生の出力と比べるときに使います | TA |
-| `practice` | 解答を雛形（空の `main`）に置き換え，入力ファイルと自動テスト（期待する出力）だけを残したもの。解答を見ずに課題を解き，学生と同じ手順と難しさを体験するときに使います | TA |
-
-解答（`weekNN/` のソース・データファイル）と各回の README は，3 つのブランチで同じ内容です。
-保守は `ta` ブランチで行い（テストと CI で確かめるため），解答と解説の変更を `main` に反映します（手順と規約は `ta` ブランチの `CONTRIBUTING.md`）。
-
-## 各回の解答
-
-<!-- WEEK-TABLE:BEGIN -->
-| 回 | テーマ | プロジェクト | 演習ページ |
+| スライド | 回 | 内容 | 時間 |
 | --- | --- | --- | --- |
-| [第1回](week01/README.md) | プログラミングの基礎 | Broken，House，Message，Version，Welcome | [ex01](https://t-yokoga.github.io/softprac1/ex01.html) |
-| [第2回](week02/README.md) | 変数 | Exchange，Observe，Profile，Rectangle，Temperature | [ex02](https://t-yokoga.github.io/softprac1/ex02.html) |
-| [第3回](week03/README.md) | 演算子 | Conditions，Flags，Leap，TimeParts，Update | [ex03](https://t-yokoga.github.io/softprac1/ex03.html) |
-| [第4回](week04/README.md) | 制御構造 | EvenSum，Fee，Powers，Table，YearGroup | [ex04](https://t-yokoga.github.io/softprac1/ex04.html) |
-| [第5回](week05/README.md) | 配列と関数 | Array3D，ColumnSum，Functions，Maximum，SumMean，ValueCopy，Warmup05 | [ex05](https://t-yokoga.github.io/softprac1/ex05.html) |
-| [第6回](week06/README.md) | 文字列 | AsciiTable，Average，CharCode，CompareJoin，CopyCapacity，Length，Lower | [ex06](https://t-yokoga.github.io/softprac1/ex06.html) |
-| [第7回](week07/README.md) | 入出力 | ByteCount，Echo，Formats，LetterCount，LineInput，LowerInput，Typing | [ex07](https://t-yokoga.github.io/softprac1/ex07.html) |
-| [第8回](week08/README.md) | ポインタ1 | CopyText，Decompose，MinMax，PointerWalk，Swap | [ex08](https://t-yokoga.github.io/softprac1/ex08.html) |
-| [第9回](week09/README.md) | ポインタ2 | ArrayTypes，FindMax，MatrixMean，Names，RaggedRows，ReturnMaximum，SwapRows | [ex09](https://t-yokoga.github.io/softprac1/ex09.html) |
-| [第10回](week10/README.md) | ファイル | Arguments，Binary，ByteOrder，CheckValue，LineLengths，NumberFormats，ParseNumber，ReadText，WriteSquares，WriteText | [ex10](https://t-yokoga.github.io/softprac1/ex10.html) |
-| [第11回](week11/README.md) | 構造体 | CopyMembers，PointInit，PointMove，Rect，RectContains，StructLayout，Students | [ex11](https://t-yokoga.github.io/softprac1/ex11.html) |
-| [第12回](week12/README.md) | コンパイル：分割コンパイルとライブラリ | CalcApp，CalcLib，LibraryCheck，SortModule，SplitCalc，VectorCalc | [ex12](https://t-yokoga.github.io/softprac1/ex12.html) |
-| [第13回](week13/README.md) | メモリ管理 | Dynamic，DynamicCopy，DynamicVector，DynamicVectorFail，GrowArray，GrowArrayFail，NewPoint，NewPointFail，SharedCount，StorageCount | [ex13](https://t-yokoga.github.io/softprac1/ex13.html) |
-| [第14回](week14/README.md) | 再帰 | CheckedFactorial，Factorial，Fibonacci，GcdLoop，Trace，TreeTraversal | [ex14](https://t-yokoga.github.io/softprac1/ex14.html) |
-<!-- WEEK-TABLE:END -->
+| [debugger-basics.md](debugger-basics.md) | 第4回（制御構造） | ブレークポイント・ステップオーバー・**Locals** で，ループの流れと変数の変化を確かめる。探し方の型（再現 → 絞り込み → 仮説 → 確かめる → 直す → テスト） | 5〜7 分 |
 
-## 解答の読み方
+- 内容の詳細は `ta` ブランチの[実務の手引き](https://github.com/NS28cse/programminglang1-ans/blob/ta/ta-guide/README.md)にあり，スライドはその一部を全員向けに見せる形にしたものです。手引きは「巡回中に個別に 1〜3 分で」が原則なので，スライドを全員に見せるのは担当教員の了承を得たときだけにします（授業時間を増やさないため）。
+- 例には演習の課題やデバッグの題材ではなく，別のプログラムを使っています（答えを見せないため）。
+- 各スライドの発表者ノート（`<!-- -->`）に，時間の目安・言うこと・出やすい質問と答えを書いています。
+- Visual Studio の画面の表記は Visual Studio 2026（英語版）で，日本語版の名前を添えています（[実務の手引きの対応表](https://github.com/NS28cse/programminglang1-ans/blob/ta/ta-guide/README.md#使い方)）。
+- 最後の「付録」のスライドは発表では使わず，質問されたときや配布用に使います。
 
-- 各回の `weekNN/README.md` に，課題ごとの解答コード・実行結果・説明・表の記入例・確認問題の解答と，TA 向けの**採点のポイント・よくある誤り**をまとめています。
-- 各プロジェクトフォルダのソースは，演習ページの「期待する表示」をそのまま出す版です。
-  演習ページの「値を変えて試す」「〜に書き換えて比べる」小問は，書き換え方と結果を README に載せています（試すときは[ソースを書き換えて試す](#ソースを書き換えて試す)）。
-  README に載せた比較用・確認用のプログラムは，プロジェクトフォルダの `versions/` にあります。
-- 実行結果は，実際にビルド・実行した出力をそのまま載せています。アドレスや `sizeof long` のように環境で変わる値は，その都度環境を書いています。
-- コンパイラの診断（エラー・警告の文面）は GCC・Clang で実際に出したものです。MSVC のエラー・警告番号（`C2143` など）は Microsoft のドキュメントに基づく例で，文面は Visual Studio の版や言語設定によって変わります。
-- すべてのプロジェクトは，MSVC（`/W4`），GCC・Clang（`-Wall -Wextra -Wpedantic`）で警告なしにビルドでき，演習ページの表示例と同じ出力になることを `ta` ブランチの自動テストで確かめています。
+## 見る・配る
 
-## フォルダの構成
+- **公開ページ**から，スライド（ブラウザーで操作できる HTML）か PDF を開きます。発表は HTML で，配布やネットにつながらない教室では PDF を使います。
+- HTML は矢印キーで進み，途中のスライドで再読み込みしても同じスライドに戻ります。
 
-授業では「1 課題 = 1 つの空のプロジェクト = 1 つの `main`」で作業します。このリポジトリでは同じ単位を **1 フォルダ** で表します。
+## 手元で発表する・書き出す
 
-```
-programminglang1-ans/
-├── README.md             ← このファイル（入口と使い方）
-├── CMakeLists.txt        ← Visual Studio・VS Code でフォルダを開いてビルドするための設定（これだけで全課題をビルドできる）
-├── week01/
-│   ├── README.md         ← 第1回の解答・解説
-│   ├── Welcome/
-│   │   └── welcome.c     ← 1 フォルダ = 1 プロジェクト = 1 つの実行ファイル（Welcome.exe）
-│   ├── Message/ ...
-│   └── _Broken/          ← 名前が _ で始まるフォルダは，意図的にエラーを含むコード（ビルドしない）
-├── week02/ ...
-└── week14/
-```
-
-- `weekNN/<プロジェクト名>/` 直下の `*.c` をまとめると，1 つの実行ファイルになります（分割コンパイルの回も同じ）。`versions/` などのサブフォルダは含みません。
-- `input.txt` などのデータファイルは，それを読むプロジェクトのフォルダに置いてあります。
-- プロジェクトフォルダの `CMakeLists.txt` は，第12回の `CalcLib`・`CalcApp`（静的ライブラリとそれを使うアプリ）と，第13回の `DynamicVectorFail`（`DynamicVector` のソースを一部使う）にだけあります。
-
-## 使い方
-
-授業と同じく **C17・警告レベル4（`/W4`）** でビルドします。GCC/Clang では `-Wall -Wextra -Wpedantic` です。
-ビルドの方法は次の 4 つのどれでもかまいません（`CMakeLists.txt` は 3・4 で使うだけで，1・2 の邪魔はしません）。
-
-| 方法 | 向いているとき |
-| --- | --- |
-| 1. [コマンドでビルドする](#1-コマンドでビルドする) | 1 つの課題をすぐ試す。リダイレクト（`<`・`>`・`|`）を使う（第7回など） |
-| 2. [授業と同じ空のプロジェクトで使う](#2-授業と同じ空のプロジェクトで使うvisual-studio) | 授業の手順どおりに確かめる（Visual Studio） |
-| 3. [Visual Studio でフォルダーを開く](#3-visual-studio-でフォルダーを開く) | 全課題をまとめてビルドし，切り替えながら実行・デバッグする |
-| 4. [VS Code で使う](#4-vs-code-で使うwindows--macos--linux) | macOS / Linux，または VS Code で作業する |
-
-### 準備
-
-| OS | 入れるもの |
-| --- | --- |
-| Windows | Visual Studio 2022 以降（Visual Studio Installer で **Desktop development with C++** ワークロード。CMake と Ninja も含まれる） |
-| macOS | `xcode-select --install`（Clang）。3・4 の方法を使うときは `brew install cmake` も |
-| Linux | `sudo apt install build-essential gdb cmake` |
-
-### 1. コマンドでビルドする
-
-プロジェクトフォルダへ移動して，フォルダ直下の `.c` をまとめてコンパイルします。作業ディレクトリがプロジェクトフォルダになるので，`input.txt` などはそのまま読めます。
+Node.js 22.12 以上を入れて，次を実行します。
 
 ```sh
-# macOS / Linux（gcc の代わりに clang でもよい）
-cd week07/Echo
-gcc -std=c17 -Wall -Wextra -Wpedantic *.c -o a.out -lm
-./a.out < input.txt
+npm ci                             # package-lock.json のとおりに入れる（初回だけ。PDF 用の Chromium も入る）
+npx slidev debugger-basics.md      # http://localhost:3030 で発表する
+npx slidev build debugger-basics.md --base ./ --out dist/debugger-basics   # HTML（静的なサイト）
+npx slidev export debugger-basics.md --output dist/debugger-basics.pdf     # PDF
 ```
 
-```powershell
-# Windows: スタート メニューの「Developer PowerShell for VS」で
-cd week07\Echo
-cl /std:c17 /W4 /utf-8 *.c /Fe:a.exe
-Get-Content input.txt | .\a.exe          # PowerShell には < がないので，パイプで渡す
-cmd /c "a.exe < input.txt"               # cmd の < を使う場合
-```
+- 発表者ビュー（ノートと次のスライドが見える）は，画面の左下に出るナビゲーションのボタンから開きます。
+- フォント（Noto Sans JP・Fira Code）は Google Fonts から読み込むので，ネットにつながらないと別のフォントで表示されます。その場合は PDF を使います。
+- PDF は，クリックで順に表示する部分の最後の状態を書き出します。1 クリックずつ別のページにするときは `--with-clicks` を付けます。`--format pptx` で PowerPoint にも書き出せますが，各スライドは画像になります。
 
-- コマンドライン引数は実行ファイルの後に並べます（例: `./a.out input.txt`）。各回の README に，課題ごとに使う引数を書いています。
-- 第12回の `CalcApp`（ライブラリを使う）と第13回の `DynamicVectorFail`（`DynamicVector` のソースも使う）は，それぞれの回の README のコマンドでビルドします。
-- 比較用のプログラム（`versions/*.c`）は，そのファイル 1 つだけをコンパイルします（例: `gcc -std=c17 -Wall -Wextra -Wpedantic versions/powers_while.c -o a.out`）。
-- 第13回などでメモリの誤りを確かめるときは，Linux・macOS で `-fsanitize=address,undefined -g` を付けてビルドすると，AddressSanitizer・UBSan が範囲外アクセスやリーク（Linux）を報告します。
+## 公開のしくみ
 
-### 2. 授業と同じ空のプロジェクトで使う（Visual Studio）
+`.github/workflows/slides.yml` が，このブランチへの push のたびに，`README.md` 以外の `.md` をすべて HTML（`--base ./`，各スライドの `routerMode: hash`）と PDF に書き出し，一覧のページと一緒に GitHub Pages に公開します。
+ほかのブランチへの push・PR では書き出しだけを行い，成果物（**Actions** の実行結果の **Artifacts** の `slides`）にします。
 
-1. 授業の手順どおり，**Create a new project > Empty Project** でプロジェクトを作ります。
-2. **Solution Explorer** の **Source Files** を右クリックし，**Add > Existing Item** でプロジェクトフォルダの `.c`（と `.h`）を追加します。
-3. `input.txt` などのデータファイルを使う課題は，ファイルを作ったプロジェクトのフォルダ（`.vcxproj` と同じフォルダ。授業の `$(ProjectDir)`）にコピーします。
-4. 引数を使う課題は，プロジェクトの **Properties > Configuration Properties > Debugging > Command Arguments** に引数を書きます。
-5. **Ctrl+F5**（**Debug > Start Without Debugging**）で実行します。
+公開には，リポジトリの設定が 2 つ要ります（最初の 1 回だけ）。
 
-ソースは BOM 付き UTF-8 なので，`/utf-8` を指定していないプロジェクトでも日本語のコメントは文字化けしません。
+1. **Settings > Pages** の **Source** を **GitHub Actions** にする。
+2. **Settings > Environments > github-pages** の **Deployment branches and tags** に `slides` を加える（既定では既定のブランチからしか公開できない）。
 
-### 3. Visual Studio でフォルダーを開く
+公開されたページは誰でも見られます。
 
-1. Visual Studio を起動し，**File > Open > Folder** でリポジトリのフォルダを開きます（`.sln` はありません。CMake のプロジェクトとして開きます）。
-2. **Output** ウィンドウに `CMake generation finished.` と出るまで待ちます。ツールバーの構成は **x64-Debug** のままでかまいません。
-3. ツールバーの **Startup Item**（▶ の横のドロップダウン）で実行したいプロジェクト（`Echo.exe` など）を選びます。
-4. **Ctrl+F5**（**Debug > Start Without Debugging**）で実行，**F5**（**Debug > Start Debugging**）でデバッグ実行，**Ctrl+Shift+B**（**Build > Build All**）ですべてビルドします。
+## 追加・修正するとき
 
-- 実行ファイルは `out\build\x64-Debug\bin\weekNN\<プロジェクト名>\` にでき，プロジェクトフォルダの `input.txt` などのデータファイルも同じフォルダにコピーされます。
-  作業ディレクトリはこのフォルダなので，データファイルを読む課題もそのまま動きます。プログラムが書き出すファイル（第10回）もこのフォルダにできます。
-- 引数を使う課題は，**Startup Item** でプロジェクトを選んだ状態で **Debug > Debug and Launch Settings for \<プロジェクト\>** を開き，表示された構成に `"args"` を足します（授業の **Command Arguments** に当たります）。
-  この設定は `.vs/launch.vs.json` に保存されます（リポジトリには含めません）。
-
-  ```json
-  {
-    "type": "default",
-    "project": "CMakeLists.txt",
-    "projectTarget": "ReadText.exe (week10\\ReadText\\ReadText.exe)",
-    "name": "ReadText.exe (week10\\ReadText\\ReadText.exe)",
-    "args": [ "input.txt" ]
-  }
-  ```
-
-- `input.txt` を書き換えたときは，次のビルドでコピーし直されます。
-
-### 4. VS Code で使う（Windows / macOS / Linux）
-
-拡張機能 **C/C++**（`ms-vscode.cpptools`）と **CMake Tools**（`ms-vscode.cmake-tools`）を入れます。
-
-1. **File > Open Folder** でリポジトリのフォルダを開きます。
-2. CMake Tools がキット（コンパイラ）を尋ねるので，Windows は **Visual Studio Community 2026 Release - amd64** などの MSVC，macOS / Linux は Clang か GCC を選びます（後から変えるときは **Command Palette**（Ctrl+Shift+P）の **CMake: Select a Kit**）。
-3. **Command Palette** の **CMake: Set Launch/Debug Target** で実行したいプロジェクトを選び，**CMake: Run Without Debugging**（Ctrl+Shift+F5）で実行，**CMake: Debug**（Shift+F5）でデバッグ実行します。
-   すべてのビルドは **CMake: Build**（F7）です。
-
-- 実行ファイルとデータファイルの場所，作業ディレクトリは 3 と同じです（ビルド先は `build/`）。
-- 引数を使う課題は，**File > Preferences > Settings** の **Workspace** タブで `cmake.debugConfig` を検索し，**Edit in settings.json** で次のように書きます（`.vscode/settings.json` に保存されます。リポジトリには含めません）。
-
-  ```json
-  { "cmake.debugConfig": { "args": [ "input.txt" ] } }
-  ```
-
-- リダイレクト（`<`）を使う課題（第7回）は，**Terminal > New Terminal** で 1 の方法を使います。
-
-### ソースを書き換えて試す
-
-演習ページの「値を変えて試す」「〜に書き換えて比べる」小問は，README の書き換え方に従ってソースを書き換え，ビルドし直して実行します。確かめたら `git restore <ファイル>`（または **Source Control** ビューの **Discard Changes**）で元に戻します。
-
-## よくあるトラブル
-
-| 症状 | 対処 |
-| --- | --- |
-| Visual Studio の **Startup Item** にプロジェクトが出ない | **Project > Delete Cache and Reconfigure** |
-| VS Code で `cl.exe` が見つからない | キットに MSVC を選ぶ。Visual Studio（または Build Tools for Visual Studio）の C++ ワークロードが入っているか確認 |
-| `input.txt` が開けない | 作業ディレクトリに `input.txt` があるか確認（1 はプロジェクトフォルダで実行，2 は `.vcxproj` のフォルダにコピー，3・4 はビルドし直す） |
-| 日本語が文字化けする | プログラムの表示は ASCII にしています。ソースのコメントが化ける場合はファイルを BOM 付き UTF-8 で保存し直す |
-| 入力の終わり（EOF）の入れ方 | Windows は行頭で **Ctrl+Z → Enter**，macOS / Linux は **Ctrl+D** |
+- スライドは 1 本 1 ファイル（`<名前>.md`）。CI は `README.md` 以外の `.md` をすべて書き出すので，追加したらこのファイルの一覧に加えるだけでよい。`ta` ブランチの実務の手引きのその回の節からリンクするときは，公開ページの URL（`https://ns28cse.github.io/programminglang1-ans/<名前>/`）を使う。
+- 内容は実務の手引きの該当する回の節に合わせ，詳しい説明は手引きに置く（スライドに手引きと違う内容を書かない）。
+- 例には，演習の課題やデバッグの題材と**同じ形・同じ種類の誤り**を使わない（答えを見せないため）。
+- その回までに授業で扱った文法・操作だけを前提にし，未習のものは「（授業では未習）」か発表者ノートで断る。Visual Studio の表記は英語版の太字で，日本語版の名前を添える（実務の手引きの対応表と同じ名前）。
+- 各スライドの発表者ノートに，時間の目安・言うこと・出やすい質問と答えを書く。問いのスライドの答えはノートに書く。
+- 例のコード・追跡表・期待値は実際にコンパイル・実行して確かめる。ステップ実行の順序を見せるときは，どこから F10 を押すかを書く。
+- コードは合字にしない（`style.css`）。コードの強調の指定は最後を `all` にする（PDF は最後のクリックの状態を書き出すため）。
+- HTML は `routerMode: hash` と `--base ./` で書き出す（どの URL に置いても，途中で再読み込みしても動くように）。
+- 評価は `ta` ブランチの評価エージェント（`.claude/agents/ta-material-reviewer.md`）の観点で行う。
+- 依存パッケージは `package-lock.json` で固定している。更新は授業の前にまとめて `npm update` し，HTML と PDF の書き出しが通ることを確かめてから commit する。`npm audit` の警告の多くは書き出しに使う開発用の部品のもので，公開する HTML・PDF には関係しない。

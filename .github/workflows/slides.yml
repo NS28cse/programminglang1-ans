@@ -1,12 +1,11 @@
 name: slides
 
-# slides/ の説明用スライド（Slidev。README.md 以外の .md をすべて）を HTML と PDF に書き出し，成果物（Artifacts の slides）にする。
-# ta ブランチでは，リポジトリ変数 SLIDES_PAGES が true のとき GitHub Pages にも公開する（設定は slides/README.md の「GitHub Pages」）
+# README.md 以外の .md（Slidev のスライド）をすべて HTML と PDF に書き出す。
+# slides ブランチへの push では GitHub Pages に公開し，ほかのブランチ・PR では成果物（Artifacts の slides）にする。
+# 公開には Settings > Pages の Source を GitHub Actions にし，github-pages 環境で slides ブランチからの公開を許可しておく（README.md の「公開のしくみ」）
 on:
   push:
-    paths: ['slides/**', '.github/workflows/slides.yml']
   pull_request:
-    paths: ['slides/**', '.github/workflows/slides.yml']
   workflow_dispatch:
 
 concurrency:
@@ -20,16 +19,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    defaults:
-      run:
-        working-directory: slides
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: slides/package-lock.json
       - name: Install
         run: npm ci
       - name: Japanese fonts and Chromium for the PDF export
@@ -60,22 +55,26 @@ jobs:
               title = html.escape(m.group(1) if m else md.stem)
               items.append(f'<li>{title}（<a href="{md.stem}/">スライド</a>・<a href="{md.stem}.pdf">PDF</a>）</li>')
           pathlib.Path("dist/index.html").write_text(
-              '<!doctype html><html lang="ja"><meta charset="utf-8"><title>説明用スライド</title>'
-              '<h1>説明用スライド</h1><ul>' + "".join(items) + '</ul></html>\n', encoding="utf-8")
+              '<!doctype html><html lang="ja"><meta charset="utf-8">'
+              '<meta name="viewport" content="width=device-width, initial-scale=1">'
+              '<title>説明用スライド</title>'
+              '<h1>説明用スライド</h1>'
+              '<p>プログラミング言語I・ソフトウェア演習I の演習の前に TA が見せる説明</p>'
+              '<ul>' + "".join(items) + '</ul></html>\n', encoding="utf-8")
           EOF
       - uses: actions/upload-artifact@v4
         with:
           name: slides
-          path: slides/dist
+          path: dist
       - name: Upload for GitHub Pages
-        if: vars.SLIDES_PAGES == 'true' && github.ref == 'refs/heads/ta' && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/slides' && github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: slides/dist
+          path: dist
 
   deploy:
     needs: build
-    if: vars.SLIDES_PAGES == 'true' && github.ref == 'refs/heads/ta' && github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/slides' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

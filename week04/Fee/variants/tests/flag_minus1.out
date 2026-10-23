@@ -1,3 +1,0 @@
-if (flag): true
-if (!flag): false
-if (flag == 1): false
