@@ -337,7 +337,7 @@ F11・ウォッチ・呼び出し履歴は第14回の講義で正式に扱う（
 **デバッグの補足（アクセス違反で止まったら）**: 演習では無効なポインタを実行して試さないが，学生のプログラムが誤って止まったときは次の順に見る。
 ① **Exception Thrown** ウィンドウの文面を読む（**read access violation** と，**p was nullptr** のようにどのポインタかが出ることがある。C のプログラムでも `nullptr` と表示されるが，`NULL` のこと）。② 黄色の矢印の行で，どの式がポインタをたどっているかを見る。③ **Locals** でそのポインタの値を確かめる（`0x0000000000000000` なら `NULL`）。④ **Call Stack** で呼び出し元の行をダブルクリックし，そのポインタをどこで受け取ったか・作ったかをさかのぼる。確かめたら Shift+F5 で止めてから直す。
 
-**関連**: 第8回 README の [課題1　`swap`を追う](../week08/README.md#課題1swapを追うswap--pointersc)（図，「`*a = *b` を `a = b` に変えても交換にならない理由」，採点のポイント），デバッグの題材 [BugCopyText](../debugging/BugCopyText/README.md)
+**関連**: 第8回 README の [課題1　`swap`を追う](../week08/README.md#課題1swapを追うswap--pointersc)（図，「`*a = *b` を `a = b` に変えても交換にならない理由」，採点のポイント），デバッグの題材 [BugCopyText](../debugging/BugCopyText/README.md)，説明用スライド「[書き込む前に容量を確かめる](https://ns28cse.github.io/programminglang1-ans/buffer-capacity/)」
 
 ## 第9回　実験の前に commit，後で差分（ポインタ2）
 
@@ -496,7 +496,7 @@ if (fp == NULL) {
 
 **デバッグの補足（確保した領域をメモリで見る。授業では未習）**: Debug 構成の C ランタイムは，`malloc` した領域を 0xCD で埋め，その前後 4 バイトずつを 0xFD で埋めて確保する（Microsoft Learn「CRT debug heap details」）。`Dynamic` で `malloc` の直後に **Memory 1** に `values` と入れると，代入前の要素が CD の並びで，最後の要素の後ろに FD が 4 つ見える。**Watch 1** に `values,5` と書けば（コマンド引数を 5 にしたとき）5 要素を配列として見られる（「,要素数」の書式指定子は授業資料にない。第5回の「デバッグの補足」）。この FD を範囲外への書き込みで壊すと，`free` のときに Debug の C ランタイムが検査してエラーを報告する。アクセス違反で止まったときの見方は第8回と同じ。
 
-**関連**: 第13回 README の [課題4　コードレビュー](../week13/README.md#課題4コードレビュー)（指摘・修正版・所有者の図），[課題3　構造体を確保する関数](../week13/README.md#課題3構造体を確保する関数newpoint--new_pointc) の [失敗を模擬する（`NewPointFail`）](../week13/README.md#失敗を模擬するnewpointfail)，[発展3　不透明な`Vector`の生成と解放](../week13/README.md#発展3不透明なvectorの生成と解放dynamicvector--vector_maincvectorcvectorh) の [途中で失敗した場合（`DynamicVectorFail`）](../week13/README.md#途中で失敗した場合dynamicvectorfail)，デバッグの題材 [BugMallocSize](../debugging/BugMallocSize/README.md)，[BugBackupScores](../debugging/BugBackupScores/README.md)
+**関連**: 第13回 README の [課題4　コードレビュー](../week13/README.md#課題4コードレビュー)（指摘・修正版・所有者の図），[課題3　構造体を確保する関数](../week13/README.md#課題3構造体を確保する関数newpoint--new_pointc) の [失敗を模擬する（`NewPointFail`）](../week13/README.md#失敗を模擬するnewpointfail)，[発展3　不透明な`Vector`の生成と解放](../week13/README.md#発展3不透明なvectorの生成と解放dynamicvector--vector_maincvectorcvectorh) の [途中で失敗した場合（`DynamicVectorFail`）](../week13/README.md#途中で失敗した場合dynamicvectorfail)，デバッグの題材 [BugMallocSize](../debugging/BugMallocSize/README.md)，[BugBackupScores](../debugging/BugBackupScores/README.md)，説明用スライド「[読みやすいコードと関数の契約](https://ns28cse.github.io/programminglang1-ans/readable-code/)」
 
 ## 第14回　推測せずに計測する（再帰）
 
@@ -672,8 +672,8 @@ AddressSanitizer は Edit and Continue（`/ZI`）・`/RTC`（実行時チェッ�
 | [動いたら commit，試したら差分](https://ns28cse.github.io/programminglang1-ans/version-control/)（[PDF](https://ns28cse.github.io/programminglang1-ans/version-control.pdf)） | 第2回〜 | [Git の最小の手順](#git-の最小の手順visual-studio-の-git-changes)，第2回・第9回 |
 | [テストの値を選ぶ](https://ns28cse.github.io/programminglang1-ans/test-cases/)（[PDF](https://ns28cse.github.io/programminglang1-ans/test-cases.pdf)） | 第3回〜 | [テストケースの書き方の型](#テストケースの書き方の型)，第3回・第4回・第10回 |
 | [デバッガで流れを追う](https://ns28cse.github.io/programminglang1-ans/debugger-basics/)（[PDF](https://ns28cse.github.io/programminglang1-ans/debugger-basics.pdf)） | 第4回〜 | [デバッグの進め方](#デバッグの進め方)，第4回 |
-| [読みやすいコードと関数の契約](https://ns28cse.github.io/programminglang1-ans/readable-code/)（[PDF](https://ns28cse.github.io/programminglang1-ans/readable-code.pdf)） | 第5回〜 | [コードレビューの観点チェックリスト](#コードレビューの観点チェックリスト)，第5回・第11回 |
-| [書き込む前に容量を確かめる](https://ns28cse.github.io/programminglang1-ans/buffer-capacity/)（[PDF](https://ns28cse.github.io/programminglang1-ans/buffer-capacity.pdf)） | 第5回〜（文字列は第6回） | 第5回・第6回 |
+| [読みやすいコードと関数の契約](https://ns28cse.github.io/programminglang1-ans/readable-code/)（[PDF](https://ns28cse.github.io/programminglang1-ans/readable-code.pdf)） | 第5回〜 | [コードレビューの観点チェックリスト](#コードレビューの観点チェックリスト)，第5回・第11回・第13回 |
+| [書き込む前に容量を確かめる](https://ns28cse.github.io/programminglang1-ans/buffer-capacity/)（[PDF](https://ns28cse.github.io/programminglang1-ans/buffer-capacity.pdf)） | 第5回〜（文字列は第6回） | 第5回・第6回・第8回 |
 | [再現できる質問](https://ns28cse.github.io/programminglang1-ans/bug-report/)（[PDF](https://ns28cse.github.io/programminglang1-ans/bug-report.pdf)） | 第1回〜（入力は第7回） | [質問・バグ報告のテンプレート](#質問バグ報告のテンプレート)，第7回 |
 
 ## テーマと回の対応
