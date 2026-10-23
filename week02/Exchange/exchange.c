@@ -1,4 +1,4 @@
-﻿// 第2回 課題3 値のコピーと交換（Exchange / exchange.c）
+﻿// 第2回 課題3　値のコピーと交換（Exchange / exchange.c）
 // a = b; で a の元の値が失われるので，先に temp へ保存してから交換する
 #include <stdio.h>
 

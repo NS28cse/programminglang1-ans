@@ -1,4 +1,4 @@
-﻿// 第6回 発展 容量の境界（CopyCapacity / strings.c）
+﻿// 第6回 発展　容量の境界（CopyCapacity / strings.c）
 // 講義の strings.c そのもの（copy の容量は 16）。
 // 容量 3 では "cat" と終端の4要素が入らないので，条件が偽になりコピー自体を行わない。
 #include <stdio.h>

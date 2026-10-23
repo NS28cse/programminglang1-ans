@@ -3,7 +3,7 @@
 - 演習ページ: [ex13](https://t-yokoga.github.io/softprac1/ex13.html)（原稿: [docs/ex13.md](https://github.com/t-yokoga/softprac1/blob/main/docs/ex13.md)）・講義: [lec13](https://t-yokoga.github.io/softprac1/lec13.html)（例題: [docs/sample/13/](https://github.com/t-yokoga/softprac1/tree/main/docs/sample/13/)）
 
 この回は「確保できたら使う」だけでなく，**誰が初期化し，誰が解放し，失敗したら何を残すか**を追跡する回です。
-リーク・二重解放・解放後の使用は実行しても気付きにくいので，AddressSanitizer・LeakSanitizer（Linux・macOS の gcc／clang で[コマンドでビルド](../README.md#1-コマンドでビルドする)するときに `-fsanitize=address,undefined -g` を付ける。LeakSanitizer は Linux だけ）や valgrind（Linux）で確かめると分かりやすくなります。
+リーク・二重解放・解放後の使用は実行しても気付きにくいので，AddressSanitizer・LeakSanitizer（付け方は[ルートの README の「コマンドでビルドする」](../README.md#1-コマンドでビルドする)）や valgrind（Linux）で確かめると分かりやすくなります。
 Visual Studio では，プロジェクトの **Properties > Configuration Properties > C/C++ > General > Enable Address Sanitizer** で AddressSanitizer だけを使えます（リークは検出しません）。
 
 ## プロジェクト一覧
@@ -86,7 +86,7 @@ Windows（Visual Studio，x64）でも Linux x64 でも表示は同じです（`
     values = NULL;
 ```
 
-講義の例題と違うのは，平均の計算を `(double)sum / (double)n` と両方明示的に変換した点だけです（`size_t` から `double` への変換を書き手の意図として明示するため）。
+コメントと課題2 の逆順処理の追加を除くと，講義の例題と違うのは平均の計算を `(double)sum / (double)n` と両方明示的に変換した点だけです（`size_t` から `double` への変換を書き手の意図として明示するため）。
 
 ### 実行結果
 
@@ -1002,7 +1002,7 @@ allocation failed
 | 2 | `x` だけ（2 回目の `y` の確保で失敗） | `cleanup` で `result`，`y` は `NULL` なので何もせず，`x` を解放。終了コード 1 |
 | 3 | `x` と `y`（3 回目，`vector_axpy` 内の `vector_create` で失敗） | `vector_axpy` が `NULL` を返し `cleanup` へ。`result` は `NULL`，`y` と `x` を解放。終了コード 1 |
 
-確認方法: Linux・macOS の gcc／clang で[コマンドでビルド](../README.md#1-コマンドでビルドする)するときに `-fsanitize=address,undefined -g` を付け（LeakSanitizer は Linux だけ），AddressSanitizer／LeakSanitizer を有効にして実行すると，どの版でもリーク・二重解放は報告されません。valgrind で確保と解放の回数を数えると，次のように予測と一致します。
+確認方法: サニタイザを付けて実行すると，どの版でもリーク・二重解放は報告されません。valgrind で確保と解放の回数を数えると，次のように予測と一致します。
 
 | `fail_on_call` | valgrind の `total heap usage` | 内訳 |
 | --- | --- | --- |
@@ -1131,7 +1131,7 @@ valgrind の `total heap usage` は `fail_on_call` = 0，1，2，3 で 4，0，1
 | 生成するものを 1 つ増やしたとき | 先頭の `NULL` の初期化と `cleanup` に 1 行ずつ足す | それより後のすべての失敗経路と正常終了に 1 行ずつ足す |
 | 誤りやすい所 | 所有ポインタの `NULL` の初期化を忘れる（未初期化のポインタを `free` する） | どれか 1 つの経路で解放を書き忘れる（その経路だけのリーク） |
 
-例えば別解の `y` の失敗経路から `vector_destroy(&x);` を消して `fail_on_call = 2` で実行すると，表示は同じ `allocation failed` のままですが，valgrind は `definitely lost: 16 bytes in 1 blocks`，LeakSanitizer（`-fsanitize=address,undefined -g`）は `SUMMARY: AddressSanitizer: 16 byte(s) leaked in 1 allocation(s).` と報告します。表示だけでは気付けないので，失敗の経路ごとに確かめる必要があります。
+例えば別解の `y` の失敗経路から `vector_destroy(&x);` を消して `fail_on_call = 2` で実行すると，表示は同じ `allocation failed` のままですが，valgrind は `definitely lost: 16 bytes in 1 blocks`，LeakSanitizer（`-fsanitize=address,undefined -g`）は `SUMMARY: AddressSanitizer: 16 byte(s) leaked in 1 allocation(s).` と報告します（課題1の例と違い，この例では失った領域を指すポインタが局所変数に残らないので，同じオプションでも検出されます）。表示だけでは気付けないので，失敗の経路ごとに確かめる必要があります。
 
 **どちらを勧めるか**: **本体（講義）の `goto cleanup;` を勧めます。** 講義 8.3 のとおり，解放責任を 1 か所にまとめると，`return` を足したときの解放漏れを防ぎやすくなります。所有するものが 1〜2 個なら別解の形でも読みやすさは変わりませんが，3 個以上や失敗箇所が多い関数では解放の列の重複が増えます。
 学生がこの形で書いてきても誤りにはしません。各失敗経路で「そこまでに作成したものだけ」を解放しているかを読み，`fail_on_call` を 1，2，3 に変えた実行と LeakSanitizer や valgrind で，どの経路もリークしないことを確かめているかを見ます。そのうえで，`goto cleanup;` の形と比べて `vector_destroy` を書く回数の違いを説明できるかを確かめます。

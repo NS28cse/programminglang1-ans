@@ -1,4 +1,4 @@
-﻿// 第6回 課題3 変換する順序（Average / average.c）
+﻿// 第6回 課題3　変換する順序（Average / average.c）
 // 演習ページの「完全なプログラム」。整数拡張・積の型・往復変換・符号なしへの変換を確かめる。
 #include <stdio.h>
 int main(void)

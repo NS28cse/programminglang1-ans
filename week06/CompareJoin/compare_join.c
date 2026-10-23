@@ -1,4 +1,4 @@
-﻿// 第6回 課題4 比較してから連結する（CompareJoin / compare_join.c）
+﻿// 第6回 課題4　比較してから連結する（CompareJoin / compare_join.c）
 // strcmp は戻り値の符号だけを使う。連結は書き込む前に容量を確かめ，終端も含めてループでコピーする。
 #include <stdio.h>
 #include <string.h>

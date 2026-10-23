@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
     long count = 0;
     int ok = read_values(fp, values, &count);
     if (fclose(fp) == EOF) {
+        fprintf(stderr, "read error\n");
         ok = 0;
     }
     if (!ok) {
