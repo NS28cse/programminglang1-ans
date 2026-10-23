@@ -12,13 +12,14 @@
 
 | ブランチ | 内容 | 使う人 |
 | --- | --- | --- |
-| `main` | 解答（ソース・入力ファイル）と解説（各回の README）。ビルドに必要な最小限のファイルだけを置いています | TA・学生 |
-| `ta` | `main` に，TA 用の資料（実務の手引き・デバッグの題材），自動テスト（期待する出力），IDE の設定，CI，保守の規約とツールを加えたもの。入口は `ta` ブランチの `TA.md` です | TA・保守する人 |
-| `ta-results` | `ta` のすべてのテストを実際に実行した結果（標準出力・標準エラー出力・終了コード・作られたファイル）を `results/` に加えたもの。学生の出力と比べるときに使います | TA |
-| `practice` | 解答を雛形（空の `main`）に置き換え，入力ファイルと自動テスト（期待する出力）だけを残したもの。解答を見ずに課題を解き，学生と同じ手順と難しさを体験するときに使います | TA |
+| [`main`](https://github.com/NS28cse/programminglang1-ans/tree/main) | 解答（ソース・入力ファイル）と解説（各回の README）。ビルドに必要な最小限のファイルだけを置いています | TA・学生 |
+| [`ta`](https://github.com/NS28cse/programminglang1-ans/tree/ta) | `main` に，TA 用の資料（実務の手引き・デバッグの題材），自動テスト（期待する出力），IDE の設定，CI，保守の規約とツールを加えたもの。入口は [TA.md](https://github.com/NS28cse/programminglang1-ans/blob/ta/TA.md) です | TA・保守する人 |
+| [`ta-results`](https://github.com/NS28cse/programminglang1-ans/tree/ta-results) | `ta` のすべてのテストを実際に実行した結果（標準出力・標準エラー出力・終了コード・作られたファイル）を `results/` に加えたもの。学生の出力と比べるときに使います。入口は [results/](https://github.com/NS28cse/programminglang1-ans/tree/ta-results/results) です | TA |
+| [`practice`](https://github.com/NS28cse/programminglang1-ans/tree/practice) | 解答を雛形（空の `main`）に置き換え，入力ファイルと自動テスト（期待する出力）だけを残したもの。解答を見ずに課題を解き，学生と同じ手順と難しさを体験するときに使います | TA |
+| [`slides`](https://github.com/NS28cse/programminglang1-ans/tree/slides) | 演習の前に TA が全員へ見せる説明用スライドだけを置いたもの。[公開ページ](https://ns28cse.github.io/programminglang1-ans/)で HTML と PDF を見られます | TA |
 
-解答（`weekNN/` のソース・データファイル）と各回の README は，3 つのブランチで同じ内容です。
-保守は `ta` ブランチで行い（テストと CI で確かめるため），解答と解説の変更を `main` に反映します（手順と規約は `ta` ブランチの `CONTRIBUTING.md`）。
+解答（`weekNN/` のソース・データファイル）と各回の README は，`main`・`ta`・`ta-results` で同じ内容です（`practice` はソースが雛形で，各回の README は課題の表だけです）。
+保守は `ta` ブランチで行い（テストと CI で確かめるため），解答と解説の変更を `main` に反映します（手順と規約は `ta` ブランチの [CONTRIBUTING.md](https://github.com/NS28cse/programminglang1-ans/blob/ta/CONTRIBUTING.md)）。
 
 ## 各回の解答
 
@@ -137,19 +138,19 @@ cmd /c "a.exe < input.txt"               # cmd の < を使う場合
 - 実行ファイルは `out\build\x64-Debug\bin\weekNN\<プロジェクト名>\` にでき，プロジェクトフォルダの `input.txt` などのデータファイルも同じフォルダにコピーされます。
   作業ディレクトリはこのフォルダなので，データファイルを読む課題もそのまま動きます。プログラムが書き出すファイル（第10回）もこのフォルダにできます。
 - 引数を使う課題は，**Startup Item** でプロジェクトを選んだ状態で **Debug > Debug and Launch Settings for \<プロジェクト\>** を開き，表示された構成に `"args"` を足します（授業の **Command Arguments** に当たります）。
-  この設定は `.vs/launch.vs.json` に保存されます（リポジトリには含めません）。
+  この設定は `.vs/launch.vs.json` に保存されます（`main` ブランチにはこのファイルを含めていません。`ta` ブランチでは [TA.md の「IDE で使う」](https://github.com/NS28cse/programminglang1-ans/blob/ta/TA.md#ide-で使う)の方法を使います）。
 
   ```json
   {
     "type": "default",
     "project": "CMakeLists.txt",
-    "projectTarget": "ReadText.exe (week10\\ReadText\\ReadText.exe)",
-    "name": "ReadText.exe (week10\\ReadText\\ReadText.exe)",
+    "projectTarget": "ReadText.exe (bin\\week10\\ReadText\\ReadText.exe)",
+    "name": "ReadText.exe (bin\\week10\\ReadText\\ReadText.exe)",
     "args": [ "input.txt" ]
   }
   ```
 
-- `input.txt` を書き換えたときは，次のビルドでコピーし直されます。
+- プロジェクトフォルダのデータファイルを書き換えたり足したりしたときは，次のビルドでコピーし直されます（実行ファイルのフォルダで直接書き換えた同名のファイルは上書きされます）。プログラムが書き出したファイルは実行ファイルのフォルダに残り，プロジェクトフォルダには戻りません。
 
 ### 4. VS Code で使う（Windows / macOS / Linux）
 
@@ -161,11 +162,14 @@ cmd /c "a.exe < input.txt"               # cmd の < を使う場合
    すべてのビルドは **CMake: Build**（F7）です。
 
 - 実行ファイルとデータファイルの場所，作業ディレクトリは 3 と同じです（ビルド先は `build/`）。
-- 引数を使う課題は，**File > Preferences > Settings** の **Workspace** タブで `cmake.debugConfig` を検索し，**Edit in settings.json** で次のように書きます（`.vscode/settings.json` に保存されます。リポジトリには含めません）。
+- 引数を使う課題は，**File > Preferences > Settings** の **Workspace** タブで `cmake.debugConfig` を検索し，**Edit in settings.json** で次のように書きます（`.vscode/settings.json` に保存されます。`main` ブランチにはこのファイルを含めていません。`ta` ブランチでは [TA.md の「IDE で使う」](https://github.com/NS28cse/programminglang1-ans/blob/ta/TA.md#ide-で使う)の方法を使います）。
+  `console` は，デバッグ実行でもキーボードから入力できるようにする設定です（入力を読む課題で使う）。
 
   ```json
-  { "cmake.debugConfig": { "args": [ "input.txt" ] } }
+  { "cmake.debugConfig": { "args": [ "input.txt" ], "console": "integratedTerminal" } }
   ```
+
+  この `args` はどのプロジェクトを実行しても渡されるので，その課題が終わったら消します。
 
 - リダイレクト（`<`）を使う課題（第7回）は，**Terminal > New Terminal** で 1 の方法を使います。
 
