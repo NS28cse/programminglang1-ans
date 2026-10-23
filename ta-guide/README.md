@@ -337,7 +337,7 @@ F11・ウォッチ・呼び出し履歴は第14回の講義で正式に扱う（
 **デバッグの補足（アクセス違反で止まったら）**: 演習では無効なポインタを実行して試さないが，学生のプログラムが誤って止まったときは次の順に見る。
 ① **Exception Thrown** ウィンドウの文面を読む（**read access violation** と，**p was nullptr** のようにどのポインタかが出ることがある。C のプログラムでも `nullptr` と表示されるが，`NULL` のこと）。② 黄色の矢印の行で，どの式がポインタをたどっているかを見る。③ **Locals** でそのポインタの値を確かめる（`0x0000000000000000` なら `NULL`）。④ **Call Stack** で呼び出し元の行をダブルクリックし，そのポインタをどこで受け取ったか・作ったかをさかのぼる。確かめたら Shift+F5 で止めてから直す。
 
-**関連**: 第8回 README の [課題1　`swap`を追う](../week08/README.md#課題1swapを追うswap--pointersc)（図，「`*a = *b` を `a = b` に変えても交換にならない理由」，採点のポイント），デバッグの題材 [BugCopyText](../debugging/BugCopyText/README.md)，説明用スライド「[書き込む前に容量を確かめる](https://ns28cse.github.io/programminglang1-ans/buffer-capacity/)」
+**関連**: 第8回 README の [課題1　`swap`を追う](../week08/README.md#課題1swapを追うswap--pointersc)（図，「`*a = *b` を `a = b` に変えても交換にならない理由」，採点のポイント），デバッグの題材 [BugCopyText](../debugging/BugCopyText/README.md)
 
 ## 第9回　実験の前に commit，後で差分（ポインタ2）
 
@@ -673,7 +673,7 @@ AddressSanitizer は Edit and Continue（`/ZI`）・`/RTC`（実行時チェッ�
 | [テストの値を選ぶ](https://ns28cse.github.io/programminglang1-ans/test-cases/)（[PDF](https://ns28cse.github.io/programminglang1-ans/test-cases.pdf)） | 第3回〜 | [テストケースの書き方の型](#テストケースの書き方の型)，第3回・第4回・第10回 |
 | [デバッガで流れを追う](https://ns28cse.github.io/programminglang1-ans/debugger-basics/)（[PDF](https://ns28cse.github.io/programminglang1-ans/debugger-basics.pdf)） | 第4回〜 | [デバッグの進め方](#デバッグの進め方)，第4回 |
 | [読みやすいコードと関数の契約](https://ns28cse.github.io/programminglang1-ans/readable-code/)（[PDF](https://ns28cse.github.io/programminglang1-ans/readable-code.pdf)） | 第5回〜 | [コードレビューの観点チェックリスト](#コードレビューの観点チェックリスト)，第5回・第11回・第13回 |
-| [書き込む前に容量を確かめる](https://ns28cse.github.io/programminglang1-ans/buffer-capacity/)（[PDF](https://ns28cse.github.io/programminglang1-ans/buffer-capacity.pdf)） | 第5回〜（文字列は第6回） | 第5回・第6回・第8回 |
+| [書き込む前に容量を確かめる](https://ns28cse.github.io/programminglang1-ans/buffer-capacity/)（[PDF](https://ns28cse.github.io/programminglang1-ans/buffer-capacity.pdf)） | 第5回〜（文字列は第6回） | 第5回・第6回 |
 | [再現できる質問](https://ns28cse.github.io/programminglang1-ans/bug-report/)（[PDF](https://ns28cse.github.io/programminglang1-ans/bug-report.pdf)） | 第1回〜（入力は第7回） | [質問・バグ報告のテンプレート](#質問バグ報告のテンプレート)，第7回 |
 
 ## テーマと回の対応
