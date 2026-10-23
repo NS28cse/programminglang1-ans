@@ -1,29 +1,7 @@
-﻿/*
- * 第8回 発展　複数の結果と場所を返す（Decompose / decompose.c）
- *   - decompose: 整数部（long）と小数部（double）の 2 つの出力先へ書き込む
- *   - min_pointer: 小さい方の値ではなく，その値がある「場所」を返す（講義のとおり main の前に定義）
- * main は演習ページのプログラムどおり（decompose(3.14, ...) の結果を表示する）．
- */
-#include <stdio.h>
-/* x は −100〜100 の有限な値．whole と fraction は有効な long と double を指す */
-void decompose(double x, long *whole, double *fraction)
-{
-    *whole = (long)x;          /* 0 方向への切り捨て（四捨五入でも床関数でもない） */
-    *fraction = x - *whole;
-}
-/* 等しいときは b を返す．返す場所は呼び出し元の変数なので，戻った後も寿命が続いている */
-int *min_pointer(int *a, int *b)
-{
-    if (*a < *b) {
-        return a;
-    }
-    return b;
-}
+﻿// Decompose / decompose.c
+// 演習ページ: https://t-yokoga.github.io/softprac1/ex08.html
+
 int main(void)
 {
-    long whole = 0;
-    double fraction = 0.0;
-    decompose(3.14, &whole, &fraction);
-    printf("whole=%ld fraction=%.2f\n", whole, fraction);
     return 0;
 }

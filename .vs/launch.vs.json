@@ -1,0 +1,664 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Broken.exe (bin\\week01\\Broken\\Broken.exe)",
+      "name": "week01 Broken",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "House.exe (bin\\week01\\House\\House.exe)",
+      "name": "week01 House",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Message.exe (bin\\week01\\Message\\Message.exe)",
+      "name": "week01 Message",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Version.exe (bin\\week01\\Version\\Version.exe)",
+      "name": "week01 Version",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Welcome.exe (bin\\week01\\Welcome\\Welcome.exe)",
+      "name": "week01 Welcome",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Exchange.exe (bin\\week02\\Exchange\\Exchange.exe)",
+      "name": "week02 Exchange",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Observe.exe (bin\\week02\\Observe\\Observe.exe)",
+      "name": "week02 Observe",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Profile.exe (bin\\week02\\Profile\\Profile.exe)",
+      "name": "week02 Profile",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Rectangle.exe (bin\\week02\\Rectangle\\Rectangle.exe)",
+      "name": "week02 Rectangle",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Temperature.exe (bin\\week02\\Temperature\\Temperature.exe)",
+      "name": "week02 Temperature",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Conditions.exe (bin\\week03\\Conditions\\Conditions.exe)",
+      "name": "week03 Conditions",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Flags.exe (bin\\week03\\Flags\\Flags.exe)",
+      "name": "week03 Flags",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Leap.exe (bin\\week03\\Leap\\Leap.exe)",
+      "name": "week03 Leap",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "TimeParts.exe (bin\\week03\\TimeParts\\TimeParts.exe)",
+      "name": "week03 TimeParts",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Update.exe (bin\\week03\\Update\\Update.exe)",
+      "name": "week03 Update",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "EvenSum.exe (bin\\week04\\EvenSum\\EvenSum.exe)",
+      "name": "week04 EvenSum",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Fee.exe (bin\\week04\\Fee\\Fee.exe)",
+      "name": "week04 Fee",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Powers.exe (bin\\week04\\Powers\\Powers.exe)",
+      "name": "week04 Powers",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Table.exe (bin\\week04\\Table\\Table.exe)",
+      "name": "week04 Table",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "YearGroup.exe (bin\\week04\\YearGroup\\YearGroup.exe)",
+      "name": "week04 YearGroup",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Array3D.exe (bin\\week05\\Array3D\\Array3D.exe)",
+      "name": "week05 Array3D",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ColumnSum.exe (bin\\week05\\ColumnSum\\ColumnSum.exe)",
+      "name": "week05 ColumnSum",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Functions.exe (bin\\week05\\Functions\\Functions.exe)",
+      "name": "week05 Functions",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Maximum.exe (bin\\week05\\Maximum\\Maximum.exe)",
+      "name": "week05 Maximum",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "SumMean.exe (bin\\week05\\SumMean\\SumMean.exe)",
+      "name": "week05 SumMean",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ValueCopy.exe (bin\\week05\\ValueCopy\\ValueCopy.exe)",
+      "name": "week05 ValueCopy",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Warmup05.exe (bin\\week05\\Warmup05\\Warmup05.exe)",
+      "name": "week05 Warmup05",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "AsciiTable.exe (bin\\week06\\AsciiTable\\AsciiTable.exe)",
+      "name": "week06 AsciiTable",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Average.exe (bin\\week06\\Average\\Average.exe)",
+      "name": "week06 Average",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CharCode.exe (bin\\week06\\CharCode\\CharCode.exe)",
+      "name": "week06 CharCode",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CompareJoin.exe (bin\\week06\\CompareJoin\\CompareJoin.exe)",
+      "name": "week06 CompareJoin",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CopyCapacity.exe (bin\\week06\\CopyCapacity\\CopyCapacity.exe)",
+      "name": "week06 CopyCapacity",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Length.exe (bin\\week06\\Length\\Length.exe)",
+      "name": "week06 Length",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Lower.exe (bin\\week06\\Lower\\Lower.exe)",
+      "name": "week06 Lower",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ByteCount.exe (bin\\week07\\ByteCount\\ByteCount.exe)",
+      "name": "week07 ByteCount",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Echo.exe (bin\\week07\\Echo\\Echo.exe)",
+      "name": "week07 Echo",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Formats.exe (bin\\week07\\Formats\\Formats.exe)",
+      "name": "week07 Formats",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "LetterCount.exe (bin\\week07\\LetterCount\\LetterCount.exe)",
+      "name": "week07 LetterCount",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "LineInput.exe (bin\\week07\\LineInput\\LineInput.exe)",
+      "name": "week07 LineInput",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "LowerInput.exe (bin\\week07\\LowerInput\\LowerInput.exe)",
+      "name": "week07 LowerInput",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Typing.exe (bin\\week07\\Typing\\Typing.exe)",
+      "name": "week07 Typing",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CopyText.exe (bin\\week08\\CopyText\\CopyText.exe)",
+      "name": "week08 CopyText",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Decompose.exe (bin\\week08\\Decompose\\Decompose.exe)",
+      "name": "week08 Decompose",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "MinMax.exe (bin\\week08\\MinMax\\MinMax.exe)",
+      "name": "week08 MinMax",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "PointerWalk.exe (bin\\week08\\PointerWalk\\PointerWalk.exe)",
+      "name": "week08 PointerWalk",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Swap.exe (bin\\week08\\Swap\\Swap.exe)",
+      "name": "week08 Swap",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ArrayTypes.exe (bin\\week09\\ArrayTypes\\ArrayTypes.exe)",
+      "name": "week09 ArrayTypes",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "FindMax.exe (bin\\week09\\FindMax\\FindMax.exe)",
+      "name": "week09 FindMax",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "MatrixMean.exe (bin\\week09\\MatrixMean\\MatrixMean.exe)",
+      "name": "week09 MatrixMean",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Names.exe (bin\\week09\\Names\\Names.exe)",
+      "name": "week09 Names",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "RaggedRows.exe (bin\\week09\\RaggedRows\\RaggedRows.exe)",
+      "name": "week09 RaggedRows",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ReturnMaximum.exe (bin\\week09\\ReturnMaximum\\ReturnMaximum.exe)",
+      "name": "week09 ReturnMaximum",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "SwapRows.exe (bin\\week09\\SwapRows\\SwapRows.exe)",
+      "name": "week09 SwapRows",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Arguments.exe (bin\\week10\\Arguments\\Arguments.exe)",
+      "name": "week10 Arguments  [nagano ishikawa]",
+      "args": [
+        "nagano",
+        "ishikawa"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Binary.exe (bin\\week10\\Binary\\Binary.exe)",
+      "name": "week10 Binary",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ByteOrder.exe (bin\\week10\\ByteOrder\\ByteOrder.exe)",
+      "name": "week10 ByteOrder",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CheckValue.exe (bin\\week10\\CheckValue\\CheckValue.exe)",
+      "name": "week10 CheckValue  [squares.txt 9]",
+      "args": [
+        "squares.txt",
+        "9"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "LineLengths.exe (bin\\week10\\LineLengths\\LineLengths.exe)",
+      "name": "week10 LineLengths  [input.txt]",
+      "args": [
+        "input.txt"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "NumberFormats.exe (bin\\week10\\NumberFormats\\NumberFormats.exe)",
+      "name": "week10 NumberFormats",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ParseNumber.exe (bin\\week10\\ParseNumber\\ParseNumber.exe)",
+      "name": "week10 ParseNumber  [42]",
+      "args": [
+        "42"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "ReadText.exe (bin\\week10\\ReadText\\ReadText.exe)",
+      "name": "week10 ReadText  [input.txt]",
+      "args": [
+        "input.txt"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "WriteSquares.exe (bin\\week10\\WriteSquares\\WriteSquares.exe)",
+      "name": "week10 WriteSquares  [4 squares.txt]",
+      "args": [
+        "4",
+        "squares.txt"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "WriteText.exe (bin\\week10\\WriteText\\WriteText.exe)",
+      "name": "week10 WriteText",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CopyMembers.exe (bin\\week11\\CopyMembers\\CopyMembers.exe)",
+      "name": "week11 CopyMembers",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "PointInit.exe (bin\\week11\\PointInit\\PointInit.exe)",
+      "name": "week11 PointInit",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "PointMove.exe (bin\\week11\\PointMove\\PointMove.exe)",
+      "name": "week11 PointMove",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Rect.exe (bin\\week11\\Rect\\Rect.exe)",
+      "name": "week11 Rect",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "RectContains.exe (bin\\week11\\RectContains\\RectContains.exe)",
+      "name": "week11 RectContains",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "StructLayout.exe (bin\\week11\\StructLayout\\StructLayout.exe)",
+      "name": "week11 StructLayout",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Students.exe (bin\\week11\\Students\\Students.exe)",
+      "name": "week11 Students",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CalcApp.exe (bin\\week12\\CalcApp\\CalcApp.exe)",
+      "name": "week12 CalcApp",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "LibraryCheck.exe (bin\\week12\\LibraryCheck\\LibraryCheck.exe)",
+      "name": "week12 LibraryCheck",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "SortModule.exe (bin\\week12\\SortModule\\SortModule.exe)",
+      "name": "week12 SortModule  [5]",
+      "args": [
+        "5"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "SplitCalc.exe (bin\\week12\\SplitCalc\\SplitCalc.exe)",
+      "name": "week12 SplitCalc",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "VectorCalc.exe (bin\\week12\\VectorCalc\\VectorCalc.exe)",
+      "name": "week12 VectorCalc",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Dynamic.exe (bin\\week13\\Dynamic\\Dynamic.exe)",
+      "name": "week13 Dynamic  [5]",
+      "args": [
+        "5"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "DynamicCopy.exe (bin\\week13\\DynamicCopy\\DynamicCopy.exe)",
+      "name": "week13 DynamicCopy  [5]",
+      "args": [
+        "5"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "DynamicVector.exe (bin\\week13\\DynamicVector\\DynamicVector.exe)",
+      "name": "week13 DynamicVector",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "DynamicVectorFail.exe (bin\\week13\\DynamicVectorFail\\DynamicVectorFail.exe)",
+      "name": "week13 DynamicVectorFail",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "GrowArray.exe (bin\\week13\\GrowArray\\GrowArray.exe)",
+      "name": "week13 GrowArray",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "GrowArrayFail.exe (bin\\week13\\GrowArrayFail\\GrowArrayFail.exe)",
+      "name": "week13 GrowArrayFail",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "NewPoint.exe (bin\\week13\\NewPoint\\NewPoint.exe)",
+      "name": "week13 NewPoint",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "NewPointFail.exe (bin\\week13\\NewPointFail\\NewPointFail.exe)",
+      "name": "week13 NewPointFail",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "SharedCount.exe (bin\\week13\\SharedCount\\SharedCount.exe)",
+      "name": "week13 SharedCount",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "StorageCount.exe (bin\\week13\\StorageCount\\StorageCount.exe)",
+      "name": "week13 StorageCount",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "CheckedFactorial.exe (bin\\week14\\CheckedFactorial\\CheckedFactorial.exe)",
+      "name": "week14 CheckedFactorial",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Factorial.exe (bin\\week14\\Factorial\\Factorial.exe)",
+      "name": "week14 Factorial",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Fibonacci.exe (bin\\week14\\Fibonacci\\Fibonacci.exe)",
+      "name": "week14 Fibonacci",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "GcdLoop.exe (bin\\week14\\GcdLoop\\GcdLoop.exe)",
+      "name": "week14 GcdLoop",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "Trace.exe (bin\\week14\\Trace\\Trace.exe)",
+      "name": "week14 Trace",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "TreeTraversal.exe (bin\\week14\\TreeTraversal\\TreeTraversal.exe)",
+      "name": "week14 TreeTraversal",
+      "args": []
+    }
+  ]
+}

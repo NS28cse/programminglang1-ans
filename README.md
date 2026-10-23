@@ -1,78 +1,80 @@
-# programminglang1-ans
+# programminglang1-ans（practice ブランチ）
 
-「プログラミング言語I・ソフトウェア演習I」（C 言語）の **TA 用解答・解説** リポジトリです。
+「プログラミング言語I・ソフトウェア演習I」（C 言語）の課題を，**解答を見ずに自分で書いて**，学生と同じ手順と難しさを体験するためのブランチです。
+各プロジェクトのソースは雛形（空の `main`）になっていて，入力ファイルと自動テスト（期待する出力）だけが入っています。
 
-- 授業サイト: <https://t-yokoga.github.io/softprac1/>（資料: <https://github.com/t-yokoga/softprac1>）
-- 全 14 回の演習について，課題・発展課題のソースコードと，解答・解説（各回の `README.md`）をまとめています。
+- 授業サイト: <https://t-yokoga.github.io/softprac1/>
+- 解答と解説は [`main`](https://github.com/NS28cse/programminglang1-ans/tree/main) ブランチ，テストの実際の出力は [`ta-results`](https://github.com/NS28cse/programminglang1-ans/tree/ta-results/results) ブランチにあります（このブランチは [`ta`](https://github.com/NS28cse/programminglang1-ans/tree/ta) の `tools/make_practice.py` で作っています）。
 
-> [!WARNING]
-> 公開リポジトリで，解答を含みます。学生にこのリポジトリを案内するかどうかと，その時期・範囲は，担当教員の指示に従ってください。
+## 進め方
 
-## ブランチ
+1. 自分用のブランチを作ります（`practice` は雛形のまま残しておくと，やり直しや他の人の練習に使えます）。
 
-| ブランチ | 内容 | 使う人 |
-| --- | --- | --- |
-| [`main`](https://github.com/NS28cse/programminglang1-ans/tree/main) | 解答（ソース・入力ファイル）と解説（各回の README）。ビルドに必要な最小限のファイルだけを置いています | TA・学生 |
-| [`ta`](https://github.com/NS28cse/programminglang1-ans/tree/ta) | `main` に，TA 用の資料（実務の手引き・デバッグの題材），自動テスト（期待する出力），IDE の設定，CI，保守の規約とツールを加えたもの。入口は [TA.md](https://github.com/NS28cse/programminglang1-ans/blob/ta/TA.md) です | TA・保守する人 |
-| [`ta-results`](https://github.com/NS28cse/programminglang1-ans/tree/ta-results) | `ta` のすべてのテストを実際に実行した結果（標準出力・標準エラー出力・終了コード・作られたファイル）を `results/` に加えたもの。学生の出力と比べるときに使います。入口は [results/](https://github.com/NS28cse/programminglang1-ans/tree/ta-results/results) です | TA |
-| [`practice`](https://github.com/NS28cse/programminglang1-ans/tree/practice) | 解答を雛形（空の `main`）に置き換え，入力ファイルと自動テスト（期待する出力）だけを残したもの。解答を見ずに課題を解き，学生と同じ手順と難しさを体験するときに使います | TA |
-| [`slides`](https://github.com/NS28cse/programminglang1-ans/tree/slides) | TA が学生に 1 対 1 で説明するときに使う，テーマごとの説明用スライドだけを置いたもの。[公開ページ](https://ns28cse.github.io/programminglang1-ans/)で HTML と PDF を見られます | TA |
+   ```sh
+   git switch -c practice-<名前> origin/practice
+   ```
 
-解答（`weekNN/` のソース・データファイル）と各回の README は，`main`・`ta`・`ta-results` で同じ内容です（`practice` はソースが雛形で，各回の README は課題の表だけです）。
-保守は `ta` ブランチで行い（テストと CI で確かめるため），解答と解説の変更を `main` に反映します（手順と規約は `ta` ブランチの [CONTRIBUTING.md](https://github.com/NS28cse/programminglang1-ans/blob/ta/CONTRIBUTING.md)）。
+   `practice` はテストが変わると作り直されます（履歴が置き換わるので `git pull` では更新できません）。新しいテストで続けるときは，`git fetch` してから自分のコミットを載せ替えます。
 
-## 各回の解答
+   ```sh
+   git fetch origin
+   git rebase --onto origin/practice origin/practice@{1}   # origin/practice@{1} は fetch する前の practice
+   ```
+
+   `origin/practice@{1}` が使えないとき（clone し直したときなど）は，`git log --oneline` で自分のコミットのすぐ下にある `practice: 解答を雛形にする（main …）` のコミットを探し，その名前（例: `dcc3463`）を代わりに書きます。
+
+2. その回の README（[各回の課題](#各回の課題)）で，課題とプロジェクト・作るファイルを確かめます。
+3. 演習ページを読み，プロジェクトフォルダの雛形に解答を書きます。ファイルの名前と分け方は演習ページの指定どおりにしてあります。
+4. ビルドして実行し，[テストで確かめます](#テストで確かめる)。
+5. 終わったら commit し，`main` の解答と比べます。
+
+   ```sh
+   git diff origin/main -- 'week05/Functions/*.c' 'week05/Functions/*.h'   # 自分の解答と main の解答の違い
+   ```
+
+## 各回の課題
 
 <!-- WEEK-TABLE:BEGIN -->
-| 回 | テーマ | プロジェクト | 演習ページ |
-| --- | --- | --- | --- |
-| [第1回](week01/README.md) | プログラミングの基礎 | Broken，House，Message，Version，Welcome | [ex01](https://t-yokoga.github.io/softprac1/ex01.html) |
-| [第2回](week02/README.md) | 変数 | Exchange，Observe，Profile，Rectangle，Temperature | [ex02](https://t-yokoga.github.io/softprac1/ex02.html) |
-| [第3回](week03/README.md) | 演算子 | Conditions，Flags，Leap，TimeParts，Update | [ex03](https://t-yokoga.github.io/softprac1/ex03.html) |
-| [第4回](week04/README.md) | 制御構造 | EvenSum，Fee，Powers，Table，YearGroup | [ex04](https://t-yokoga.github.io/softprac1/ex04.html) |
-| [第5回](week05/README.md) | 配列と関数 | Array3D，ColumnSum，Functions，Maximum，SumMean，ValueCopy，Warmup05 | [ex05](https://t-yokoga.github.io/softprac1/ex05.html) |
-| [第6回](week06/README.md) | 文字列 | AsciiTable，Average，CharCode，CompareJoin，CopyCapacity，Length，Lower | [ex06](https://t-yokoga.github.io/softprac1/ex06.html) |
-| [第7回](week07/README.md) | 入出力 | ByteCount，Echo，Formats，LetterCount，LineInput，LowerInput，Typing | [ex07](https://t-yokoga.github.io/softprac1/ex07.html) |
-| [第8回](week08/README.md) | ポインタ1 | CopyText，Decompose，MinMax，PointerWalk，Swap | [ex08](https://t-yokoga.github.io/softprac1/ex08.html) |
-| [第9回](week09/README.md) | ポインタ2 | ArrayTypes，FindMax，MatrixMean，Names，RaggedRows，ReturnMaximum，SwapRows | [ex09](https://t-yokoga.github.io/softprac1/ex09.html) |
-| [第10回](week10/README.md) | ファイル | Arguments，Binary，ByteOrder，CheckValue，LineLengths，NumberFormats，ParseNumber，ReadText，WriteSquares，WriteText | [ex10](https://t-yokoga.github.io/softprac1/ex10.html) |
-| [第11回](week11/README.md) | 構造体 | CopyMembers，PointInit，PointMove，Rect，RectContains，StructLayout，Students | [ex11](https://t-yokoga.github.io/softprac1/ex11.html) |
-| [第12回](week12/README.md) | コンパイル：分割コンパイルとライブラリ | CalcApp，CalcLib，LibraryCheck，SortModule，SplitCalc，VectorCalc | [ex12](https://t-yokoga.github.io/softprac1/ex12.html) |
-| [第13回](week13/README.md) | メモリ管理 | Dynamic，DynamicCopy，DynamicVector，DynamicVectorFail，GrowArray，GrowArrayFail，NewPoint，NewPointFail，SharedCount，StorageCount | [ex13](https://t-yokoga.github.io/softprac1/ex13.html) |
-| [第14回](week14/README.md) | 再帰 | CheckedFactorial，Factorial，Fibonacci，GcdLoop，Trace，TreeTraversal | [ex14](https://t-yokoga.github.io/softprac1/ex14.html) |
+| 回 | テーマ | プロジェクト | テスト数 |
+| --- | --- | --- | ---: |
+| [第1回](week01/README.md) | プログラミングの基礎 | Broken，House，Message，Version，Welcome | 5 |
+| [第2回](week02/README.md) | 変数 | Exchange，Observe，Profile，Rectangle，Temperature | 4 |
+| [第3回](week03/README.md) | 演算子 | Conditions，Flags，Leap，TimeParts，Update | 5 |
+| [第4回](week04/README.md) | 制御構造 | EvenSum，Fee，Powers，Table，YearGroup | 5 |
+| [第5回](week05/README.md) | 配列と関数 | Array3D，ColumnSum，Functions，Maximum，SumMean，ValueCopy，Warmup05 | 7 |
+| [第6回](week06/README.md) | 文字列 | AsciiTable，Average，CharCode，CompareJoin，CopyCapacity，Length，Lower | 7 |
+| [第7回](week07/README.md) | 入出力 | ByteCount，Echo，Formats，LetterCount，LineInput，LowerInput，Typing | 60 |
+| [第8回](week08/README.md) | ポインタ1 | CopyText，Decompose，MinMax，PointerWalk，Swap | 5 |
+| [第9回](week09/README.md) | ポインタ2 | ArrayTypes，FindMax，MatrixMean，Names，RaggedRows，ReturnMaximum，SwapRows | 7 |
+| [第10回](week10/README.md) | ファイル | Arguments，Binary，ByteOrder，CheckValue，LineLengths，NumberFormats，ParseNumber，ReadText，WriteSquares，WriteText | 109 |
+| [第11回](week11/README.md) | 構造体 | CopyMembers，PointInit，PointMove，Rect，RectContains，StructLayout，Students | 7 |
+| [第12回](week12/README.md) | コンパイル：分割コンパイルとライブラリ | CalcApp，CalcLib，LibraryCheck，SortModule，SplitCalc，VectorCalc | 21 |
+| [第13回](week13/README.md) | メモリ管理 | Dynamic，DynamicCopy，DynamicVector，DynamicVectorFail，GrowArray，GrowArrayFail，NewPoint，NewPointFail，SharedCount，StorageCount | 39 |
+| [第14回](week14/README.md) | 再帰 | CheckedFactorial，Factorial，Fibonacci，GcdLoop，Trace，TreeTraversal | 6 |
 <!-- WEEK-TABLE:END -->
 
-## 解答の読み方
+## テストで確かめる
 
-- 各回の `weekNN/README.md` に，課題ごとの解答コード・実行結果・説明・表の記入例・確認問題の解答と，TA 向けの**採点のポイント・よくある誤り**をまとめています。
-- 各プロジェクトフォルダのソースは，演習ページの「期待する表示」をそのまま出す版です。
-  演習ページの「値を変えて試す」「〜に書き換えて比べる」小問は，書き換え方と結果を README に載せています（試すときは[ソースを書き換えて試す](#ソースを書き換えて試す)）。
-  README に載せた比較用・確認用のプログラムは，プロジェクトフォルダの `versions/` にあります。
-- 実行結果は，実際にビルド・実行した出力をそのまま載せています。アドレスや `sizeof long` のように環境で変わる値は，その都度環境を書いています。
-- コンパイラの診断（エラー・警告の文面）は GCC・Clang で実際に出したものです。MSVC のエラー・警告番号（`C2143` など）は Microsoft のドキュメントに基づく例で，文面は Visual Studio の版や言語設定によって変わります。
-- すべてのプロジェクトは，MSVC（`/W4`），GCC・Clang（`-Wall -Wextra -Wpedantic`）で警告なしにビルドでき，演習ページの表示例と同じ出力になることを `ta` ブランチの自動テストで確かめています。
+テストは各プロジェクトの `tests/` にあり，`<ケース>.in`（標準入力）・`<ケース>.args`（引数）でプログラムを実行して，標準出力が `<ケース>.out` と一致するかを確かめます（終了コードは `.code`，作られるファイルは `.files/`）。
+テストを動かすには CMake を使います（[使い方](#使い方)の 3・4）。
 
-## フォルダの構成
+| 方法 | テストの実行 |
+| --- | --- |
+| コマンド | `cmake -S . -B build && cmake --build build --config Debug` の後，`ctest --test-dir build -C Debug -R week05/Functions --output-on-failure`（`-R` で回やプロジェクトを絞る。`-R week05` なら第5回すべて。`--config`・`-C` は Windows の Visual Studio のジェネレーターで必要で，ほかでは付けても同じ） |
+| Visual Studio でフォルダーを開く | **Test > Run CTests for softprac1_answers**，または **Test Explorer** |
+| VS Code | **Testing** ビュー，または **Command Palette** の **CMake: Run Tests** |
 
-授業では「1 課題 = 1 つの空のプロジェクト = 1 つの `main`」で作業します。このリポジトリでは同じ単位を **1 フォルダ** で表します。
+- 失敗したテストは，期待する出力と実際の出力を並べて表示します（`--output-on-failure`）。
+- 雛形のままでは，そのプロジェクトのテストはほとんど失敗します。ただし，何もしないのが正しいケース（入力が空・引数が足りないときに何も表示しない，既にあるファイルをそのまま残すなど）は雛形でも通ります。全部が通れば，演習ページの表示例どおりに書けています。
+- 標準エラー出力（エラーメッセージ）の文面は比べません（終了コードは比べます）。メッセージは `main` の解答と見比べます。
+- 関数だけを書くファイル（`main` を持たない `.c`）は，空のままだと「空の翻訳単位」の警告が出ます（MSVC は C4206）。中身を書けば消えます。
+- 空のプロジェクトやコマンドで作った実行ファイルは，入力を与えて出力をファイルに保存し，`diff`（Windows は `fc`）で `tests/<ケース>.out` と比べます。
 
-```
-programminglang1-ans/
-├── README.md             ← このファイル（入口と使い方）
-├── CMakeLists.txt        ← Visual Studio・VS Code でフォルダを開いてビルドするための設定（これだけで全課題をビルドできる）
-├── week01/
-│   ├── README.md         ← 第1回の解答・解説
-│   ├── Welcome/
-│   │   └── welcome.c     ← 1 フォルダ = 1 プロジェクト = 1 つの実行ファイル（Welcome.exe）
-│   ├── Message/ ...
-│   └── _Broken/          ← 名前が _ で始まるフォルダは，意図的にエラーを含むコード（ビルドしない）
-├── week02/ ...
-└── week14/
-```
-
-- `weekNN/<プロジェクト名>/` 直下の `*.c` をまとめると，1 つの実行ファイルになります（分割コンパイルの回も同じ）。`versions/` などのサブフォルダは含みません。
-- `input.txt` などのデータファイルは，それを読むプロジェクトのフォルダに置いてあります。
-- プロジェクトフォルダの `CMakeLists.txt` は，第12回の `CalcLib`・`CalcApp`（静的ライブラリとそれを使うアプリ）と，第13回の `DynamicVectorFail`（`DynamicVector` のソースを一部使う）にだけあります。
+  ```sh
+  cd week07/Echo
+  gcc -std=c17 -Wall -Wextra -Wpedantic *.c -o a.out -lm
+  ./a.out < tests/two_lines.in | diff - tests/two_lines.out   # 何も表示されなければ一致
+  ```
 
 ## 使い方
 
@@ -114,8 +116,7 @@ cmd /c "a.exe < input.txt"               # cmd の < を使う場合
 ```
 
 - コマンドライン引数は実行ファイルの後に並べます（例: `./a.out input.txt`）。各回の README に，課題ごとに使う引数を書いています。
-- 第12回の `CalcApp`（ライブラリを使う）と第13回の `DynamicVectorFail`（`DynamicVector` のソースも使う）は，それぞれの回の README のコマンドでビルドします。
-- 比較用のプログラム（`versions/*.c`）は，そのファイル 1 つだけをコンパイルします（例: `gcc -std=c17 -Wall -Wextra -Wpedantic versions/powers_while.c -o a.out`）。
+- 第12回の `CalcApp`（ライブラリを使う）と第13回の `DynamicVectorFail`（`DynamicVector` のソースも使う）は，`main` ブランチのそれぞれの回の README のコマンドでビルドします（CMake を使う方法 3・4 ならそのままビルドできます）。
 - 第13回などでメモリの誤りを確かめるときは，Linux・macOS で `-fsanitize=address,undefined -g` を付けてビルドすると，AddressSanitizer・UBSan が範囲外アクセスやリーク（Linux）を報告します。
 
 ### 2. 授業と同じ空のプロジェクトで使う（Visual Studio）
@@ -137,18 +138,9 @@ cmd /c "a.exe < input.txt"               # cmd の < を使う場合
 
 - 実行ファイルは `out\build\x64-Debug\bin\weekNN\<プロジェクト名>\` にでき，プロジェクトフォルダの `input.txt` などのデータファイルも同じフォルダにコピーされます。
   作業ディレクトリはこのフォルダなので，データファイルを読む課題もそのまま動きます。プログラムが書き出すファイル（第10回）もこのフォルダにできます。
-- 引数を使う課題は，**Startup Item** でプロジェクトを選んだ状態で **Debug > Debug and Launch Settings for \<プロジェクト\>** を開き，表示された構成に `"args"` を足します（授業の **Command Arguments** に当たります）。
-  この設定は `.vs/launch.vs.json` に保存されます（`main` ブランチにはこのファイルを含めていません。`ta` ブランチでは [TA.md の「IDE で使う」](https://github.com/NS28cse/programminglang1-ans/blob/ta/TA.md#ide-で使う)の方法を使います）。
-
-  ```json
-  {
-    "type": "default",
-    "project": "CMakeLists.txt",
-    "projectTarget": "ReadText.exe (bin\\week10\\ReadText\\ReadText.exe)",
-    "name": "ReadText.exe (bin\\week10\\ReadText\\ReadText.exe)",
-    "args": [ "input.txt" ]
-  }
-  ```
+- 引数を使う課題は，**Startup Item** で `week10 ReadText  [input.txt]` のような `weekNN 名前  [引数]` の項目を選びます（授業の **Command Arguments** に当たります）。
+  引数は各回の README の表の「実行に使うもの」と同じで，作業ディレクトリは `Echo.exe` などの項目と同じく実行ファイルのフォルダです。
+  ほかの引数で試すときは，その項目を選んだ状態で **Debug > Debug and Launch Settings for \<項目\>** を開き，`"args"` を書き換えます（`.vs/launch.vs.json` に保存されます。試し終わったら `git restore .vs/launch.vs.json` で戻します）。
 
 - プロジェクトフォルダのデータファイルを書き換えたり足したりしたときは，次のビルドでコピーし直されます（実行ファイルのフォルダで直接書き換えた同名のファイルは上書きされます）。プログラムが書き出したファイルは実行ファイルのフォルダに残り，プロジェクトフォルダには戻りません。
 
@@ -162,7 +154,7 @@ cmd /c "a.exe < input.txt"               # cmd の < を使う場合
    すべてのビルドは **CMake: Build**（F7）です。
 
 - 実行ファイルとデータファイルの場所，作業ディレクトリは 3 と同じです（ビルド先は `build/`）。
-- 引数を使う課題は，**File > Preferences > Settings** の **Workspace** タブで `cmake.debugConfig` を検索し，**Edit in settings.json** で次のように書きます（`.vscode/settings.json` に保存されます。`main` ブランチにはこのファイルを含めていません。`ta` ブランチでは [TA.md の「IDE で使う」](https://github.com/NS28cse/programminglang1-ans/blob/ta/TA.md#ide-で使う)の方法を使います）。
+- 引数を使う課題は，**File > Preferences > Settings** の **Workspace** タブで `cmake.debugConfig` を検索し，**Edit in settings.json** で次のように書きます（`.vscode/settings.json` に保存されます。このブランチには含めていません）。
   `console` は，デバッグ実行でもキーボードから入力できるようにする設定です（入力を読む課題で使う）。
 
   ```json
@@ -172,10 +164,6 @@ cmd /c "a.exe < input.txt"               # cmd の < を使う場合
   この `args` はどのプロジェクトを実行しても渡されるので，その課題が終わったら消します。
 
 - リダイレクト（`<`）を使う課題（第7回）は，**Terminal > New Terminal** で 1 の方法を使います。
-
-### ソースを書き換えて試す
-
-演習ページの「値を変えて試す」「〜に書き換えて比べる」小問は，README の書き換え方に従ってソースを書き換え，ビルドし直して実行します。確かめたら `git restore <ファイル>`（または **Source Control** ビューの **Discard Changes**）で元に戻します。
 
 ## よくあるトラブル
 

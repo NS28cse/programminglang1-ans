@@ -1,19 +1,3 @@
-﻿/* 第12回 課題4　ベクトルと行列を分割する（VectorCalc / matrix.c）
-   講義 7 の matrix.c．行列とベクトルの計算．v[2*i+j] が第 i 行第 j 列 */
-#include "matrix.h"
-#include <stdio.h>
-
-Vector gemv(double alpha, Matrix a, Vector x, double beta, Vector y)
-{
-    Vector result = {{
-        alpha * (a.v[0] * x.v[0] + a.v[1] * x.v[1]) + beta * y.v[0],
-        alpha * (a.v[2] * x.v[0] + a.v[3] * x.v[1]) + beta * y.v[1]
-    }};
-    return result;
-}
-
-void print_matrix(Matrix a)
-{
-    printf("[%.1f %.1f]\n[%.1f %.1f]\n",
-           a.v[0], a.v[1], a.v[2], a.v[3]);
-}
+﻿// 第12回 課題4　ベクトルと行列を分割する（VectorCalc / matrix.c）
+// 演習ページ: https://t-yokoga.github.io/softprac1/ex12.html
+// 関数の定義をここに書く（空のままだと -Wpedantic で空の翻訳単位の警告が出る）

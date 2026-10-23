@@ -7,6 +7,19 @@
 #   - 実行ファイルは <ビルド先>/bin/weekNN/<プロジェクト名>/ にでき，フォルダの input.txt などのデータファイルもそこへコピーする
 cmake_minimum_required(VERSION 3.21)
 project(softprac1_answers LANGUAGES C)
+enable_testing()
+set(SOFTPRAC_RUN_TEST "${CMAKE_SOURCE_DIR}/cmake/RunTest.cmake")
+
+# <プロジェクト>/tests/<ケース>.out があれば CTest に登録する（practice ブランチ。テスト名は weekNN/<名前>/<ケース>）
+function(softprac_add_tests name project_dir)
+  file(GLOB outs CONFIGURE_DEPENDS "${project_dir}/tests/*.out")
+  foreach(out IN LISTS outs)
+    get_filename_component(case "${out}" NAME_WE)
+    add_test(NAME "${SOFTPRAC_WEEK}/${name}/${case}"
+      COMMAND "${CMAKE_COMMAND}" "-DPROGRAM=$<TARGET_FILE:${name}>" "-DPROJECT_DIR=${project_dir}" "-DCASE=${case}"
+        "-DWORK_DIR=${CMAKE_BINARY_DIR}/testwork/${SOFTPRAC_WEEK}/${name}/${case}" -P "${SOFTPRAC_RUN_TEST}")
+  endforeach()
+endfunction()
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -40,6 +53,7 @@ function(softprac_add_program name)
       configure_file("${f}" "${out_dir}/${fname}" COPYONLY)
     endif()
   endforeach()
+  softprac_add_tests(${name} "${SOFTPRAC_PROJECT_DIR}")
 endfunction()
 
 # CONFIGURE_DEPENDS: フォルダや .c を足すと，次のビルドで構成し直して加える

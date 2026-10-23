@@ -1,32 +1,7 @@
 ﻿// 第9回 課題1　見つからない場合（FindMax / double_pointer.c）
-// 講義の例題。find_max は最大要素の場所を二重ポインタ out で呼び出し元の answer へ書き，戻り値で成功・失敗を返す。
-#include <stdio.h>
-// 最大要素の場所を *out へ書き，成功なら1，n<=0 なら0を返す。
-// 契約: out には書き込み可能な int * 変数のアドレスを渡す。n は実際の要素数以下（関数側では検査できない）。
-int find_max(int a[], int n, int **out)
-{
-    *out = NULL;  // 失敗したときに以前の結果を残さない
-    if (n <= 0) { return 0; }
-    int *best = &a[0];
-    for (int i = 1; i < n; ++i) {
-        if (a[i] > *best) { best = &a[i]; }  // > なので，同点なら最初の要素のまま
-    }
-    *out = best;
-    return 1;
-}
+// 演習ページ: https://t-yokoga.github.io/softprac1/ex09.html
+
 int main(void)
 {
-    int a[] = {7, 12, 4};
-    int *answer = NULL;
-    if (find_max(a, 3, &answer)) {  // *answer を使うのは成功したときだけ
-        printf("max=%d\n", *answer);
-        *answer = 99;
-    }
-    printf("a[1]=%d\n", a[1]);
-    const char *names[] = {"red", "green", "blue"};
-    const char *temp = names[0];
-    names[0] = names[2];
-    names[2] = temp;
-    for (int i = 0; i < 3; ++i) { printf("%s\n", names[i]); }
     return 0;
 }

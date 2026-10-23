@@ -1,33 +1,7 @@
-﻿/*
- * 第8回 課題2　最小値と最大値を返す（MinMax / min_max.c）
- * 配列の最小値と最大値を，2 つの出力先ポインタ low，high へ書き込む関数 min_max を作り，結果を表示する．
- */
-#include <stdio.h>
-/*
- * 契約（呼び出し側の責任）:
- *   - n は 1 以上で，a から少なくとも n 要素を読める
- *   - low と high は互いに異なる有効な int を指し，a の要素とも重ならない
- */
-void min_max(const int *a, int n, int *low, int *high)
-{
-    /* 0 ではなく最初の要素で両候補を初期化する（全部が負の配列でも正しい） */
-    *low = a[0];
-    *high = a[0];
-    for (int i = 1; i < n; ++i) {
-        if (a[i] < *low) {
-            *low = a[i];
-        }
-        if (a[i] > *high) {
-            *high = a[i];
-        }
-    }
-}
+﻿// MinMax / min_max.c
+// 演習ページ: https://t-yokoga.github.io/softprac1/ex08.html
+
 int main(void)
 {
-    int data[] = {7, -2, 9, 0};
-    int low;   /* min_max が書き込んだ後に初めて読む */
-    int high;
-    min_max(data, 4, &low, &high);   /* 要素数を変えたら n も合わせる */
-    printf("min=%d max=%d\n", low, high);
     return 0;
 }

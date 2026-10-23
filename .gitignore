@@ -1,7 +1,8 @@
 # ビルドの生成物（CMake・Visual Studio・VS Code・コンパイラを直接使ったとき）
 /out/
 /build/
-.vs/
+/.vs/*
+!/.vs/launch.vs.json
 .vscode/
 CMakeUserPresets.json
 CMakeSettings.json

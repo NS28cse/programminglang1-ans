@@ -1,11 +1,7 @@
-﻿/* 第12回 発展1　静的ライブラリとして使う（CalcApp / main.c）
-   静的ライブラリ CalcLib の関数を呼び出すアプリ．このプロジェクトには main.c だけを入れる */
-#include <stdio.h>
-#include "calc.h"
+﻿// 第12回 発展1　静的ライブラリとして使う（CalcApp / main.c）
+// 演習ページ: https://t-yokoga.github.io/softprac1/ex12.html
+
 int main(void)
 {
-    printf("add=%.1f\n", add(1.5, 2.0));
-    printf("multiply=%.1f\n", multiply(1.5, 2.0));
-    printf("subtract=%.1f\n", subtract(5.0, 2.0));
     return 0;
 }
