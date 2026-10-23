@@ -1,16 +1,18 @@
 name: slides
 
 # README.md 以外の .md（Slidev のスライド）をすべて HTML と PDF に書き出す。
-# slides ブランチへの push では GitHub Pages に公開し，ほかのブランチ・PR では成果物（Artifacts の slides）にする。
+# slides ブランチへの push では GitHub Pages に公開し，PR では成果物（Artifacts の slides）にする。
 # 公開には Settings > Pages の Source を GitHub Actions にし，github-pages 環境で slides ブランチからの公開を許可しておく（README.md の「公開のしくみ」）
 on:
   push:
+    branches: [slides]
   pull_request:
   workflow_dispatch:
 
+# PR は新しい push で古い実行を取り消す。slides への push（公開）は取り消さない
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -80,6 +82,10 @@ jobs:
     permissions:
       pages: write
       id-token: write
+    # 公開の途中で取り消さない（続けて push したときは，前の公開が終わってから次を公開する）
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
