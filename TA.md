@@ -48,8 +48,8 @@
 | [第12回](week12/README.md) | コンパイル：分割コンパイルとライブラリ | CalcApp，CalcLib，LibraryCheck，SortModule，SplitCalc，VectorCalc | 52 | [ex12](https://t-yokoga.github.io/softprac1/ex12.html) |
 | [第13回](week13/README.md) | メモリ管理 | Dynamic，DynamicCopy，DynamicVector，DynamicVectorFail，GrowArray，GrowArrayFail，NewPoint，NewPointFail，SharedCount，StorageCount | 75 | [ex13](https://t-yokoga.github.io/softprac1/ex13.html) |
 | [第14回](week14/README.md) | 再帰 | CheckedFactorial，Factorial，Fibonacci，GcdLoop，Trace，TreeTraversal | 65 | [ex14](https://t-yokoga.github.io/softprac1/ex14.html) |
-| [デバッグの題材](debugging/README.md) | バグ入りのプログラム（TA 用） | 17 題 | 45 | |
-| | | **合計** | **1005** | |
+| [デバッグの題材](debugging/README.md) | バグ入りのプログラム（TA 用） | 18 題 | 47 | |
+| | | **合計** | **1007** | |
 <!-- WEEK-TABLE:END -->
 
 テスト数は `tests/` と `variants/tests/` の期待値の数です。この表は `python3 tools/update_generated.py` で作り直します（手で書き換えません）。

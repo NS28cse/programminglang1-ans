@@ -846,6 +846,14 @@
     {
       "type": "default",
       "project": "CMakeLists.txt",
+      "projectTarget": "BugMeanScore.exe (bin\\debugging\\BugMeanScore\\BugMeanScore.exe)",
+      "name": "debugging BugMeanScore",
+      "currentDir": "${workspaceRoot}\\debugging\\BugMeanScore",
+      "args": []
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
       "projectTarget": "BugReverseWord.exe (bin\\debugging\\BugReverseWord\\BugReverseWord.exe)",
       "name": "debugging BugReverseWord",
       "currentDir": "${workspaceRoot}\\debugging\\BugReverseWord",

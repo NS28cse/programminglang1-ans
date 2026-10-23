@@ -1,4 +1,4 @@
-﻿// 第5回 課題2 補足　三次元配列の添字（Array3D / array3d.c）
+﻿// 第5回 課題2　補足　三次元配列の添字（Array3D / array3d.c）
 // int data[2][3][4] の最後の要素 data[1][2][3] へ 7 を代入して表示し，総要素数も確かめる。
 #include <stdio.h>
 

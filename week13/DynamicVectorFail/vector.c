@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 struct vector {
-    double v[2];
+    double v[2];    // 配列メンバは本体に含まれるので，本体の free だけで後始末が終わる
 };
 
 // 試験用の確保関数：呼ばれた回数を static 変数で数え，fail_on_call 回目だけ失敗させる
@@ -42,7 +42,7 @@ Vector *vector_axpy(double alpha, const Vector *a, const Vector *b)
 int vector_get(const Vector *p, size_t index, double *out)
 {
     if (p == NULL || index >= 2 || out == NULL) {
-        return 0;
+        return 0;   // 失敗時は *out に書き込まない
     }
     *out = p->v[index];
     return 1;
@@ -51,7 +51,7 @@ int vector_get(const Vector *p, size_t index, double *out)
 void vector_destroy(Vector **p)
 {
     if (p != NULL) {
-        free(*p);
-        *p = NULL;
+        free(*p);   // *p が NULL なら free は何もしない
+        *p = NULL;  // 呼び出し元のポインタ変数を NULL にする
     }
 }

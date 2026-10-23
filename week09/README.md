@@ -577,7 +577,7 @@ row1 mean=2.33
 
   元の配列（合計 6 と 15）は 3 で割り切れるので整数除算でも 2.00，5.00 と同じ表示になり，**割り切れない `{1, 1, 2}` のケースでないと誤りに気付けません**。`4 / 3` は `int` 同士の除算で 1 になり，それを `double` に変換しても 1.0 です。
   `%.2f` を `%.6f` にしても 1.000000 で，除算で失った情報は戻りません。
-  （`printf("%.2f", total / COLS)` のように `int` を `%f` に直接渡すのは書式と型の不一致で未定義動作になり，GCC は `-Wformat` の警告，MSVC は C4477（書式と引数の型が合わない）を出す。解答では `double` の変数に代入しているので，`(double)` を外しても警告なしで整数除算の結果だけを比べられます。）
+  （`printf("%.2f", total / COLS)` のように `int` を `%f` に直接渡すのは書式と型の不一致で未定義動作になり，GCC は `-Wformat` の警告，MSVC は C4477（書式と引数の型が合わない）を出します。解答では `double` の変数に代入しているので，`(double)` を外しても警告なしで整数除算の結果だけを比べられます。）
 
 ### 配列へのポインタで表す
 
@@ -642,7 +642,7 @@ in main: sizeof a=24 sizeof a[0]=12 sizeof a / sizeof a[0]=2
 in function: sizeof a=8 sizeof a[0]=12 sizeof a / sizeof a[0]=0
 ```
 
-関数内の `sizeof a` はポインタ 1 個の大きさ（8）で，8 / 12 = 0 という無意味な値になります。GCC は `warning: 'sizeof' on array function parameter 'a' will return size of 'int (*)[3]' [-Wsizeof-array-argument]` を出します。
+関数内の `sizeof a` はポインタ 1 個の大きさ（8）で，8 / 12 = 0 という無意味な値になります。GCC は `warning: 'sizeof' on array function parameter 'a' will return size of 'int (*)[3]' [-Wsizeof-array-argument]` を出し，Clang も `-Wsizeof-array-argument` と `-Wsizeof-pointer-div`（`sizeof a / sizeof a[0]` の割り算）を出します。Windows x64（MSVC）でもポインタは 8 バイトなので，表示は同じです。
 だから行数は `rows` として別に渡します。
 
 ### 行平均と全体平均

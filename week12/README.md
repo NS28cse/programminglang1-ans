@@ -123,7 +123,7 @@ $ touch week12/SplitCalc/calc.h && cmake --build $B --target SplitCalc     ← �
 [3/3] Linking C executable bin/week12/SplitCalc/SplitCalc
 ```
 
-`--clean-first` は，CMake（Ninja）では指定したターゲットだけでなく**ビルドフォルダのすべての生成物を消してから**作り直す（上の `Cleaning... 191 files.` はリポジトリの全プロジェクトの分）。
+`--clean-first` は，CMake（Ninja）では指定したターゲットだけでなく**ビルドフォルダのすべての生成物を消してから**作り直す（上の `Cleaning...` で消えるのは，そのビルドフォルダにある全プロジェクトの分。数は構成によって変わる）。
 Visual Studio の **Rebuild**（プロジェクトを右クリックした場合はそのプロジェクトだけ）より範囲が広いが，`SplitCalc` についての動き（全 `.c` を再コンパイルしてリンク）は同じ。
 
 観察の要点: `calc.c` だけが新しくなると**`calc.c` の再コンパイルとリンク**だけが行われ，`main.c` はコンパイルされない（`main.obj` は前のものを使う）。
@@ -137,7 +137,7 @@ Visual Studio の **Rebuild**（プロジェクトを右クリックした場合
   `calc.c` をプロジェクトの **Source Files** に追加しないと，課題3のようにリンクエラー（`LNK2019`）になる。
 - **`.obj` と `.exe` は同じものか**: 違う。`.obj`（オブジェクト）は 1 つの翻訳単位をコンパイルした機械語と名前・未解決の参照の情報で，単独では実行できない。
   `.exe` はリンカが `main.obj`・`calc.obj` と標準ライブラリを結び付けて参照をすべて解決した実行ファイル。Visual Studio の既定では `.obj` は `<プロジェクトフォルダ>\x64\Debug\`（例 `SplitCalc\x64\Debug\main.obj`），`.exe` は `<ソリューションフォルダ>\x64\Debug\`（例 `SplitCalc.exe`）にできる
-  （このリポジトリの CMake では，例えば `CMakeFiles/SplitCalc.dir/week12/SplitCalc/calc.c.o`・`main.c.o` と `bin/week12/SplitCalc/SplitCalc`。オブジェクトファイルの置き場所は CMake の構成によって変わる）。
+  （このリポジトリの CMake では，ビルドフォルダの下の `SplitCalc.dir/` のどこかに `calc.c.o`・`main.c.o`，実行ファイルは `bin/week12/SplitCalc/SplitCalc`（Windows は `SplitCalc.exe`）。オブジェクトファイルの細かい置き場所は CMake の構成によって変わる）。
 - **`main.c` と `calc.c` を別々の実行アプリ用プロジェクトにしてよいか**: いけない。プロジェクト＝1 つの実行ファイルなので，`calc.c` だけのプロジェクトは `main` がなくリンクに失敗し（`LNK2019`（未解決の外部シンボル `main`）／`LNK1120`），
   `main.c` だけのプロジェクトは `add` の定義がなく `LNK2019` になる。同じプロジェクトに入れるか，発展1のように `calc.c` を**静的ライブラリ**のプロジェクトにして参照する。
 
@@ -919,7 +919,7 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 ### 追加の観察
 
 1. **`NDEBUG` を定義する**: `#define _CRT_SECURE_NO_WARNINGS` の次（`#include <assert.h>` より前）に `#define NDEBUG` を置いてビルドすると，表示は上と**まったく同じ 5 行**で，終了コードも 0 になる
-   （さらに `assert(bytes[3] == 'c');` を**わざと偽になる** `assert(bytes[3] == 'x');` に変えても異常終了しないので，`assert` が無効になっていると分かる）。前処理後を見ると 2 つの `assert(...)` は `((void) (0));` に置き換わっており，式は評価されない。
+   （さらに `assert(bytes[3] == 'c');` を**わざと偽になる** `assert(bytes[3] == 'x');` に変えても異常終了しないので，`assert` が無効になっていると分かる）。前処理後を見ると 2 つの `assert(...)` は Linux（glibc）では `((void) (0));`（MSVC では `((void)0);`）に置き換わっており，式は評価されない。
    一方，`strcpy`・`memcpy`・`srand`・`rand` は `assert` の外にあるので同じように実行される。`#include <assert.h>` の後で定義しても効かない（マクロは取り込んだ時点の定義で決まる）。Visual Studio では Release 構成が既定で `NDEBUG` を定義する。
    Release 構成で試すとコマンドラインの `NDEBUG` の定義と重なって，MSVC では C4005（マクロの再定義），GCC では `"NDEBUG" redefined`，Clang では `-Wmacro-redefined` の警告が出るので，この観察は Debug 構成で行う（Release 構成では `#define NDEBUG` がなくても `assert` は無効）。
 2. **`assert` の式にコピーや `rand` を入れない理由**: `NDEBUG` を定義した構成（Release など）では `assert` の式自体が評価されないので，`assert(strcpy(text, src) != NULL)` や `assert(rand() >= 0)` と書くと，
@@ -1043,7 +1043,5 @@ Linux の GCC/Clang では `sqrt`・`pow` の実装が数学ライブラリ（li
 
 ## 補足：引数とエラー版の試し方
 
-- `SortModule` を別の引数で試すときは，コマンドでは `./a.out 0`（Windows は `.\a.exe 0`）のように実行ファイルの後に書き，授業と同じ空のプロジェクトでは **Command Arguments**，
-  Visual Studio でフォルダーを開いた場合は **Debug > Debug and Launch Settings for SortModule** の `"args"`，VS Code では `cmake.debugConfig` の `args` に書く（[ルートの README の使い方](../README.md#使い方)）。
-  空文字列の引数は Visual Studio の **Command Arguments** では `""` と入力する。
+- `SortModule` を別の引数で試す方法は [ルートの README の使い方](../README.md#使い方) を参照。空文字列の引数は Visual Studio の **Command Arguments** では `""` と入力する。
 - `_BuildErrors/` のエラー版を GCC で再現するには，`_BuildErrors/split/` で課題3 の「GCC の診断」のコマンドを，`_BuildErrors/` で `gcc -std=c17 -c noguard/vector_main.c` と `gcc -std=c17 -c noinclude/vector_main.c` を実行する。

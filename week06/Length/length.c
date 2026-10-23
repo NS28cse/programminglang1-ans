@@ -1,4 +1,4 @@
-﻿// 第6回 課題1 長さを数える（Length / length.c）
+﻿// 第6回 課題1　長さを数える（Length / length.c）
 // 文字列は最初の終端 '\0' で終わる。関数は配列の容量を受け取らず，終端まで走査する。
 #include <stddef.h>
 #include <stdio.h>
