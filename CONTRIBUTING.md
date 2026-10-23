@@ -12,12 +12,13 @@
 
 | ブランチ | 内容 | 変更のしかた |
 | --- | --- | --- |
-| `main` | 解答と解説だけ（`README.md`，最小の `CMakeLists.txt`・`.gitignore`，`weekNN/` のソース・データファイル・`versions/`・各回の README，ライブラリなどに要るプロジェクトフォルダの `CMakeLists.txt` 3 つ） | `ta` で確かめた変更を `tools/export_main.py` で写して PR を出す |
-| `ta` | `main` ＋ テスト・書き換えた版・TA 用の資料・IDE の設定・CI・規約とツール | 保守はここで行う（作業ブランチを `ta` から切り，`ta` へ PR を出す） |
+| `main` | 解答と解説だけ（`README.md`，最小の `CMakeLists.txt`・`.gitignore`，`.gitattributes`，`weekNN/` のソース・データファイル・`versions/`・各回の README，ライブラリなどに要るプロジェクトフォルダの `CMakeLists.txt` 3 つ） | `ta` で確かめた変更を `tools/export_main.py` で写して PR を出す |
+| `ta` | `main` ＋ テスト・書き換えた版・TA 用の資料・IDE の設定・CI・規約とツール | 保守はここで行う（作業ブランチを `ta` から切り，CI が通ったら `ta` へマージする。PR を出してもよい） |
 | `ta-results` | `ta` ＋ すべてのテストの実際の出力（`results/`） | `ta` への push で CI（`results.yml`）が作り直して force push する。手で commit しない |
-| `practice` | `main` の解答を雛形にし，`ta` の `tests/` を加えた練習用（各回の README は課題の表だけ） | `main` を更新したりテストを変えたりしたら，下の手順で作り直す。TA の練習は `practice` から切った各自のブランチで行う |
+| `practice` | `main` の解答を雛形にし，`ta` の `tests/` と Visual Studio の起動構成（`.vs/launch.vs.json`）を加えた練習用（各回の README は課題の表だけ） | `main` を更新したりテストを変えたりしたら，下の手順で作り直す。TA の練習は `practice` から切った各自のブランチで行う |
+| `slides` | 演習の前に全員へ見せる説明用スライド（Slidev）だけ。ほかのブランチとファイルを共有しない | `ta` とは別に保守する（`slides` から作業ブランチを切る）。`slides` への push で GitHub Pages（<https://ns28cse.github.io/programminglang1-ans/>）に公開される。規約は `slides` の [README.md](https://github.com/NS28cse/programminglang1-ans/blob/slides/README.md) |
 
-- `README.md` と `weekNN/` の解答・解説（`tests/`・`variants/`・`run.args`・プロジェクトフォルダの `CMakeLists.txt` を除く）は，`main` と `ta` で**同じ内容**にする。
+- `README.md`・`.gitattributes` と `weekNN/` の解答・解説（`tests/`・`variants/`・`run.args`・プロジェクトフォルダの `CMakeLists.txt` を除く）は，`main` と `ta` で**同じ内容**にする（`tools/export_main.py` が写す）。
   そのため各回の README には，`ta` だけにあるもの（テスト名・テスト数，実務の手引き・デバッグの題材へのリンク，`run.args`・`.vs/launch.vs.json`・`.vscode/`・プリセット）を書かない（「[各回の README.md](#各回の-readmemd解答解説)」）。
 - `main` と `ta` で内容が違うのは，ルートの `CMakeLists.txt`（`ta` はテスト・variant・CI 用のオプション・`debugging/` を加えたもの）と `.gitignore`，`week12/CalcLib`・`week12/CalcApp`・`week13/DynamicVectorFail` の `CMakeLists.txt`（`ta` は variant を加えたもの）だけ。
   実行ファイルの場所（`<ビルド先>/bin/weekNN/<名前>/`）とデータファイルのコピーは両方のルートの `CMakeLists.txt` で同じにする（各回の README がこの場所を書いている）。
@@ -46,7 +47,7 @@ git push --force origin HEAD:practice               # practice は main の 1 �
 cd - && git worktree remove ../practice-work
 ```
 
-- `ta` に `main` をマージしておく（`git merge main`）と，`ta` が `main` を含む形が保たれる。内容は同じなので衝突はしない。`ta` を `main` にマージしてはいけない（TA 用のファイルが `main` に入る）。
+- `ta` に `main` をマージしておく（`git merge origin/main`）と，`ta` が `main` を含む形が保たれる。内容は同じなので衝突はしない。`ta` を `main` にマージしてはいけない（TA 用のファイルが `main` に入る）。
 - フォルダ直下の `*.c` をまとめる規則でビルドできない新しいプロジェクト（ライブラリなど）は，`main` 用の `CMakeLists.txt` を `main` で手で書き，`tools/export_main.py` の `MAIN_CMAKE` に加える。
 
 ## フォルダ構成
@@ -157,6 +158,12 @@ TA が授業で解説・採点に使う資料。演習ページの**すべての
 4. 確認問題: 番号ごとに，結論を先に書き，理由を添える。
 5. チェックリストの各項目について，どの課題の何で確認できるかを書く。
 
+README 全体で:
+
+- 実行結果は推測で書かず，実際にビルドして実行した出力を貼る。環境で変わる値（アドレス，`sizeof long` など）は「Windows x64 (MSVC) では…，Linux x64 では…」のように違いを明記する。
+- 意図的なエラー（第1回の `broken.c`，第12回のリンクエラーなど）は，エラーになる版を README にコードブロックで示し，MSVC での診断（エラー番号 `C2143`，`LNK2019` など）と GCC での診断の例を書く。
+- 用語は講義ページに合わせる。
+
 ### 別解
 
 学生の解き方は 1 つではないので，考え方が本当に違う解き方は別解として載せ，どこが違い，どちらがどの場面でよいかを比べる。
@@ -169,10 +176,6 @@ TA が授業で解説・採点に使う資料。演習ページの**すべての
 - その回までに講義で扱った文法・関数だけを使う（本体と同じ）。演習ページの「使わない」指定も守る。出力は本体と同じ「期待する表示」にする。
 - ソースは `<プロジェクト>/versions/<名前>.c` に置き（先頭コメントに「第N回 課題M　別解：<考え方>（<プロジェクト> / versions/<名前>.c）」と考え方を 1〜2 行），置換なしの `softprac_add_variant(<プロジェクト> versions/<名前>.c <ケース名>)` で本体と同じ入力のテストを付ける（期待値は `variants/tests/<ケース名>.out`）。
 - README では課題の節の「採点のポイント」の前に `### 別解` を置き，別解ごとに「考え方」「コード（要点の抜粋かリンク）」「本体との比べ方（ループの回数・メモリ・読みやすさ・誤りやすさ）」「どちらを勧めるか・学生がこの形で書いてきたときの見方」を書く。
-
-- 実行結果は推測で書かず，実際にビルドして実行した出力を貼る。環境で変わる値（アドレス，`sizeof long` など）は「Windows x64 (MSVC) では…，Linux x64 では…」のように違いを明記する。
-- 意図的なエラー（第1回の `broken.c`，第12回のリンクエラーなど）は，エラーになる版を README にコードブロックで示し，MSVC での診断（エラー番号 `C2143`，`LNK2019` など）と GCC での診断の例を書く。
-- 用語は講義ページに合わせる。
 
 ## 読者に向けた書き方
 
@@ -237,7 +240,7 @@ python3 tools/check_docs.py         # 文書のリンクとアンカー，デバ
 - 生成されたファイルも同じコミットに含める（テスト数が変わったのに作り直さないと，CI の repository-checks が失敗する）。
 - push して CI の repository-checks が失敗したら，手元でこの 2 つを実行し，変わったファイルを commit する。Visual Studio の **Debug and Launch Settings** で `.vs/launch.vs.json` の引数を書き換えたまま commit したときも失敗する（既定の引数は `run.args` で変える）。
 - push したら CI の全ジョブが成功したことを確かめる。
-- 解答・解説を変えたら，`ta` にマージした後で `main` にも反映する（「[ブランチ](#ブランチ)」）。
+- 解答・解説を変えたら，`ta` にマージした後で `main` にも反映する（「[ブランチ](#ブランチ)」）。`main`・`practice` に反映するまで，`ta` の CI の `main-and-practice` は失敗する（`main` へ反映し，`practice` を作り直してから，`ta` に `origin/main` をマージして push すると成功する）。
 
 `tools/` のスクリプト:
 
@@ -250,7 +253,7 @@ python3 tools/check_docs.py         # 文書のリンクとアンカー，デバ
 | `check_docs.py` | すべての `.md` の相対リンクとアンカーがあること，`debugging/README.md` の一覧と `Bug*` フォルダが一致すること |
 | `check_launch.py` | IDE の起動構成が実際に動くこと（`python3 tools/check_launch.py <ビルド先>`。CI 用。手元でも確かめられる） |
 | `collect_results.py` | すべてのテストを実行し，実際の出力を `results/` に保存して `results/README.md`（環境・結果の一覧）を書く（`ta-results` ブランチの中身。CI 用。手元でも実行できる） |
-| `make_practice.py` | `main` の作業ツリーを `practice` の中身（雛形・`tests/`・課題の表・テストの登録）に書き換える（「[ブランチ](#ブランチ)」） |
+| `make_practice.py` | `main` の作業ツリーを `practice` の中身（雛形・`tests/`・課題の表・テストの登録・Visual Studio の起動構成）に書き換える（「[ブランチ](#ブランチ)」） |
 | `export_main.py` | 解答と解説を `main` の作業ツリーへ写す（「[ブランチ](#ブランチ)」） |
 | `projects.py` | プロジェクトの列挙（ルートの `CMakeLists.txt` と同じ規則）を各スクリプトで共有するライブラリ |
 
@@ -265,7 +268,7 @@ python3 tools/check_docs.py         # 文書のリンクとアンカー，デバ
 | `windows-mingw` | MSYS2 UCRT64 の gcc（VS Code + MinGW）。Visual Studio の構成の一覧に MinGW が出ないよう，プリセットを使わず CMake のオプションで指定する |
 | `linux` | GCC・Clang × Debug・Release。`-Werror`，AddressSanitizer/UBSan |
 | `macos` | Apple Clang。プリセット `gcc-debug`。IDE の起動構成で全プロジェクトを起動する（`debugging/` は起動せず，実行ファイルの存在だけを確かめる） |
-| `main-and-practice` | ta の解答を `tools/export_main.py` で main に写して main の最小の `CMakeLists.txt` で `-Werror` ビルドし，`tools/make_practice.py` で作った practice に main の解答を重ねてテストがすべて通ること（main が分ける前の構成の間は確かめない） |
+| `main-and-practice` | 実際の `main` が ta から `tools/export_main.py` で写したものと同じこと（`--check`），実際の `practice` が `tools/make_practice.py` で `main` から作り直したものと同じこと（反映の漏れを知らせる。`ta` への push では失敗にし，ほかのブランチと PR では警告だけにする）。ta の解答を main に写して main の最小の `CMakeLists.txt` で `-Werror` ビルドでき，practice に main の解答を重ねるとテストがすべて通ること |
 | `repository-checks` | Windows で使えないファイル名，生成物が最新か（`update_generated.py --check`），文書のリンクと題材の一覧（`check_docs.py`） |
 
 - 全ジョブに時間制限があり，同じブランチに新しい push が来ると古い実行は取り消される。

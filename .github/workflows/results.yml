@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Run all tests and save the actual outputs
         # テストが失敗しても results/ は作る（不一致は results/README.md に出る）
         run: python3 tools/collect_results.py --build-dir build || test $? -eq 1

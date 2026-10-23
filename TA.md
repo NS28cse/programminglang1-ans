@@ -12,19 +12,20 @@
 | --- | --- | --- |
 | `main` | 解答（`weekNN/` のソース・データファイル・`versions/`）と各回の README，ルートの README.md と最小の CMakeLists.txt | `ta` で直して確かめた解答・解説を `tools/export_main.py` で写し，`main` に PR を出す |
 | `ta` | `main` ＋ このファイルの「[`ta` だけにあるもの](#ta-だけにあるもの)」 | 保守はここで行う。`main` の PR がマージされたら `git merge origin/main` で取り込む（`ta` を `main` へはマージしない） |
-| `ta-results` | `ta` ＋ すべてのテストの実際の出力（`results/`） | `ta` へ push すると CI（`.github/workflows/results.yml`）が作り直して force push する。手で commit しない |
+| `ta-results` | `ta` ＋ すべてのテストの実際の出力（[results/](https://github.com/NS28cse/programminglang1-ans/tree/ta-results/results)） | `ta` へ push すると CI（`.github/workflows/results.yml`）が作り直して force push する。手で commit しない |
 | `practice` | `main` の解答を雛形（空の `main`）にし，`ta` の `tests/` を加えた練習用。解答を見ずに課題を解き，テストで自己採点する | `tools/make_practice.py` で作る。練習は `practice` から切った自分のブランチで行う |
+| `slides` | 演習の前に全員へ見せる説明用スライド（Slidev）だけ。ほかのブランチとファイルを共有しない | `ta` とは別に保守し，`slides` への push で [GitHub Pages](https://ns28cse.github.io/programminglang1-ans/) に公開する。規約は `slides` の [README.md](https://github.com/NS28cse/programminglang1-ans/blob/slides/README.md) |
 
 詳しい手順は [CONTRIBUTING.md の「ブランチ」](CONTRIBUTING.md#ブランチ)にあります。
-`ta-results` と `practice` は作り直すたびに履歴が置き換わるので，`git pull` では更新できません。手元の `ta-results` は `git fetch origin && git switch -C ta-results origin/ta-results` で最新にします（`practice` から切った自分のブランチの載せ替えは `practice` の README.md）。
+`ta-results` と `practice` は作り直すたびに履歴が置き換わるので，`git pull` では更新できません。手元の `ta-results` は `git fetch origin && git switch -C ta-results origin/ta-results` で最新にします（`practice` から切った自分のブランチの載せ替えは `practice` の [README.md](https://github.com/NS28cse/programminglang1-ans/blob/practice/README.md)）。
 
 ## 読者別の入口
 
 | 読者 | すること | 読むもの（順に） |
 | --- | --- | --- |
 | TA（授業の準備） | その回の解答と採点のポイントを確かめ，演習中の声かけを用意する | 1. [各回の解答と題材の表](#各回の解答と題材の表)からその回の README（解答・解説・採点のポイント）<br>2. [実務の手引き](ta-guide/README.md)のその回の節<br>3. その回の[デバッグの題材](debugging/README.md)（第4回〜第14回） |
-| TA（採点） | 学生の出力を期待値と比べる | 各プロジェクトの `tests/`（入力と期待値）と，`ta-results` ブランチの `results/`（実際の出力。見方は `results/README.md`） |
-| TA（課題を体験する） | 解答を見ずに課題を解き，学生と同じ手順と難しさを確かめる | `practice` ブランチの README.md（`git switch -c practice-<名前> origin/practice`） |
+| TA（採点） | 学生の出力を期待値と比べる | 各プロジェクトの `tests/`（入力と期待値）と，`ta-results` ブランチの [results/](https://github.com/NS28cse/programminglang1-ans/tree/ta-results/results)（実際の出力。見方は `results/README.md`） |
+| TA（課題を体験する） | 解答を見ずに課題を解き，学生と同じ手順と難しさを確かめる | `practice` ブランチの [README.md](https://github.com/NS28cse/programminglang1-ans/blob/practice/README.md)（`git switch -c practice-<名前> origin/practice`） |
 | TA（環境の準備） | IDE から引数・作業ディレクトリの設定なしで実行する | [IDE で使う](#ide-で使う) |
 | 保守する人 | 解答・テスト・手引き・題材を追加・修正する | [CONTRIBUTING.md](CONTRIBUTING.md)（ブランチ，規約，テストの形式，仕上げのツール，CI） |
 
@@ -56,6 +57,7 @@
 ## TA 用の資料
 
 - [実務の手引き](ta-guide/README.md)（`ta-guide/`）: 各回の演習に，エラーの読み方・テスト・デバッグ・バージョン管理など実際の開発で必要になることを 1 つずつ添えるための手引きです。巡回中に 1〜3 分で使える声かけ・見せ方・確かめる問いと，どの回でも使う型（デバッグの進め方，質問・バグ報告のテンプレートなど）をまとめています。
+- [説明用スライド](https://ns28cse.github.io/programminglang1-ans/)（`slides` ブランチ）: 実務の手引きの一部を，演習の前に全員へ数分で見せる形にしたスライドです（第4回「[デバッガで流れを追う](https://ns28cse.github.io/programminglang1-ans/debugger-basics/)」）。全員に見せるのは担当教員の了承を得たときだけにします。発表者ノートに時間の目安・言うこと・出やすい質問と答えがあります。
 - [デバッグの題材](debugging/README.md)（`debugging/`）: 第4回〜第14回の内容に合わせて，コンパイラの警告では見つからない誤りを 1 つずつ入れた短いプログラムです。題材ごとの README に，症状・学生への渡し方・探し方・ヒントの段階・原因・直し方があります。README は答えを含むので，学生にはソースと入力ファイルだけを渡します。
 
 ## `ta` だけにあるもの
@@ -79,7 +81,7 @@ programminglang1-ans/（ta ブランチ）
 ├── .vs/launch.vs.json    ← Visual Studio 用の起動設定（tools/ が作る生成物。手で直さない）
 ├── .vscode/              ← VS Code 用の設定
 ├── .github/workflows/    ← CI（ci.yml）と ta-results の作成（results.yml）
-└── .editorconfig，.gitattributes
+└── .editorconfig        ← エディターの設定（インデント・文字コード）
 ```
 
 ## 自動テスト
