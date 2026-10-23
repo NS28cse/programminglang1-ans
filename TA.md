@@ -14,7 +14,7 @@
 | `ta` | `main` ＋ このファイルの「[`ta` だけにあるもの](#ta-だけにあるもの)」 | 保守はここで行う。作業ブランチから `ta` への PR を出してマージする。解答・解説の変更は，`ta` へマージする前に `main`・`practice` へ反映し，作業ブランチに `git merge origin/main` で取り込む（`ta` を `main` へはマージしない） |
 | `ta-results` | `ta` ＋ すべてのテストの実際の出力（[results/](https://github.com/NS28cse/programminglang1-ans/tree/ta-results/results)） | `ta` へ push すると CI（`.github/workflows/results.yml`）が作り直して force push する。手で commit しない |
 | `practice` | `main` の解答を雛形（空の `main`）にし，`ta` の `tests/` を加えた練習用。解答を見ずに課題を解き，テストで自己採点する | `tools/make_practice.py` で作る。練習は `practice` から切った自分のブランチで行う |
-| `slides` | 演習の前に全員へ見せる説明用スライド（Slidev）だけ。ほかのブランチとファイルを共有しない | `ta` とは別に保守し，`slides` への push で [GitHub Pages](https://ns28cse.github.io/programminglang1-ans/) に公開する。規約は `slides` の [README.md](https://github.com/NS28cse/programminglang1-ans/blob/slides/README.md) |
+| `slides` | 1 対 1 の説明に使う，テーマごとの説明用スライド（Slidev）だけ。ほかのブランチとファイルを共有しない | `ta` とは別に保守し，`slides` への push で [GitHub Pages](https://ns28cse.github.io/programminglang1-ans/) に公開する。規約は `slides` の [README.md](https://github.com/NS28cse/programminglang1-ans/blob/slides/README.md) |
 
 詳しい手順は [CONTRIBUTING.md の「ブランチ」](CONTRIBUTING.md#ブランチ)にあります。
 `ta-results` と `practice` は作り直すたびに履歴が置き換わるので，`git pull` では更新できません。手元の `ta-results` は `git fetch origin && git switch -C ta-results origin/ta-results` で最新にします（`practice` から切った自分のブランチの載せ替えは `practice` の [README.md](https://github.com/NS28cse/programminglang1-ans/blob/practice/README.md)）。
@@ -57,7 +57,7 @@
 ## TA 用の資料
 
 - [実務の手引き](ta-guide/README.md)（`ta-guide/`）: 各回の演習に，エラーの読み方・テスト・デバッグ・バージョン管理など実際の開発で必要になることを 1 つずつ添えるための手引きです。巡回中に 1〜3 分で使える声かけ・見せ方・確かめる問いと，どの回でも使う型（デバッグの進め方，質問・バグ報告のテンプレートなど）をまとめています。
-- [説明用スライド](https://ns28cse.github.io/programminglang1-ans/)（`slides` ブランチ）: 実務の手引きの一部を，演習の前に全員へ数分で見せる形にしたスライドです（第4回「[デバッガで流れを追う](https://ns28cse.github.io/programminglang1-ans/debugger-basics/)」）。全員に見せるのは担当教員の了承を得たときだけにします。発表者ノートに時間の目安・言うこと・出やすい質問と答えがあります。
+- [説明用スライド](https://ns28cse.github.io/programminglang1-ans/)（`slides` ブランチ）: 実務のテーマごとのスライドです（エラーメッセージ・Git・テストの値・デバッガ・読みやすいコード・容量・質問の書き方）。TA の仕事は学生への 1 対 1 の指導なので，学生の画面で要る 1〜2 枚だけを一緒に見るか，URL を伝えて後で読んでもらいます。一覧は実務の手引きの「[説明用スライド](ta-guide/README.md#説明用スライド)」，発表者ノートに使う場面・学生に聞く問いと期待する答えがあります。
 - [デバッグの題材](debugging/README.md)（`debugging/`）: 第4回〜第14回の内容に合わせて，コンパイラの警告では見つからない誤りを 1 つずつ入れた短いプログラムです。題材ごとの README に，症状・学生への渡し方・探し方・ヒントの段階・原因・直し方があります。README は答えを含むので，学生にはソースと入力ファイルだけを渡します。
 
 ## `ta` だけにあるもの

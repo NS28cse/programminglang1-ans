@@ -16,7 +16,7 @@
 | [`ta`](https://github.com/NS28cse/programminglang1-ans/tree/ta) | `main` に，TA 用の資料（実務の手引き・デバッグの題材），自動テスト（期待する出力），IDE の設定，CI，保守の規約とツールを加えたもの。入口は [TA.md](https://github.com/NS28cse/programminglang1-ans/blob/ta/TA.md) です | TA・保守する人 |
 | [`ta-results`](https://github.com/NS28cse/programminglang1-ans/tree/ta-results) | `ta` のすべてのテストを実際に実行した結果（標準出力・標準エラー出力・終了コード・作られたファイル）を `results/` に加えたもの。学生の出力と比べるときに使います。入口は [results/](https://github.com/NS28cse/programminglang1-ans/tree/ta-results/results) です | TA |
 | [`practice`](https://github.com/NS28cse/programminglang1-ans/tree/practice) | 解答を雛形（空の `main`）に置き換え，入力ファイルと自動テスト（期待する出力）だけを残したもの。解答を見ずに課題を解き，学生と同じ手順と難しさを体験するときに使います | TA |
-| [`slides`](https://github.com/NS28cse/programminglang1-ans/tree/slides) | 演習の前に TA が全員へ見せる説明用スライドだけを置いたもの。[公開ページ](https://ns28cse.github.io/programminglang1-ans/)で HTML と PDF を見られます | TA |
+| [`slides`](https://github.com/NS28cse/programminglang1-ans/tree/slides) | TA が学生に 1 対 1 で説明するときに使う，テーマごとの説明用スライドだけを置いたもの。[公開ページ](https://ns28cse.github.io/programminglang1-ans/)で HTML と PDF を見られます | TA |
 
 解答（`weekNN/` のソース・データファイル）と各回の README は，`main`・`ta`・`ta-results` で同じ内容です（`practice` はソースが雛形で，各回の README は課題の表だけです）。
 保守は `ta` ブランチで行い（テストと CI で確かめるため），解答と解説の変更を `main` に反映します（手順と規約は `ta` ブランチの [CONTRIBUTING.md](https://github.com/NS28cse/programminglang1-ans/blob/ta/CONTRIBUTING.md)）。

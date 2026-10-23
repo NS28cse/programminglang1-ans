@@ -2,7 +2,8 @@
 
 プログラミング言語I・ソフトウェア演習I（C 言語）の TA 用解答リポジトリの `ta` ブランチ（入口は [TA.md](TA.md)）。
 保守はこのブランチで行う。`main` は解答と解説だけ，`ta-results` は CI が作るテストの実行結果，`practice` は `tools/make_practice.py` で `main` から作る練習用の生成物（どれも直接編集しない。`main` へは `tools/export_main.py` で反映する）。
-`slides` は説明用スライドだけの別のブランチで，`ta` とは別に保守する（規約は `slides` の README.md）。
+`slides` は説明用スライド（実務のテーマごとに 1 つ）だけの別のブランチで，`ta` とは別に保守する（規約は `slides` の README.md）。
+TA の仕事は学生に 1 対 1 で教えることだけなので，指導資料とスライドは 1 対 1 で使う形にする（全員への説明・発表を前提にしない）。
 
 - 規約: [CONTRIBUTING.md](CONTRIBUTING.md)（ブランチ，フォルダ構成，コード規約，テスト形式，README の構成と書き方，実務の手引きとデバッグの題材の規則，仕上げ，CI）
 - 評価（解答）: [softprac-grader](.claude/agents/softprac-grader.md)（`weekNN/` を回ごとに採点する）

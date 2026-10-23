@@ -17,7 +17,7 @@
 | `ta` | `main` ＋ テスト・書き換えた版・TA 用の資料・IDE の設定・CI・規約とツール | 保守はここで行う（作業ブランチを `ta` から切り，`ta` への PR を出す。CI は PR で動くので，全ジョブが通ったら merge commit でマージする） |
 | `ta-results` | `ta` ＋ すべてのテストの実際の出力（`results/`） | `ta` への push で CI（`results.yml`）が作り直して force push する。手で commit しない |
 | `practice` | `main` の解答を雛形にし，`ta` の `tests/` と Visual Studio の起動構成（`.vs/launch.vs.json`）を加えた練習用（各回の README は課題の表だけ） | `main` を更新したりテストを変えたりしたら，下の手順で作り直す。TA の練習は `practice` から切った各自のブランチで行う |
-| `slides` | 演習の前に全員へ見せる説明用スライド（Slidev）だけ。ほかのブランチとファイルを共有しない | `ta` とは別に保守する（`slides` から作業ブランチを切る）。`slides` への push で GitHub Pages（<https://ns28cse.github.io/programminglang1-ans/>）に公開される。規約は `slides` の [README.md](https://github.com/NS28cse/programminglang1-ans/blob/slides/README.md) |
+| `slides` | 1 対 1 の説明に使う，テーマごとの説明用スライド（Slidev）だけ。ほかのブランチとファイルを共有しない | `ta` とは別に保守する（`slides` から作業ブランチを切る）。`slides` への push で GitHub Pages（<https://ns28cse.github.io/programminglang1-ans/>）に公開される。規約は `slides` の [README.md](https://github.com/NS28cse/programminglang1-ans/blob/slides/README.md) |
 
 - `README.md`・`.gitattributes` と `weekNN/` の解答・解説（`tests/`・`variants/`・`run.args`・プロジェクトフォルダの `CMakeLists.txt` を除く）は，`main` と `ta` で**同じ内容**にする（`tools/export_main.py` が写す）。
   そのため各回の README には，`ta` だけにあるもの（テスト名・テスト数，実務の手引き・デバッグの題材へのリンク，`run.args`・`.vs/launch.vs.json`・`.vscode/`・プリセット）を書かない（「[各回の README.md](#各回の-readmemd解答解説)」）。
