@@ -1,0 +1,5 @@
+read 7: *low=7 *high=7
+read -2: *low=-2 *high=7
+read 9: *low=-2 *high=9
+read 0: *low=-2 *high=9
+min=-2 max=9

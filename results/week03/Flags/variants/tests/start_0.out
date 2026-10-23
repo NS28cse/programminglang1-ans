@@ -1,0 +1,5 @@
+start=0
+set write=2
+clear read=2
+toggle exec=6
+exec=1

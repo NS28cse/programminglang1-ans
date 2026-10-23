@@ -1,0 +1,4 @@
+loop: a=48 b=18 remainder=12
+loop: a=18 b=12 remainder=6
+loop: a=12 b=6 remainder=0
+gcd(48, 18): loop=6 recursive=6 equal=1
